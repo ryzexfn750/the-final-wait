@@ -1,0 +1,85 @@
+/* V9 — five-minute theatrical finale. This layer intentionally overrides only finale behavior. */
+
+/* Keep the final minute inside the original countdown layout rather than swapping to a separate screen. */
+body.phase-final-minute{overflow:auto}
+body.phase-final-minute .countdown{opacity:1!important;pointer-events:auto!important;display:grid!important;transform:scale(var(--finale-scale,1));transform-origin:center;transition:transform .38s cubic-bezier(.2,.8,.2,1),filter .38s ease}
+body.phase-final-minute .final-minute-countdown{display:none!important}
+body.phase-final-minute .gta-logo{width:clamp(86px,8vw,126px);margin-bottom:0}
+body.phase-final-minute .hero-title-wrap,body.phase-final-minute .phase-pill,body.phase-final-minute .release-hud,body.phase-final-minute .progress-block{transition:opacity .7s ease,filter .7s ease,transform .7s ease}
+
+/* The whole five-minute sequence remains part of the hero and becomes progressively more focused. */
+body.final-five-active #countdown{transform:scale(var(--finale-scale,1));transform-origin:center;will-change:transform,filter;filter:drop-shadow(0 16px 42px rgba(0,0,0,.52)) drop-shadow(0 0 var(--finale-glow,12px) rgba(242,63,178,.16));transition:transform .32s cubic-bezier(.2,.78,.2,1),filter .32s ease}
+body.final-five-active .hero-title-wrap{opacity:var(--finale-title-opacity,1)}
+body.final-five-active .release-hud,body.final-five-active .progress-block{opacity:var(--finale-hud-opacity,1)}
+body.final-five-active .next-scene{opacity:0!important;pointer-events:none!important}
+body.final-five-active .scene{transition:opacity 2.4s ease,transform .85s ease,filter .85s ease;filter:saturate(1.08) contrast(1.025)}
+body.final-five-active .hero-shade{background:radial-gradient(circle at 50% 47%,rgba(13,9,20,.06),rgba(7,5,12,.33) 52%,rgba(4,3,8,.82) 100%),linear-gradient(180deg,rgba(6,4,10,.1),rgba(5,4,9,.42));transition:background .8s ease}
+body.final-five-active .time-unit{box-shadow:0 18px 55px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.035);transition:box-shadow .3s,border-color .3s,background .3s}
+body.final-five-active .time-value{text-shadow:0 7px 35px rgba(0,0,0,.78),0 0 24px rgba(255,255,255,.14)}
+
+/* Forty seconds: every second has a visible heartbeat. */
+body.finale-last-40 .hero-atmosphere{opacity:.72;filter:saturate(1.16)}
+body.finale-last-40 .time-unit{border-color:rgba(255,255,255,.2)}
+#hero.finale-second-pulse .time-unit{animation:tfwSecondPulse .34s cubic-bezier(.15,.8,.25,1)}
+#hero.finale-second-pulse .hero-orbit-a{animation:tfwOrbitPulse .48s ease-out}
+@keyframes tfwSecondPulse{0%{transform:scale(1);box-shadow:0 15px 45px rgba(0,0,0,.24)}35%{transform:scale(1.025);border-color:rgba(242,63,178,.62);box-shadow:0 18px 58px rgba(0,0,0,.3),0 0 36px rgba(242,63,178,.18)}100%{transform:scale(1);box-shadow:0 15px 45px rgba(0,0,0,.24)}}
+@keyframes tfwOrbitPulse{0%{opacity:.16;transform:scale(.99)}35%{opacity:.48;transform:scale(1.015)}100%{opacity:.16;transform:scale(1)}}
+
+/* Final ten seconds: the UI falls away so the clock becomes the scene. */
+body.finale-last-10 .hero-title-wrap,body.finale-last-10 .phase-pill,body.finale-last-10 .release-hud,body.finale-last-10 .progress-block{opacity:.06!important;filter:blur(5px);pointer-events:none}
+body.finale-last-10 #countdown{z-index:8}
+body.finale-last-10 .hero-content:after{content:'';position:absolute;left:50%;top:50%;width:min(84vw,1100px);height:min(34vw,430px);translate:-50% -28%;border-radius:50%;background:radial-gradient(ellipse,rgba(242,63,178,.13),rgba(119,96,255,.04) 43%,transparent 72%);filter:blur(22px);pointer-events:none;z-index:-1}
+body.finale-last-second #countdown{filter:drop-shadow(0 0 38px rgba(242,63,178,.24)) drop-shadow(0 0 75px rgba(119,96,255,.14));transition:none}
+#hero.finale-rapid-pulse .countdown{animation:tfwRapidPulse .095s linear}
+#hero.finale-rapid-pulse .finale-edge-glow{animation:tfwEdgeHit .12s ease-out}
+@keyframes tfwRapidPulse{50%{filter:brightness(1.23) drop-shadow(0 0 48px rgba(255,255,255,.22))}}
+@keyframes tfwEdgeHit{0%{opacity:.15}35%{opacity:.75}100%{opacity:.15}}
+
+.finale-edge-glow{position:absolute;inset:10px;z-index:11;pointer-events:none;border:1px solid rgba(255,255,255,.09);border-radius:22px;opacity:0;box-shadow:inset 0 0 38px rgba(242,63,178,.14),0 0 38px rgba(119,96,255,.08)}
+.finale-flash{position:absolute;inset:0;z-index:12;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 48%,#fff 0,rgba(255,255,255,.94) 8%,rgba(255,122,200,.45) 24%,rgba(119,96,255,.12) 52%,transparent 76%)}
+.finale-flash.fire{animation:tfwReleaseFlash 2.1s cubic-bezier(.15,.7,.2,1) forwards}
+@keyframes tfwReleaseFlash{0%{opacity:0}5%{opacity:1}18%{opacity:.78}48%{opacity:.12}100%{opacity:0}}
+
+.countdown-shell{position:relative}
+
+/* 00:00 replaces the timer in-place. It is not a full-screen overlay. */
+.finale-release{position:absolute;left:50%;top:50%;translate:-50% -50%;z-index:18;width:min(1000px,92vw);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;visibility:hidden;pointer-events:none;transform:scale(.78);filter:blur(20px);transition:opacity .65s ease,transform 1.15s cubic-bezier(.16,.9,.25,1),filter .8s ease}
+.finale-release.active{opacity:1;visibility:visible;transform:scale(1);filter:none}
+.finale-release-kicker{font:900 clamp(8px,.72vw,12px)/1 Arial;letter-spacing:.34em;color:#fff;text-shadow:0 0 18px rgba(255,255,255,.45);opacity:0;animation:tfwReleaseKicker .9s .25s ease forwards}
+.finale-release h2{position:relative;margin:18px 0 12px;font:900 clamp(50px,8.6vw,145px)/.77 'Arial Black',Impact,sans-serif;letter-spacing:-.075em;text-transform:uppercase;background:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%);background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 8px 24px rgba(0,0,0,.65)) drop-shadow(0 0 22px rgba(242,63,178,.25));animation:tfwReleaseGradient 3.8s linear infinite,tfwReleaseBreath 2.6s ease-in-out infinite}
+.finale-release h2:before,.finale-release h2:after{content:'';position:absolute;inset:-18px -28px;border:1px solid rgba(255,255,255,.14);border-radius:26px;opacity:.6;box-shadow:0 0 34px rgba(242,63,178,.14),inset 0 0 30px rgba(119,96,255,.08);animation:tfwReleaseFrame 2.8s ease-in-out infinite}
+.finale-release h2:after{inset:-30px -42px;border-color:rgba(242,63,178,.11);animation-delay:-1.4s}
+.finale-release-date{font:900 clamp(7px,.68vw,11px)/1 Arial;letter-spacing:.25em;color:rgba(255,255,255,.7);opacity:0;animation:tfwReleaseKicker .9s .85s ease forwards}
+@keyframes tfwReleaseKicker{to{opacity:1;transform:none}}
+@keyframes tfwReleaseGradient{to{background-position:220% center}}
+@keyframes tfwReleaseBreath{50%{filter:drop-shadow(0 10px 28px rgba(0,0,0,.7)) drop-shadow(0 0 52px rgba(242,63,178,.36)) brightness(1.08)}}
+@keyframes tfwReleaseFrame{50%{opacity:1;transform:scale(1.018);border-color:rgba(255,255,255,.27);box-shadow:0 0 48px rgba(242,63,178,.23),inset 0 0 38px rgba(119,96,255,.13)}}
+
+.release-spark{position:absolute;width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 12px #fff,0 0 24px #f23fb2;opacity:0}
+.release-spark:before,.release-spark:after{content:'';position:absolute;left:50%;top:50%;width:36px;height:1px;translate:-50% -50%;background:linear-gradient(90deg,transparent,#fff,transparent)}
+.release-spark:after{rotate:90deg}.spark-a{left:8%;top:18%;animation:tfwSpark 2.4s .4s ease-in-out infinite}.spark-b{right:9%;top:24%;animation:tfwSpark 2.7s .9s ease-in-out infinite}.spark-c{left:14%;bottom:17%;animation:tfwSpark 3s 1.3s ease-in-out infinite}.spark-d{right:13%;bottom:14%;animation:tfwSpark 2.2s .15s ease-in-out infinite}@keyframes tfwSpark{0%,100%{opacity:0;transform:scale(.2) rotate(0)}35%,60%{opacity:1;transform:scale(1) rotate(45deg)}}
+
+body.finale-released #countdown,body.finale-released .final-minute-countdown{opacity:0!important;visibility:hidden!important;pointer-events:none!important;transform:scale(.72)!important}
+body.finale-released .hero-title-wrap,body.finale-released .phase-pill,body.finale-released .release-hud,body.finale-released .progress-block{opacity:0!important;pointer-events:none!important}
+body.finale-released .hero-content{z-index:15}
+body.finale-released .hero-shade{background:radial-gradient(circle at 50% 48%,rgba(26,12,40,.05),rgba(7,4,13,.34) 52%,rgba(3,2,7,.75) 100%)}
+body.finale-released .hero-orbit{opacity:.5;filter:drop-shadow(0 0 22px rgba(242,63,178,.22))}
+body.finale-released .release-overlay{display:none!important}
+.finale-fireworks{position:absolute;inset:0;width:100%;height:100%;z-index:14;pointer-events:none;mix-blend-mode:screen}
+
+.finale-preview-exit{position:fixed;right:18px;bottom:18px;z-index:5400;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(8,7,13,.88);backdrop-filter:blur(18px);color:#fff;padding:13px 17px;font:900 7px/1 Arial;letter-spacing:.13em;cursor:pointer;box-shadow:0 18px 50px rgba(0,0,0,.32)}
+body.finale-previewing .milestone-preview-toggle{opacity:.35;pointer-events:none}
+
+/* The old fixed release page is disabled in V9; release now lives where the timer was. */
+.release-overlay{display:none!important}
+
+@media(max-width:700px){
+  body.final-five-active #countdown{transform:scale(1.035)}
+  body.finale-last-10 #countdown{transform:scale(1.055)}
+  body.finale-last-second #countdown{transform:scale(1.075)}
+  .finale-release{width:94vw}.finale-release h2{font-size:clamp(42px,15vw,88px)}.finale-release h2:before{inset:-12px -14px}.finale-release h2:after{inset:-21px -22px}
+  .finale-preview-exit{right:10px;bottom:10px;font-size:6px;padding:11px 13px}
+}
+@media(prefers-reduced-motion:reduce){
+  body.final-five-active #countdown,.finale-release,.finale-release h2,.release-spark,.finale-flash{animation:none!important;transition:none!important}
+}

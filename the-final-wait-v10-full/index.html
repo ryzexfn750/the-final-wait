@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#09070e" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="The Final Wait: Road to Leonida — an unofficial cinematic countdown to Grand Theft Auto VI." />
+  <meta property="og:title" content="The Final Wait: Road to Leonida" />
+  <meta property="og:description" content="A cinematic fan countdown to Grand Theft Auto VI — November 19, 2026." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://ryzexfn750.github.io/the-final-wait/assets/today-card.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <title>The Final Wait: Road to Leonida</title>
+  <script>
+    if (location.hash && location.hash !== '#hero') {
+      window.__tfwInitialHash = location.hash;
+      document.documentElement.classList.add('anchor-loading');
+      setTimeout(()=>document.documentElement.classList.remove('anchor-loading'),8000);
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  </script>
+  <link rel="icon" href="assets/icon-192.png" sizes="192x192" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <link rel="manifest" href="site.webmanifest" />
+  <link rel="preload" as="image" href="assets/gta-vi-logo.webp" />
+  <link rel="preload" as="image" href="assets/screenshots/desktop/scene-02.webp" media="(min-width: 701px)" />
+  <link rel="preload" as="image" href="assets/screenshots/mobile/scene-02.webp" media="(max-width: 700px)" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="v6.css?v=8" />
+  <link rel="stylesheet" href="v8.css?v=8" />
+  <link rel="stylesheet" href="v9.css?v=9" />
+  <link rel="stylesheet" href="v10.css?v=10" />
+  <link rel="preload" href="assets/audio/final-5-minutes.mp3" as="audio" type="audio/mpeg" />
+  <link rel="preload" href="assets/audio/final-10-release.mp4" as="audio" type="audio/mp4" />
+</head>
+<body class="home-page">
+  <div class="page-noise" aria-hidden="true"></div>
+  <div class="page-grid" aria-hidden="true"></div>
+  <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+  <div class="page-transition" id="pageTransition" aria-hidden="true"><span></span><span></span></div>
+
+  <header class="topbar" id="topbar">
+    <a class="brand magnetic" href="#hero" aria-label="The Final Wait home">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-copy"><strong>THE FINAL WAIT</strong><small>ROAD TO LEONIDA</small></span>
+    </a>
+    <nav class="nav desktop-nav" aria-label="Main navigation">
+      <a href="#today">TODAY</a>
+      <a href="#timeline">TIMELINE</a>
+      <a href="#intel">LEONIDA INTEL</a>
+      <button class="nav-button" id="shareButton" type="button">SHARE</button>
+      <button class="nav-button fullscreen-button" id="fullscreenButton" type="button">FULLSCREEN</button>
+      <button class="sound-button" id="soundButton" type="button" aria-pressed="true" title="Toggle soundtrack">
+        <span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="sound-label">SOUND</span>
+      </button>
+    </nav>
+    <div class="gtranslate_wrapper language-widget" aria-label="Translate website"></div>
+    <div class="mobile-controls">
+      <button class="sound-button compact" id="mobileSoundButton" type="button" aria-pressed="true" aria-label="Toggle soundtrack"><span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>
+      <button class="menu-button" id="menuButton" type="button" aria-expanded="false" aria-controls="mobileMenu">MENU</button>
+    </div>
+  </header>
+
+  <a class="return-countdown magnetic" id="returnCountdown" href="#hero" aria-label="Return to countdown"><span>↑</span> COUNTDOWN</a>
+
+  <div class="mobile-menu glass" id="mobileMenu" hidden>
+    <a href="#today">TODAY</a>
+    <a href="#timeline">TIMELINE</a>
+    <a href="#intel">LEONIDA INTEL</a>
+    <button type="button" id="mobileShareButton">SHARE</button>
+    <button type="button" id="mobileFullscreenButton">FULLSCREEN</button>
+  </div>
+
+  <main>
+    <section class="hero" id="hero" aria-labelledby="heroTitle">
+      <div class="scene scene-a active" id="sceneA" aria-hidden="true"></div>
+      <div class="scene scene-b" id="sceneB" aria-hidden="true"></div>
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-atmosphere" aria-hidden="true"></div>
+      <div class="scene-sweep" id="sceneSweep" aria-hidden="true"></div>
+      <div class="hero-orbit hero-orbit-a" aria-hidden="true"></div>
+      <div class="hero-orbit hero-orbit-b" aria-hidden="true"></div>
+
+      <div class="hero-status glass" aria-hidden="true">
+        <span id="sceneCounter">SCENE: 1 / 164</span>
+      </div>
+
+      <div class="hero-content" id="heroContent">
+        <div class="logo-stage">
+          <span class="logo-halo" aria-hidden="true"></span>
+          <img class="gta-logo" src="assets/gta-vi-logo.webp" alt="Grand Theft Auto VI" />
+        </div>
+
+        <div class="hero-title-wrap">
+          <p class="eyebrow bright">THE FINAL WAIT</p>
+          <h1 id="heroTitle">ROAD TO LEONIDA</h1>
+          <p class="hero-subcopy">ONE LIVE CLOCK. EVERY SECOND CLOSER.</p>
+        </div>
+
+        <div class="phase-pill glass" id="phasePill"><span class="phase-dot"></span> THE FINAL WAIT</div>
+
+        <div class="countdown-shell">
+          <div class="countdown" id="countdown" aria-hidden="true">
+            <div class="time-unit days"><span class="digit-glow"></span><span class="time-value" id="days">45</span><span class="time-label">DAYS</span></div>
+            <div class="time-separator">:</div>
+            <div class="time-unit"><span class="digit-glow"></span><span class="time-value" id="hours">00</span><span class="time-label">HOURS</span></div>
+            <div class="time-separator">:</div>
+            <div class="time-unit"><span class="digit-glow"></span><span class="time-value" id="minutes">00</span><span class="time-label">MINUTES</span></div>
+            <div class="time-separator">:</div>
+            <div class="time-unit"><span class="digit-glow"></span><span class="time-value" id="seconds">00</span><span class="time-label">SECONDS</span></div>
+            <div class="time-separator dot">.</div>
+            <div class="time-unit milliseconds"><span class="digit-glow"></span><span class="time-value" id="milliseconds">000</span><span class="time-label">MILLISECONDS</span></div>
+          </div>
+          <p class="sr-countdown" id="srCountdown" aria-live="polite"></p>
+          <div class="final-minute-countdown" id="finalMinuteCountdown" aria-hidden="true">00:00:59.999</div>
+        </div>
+
+        <div class="release-hud glass">
+          <div class="release-date-block">
+            <span class="hud-label">RELEASE DATE</span>
+            <strong>NOVEMBER 19, 2026</strong>
+          </div>
+          <div class="release-zone-block">
+            <span class="hud-label">TIME ZONE</span>
+            <button class="zone-button magnetic" id="zoneButton" type="button"><strong id="zoneShort">CET · UTC+1</strong><span>CHANGE</span></button>
+          </div>
+        </div>
+
+        <div class="progress-block glass" aria-label="Progress since the latest announced delay">
+          <div class="progress-meta"><span>SINCE THE NOVEMBER 6, 2025 DELAY</span><strong id="progressText">0.00000000%</strong></div>
+          <div class="progress-track"><div class="progress-fill" id="progressFill"><i></i></div></div>
+          
+        </div>
+      </div>
+
+      <div class="hero-corners" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <button class="next-scene fx-button" id="nextScene" type="button" aria-label="Show another official screenshot">CHANGE SCENE <span>→</span></button>
+      <a class="scroll-cue" href="#today"><span>ENTER LEONIDA</span><i aria-hidden="true">↓</i></a>
+    </section>
+
+    <section class="section today-section scene-section" id="today"><div class="section-backdrop today-backdrop" aria-hidden="true"></div>
+      <div class="section-head reveal">
+        <span class="section-index">01</span>
+        <div><p class="eyebrow bright">THE DAILY EDITION</p><h2>TODAY IN LEONIDA</h2><p class="section-lede">Find daily updates on new GTA VI details, discoveries and news as the road to Leonida continues.</p></div>
+      </div>
+
+      <article class="newspaper-card reveal tilt-card" id="dailyCard">
+        <a class="newspaper-image-link" href="today.html" aria-label="Read today's Leonida article"><div class="newspaper-image" id="dailyImage" aria-hidden="true"></div></a>
+        <div class="newspaper-copy">
+          <div class="newspaper-mast"><span id="dailyIssue">ISSUE 001</span><strong>THE LEONIDA DESK</strong><span id="dailyDate">OCTOBER 4, 2026</span></div>
+          <span class="tag" id="dailyTag"></span>
+          <h3 id="dailyTitle"></h3>
+          <p id="dailyText"></p>
+          <div class="newspaper-meta"><span id="dailyReadTime">4 MIN READ</span><span>OFFICIAL-SOURCE REPORTING</span></div>
+          <div class="daily-actions">
+            <a class="fx-button primary magnetic" href="today.html">READ TODAY'S STORY <span>↗</span></a>
+            <button class="fx-button magnetic" type="button" id="dailyShare">SHARE STORY</button>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="section timeline-section scene-section" id="timeline"><div class="section-backdrop timeline-backdrop" aria-hidden="true"></div>
+      <div class="section-head reveal">
+        <span class="section-index">02</span>
+        <div><p class="eyebrow bright">EVERY MAJOR TURN</p><h2>THE ROAD TO LEONIDA</h2><p class="section-lede">From the first whispers to the last countdown. Official milestones, reported leaks, and the moments that kept us watching.</p></div>
+      </div>
+      <div class="timeline-stage reveal">
+        <div class="timeline-controls">
+          <span id="timelinePosition" aria-live="polite">01 / 01</span>
+          <div class="timeline-buttons">
+            <button class="timeline-arrow magnetic" id="timelinePrev" type="button" aria-label="Previous timeline event">←</button>
+            <button class="timeline-arrow magnetic" id="timelineNext" type="button" aria-label="Next timeline event">→</button>
+          </div>
+        </div>
+        <div class="timeline-progressbar" aria-hidden="true"><span id="timelineProgress"></span></div>
+        <div class="timeline-viewport" id="timelineViewport" tabindex="0" aria-label="GTA VI release timeline">
+          <div class="timeline" id="timelineList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="intel-section scene-section" id="intel"><div class="section-backdrop intel-backdrop" aria-hidden="true"></div>
+      <div class="section intel-head">
+        <div class="section-head reveal">
+          <span class="section-index">03</span>
+          <div><p class="eyebrow bright">OFFICIAL INTEL</p><h2>INSIDE LEONIDA</h2><p class="section-lede">People, places and systems confirmed by Rockstar Games, official trailers, the extended look, and Rockstar developer interviews.</p></div>
+        </div>
+        <div class="intel-filter reveal" id="intelFilter">
+          <button class="active" data-filter="ALL">ALL</button>
+          <button data-filter="PEOPLE">PEOPLE</button>
+          <button data-filter="PLACES">PLACES</button>
+          <button data-filter="SYSTEMS">SYSTEMS</button>
+        </div>
+      </div>
+      <div class="intel-grid section" id="intelGrid"></div>
+    </section>
+
+    <section class="share-section" id="share">
+      <div class="share-backdrop" aria-hidden="true"></div>
+      <div class="share-inner reveal">
+        <img src="assets/gta-vi-logo.webp" alt="" class="share-logo" />
+        <p class="eyebrow bright">DON'T WAIT ALONE</p>
+        <h2>BRING SOMEONE<br>TO LEONIDA.</h2>
+        <p id="shareCountdownText"></p>
+        <div class="share-actions">
+          <button class="fx-button magnetic" type="button" data-share="x">SHARE ON X</button>
+          <button class="fx-button magnetic" type="button" data-share="whatsapp">SHARE ON WHATSAPP</button>
+          <button class="fx-button primary magnetic" type="button" data-share="native">SHARE WEBSITE</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-brand"><strong>THE FINAL WAIT</strong><span>ROAD TO LEONIDA</span></div>
+    <p class="legal-copy">This is not an official Rockstar Games project. Grand Theft Auto, Grand Theft Auto VI, Rockstar Games, related trademarks, names and official imagery belong to their respective owners. This fan-made website is not affiliated with or endorsed by Rockstar Games or Take-Two Interactive.</p>
+    <a class="creator-chip magnetic" href="https://x.com/RyzeGTAVI" target="_blank" rel="noreferrer" aria-label="Created by Ryze on X"><span class="x-icon">𝕏</span><span><small>CREATED BY</small><strong>RYZE</strong></span></a>
+    <button type="button" id="privacyButton" hidden>PRIVACY</button>
+  </footer>
+
+  <div class="share-modal glass" id="shareModal" hidden role="dialog" aria-modal="true" aria-labelledby="modalShareTitle" tabindex="-1">
+    <button class="modal-close" id="closeShare" type="button" aria-label="Close">×</button>
+    <p class="eyebrow bright">SHARE THE WAIT</p>
+    <h2 id="modalShareTitle">THE WAIT IS GETTING SHORTER.</h2>
+    <p id="modalShareText"></p>
+    <div class="share-actions modal-actions">
+      <button class="fx-button" type="button" data-share="x">SHARE ON X</button>
+      <button class="fx-button" type="button" data-share="whatsapp">SHARE ON WHATSAPP</button>
+      <button class="fx-button primary" type="button" data-share="native">SHARE WEBSITE</button>
+    </div>
+  </div>
+
+  <div class="timezone-modal glass" id="timezoneModal" hidden role="dialog" aria-modal="true" aria-labelledby="timezoneTitle" tabindex="-1">
+    <button class="modal-close" id="closeTimezone" type="button" aria-label="Close">×</button>
+    <p class="eyebrow bright">COUNTDOWN TARGET</p>
+    <h2 id="timezoneTitle">CHOOSE A TIME ZONE.</h2>
+    <p>The default is Central European Time. Selecting another region recalculates the countdown to midnight on November 19 in that time zone.</p>
+    <div class="timezone-search-wrap"><input id="timezoneSearch" type="search" placeholder="Search Europe, America, Tokyo..." autocomplete="off" /></div>
+    <div class="timezone-list" id="timezoneList"></div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden></div>
+
+  <div class="analytics-consent glass" id="analyticsConsent" hidden>
+    <div><strong>OPTIONAL ANALYTICS</strong><p>This fan site can use anonymous analytics to understand visits and interactions. You choose whether to enable it.</p></div>
+    <div class="consent-actions"><button type="button" id="analyticsDecline">DECLINE</button><button type="button" id="analyticsAccept">ACCEPT</button></div>
+  </div>
+
+  <div class="release-overlay" id="releaseOverlay" aria-hidden="true">
+    <div class="release-flare" aria-hidden="true"></div>
+    <img src="assets/gta-vi-logo.webp" alt="Grand Theft Auto VI" />
+    <p>THE WAIT IS OVER.</p>
+    <h2>WELCOME TO LEONIDA.</h2>
+    <span>AFTER MORE THAN A DECADE, HERE WE ARE.</span>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="route-loader" id="routeLoader" aria-hidden="true">
+    <div class="route-loader-inner">
+      <img src="assets/gta-vi-logo.webp" alt="" aria-hidden="true" />
+      <span class="route-loader-kicker" id="routeLoaderKicker">THE FINAL WAIT</span>
+      <strong id="routeLoaderLabel">LOADING</strong>
+      <div class="route-loader-track"><i></i></div>
+    </div>
+  </div>
+  <script defer src="clock.js?v=10"></script>
+  <script type="module" src="app.js?v=10"></script>
+  <script defer src="milestones.js?v=10"></script>
+  <script defer src="motion.js?v=8"></script>
+  <script defer src="language.js?v=8"></script>
+</body>
+</html>

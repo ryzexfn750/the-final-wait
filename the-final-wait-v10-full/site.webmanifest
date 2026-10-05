@@ -1,0 +1,13 @@
+{
+  "name": "The Final Wait: Road to Leonida",
+  "short_name": "The Final Wait",
+  "description": "An unofficial cinematic fan countdown to Grand Theft Auto VI.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#08070c",
+  "theme_color": "#0b0712",
+  "icons": [
+    {"src":"assets/icon-192.png","sizes":"192x192","type":"image/png"},
+    {"src":"assets/icon-512.png","sizes":"512x512","type":"image/png"}
+  ]
+}

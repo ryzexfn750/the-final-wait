@@ -1,0 +1,140 @@
+/* V10 — final-30-minute simulator + refined theatrical finale. Loaded after V9. */
+
+/* Keep the finale large but inside the viewport at every stage. */
+body.final-five-active .hero-content{
+  width:min(1260px,90vw);
+  transition:width .9s cubic-bezier(.2,.78,.2,1),transform .35s ease;
+}
+body.final-five-active .countdown-shell{margin-top:10px;overflow:visible}
+body.final-five-active #countdown{
+  width:100%;margin-inline:auto;
+  transform:scale(var(--finale-scale,1));
+  transform-origin:center center;
+}
+
+/* At -05:00 the release/time-zone HUD leaves the composition completely. */
+.release-hud{max-height:120px;transition:opacity .75s ease,filter .75s ease,transform .75s ease,max-height .75s cubic-bezier(.2,.72,.2,1),margin .75s ease,border-color .5s ease}
+body.final-five-active .release-hud{
+  opacity:0!important;filter:blur(9px);transform:translateY(16px) scale(.96);
+  max-height:0;margin-top:0!important;border-color:transparent!important;overflow:hidden;pointer-events:none!important;
+}
+
+/* Percentage becomes a co-star from -00:45 onward instead of fading away. */
+body.final-five-active .progress-block{opacity:.58!important;filter:none!important;transition:opacity .55s ease,filter .55s ease,transform .55s cubic-bezier(.18,.82,.18,1),width .55s ease,box-shadow .4s ease,border-color .4s ease}
+body.finale-last-45 .progress-block,
+body.finale-last-10 .progress-block{
+  opacity:1!important;filter:none!important;pointer-events:auto!important;
+  width:min(980px,91%);
+  transform:translateY(clamp(16px,2.6vh,30px)) scale(var(--finale-progress-scale,1));
+  border-color:rgba(242,63,178,.32);
+  box-shadow:0 22px 60px rgba(0,0,0,.3),0 0 34px rgba(242,63,178,.1),inset 0 0 26px rgba(119,96,255,.035);
+  background:linear-gradient(135deg,rgba(12,9,18,.76),rgba(18,10,25,.62));
+}
+body.finale-last-45 .progress-meta{font-size:clamp(7px,.67vw,10px);color:rgba(255,255,255,.77)}
+body.finale-last-45 .progress-meta strong{
+  font-size:clamp(9px,.82vw,13px);color:#fff;
+  text-shadow:0 0 18px rgba(242,63,178,.4);
+}
+body.finale-last-45 .progress-track{height:8px;box-shadow:0 0 22px rgba(119,96,255,.1)}
+body.finale-last-45 .progress-fill{box-shadow:0 0 24px rgba(242,63,178,.42),0 0 42px rgba(119,96,255,.18)}
+body.finale-last-10 .progress-fill i{animation:tfwProgressFinalPulse .7s ease-in-out infinite alternate}
+@keyframes tfwProgressFinalPulse{to{transform:translate(50%,-50%) scale(1.45);box-shadow:0 0 22px #fff,0 0 52px var(--accent),0 0 78px rgba(119,96,255,.32)}}
+
+/* Free vertical room before the last ten seconds so the enlarged timer never collides with the title. */
+body.finale-last-45 .hero-title-wrap{opacity:0!important;transform:translateY(-12px) scale(.92);filter:blur(4px);pointer-events:none!important}
+body.finale-last-45 .phase-pill{opacity:0!important;transform:translateY(-9px) scale(.92);pointer-events:none!important}
+body.finale-last-45 .logo-stage{transform:translateY(-4px) scale(.88);transition:transform .7s ease,opacity .7s ease}
+body.finale-last-10 .hero-title-wrap,body.finale-last-10 .phase-pill{opacity:0!important;filter:blur(5px);pointer-events:none!important;transform:translateY(-16px) scale(.88)}
+body.finale-last-10 .logo-stage{opacity:.28;transform:translateY(-8px) scale(.72)}
+body.finale-last-10 #countdown{z-index:9}
+body.finale-last-second #countdown{transition:none!important}
+
+/* Music-reactive layer. It is driven by a real Web Audio analyser. */
+.finale-visualizer{
+  position:absolute;inset:0;width:100%;height:100%;z-index:7;pointer-events:none;
+  opacity:0;mix-blend-mode:screen;filter:saturate(1.18) blur(.15px);
+  transition:opacity .65s ease;
+}
+body.finale-music-live .finale-visualizer{opacity:.68}
+.finale-beat-halo{
+  position:absolute;left:50%;top:49%;z-index:6;width:min(1080px,82vw);height:min(430px,38vw);
+  translate:-50% -50%;border-radius:50%;pointer-events:none;opacity:0;
+  background:radial-gradient(ellipse,rgba(255,255,255,.055) 0%,rgba(242,63,178,.12) 24%,rgba(119,96,255,.075) 48%,transparent 72%);
+  box-shadow:0 0 80px rgba(242,63,178,.1),inset 0 0 70px rgba(119,96,255,.06);
+  transform:scale(var(--music-scale,1));transition:opacity .5s ease;filter:blur(13px);
+}
+body.finale-music-live .finale-beat-halo{opacity:calc(.18 + var(--music-energy,.08) * .82)}
+body.finale-music-live .finale-edge-glow{opacity:calc(.1 + var(--music-energy,.08) * .5);box-shadow:inset 0 0 58px rgba(242,63,178,.16),0 0 54px rgba(119,96,255,.09)}
+
+/* Release remains exactly where the timer was, but now behaves like a persistent finale. */
+.finale-release{
+  width:min(1060px,91vw);isolation:isolate;
+  filter:blur(20px) brightness(.8);
+}
+.finale-release.active{filter:none}
+.finale-release:before{
+  content:'';position:absolute;z-index:-2;left:50%;top:50%;width:120%;height:190%;translate:-50% -50%;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0 8%,rgba(242,63,178,.08) 13%,transparent 21% 37%,rgba(119,96,255,.1) 43%,transparent 52% 68%,rgba(255,156,67,.075) 76%,transparent 85%);
+  filter:blur(22px);animation:tfwReleaseAurora 13s linear infinite;
+}
+.finale-release:after{
+  content:'';position:absolute;z-index:-1;inset:-38% -12%;border-radius:48%;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.08),rgba(242,63,178,.08) 24%,rgba(119,96,255,.045) 44%,transparent 68%);
+  animation:tfwReleaseAura 3.1s ease-in-out infinite;
+}
+.release-radiance{position:absolute;left:50%;top:50%;z-index:-1;width:135%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;border:1px solid rgba(255,255,255,.08);box-shadow:0 0 70px rgba(242,63,178,.13),inset 0 0 80px rgba(119,96,255,.07);animation:tfwRadianceRing 4s ease-in-out infinite}
+.finale-release-kicker{
+  font:900 clamp(16px,1.42vw,24px)/1 Arial!important;letter-spacing:.25em!important;
+  background:linear-gradient(90deg,#fff,#ffc073,#ff59c0,#9c88ff,#fff);background-size:240% auto;-webkit-background-clip:text;background-clip:text;color:transparent!important;
+  text-shadow:none!important;filter:drop-shadow(0 0 14px rgba(255,255,255,.22));
+  animation:tfwReleaseKicker .7s .15s ease forwards,tfwKickerFlow 4.5s linear infinite!important;
+}
+.finale-release h2{margin:22px 0 18px!important;display:flex;flex-direction:column;gap:0;line-height:.74!important;animation:tfwReleaseGradient 3.8s linear infinite,tfwReleaseBreath 2.25s ease-in-out infinite!important}
+.finale-release h2 span{font-size:.56em;letter-spacing:-.055em;opacity:.92}
+.finale-release h2 em{font:inherit;font-size:1em;font-style:normal;letter-spacing:-.08em}
+.finale-release-date{
+  font:900 clamp(9px,.86vw,14px)/1.35 Arial!important;letter-spacing:.18em!important;color:rgba(255,255,255,.84)!important;
+  text-shadow:0 0 22px rgba(255,255,255,.2),0 0 30px rgba(242,63,178,.14);
+}
+.release-line{width:min(440px,58vw);height:1px;margin-top:18px;background:linear-gradient(90deg,transparent,rgba(119,96,255,.8),#fff,rgba(242,63,178,.8),transparent);box-shadow:0 0 20px rgba(242,63,178,.35);animation:tfwReleaseLine 2.2s ease-in-out infinite}
+body.finale-released .hero-corners span{border-color:rgba(255,255,255,.45);filter:drop-shadow(0 0 10px rgba(242,63,178,.65));animation:tfwCornerAlive 2.1s ease-in-out infinite alternate}
+body.finale-released .finale-edge-glow{opacity:.35;animation:tfwReleaseEdge 2.4s ease-in-out infinite}
+@keyframes tfwReleaseAurora{to{transform:rotate(360deg)}}
+@keyframes tfwReleaseAura{50%{transform:scale(1.08);opacity:.66}}
+@keyframes tfwRadianceRing{50%{transform:scale(1.055);opacity:.68;border-color:rgba(242,63,178,.18)}}
+@keyframes tfwKickerFlow{to{background-position:240% center}}
+@keyframes tfwReleaseLine{50%{width:min(520px,68vw);filter:brightness(1.5)}}
+@keyframes tfwCornerAlive{to{opacity:.6;filter:drop-shadow(0 0 19px rgba(242,63,178,.9))}}
+@keyframes tfwReleaseEdge{50%{opacity:.78;border-color:rgba(255,255,255,.24);box-shadow:inset 0 0 76px rgba(242,63,178,.2),0 0 62px rgba(119,96,255,.13)}}
+
+/* Final release fireworks are deliberately allowed to continue for the entire release state. */
+.finale-fireworks{z-index:14}
+
+/* V10 preview controls — true timeline scrubber for the final 30 minutes. */
+.milestone-preview-panel{width:min(470px,calc(100vw - 36px));max-height:min(82vh,720px);padding:18px 18px 20px}
+.preview-panel-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.finale-scrubber{margin:15px 0 16px;padding:14px;border:1px solid rgba(255,255,255,.11);border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(242,63,178,.025));box-shadow:inset 0 0 26px rgba(119,96,255,.025)}
+.finale-scrub-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.finale-scrub-head span,.preview-quick-label{font:900 7px/1 Arial;letter-spacing:.16em;color:rgba(255,255,255,.55)}.finale-scrub-head strong{font:900 13px/1 Arial;letter-spacing:.08em;font-variant-numeric:tabular-nums;color:#fff;text-shadow:0 0 18px rgba(242,63,178,.3)}
+#finaleScrubber{width:100%;height:24px;accent-color:#f23fb2;cursor:ew-resize}
+.finale-scrub-scale{display:flex;justify-content:space-between;margin-top:1px;font:800 6px/1 Arial;letter-spacing:.08em;color:rgba(255,255,255,.38)}
+.finale-scrub-actions{display:grid;grid-template-columns:1.25fr .8fr 1fr;gap:6px;margin-top:12px}.finale-scrub-actions button{border:1px solid rgba(255,255,255,.12);border-radius:9px;background:rgba(255,255,255,.04);color:#fff;padding:9px 7px;font:900 6.5px/1 Arial;letter-spacing:.08em;cursor:pointer;transition:border-color .2s,background .2s,transform .2s}.finale-scrub-actions button:first-child{border-color:rgba(242,63,178,.34);background:linear-gradient(100deg,rgba(119,96,255,.16),rgba(242,63,178,.16))}.finale-scrub-actions button:hover{border-color:rgba(242,63,178,.6);background:rgba(242,63,178,.1);transform:translateY(-1px)}
+.preview-quick-label{margin:2px 0 8px}
+body.finale-previewing .milestone-preview-toggle{opacity:.28;pointer-events:none}
+.finale-preview-exit{font-size:7px!important;letter-spacing:.14em!important;border-color:rgba(242,63,178,.34)!important;box-shadow:0 18px 50px rgba(0,0,0,.34),0 0 24px rgba(242,63,178,.08)!important}
+
+@media(max-width:900px){
+  body.final-five-active .hero-content{width:88vw}
+  body.finale-last-45 .progress-block,body.finale-last-10 .progress-block{width:92%;transform:translateY(14px) scale(1.025)}
+}
+@media(max-width:700px){
+  body.final-five-active .hero-content{width:91vw}
+  body.final-five-active #countdown,body.finale-last-10 #countdown,body.finale-last-second #countdown{transform:scale(1)!important}
+  body.finale-last-45 .hero-title-wrap,body.finale-last-45 .phase-pill{opacity:.12!important}
+  body.finale-last-45 .progress-block,body.finale-last-10 .progress-block{width:96%;transform:translateY(10px) scale(1)!important}
+  body.finale-last-45 .progress-meta{font-size:6px}.finale-release-kicker{font-size:clamp(12px,3.4vw,18px)!important}.finale-release h2{font-size:clamp(44px,14vw,82px)!important}.finale-release-date{font-size:clamp(7px,2vw,10px)!important;letter-spacing:.12em!important}
+  .finale-beat-halo{width:92vw;height:52vw}.milestone-preview-panel{left:10px;bottom:58px;width:calc(100vw - 20px);max-height:72vh}.finale-scrub-actions{grid-template-columns:1fr 1fr}.finale-scrub-actions button:first-child{grid-column:1/-1}
+}
+@media(prefers-reduced-motion:reduce){
+  .finale-release:before,.finale-release:after,.release-radiance,.release-line,body.finale-released .hero-corners span{animation:none!important}
+  body.finale-music-live .finale-visualizer{opacity:.28}
+}
