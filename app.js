@@ -30,6 +30,10 @@ let sceneTimer = null;
 let finaleSceneDeck = [];
 let finaleSceneCursor = 0;
 let finaleDeckPrimed = false;
+const releaseSceneIds = ['scene-64','scene-69','scene-68','scene-25','scene-134','scene-43','scene-104','scene-123'];
+let releaseSceneCursor = -1;
+let releaseSequenceActive = false;
+let releaseSequencePrimed = false;
 let releaseTriggered = false;
 let currentPhase = '';
 let lastSlowUpdate = 0;
@@ -278,9 +282,36 @@ function pickNextScene(){
   return pool[Math.floor(Math.random()*pool.length)];
 }
 function preloadChoice(choice){ if (!choice) return; const img = new Image(); img.decoding='async'; img.src=srcFor(choice.scene); }
+function releaseChoiceForCursor(cursor){
+  const id=releaseSceneIds[cursor];
+  if(!id)return null;
+  const index=scenes.findIndex(scene=>scene.id===id);
+  return index>=0?{scene:scenes[index],index}:null;
+}
+function primeReleaseSceneSequence(){
+  if(releaseSequencePrimed||!scenes.length)return;
+  releaseSequencePrimed=true;
+  releaseSceneIds.forEach((_,i)=>{const choice=releaseChoiceForCursor(i);if(choice)setTimeout(()=>preloadChoice(choice),i*85)});
+}
+function startReleaseSceneSequence(){
+  primeReleaseSceneSequence();
+  releaseSceneCursor=0;
+  releaseSequenceActive=true;
+  const choice=releaseChoiceForCursor(releaseSceneCursor);
+  if(choice)changeScene(choice,true);
+}
+function nextReleaseSceneChoice(){
+  if(!releaseSequenceActive)return null;
+  releaseSceneCursor++;
+  if(releaseSceneCursor>=releaseSceneIds.length){releaseSequenceActive=false;return null}
+  return releaseChoiceForCursor(releaseSceneCursor);
+}
 function changeScene(forceChoice=null, allowFinale=false){
-  if (!scenes.length || ((currentPhase==='released' || currentPhase==='final-minute') && !allowFinale)) return;
-  const choice = forceChoice || pickNextScene(); if (!choice) return;
+  if (!scenes.length || (currentPhase==='final-minute' && !allowFinale)) return;
+  let choice=forceChoice;
+  if(!choice && (currentPhase==='released'||document.body.classList.contains('finale-released')))choice=nextReleaseSceneChoice();
+  if(!choice)choice=pickNextScene();
+  if (!choice) return;
   const incoming = activeLayer === 0 ? els.sceneB : els.sceneA;
   const outgoing = activeLayer === 0 ? els.sceneA : els.sceneB;
   applyScene(incoming, choice.scene);
@@ -307,7 +338,7 @@ function primeFinaleSceneDeck(){
   finaleSceneDeck.forEach((choice,i)=>setTimeout(()=>preloadChoice(choice),i*120));
 }
 
-window.addEventListener('tfw:finale-start',primeFinaleSceneDeck);
+window.addEventListener('tfw:finale-start',()=>{primeFinaleSceneDeck();primeReleaseSceneSequence()});
 // The finale controller can request scene changes faster than the normal 10s rotation.
 // This path intentionally bypasses the final-minute lock while preserving the normal lock elsewhere.
 window.addEventListener('tfw:finale-scene-step',()=>{
@@ -315,6 +346,10 @@ window.addEventListener('tfw:finale-scene-step',()=>{
   primeFinaleSceneDeck();
   const choice=finaleSceneDeck.length?finaleSceneDeck[finaleSceneCursor++%finaleSceneDeck.length]:null;
   changeScene(choice,true);
+});
+window.addEventListener('tfw:finale-release',()=>{
+  if(!scenes.length)return;
+  startReleaseSceneSequence();
 });
 
 async function loadToday(){

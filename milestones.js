@@ -339,9 +339,13 @@
 
     if(title){
       let text='ROAD TO LEONIDA';
+      let forceBreak=false;
       if(remaining<=1000&&remaining>0)text='ONE SECOND TO LEONIDA';
+      else if(remaining<=2000&&remaining>0)text='TWO SECONDS TO LEONIDA';
+      else if(remaining<=3000&&remaining>0)text='THREE SECONDS TO LEONIDA';
+      else if(remaining<=4000&&remaining>0)text='FOUR SECONDS TO LEONIDA';
       else if(remaining<=5000&&remaining>0)text='FIVE SECONDS TO LEONIDA';
-      else if(remaining<=10000&&remaining>0)text='TEN SECONDS TO LEONIDA';
+      else if(remaining<=10000&&remaining>0){text='TEN SECONDS TO LEONIDA';forceBreak=true;}
       else if(remaining<=15000&&remaining>0)text='FIFTEEN SECONDS TO LEONIDA';
       else if(remaining<=30000&&remaining>0)text='30 SECONDS TO LEONIDA';
       else if(remaining<=MIN&&remaining>0)text='ONE MINUTE TO LEONIDA';
@@ -349,7 +353,7 @@
       else if(remaining<=3*MIN&&remaining>0)text='THREE MINUTES TO LEONIDA';
       else if(remaining<=4*MIN&&remaining>0)text='FOUR MINUTES TO LEONIDA';
       else if(remaining<=FINAL_FIVE&&remaining>0)text='FIVE MINUTES TO LEONIDA';
-      title.textContent=text;
+      if(forceBreak)title.innerHTML='TEN SECONDS TO<br>LEONIDA';else title.textContent=text;
     }
     if(pill){
       let label='THE FINAL WAIT';
@@ -397,7 +401,7 @@
         musicAnalyser.getByteFrequencyData(musicData);
         let sum=0;const take=Math.min(52,musicData.length);for(let i=0;i<take;i++)sum+=musicData[i];energy=clamp(sum/(take*255),.025,1);
       }else if(document.body.classList.contains('finale-music-live')){
-        energy=.045+Math.sin(t*.004)*.012;
+        energy=.16+Math.sin(t*.007)*.045+Math.sin(t*.013)*.025;
       }
       document.documentElement.style.setProperty('--music-energy',energy.toFixed(3));
       document.documentElement.style.setProperty('--music-scale',(1+energy*.06).toFixed(3));
@@ -405,7 +409,13 @@
       ctx.save();ctx.globalCompositeOperation='lighter';
       for(let i=0;i<bars;i++){
         let amp=energy;
-        if(musicData&&musicAnalyser&&musicIsPlaying()){const idx=Math.min(musicData.length-1,Math.floor(i/bars*musicData.length*.74));amp=musicData[idx]/255}
+        if(musicData&&musicAnalyser&&musicIsPlaying()){
+          const idx=Math.min(musicData.length-1,Math.floor(i/bars*musicData.length*.74));amp=musicData[idx]/255;
+        }else{
+          const waveA=(Math.sin(t*.009+i*.34)+1)*.5;
+          const waveB=(Math.sin(t*.015-i*.21)+1)*.5;
+          amp=clamp(.08+waveA*.28+waveB*.18,0,1);
+        }
         const curve=Math.sin((i+1)/(bars+1)*Math.PI);const h=2+amp*maxH*(.28+.72*curve);const x=startX+i*((r.width*.92)/bars);
         const g=ctx.createLinearGradient(0,centerY-h,0,centerY+h);g.addColorStop(0,'rgba(119,96,255,.18)');g.addColorStop(.42,`rgba(119,96,255,${.32+amp*.5})`);g.addColorStop(.58,`rgba(242,63,178,${.36+amp*.56})`);g.addColorStop(1,'rgba(255,156,67,.16)');ctx.fillStyle=g;ctx.fillRect(x,centerY-h,barW,h*2);
       }
@@ -527,6 +537,7 @@
       try{finalSong.pause()}catch{}
       const release=$('#finaleRelease');if(release){release.setAttribute('aria-hidden','false');release.classList.add('active')}
       $('#countdown')?.setAttribute('aria-hidden','true');$('#finaleFlash')?.classList.add('fire');startFireworks();
+      window.dispatchEvent(new CustomEvent('tfw:finale-release'));
     }
     startVisualizer();
     if(playAudio){syncSequenceSong(0);}else pauseFinaleAudio(false,true);
@@ -668,12 +679,17 @@
     lastRemaining=remaining;
   }
 
-  sequenceSong.addEventListener('ended',()=>{if(!finalSong.paused)startVisualizer();else stopVisualizer()});
+  sequenceSong.addEventListener('ended',()=>{if(document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released'))startVisualizer();else stopVisualizer()});
   inject();
   ['pointerdown','keydown','touchstart'].forEach(ev=>window.addEventListener(ev,unlockFinaleAudio,{once:true,capture:true,passive:true}));
   window.addEventListener('tfw:countdown',e=>{const ms=Number(e.detail?.remaining);if(Number.isFinite(ms))maybeTrigger(ms,Boolean(e.detail?.preview))});
   window.addEventListener('tfw:sound-change',()=>{
-    if(!soundEnabled()){startVisualizer();pauseFinaleAudio(false,true);return}
+    if(!soundEnabled()){
+      document.body.classList.add('finale-music-live');
+      startVisualizer();
+      pauseFinaleAudio(false,true);
+      return;
+    }
     const remaining=finalePreview?Number(window.__tfwPreviewRemainingMs):lastRemaining;
     if(Number.isFinite(remaining)&&remaining<=FINAL_FIVE){startVisualizer();syncFinalSong(remaining);syncVoiceSong(remaining);syncSequenceSong(remaining)}
   });

@@ -1,0 +1,68 @@
+/* V16 — requested fixes only. */
+
+/* Never allow finale transforms to create browser scrollbars. */
+html{overflow-x:hidden!important}
+body.phase-final-minute,
+body.finale-last-second,
+body.finale-released{overflow:hidden!important}
+#hero{overflow:hidden!important}
+
+/* Larger Ryze logo beside THE FINAL WAIT / ROAD TO LEONIDA. */
+.brand-ryze-logo{width:clamp(50px,4vw,68px)!important}
+
+/* Keep the dynamic title geometry stable when the -6.5s finale effects begin. */
+body.final-five-active #heroTitle,
+body.final-five-active.finale-last-15 #heroTitle{
+  width:min(980px,92vw)!important;
+  max-width:min(980px,92vw)!important;
+  min-height:1.84em;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  font-size:clamp(36px,4.8vw,78px)!important;
+  line-height:.9!important;
+  text-wrap:balance;
+}
+
+/* Same visibly moving colour treatment as the release title. */
+body.final-five-active.finale-dynamic-copy #heroTitle{
+  background:linear-gradient(90deg,#fff 0%,#ffb05f 18%,#ff52bd 45%,#8e78ff 72%,#fff 100%)!important;
+  background-size:280% 100%!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  animation:tfwV16TitleFlow 2.65s linear infinite,tfwV16TitleBreath 2.5s ease-in-out infinite!important;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.62)) drop-shadow(0 0 20px rgba(242,63,178,.24))!important;
+}
+@keyframes tfwV16TitleFlow{from{background-position:0% 50%}to{background-position:280% 50%}}
+@keyframes tfwV16TitleBreath{50%{filter:drop-shadow(0 8px 24px rgba(0,0,0,.62)) drop-shadow(0 0 34px rgba(242,63,178,.38)) brightness(1.1)}}
+
+/* Slower glow dissolve from -6.5 seconds. */
+body.finale-last-15 #countdown{animation:tfwV15CountdownGlowIn 5.4s ease-out forwards!important}
+body.finale-last-15 .time-unit{
+  animation:tfwV15UnitGlowIn 5.4s ease-out forwards,tfwV12UnitCharge 1.35s 5.4s ease-in-out infinite alternate!important;
+}
+body.finale-last-15 .time-value{animation:tfwV15DigitGlowIn 5.4s ease-out forwards!important}
+
+/* Visualizer remains visible and animated when audio is muted and after 00:00. */
+body.final-five-active .finale-visualizer-wrap,
+body.finale-released .finale-visualizer-wrap{
+  visibility:visible!important;
+  opacity:.92!important;
+}
+body.finale-released .finale-visualizer-wrap{height:44px!important}
+body.finale-released .finale-visualizer{opacity:.95!important}
+body.final-five-active .sound-button[aria-pressed="false"] ~ * .finale-visualizer-wrap{opacity:.92!important}
+
+@media(max-width:900px){
+  .brand-ryze-logo{width:48px!important}
+  body.final-five-active #heroTitle,
+  body.final-five-active.finale-last-15 #heroTitle{width:min(760px,90vw)!important;max-width:min(760px,90vw)!important;font-size:clamp(31px,7vw,54px)!important}
+}
+@media(max-width:700px){
+  .brand-ryze-logo{width:44px!important}
+  body.final-five-active #heroTitle,
+  body.final-five-active.finale-last-15 #heroTitle{width:91vw!important;max-width:91vw!important;font-size:clamp(28px,7.6vw,42px)!important}
+}
