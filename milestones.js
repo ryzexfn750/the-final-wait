@@ -5,8 +5,10 @@
   // loadedmetadata below refreshes this value from the actual media file, keeping the handoff gapless.
   let FINAL_SONG_END=41884;
   let TICK_START=FINAL_SONG_END;
-  const PROGRESS_FOCUS_START=45000;
-  const RELEASE_TRACK_START=10000;
+  const PROGRESS_FOCUS_START=FINAL_FIVE;
+  const VOICE_TRACK_START=60000;
+  const SEQUENCE_TRACK_START=30000;
+  const LAST_FIFTEEN=15000;
   const SCRUB_MAX=30*MIN;
   const storage={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
   const $=s=>document.querySelector(s);
@@ -42,21 +44,22 @@
   let tickCtx=null;
   let musicCtx=null;
   let musicAnalyser=null;
-  let musicSource=null;
+  let finalMusicSource=null;
+  let sequenceMusicSource=null;
   let musicData=null;
   let visualizerRaf=0;
   let visualizerResize=null;
-  let lastFinalSongSeekAt=0;
-  let lastLaunchSongSeekAt=0;
   let scrubPointerId=null;
+  let lastSceneStepAt=0;
+  let sceneRushPrimed=false;
 
   const finalSong=new Audio('assets/audio/final-5-minutes.mp3');
-  const launchSong=new Audio('assets/audio/final-10-release.mp4');
-  finalSong.preload='auto'; finalSong.playsInline=true;
-  launchSong.preload='auto'; launchSong.playsInline=true;
-  finalSong.volume=.84;
-  // The -10 track sits under the countdown/ticks instead of overpowering them.
-  launchSong.volume=.72;
+  const voiceSong=new Audio('assets/audio/final-1-minute-voice.mp4');
+  const sequenceSong=new Audio('assets/audio/final-30-sequence.mp4');
+  for(const audio of [finalSong,voiceSong,sequenceSong]){audio.preload='auto';audio.playsInline=true}
+  finalSong.volume=.78;
+  voiceSong.volume=1;
+  sequenceSong.volume=.68;
   finalSong.addEventListener('loadedmetadata',()=>{
     if(Number.isFinite(finalSong.duration)&&finalSong.duration>1){
       FINAL_SONG_END=Math.max(0,FINAL_FIVE-finalSong.duration*1000);
@@ -123,9 +126,13 @@
           <i class="release-spark spark-a"></i><i class="release-spark spark-b"></i><i class="release-spark spark-c"></i><i class="release-spark spark-d"></i>
         </div>`);
     }
+    const progress=$('.progress-block');
+    if(progress && !$('#finaleVisualizer')){
+      progress.insertAdjacentHTML('afterend',`<div class="finale-visualizer-wrap" id="finaleVisualizerWrap" aria-hidden="true"><canvas class="finale-visualizer" id="finaleVisualizer"></canvas><div class="finale-beat-halo" id="finaleBeatHalo"></div></div>`);
+    }
     const hero=$('#hero');
     if(hero && !$('#finaleFireworks')){
-      hero.insertAdjacentHTML('beforeend',`<canvas class="finale-visualizer" id="finaleVisualizer" aria-hidden="true"></canvas><div class="finale-beat-halo" id="finaleBeatHalo" aria-hidden="true"></div><canvas class="finale-fireworks" id="finaleFireworks" aria-hidden="true"></canvas><div class="finale-flash" id="finaleFlash" aria-hidden="true"></div><div class="finale-edge-glow" aria-hidden="true"></div>`);
+      hero.insertAdjacentHTML('beforeend',`<canvas class="finale-fireworks" id="finaleFireworks" aria-hidden="true"></canvas><div class="finale-flash" id="finaleFlash" aria-hidden="true"></div><div class="finale-edge-glow" aria-hidden="true"></div>`);
     }
     if(!$('#finalePreviewExit')) document.body.insertAdjacentHTML('beforeend','<button class="finale-preview-exit" id="finalePreviewExit" type="button" hidden>EXIT SIMULATION</button>');
 
@@ -262,11 +269,11 @@
     const base=rapid?1040+progress*980:920;
     const length=rapid?.032:.09;
     master.gain.setValueAtTime(.0001,now);
-    master.gain.exponentialRampToValueAtTime(rapid?.26:.48,now+.002);
+    master.gain.exponentialRampToValueAtTime(rapid?.40:.76,now+.002);
     master.gain.exponentialRampToValueAtTime(.0001,now+length);
     master.connect(compressor);compressor.connect(ctx.destination);
     [1,2.02].forEach((mul,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=i?'triangle':'square';o.frequency.setValueAtTime(base*mul,now);o.frequency.exponentialRampToValueAtTime(base*mul*(rapid?1.11:.91),now+length);g.gain.value=i?.20:.68;o.connect(g);g.connect(master);o.start(now);o.stop(now+length+.01)});
-    const noise=ctx.createBufferSource(),buffer=ctx.createBuffer(1,Math.max(1,Math.floor(ctx.sampleRate*.018)),ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);noise.buffer=buffer;const ng=ctx.createGain();ng.gain.setValueAtTime(rapid?.16:.24,now);ng.gain.exponentialRampToValueAtTime(.0001,now+.018);noise.connect(ng);ng.connect(compressor);noise.start(now);
+    const noise=ctx.createBufferSource(),buffer=ctx.createBuffer(1,Math.max(1,Math.floor(ctx.sampleRate*.018)),ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);noise.buffer=buffer;const ng=ctx.createGain();ng.gain.setValueAtTime(rapid?.24:.38,now);ng.gain.exponentialRampToValueAtTime(.0001,now+.018);noise.connect(ng);ng.connect(compressor);noise.start(now);
   }
 
   function visualPulse(rapid=false){
@@ -277,17 +284,41 @@
   function setFinaleScale(remaining){
     let scale=1;
     if(remaining<=FINAL_FIVE){
-      if(remaining>MIN){const p=(FINAL_FIVE-remaining)/(FINAL_FIVE-MIN);scale=1+.04*clamp(p,0,1)}
-      else if(remaining>10000){const p=(MIN-remaining)/50000;scale=1.04+.04*clamp(p,0,1)}
-      else if(remaining>1000){const p=(10000-remaining)/9000;scale=1.08+.03*clamp(p,0,1)}
-      else {const p=(1000-remaining)/1000;scale=1.11+.04*clamp(p,0,1)}
+      if(remaining>MIN){
+        const p=(FINAL_FIVE-remaining)/(FINAL_FIVE-MIN);
+        scale=1+.085*clamp(p,0,1);
+      }else if(remaining>15000){
+        const p=(MIN-remaining)/45000;
+        scale=1.085+.065*clamp(p,0,1);
+      }else if(remaining>1000){
+        const p=(15000-remaining)/14000;
+        scale=1.15+.055*clamp(p,0,1);
+      }else{
+        const p=(1000-remaining)/1000;
+        scale=1.205+.025*clamp(p,0,1);
+      }
     }
+    const vw=window.innerWidth||1920;
+    const maxScale=vw<=700?1.075:vw<=900?1.105:1.23;
+    scale=Math.min(scale,maxScale);
     const intensity=clamp((FINAL_FIVE-remaining)/FINAL_FIVE,0,1);
-    const progressScale=remaining<=PROGRESS_FOCUS_START?1+.14*clamp((PROGRESS_FOCUS_START-remaining)/PROGRESS_FOCUS_START,0,1):1;
+    let progressScale=1;
+    if(remaining<=FINAL_FIVE){
+      if(remaining>MIN){
+        const p=(FINAL_FIVE-remaining)/(FINAL_FIVE-MIN);
+        progressScale=1+.07*clamp(p,0,1);
+      }else{
+        const p=(MIN-remaining)/MIN;
+        progressScale=1.07+.09*clamp(p,0,1);
+      }
+    }
+    const progressMax=vw<=700?1.055:vw<=900?1.09:1.16;
+    progressScale=Math.min(progressScale,progressMax);
     document.documentElement.style.setProperty('--finale-scale',String(scale));
     document.documentElement.style.setProperty('--finale-progress-scale',String(progressScale));
     document.documentElement.style.setProperty('--finale-intensity',String(intensity));
-    document.documentElement.style.setProperty('--finale-glow',`${14+58*intensity}px`);
+    document.documentElement.style.setProperty('--finale-glow',`${14+70*intensity}px`);
+    document.documentElement.style.setProperty('--finale-gap',`${10+34*intensity}px`);
     document.documentElement.style.setProperty('--finale-title-opacity','1');
   }
 
@@ -296,22 +327,25 @@
     const pill=$('#phasePill');
     const songEnded=remaining<=TICK_START;
     document.body.classList.toggle('finale-song-ended',songEnded&&remaining>0);
-    document.body.classList.toggle('finale-dynamic-copy',remaining<=MIN&&remaining>0);
+    document.body.classList.toggle('finale-dynamic-copy',remaining<=FINAL_FIVE&&remaining>0);
 
     if(title){
       let text='ROAD TO LEONIDA';
       if(remaining<=10000&&remaining>0)text='THE FINAL TEN';
+      else if(remaining<=15000&&remaining>0)text='FIFTEEN SECONDS TO LEONIDA';
       else if(remaining<=30000&&remaining>0)text='30 SECONDS TO LEONIDA';
       else if(remaining<=MIN&&remaining>0)text='ONE MINUTE TO LEONIDA';
+      else if(remaining<=FINAL_FIVE&&remaining>0)text='FIVE MINUTES TO LEONIDA';
       title.textContent=text;
     }
     if(pill){
       let label='THE FINAL WAIT';
-      if(remaining<=5*MIN)label='FINAL FIVE MINUTES';
+      if(remaining<=5*MIN)label='FIVE MINUTES. STAY HERE.';
       else if(remaining<=15*MIN)label='THE LAST QUARTER HOUR';
       else if(remaining<=30*MIN)label='FINAL 30 MINUTES';
       else if(remaining<=HOUR)label='THE FINAL HOUR';
       if(remaining<=MIN)label='THE FINAL MINUTE';
+      if(remaining<=30000)label='THE FINAL THIRTY';
       if(songEnded&&remaining>0)label='';
       pill.innerHTML=label?`<span class="phase-dot"></span> ${label}`:'<span class="phase-dot"></span>';
     }
@@ -322,17 +356,22 @@
     const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
     try{
       if(!musicCtx||musicCtx.state==='closed')musicCtx=new AC();
-      if(!musicSource){
+      if(!musicAnalyser){
         musicAnalyser=musicCtx.createAnalyser();
-        musicAnalyser.fftSize=256;musicAnalyser.smoothingTimeConstant=.82;
+        musicAnalyser.fftSize=256;musicAnalyser.smoothingTimeConstant=.78;
         musicData=new Uint8Array(musicAnalyser.frequencyBinCount);
-        musicSource=musicCtx.createMediaElementSource(launchSong);
-        musicSource.connect(musicAnalyser);musicAnalyser.connect(musicCtx.destination);
+        finalMusicSource=musicCtx.createMediaElementSource(finalSong);
+        sequenceMusicSource=musicCtx.createMediaElementSource(sequenceSong);
+        finalMusicSource.connect(musicAnalyser);
+        sequenceMusicSource.connect(musicAnalyser);
+        musicAnalyser.connect(musicCtx.destination);
       }
       if(musicCtx.state==='suspended')await musicCtx.resume();
       return musicCtx;
     }catch(error){console.warn('Finale music analyser unavailable',error);return null}
   }
+
+  function musicIsPlaying(){return !finalSong.paused||!sequenceSong.paused}
 
   function startVisualizer(){
     const canvas=$('#finaleVisualizer');if(!canvas||visualizerRaf)return;
@@ -342,22 +381,22 @@
     visualizerResize=resize;resize();window.addEventListener('resize',resize,{passive:true});
     const loop=t=>{
       const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);
-      let energy=.08;
-      if(musicAnalyser&&musicData&&musicCtx?.state==='running'&&!launchSong.paused){
+      let energy=.045;
+      if(musicAnalyser&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()){
         musicAnalyser.getByteFrequencyData(musicData);
-        let sum=0;const take=Math.min(48,musicData.length);for(let i=0;i<take;i++)sum+=musicData[i];energy=clamp(sum/(take*255),.02,1);
+        let sum=0;const take=Math.min(52,musicData.length);for(let i=0;i<take;i++)sum+=musicData[i];energy=clamp(sum/(take*255),.025,1);
       }else if(document.body.classList.contains('finale-music-live')){
-        energy=.08+Math.sin(t*.004)*.025;
+        energy=.045+Math.sin(t*.004)*.012;
       }
       document.documentElement.style.setProperty('--music-energy',energy.toFixed(3));
-      document.documentElement.style.setProperty('--music-scale',(1+energy*.09).toFixed(3));
-      const bars=64,centerY=r.height*.49,maxH=Math.min(150,r.height*.19),gap=3,barW=Math.max(2,(r.width*.74/bars)-gap),startX=r.width*.13;
+      document.documentElement.style.setProperty('--music-scale',(1+energy*.06).toFixed(3));
+      const bars=58,centerY=r.height*.52,maxH=Math.max(9,r.height*.43),gap=2,barW=Math.max(1.5,(r.width*.92/bars)-gap),startX=r.width*.04;
       ctx.save();ctx.globalCompositeOperation='lighter';
       for(let i=0;i<bars;i++){
         let amp=energy;
-        if(musicData&&musicAnalyser&&!launchSong.paused){const idx=Math.min(musicData.length-1,Math.floor(i/bars*musicData.length*.72));amp=musicData[idx]/255}
-        const curve=Math.sin((i+1)/(bars+1)*Math.PI);const h=4+amp*maxH*(.38+.62*curve);const x=startX+i*((r.width*.74)/bars);
-        const g=ctx.createLinearGradient(0,centerY-h,0,centerY+h);g.addColorStop(0,'rgba(119,96,255,.03)');g.addColorStop(.35,`rgba(119,96,255,${.12+amp*.36})`);g.addColorStop(.55,`rgba(242,63,178,${.12+amp*.5})`);g.addColorStop(1,'rgba(255,156,67,.02)');ctx.fillStyle=g;ctx.fillRect(x,centerY-h,barW,h*2);
+        if(musicData&&musicAnalyser&&musicIsPlaying()){const idx=Math.min(musicData.length-1,Math.floor(i/bars*musicData.length*.74));amp=musicData[idx]/255}
+        const curve=Math.sin((i+1)/(bars+1)*Math.PI);const h=2+amp*maxH*(.28+.72*curve);const x=startX+i*((r.width*.92)/bars);
+        const g=ctx.createLinearGradient(0,centerY-h,0,centerY+h);g.addColorStop(0,'rgba(119,96,255,.18)');g.addColorStop(.42,`rgba(119,96,255,${.32+amp*.5})`);g.addColorStop(.58,`rgba(242,63,178,${.36+amp*.56})`);g.addColorStop(1,'rgba(255,156,67,.16)');ctx.fillStyle=g;ctx.fillRect(x,centerY-h,barW,h*2);
       }
       ctx.restore();
       if(document.body.classList.contains('finale-music-live'))visualizerRaf=requestAnimationFrame(loop);else stopVisualizer();
@@ -375,7 +414,7 @@
 
   async function unlockFinaleAudio(){
     await ensureMusicGraph();
-    for(const audio of [finalSong,launchSong]){
+    for(const audio of [finalSong,voiceSong,sequenceSong]){
       try{const old=audio.volume;audio.volume=0;await audio.play();audio.pause();audio.currentTime=0;audio.volume=old}catch{}
     }
     ensureTickContext();
@@ -383,56 +422,48 @@
 
   async function syncFinalSong(remaining){
     if(!soundEnabled()){if(!finalSong.paused)finalSong.pause();return}
-    if(remaining>FINAL_FIVE){
-      if(!finalSong.paused)finalSong.pause();
-      try{finalSong.currentTime=0}catch{}
-      return;
-    }
+    if(remaining>FINAL_FIVE){if(!finalSong.paused)finalSong.pause();try{finalSong.currentTime=0}catch{};return}
+    await ensureMusicGraph();startVisualizer();
     const duration=Number.isFinite(finalSong.duration)&&finalSong.duration>0?finalSong.duration:258.115918;
     const target=clamp((FINAL_FIVE-remaining)/1000,0,duration);
-    if(remaining<=FINAL_SONG_END){
-      // Let the file reach its natural end when already playing. Static seeks below the handoff stay silent.
-      if(finalSong.paused||target>=duration-.05){try{finalSong.pause();finalSong.currentTime=duration}catch{}}
-      return;
-    }
+    if(remaining<=FINAL_SONG_END){return}
+    const voiceDuration=Number.isFinite(voiceSong.duration)&&voiceSong.duration>0?voiceSong.duration:3.114667;
+    const voiceActive=remaining<=VOICE_TRACK_START&&remaining>VOICE_TRACK_START-voiceDuration*1000;
+    finalSong.volume=voiceActive?.48:.78;
     try{
-      const now=performance.now();
       if(finalSong.paused){
         finalSong.currentTime=target;
-        lastFinalSongSeekAt=now;
         await finalSong.play();
-      }else{
-        const drift=Math.abs(finalSong.currentTime-target);
-        if(drift>1.8&&now-lastFinalSongSeekAt>5000){
-          finalSong.currentTime=target;
-          lastFinalSongSeekAt=now;
-        }
       }
+      // Deliberately no continuous currentTime correction: repeated seeking caused the old -01:34 glitch.
     }catch{}
   }
 
-  async function syncLaunchSong(remaining){
-    if(!soundEnabled()){if(!launchSong.paused)launchSong.pause();stopVisualizer();return}
-    if(remaining>RELEASE_TRACK_START){if(!launchSong.paused)launchSong.pause();try{launchSong.currentTime=0}catch{};stopVisualizer();return}
-    await ensureMusicGraph();
-    const target=Math.max(0,(RELEASE_TRACK_START-Math.max(0,remaining))/1000);
+  async function syncVoiceSong(remaining){
+    if(!soundEnabled()){if(!voiceSong.paused)voiceSong.pause();return}
+    const duration=Number.isFinite(voiceSong.duration)&&voiceSong.duration>0?voiceSong.duration:3.114667;
+    const endAt=VOICE_TRACK_START-duration*1000;
+    if(remaining>VOICE_TRACK_START){if(!voiceSong.paused)voiceSong.pause();try{voiceSong.currentTime=0}catch{};return}
+    if(remaining<=endAt){if(!voiceSong.paused)voiceSong.pause();return}
+    const target=clamp((VOICE_TRACK_START-remaining)/1000,0,duration);
+    try{if(voiceSong.paused){voiceSong.currentTime=target;await voiceSong.play()}}catch{}
+  }
+
+  async function syncSequenceSong(remaining){
+    if(!soundEnabled()){if(!sequenceSong.paused)sequenceSong.pause();return}
+    if(remaining>SEQUENCE_TRACK_START){if(!sequenceSong.paused)sequenceSong.pause();try{sequenceSong.currentTime=0}catch{};return}
+    await ensureMusicGraph();startVisualizer();
+    const target=Math.max(0,(SEQUENCE_TRACK_START-Math.max(0,remaining))/1000);
     try{
-      const now=performance.now();
-      if(launchSong.paused){
-        launchSong.currentTime=target;
-        lastLaunchSongSeekAt=now;
-        await launchSong.play();
-      }else if(remaining>0){
-        const drift=Math.abs(launchSong.currentTime-target);
-        if(drift>.9&&now-lastLaunchSongSeekAt>2500){launchSong.currentTime=target;lastLaunchSongSeekAt=now}
-      }
-      startVisualizer();
+      if(sequenceSong.paused){sequenceSong.currentTime=target;await sequenceSong.play()}
+      // Keep continuous playback untouched after the initial seek so the embedded -30/-15/-10 cues stay sample-aligned.
     }catch{}
   }
 
-  function pauseFinaleAudio(resetLaunch=false){
-    try{finalSong.pause();if(resetLaunch)finalSong.currentTime=0}catch{}
-    try{launchSong.pause();if(resetLaunch)launchSong.currentTime=0}catch{}
+  function pauseFinaleAudio(reset=false){
+    try{finalSong.pause();if(reset)finalSong.currentTime=0;finalSong.volume=.78}catch{}
+    try{voiceSong.pause();if(reset)voiceSong.currentTime=0}catch{}
+    try{sequenceSong.pause();if(reset)sequenceSong.currentTime=0}catch{}
     stopVisualizer();
   }
 
@@ -444,10 +475,10 @@
 
   function leaveFinalFive(){
     finaleActive=false;
-    document.body.classList.remove('final-five-active','finale-last-45','finale-last-40','finale-last-10','finale-last-second','finale-song-ended','finale-dynamic-copy');
+    document.body.classList.remove('final-five-active','finale-last-45','finale-last-40','finale-last-15','finale-last-10','finale-last-second','finale-scene-rush','finale-song-ended','finale-dynamic-copy');
     const title=$('#heroTitle');if(title)title.textContent='ROAD TO LEONIDA';
-    ['--finale-scale','--finale-progress-scale','--finale-intensity','--finale-glow','--finale-title-opacity'].forEach(v=>document.documentElement.style.removeProperty(v));
-    pauseFinaleAudio(true);lastSecondTick=null;lastRapidBucket=null;
+    ['--finale-scale','--finale-progress-scale','--finale-intensity','--finale-glow','--finale-gap','--finale-title-opacity'].forEach(v=>document.documentElement.style.removeProperty(v));
+    pauseFinaleAudio(true);lastSecondTick=null;lastRapidBucket=null;lastSceneStepAt=0;sceneRushPrimed=false;document.documentElement.style.removeProperty('--finale-scene-transition');
   }
 
   function rapidIntervalFor(remaining){
@@ -458,16 +489,41 @@
     return 18;
   }
 
+  function sceneIntervalFor(remaining){
+    if(remaining>MIN)return Infinity;
+    if(remaining>30000)return 2200-(MIN-remaining)/30000*950;
+    if(remaining>15000)return 1250-(30000-remaining)/15000*650;
+    if(remaining>10000)return 600-(15000-remaining)/5000*190;
+    if(remaining>5000)return 410-(10000-remaining)/5000*180;
+    if(remaining>1000)return 230-(5000-remaining)/4000*125;
+    return 105-(1000-remaining)/1000*67;
+  }
+
+  function updateSceneRush(remaining,enabled){
+    const active=enabled&&remaining<=MIN&&remaining>0;
+    document.body.classList.toggle('finale-scene-rush',active);
+    if(!active){lastSceneStepAt=0;sceneRushPrimed=false;document.documentElement.style.removeProperty('--finale-scene-transition');return}
+    const interval=Math.max(38,sceneIntervalFor(remaining));
+    const transition=Math.max(32,Math.min(620,interval*.72));
+    document.documentElement.style.setProperty('--finale-scene-transition',`${Math.round(transition)}ms`);
+    const now=performance.now();
+    if(!sceneRushPrimed){sceneRushPrimed=true;lastSceneStepAt=now;return}
+    if(now-lastSceneStepAt>=interval){
+      lastSceneStepAt=now;
+      window.dispatchEvent(new CustomEvent('tfw:finale-scene-step',{detail:{remaining,interval}}));
+    }
+  }
+
   function showRelease(playAudio=true){
     if(!releaseShown){
       releaseShown=true;finaleActive=false;
-      document.body.classList.remove('final-five-active','finale-last-45','finale-last-40','finale-last-10','finale-last-second','finale-song-ended','finale-dynamic-copy');
+      document.body.classList.remove('final-five-active','finale-last-45','finale-last-40','finale-last-15','finale-last-10','finale-last-second','finale-scene-rush','finale-song-ended','finale-dynamic-copy');
       document.body.classList.add('finale-released');
       try{finalSong.pause()}catch{}
       const release=$('#finaleRelease');if(release){release.setAttribute('aria-hidden','false');release.classList.add('active')}
       $('#countdown')?.setAttribute('aria-hidden','true');$('#finaleFlash')?.classList.add('fire');startFireworks();
     }
-    if(playAudio)syncLaunchSong(0);else pauseFinaleAudio(false);
+    if(playAudio)syncSequenceSong(0);else pauseFinaleAudio(false);
   }
 
   function resetRelease({pauseAudio=true}={}){
@@ -485,12 +541,14 @@
     if(releaseShown)resetRelease({pauseAudio:true});
     if(remaining>FINAL_FIVE){if(finaleActive)leaveFinalFive();else pauseFinaleAudio(true);return}
     enterFinalFive(remaining);setFinaleScale(remaining);
-    if(playAudio){syncFinalSong(remaining);syncLaunchSong(remaining)}else pauseFinaleAudio(false);
+    if(playAudio){syncFinalSong(remaining);syncVoiceSong(remaining);syncSequenceSong(remaining)}else pauseFinaleAudio(false);
 
     document.body.classList.toggle('finale-last-45',remaining<=PROGRESS_FOCUS_START);
     document.body.classList.toggle('finale-last-40',remaining<=TICK_START);
-    document.body.classList.toggle('finale-last-10',remaining<=RELEASE_TRACK_START);
+    document.body.classList.toggle('finale-last-15',remaining<=LAST_FIFTEEN);
+    document.body.classList.toggle('finale-last-10',remaining<=10000);
     document.body.classList.toggle('finale-last-second',remaining<=1000);
+    updateSceneRush(remaining,playTicks);
 
     if(playTicks&&remaining<=TICK_START&&remaining>1000){
       // First click fires exactly when song one ends, then every 1000ms from that handoff.
@@ -604,20 +662,20 @@
     lastRemaining=remaining;
   }
 
-  launchSong.addEventListener('ended',()=>stopVisualizer());
+  sequenceSong.addEventListener('ended',()=>{if(!finalSong.paused)startVisualizer();else stopVisualizer()});
   inject();
   ['pointerdown','keydown','touchstart'].forEach(ev=>window.addEventListener(ev,unlockFinaleAudio,{once:true,capture:true,passive:true}));
   window.addEventListener('tfw:countdown',e=>{const ms=Number(e.detail?.remaining);if(Number.isFinite(ms))maybeTrigger(ms,Boolean(e.detail?.preview))});
   window.addEventListener('tfw:sound-change',()=>{
     if(!soundEnabled()){pauseFinaleAudio(false);return}
     const remaining=finalePreview?Number(window.__tfwPreviewRemainingMs):lastRemaining;
-    if(Number.isFinite(remaining)&&remaining<=FINAL_FIVE){syncFinalSong(remaining);syncLaunchSong(remaining)}
+    if(Number.isFinite(remaining)&&remaining<=FINAL_FIVE){syncFinalSong(remaining);syncVoiceSong(remaining);syncSequenceSong(remaining)}
   });
   window.addEventListener('tfw:finale-audio-enable',()=>{
     const remaining=finalePreview?Number(window.__tfwPreviewRemainingMs):lastRemaining;
-    if(Number.isFinite(remaining)&&remaining<=FINAL_FIVE){syncFinalSong(remaining);syncLaunchSong(remaining)}
+    if(Number.isFinite(remaining)&&remaining<=FINAL_FIVE){syncFinalSong(remaining);syncVoiceSong(remaining);syncSequenceSong(remaining)}
   });
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!finalePreview&&Number.isFinite(lastRemaining)&&lastRemaining<=FINAL_FIVE){syncFinalSong(lastRemaining);syncLaunchSong(lastRemaining)}});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!finalePreview&&Number.isFinite(lastRemaining)&&lastRemaining<=FINAL_FIVE){syncFinalSong(lastRemaining);syncVoiceSong(lastRemaining);syncSequenceSong(lastRemaining)}});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(finalePreview)stopFinalePreview();else if(previewCard)hideCard()}});
   if(Number.isFinite(window.__tfwLastRemaining))maybeTrigger(window.__tfwLastRemaining,false);
 })();

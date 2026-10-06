@@ -27,6 +27,9 @@ let currentIndex = 0;
 let activeLayer = 0;
 let recentScenes = [];
 let sceneTimer = null;
+let finaleSceneDeck = [];
+let finaleSceneCursor = 0;
+let finaleDeckPrimed = false;
 let releaseTriggered = false;
 let currentPhase = '';
 let lastSlowUpdate = 0;
@@ -275,8 +278,8 @@ function pickNextScene(){
   return pool[Math.floor(Math.random()*pool.length)];
 }
 function preloadChoice(choice){ if (!choice) return; const img = new Image(); img.decoding='async'; img.src=srcFor(choice.scene); }
-function changeScene(forceChoice=null){
-  if (!scenes.length || ['final-minute','released'].includes(currentPhase)) return;
+function changeScene(forceChoice=null, allowFinale=false){
+  if (!scenes.length || currentPhase==='released' || (currentPhase==='final-minute' && !allowFinale)) return;
   const choice = forceChoice || pickNextScene(); if (!choice) return;
   const incoming = activeLayer === 0 ? els.sceneB : els.sceneA;
   const outgoing = activeLayer === 0 ? els.sceneA : els.sceneB;
@@ -292,6 +295,27 @@ function scheduleSceneRotation(){
   sceneTimer=setTimeout(function rotate(){ sceneTimer=null; if(!document.hidden) changeScene(); scheduleSceneRotation(); }, SITE_CONFIG.backgroundIntervalMs);
 }
 function stopSceneRotation(){ if(sceneTimer) clearTimeout(sceneTimer); sceneTimer=null; }
+
+function primeFinaleSceneDeck(){
+  if(finaleDeckPrimed||!scenes.length)return;
+  finaleDeckPrimed=true;
+  const candidates=scenes.map((scene,index)=>({scene,index})).filter(({index})=>index!==currentIndex);
+  for(let i=candidates.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[candidates[i],candidates[j]]=[candidates[j],candidates[i]]}
+  finaleSceneDeck=candidates.slice(0,Math.min(36,candidates.length));
+  finaleSceneCursor=0;
+  // Prime a compact deck during the five-minute lead-in so the final-second rush does not wait on network decoding.
+  finaleSceneDeck.forEach((choice,i)=>setTimeout(()=>preloadChoice(choice),i*180));
+}
+
+window.addEventListener('tfw:finale-start',primeFinaleSceneDeck);
+// The finale controller can request scene changes faster than the normal 10s rotation.
+// This path intentionally bypasses the final-minute lock while preserving the normal lock elsewhere.
+window.addEventListener('tfw:finale-scene-step',()=>{
+  if(!scenes.length || currentPhase==='released')return;
+  primeFinaleSceneDeck();
+  const choice=finaleSceneDeck.length?finaleSceneDeck[finaleSceneCursor++%finaleSceneDeck.length]:null;
+  changeScene(choice,true);
+});
 
 async function loadToday(){
   const r = await fetch('./content/today.json',{cache:'no-cache'}); if(!r.ok) throw new Error('today.json failed'); todayData=await r.json();

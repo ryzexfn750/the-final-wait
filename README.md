@@ -153,11 +153,13 @@ A small `EXPERIENCE PREVIEW` button appears at the bottom-left. The 30-second pr
 
 Open the site with `?preview=1` to enter the finale preview. V10 automatically starts the preview at **-05:00** and drives the real countdown UI with simulated time. The preview panel includes a scrubber covering the complete final 30 minutes, so you can drag to arbitrary positions such as `-23:56.000`, pause there, or press **PLAY FROM HERE** to resume in real time.
 
-Finale audio:
+Finale audio (current V12 behavior):
 
-- `assets/audio/final-5-minutes.mp3` starts at `-05:00` and ends around `-00:42`.
-- `assets/audio/final-10-release.mp4` starts exactly at `-00:10`, continues through `00:00`, and drives the music-reactive visualizer.
-- Tick cues begin at `-00:40` and accelerate during the final second.
+- `assets/audio/final-5-minutes.mp3` starts at `-05:00` and ends naturally around `-00:41.884`.
+- `assets/audio/final-1-minute-voice.mp4` starts exactly at `-01:00`.
+- `assets/audio/final-30-sequence.mp4` starts exactly at `-00:30` and contains the later spoken/countdown cues.
+- Tick cues begin immediately when the five-minute song ends and accelerate during the final second.
+- The music visualizer appears from `-05:00`, below the percentage bar, and reacts to the five-minute song and the final sequence track.
 
 At `00:00` the timer is replaced in-place by the release message. Fireworks and the release-state visual effects remain active for as long as the release state is displayed.
 
@@ -170,3 +172,13 @@ At `00:00` the timer is replaced in-place by the release message. Fireworks and 
 - restored final-five layout through -45s/-10s/-1m with safe responsive growth
 - dynamic final-minute headline effects and milestone pill copy
 - fixed seconds-to-milliseconds colon
+
+## V12 finale refinements
+- five-minute headline now switches immediately to a cinematic gradient treatment
+- GTA VI and Ryze marks are normalized to equal pixel boxes and tightened around the × separator
+- percentage panel is fully visible and animated from -05:00
+- timer and progress growth restored with viewport-safe scale caps
+- explicit seconds color normalization plus illuminated final-15-second treatment
+- screenshots accelerate progressively through the final minute, using a preloaded finale deck for the fastest final-second cuts
+- one-minute voiceover and complete -30-second sequence replace the old -10-second track
+- continuous audio playback no longer performs repeated seek corrections, avoiding the old mid-song glitch

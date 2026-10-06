@@ -1,0 +1,167 @@
+/* V12 — final-five timing, audio staging, scene rush and visual polish. */
+
+/* --- Balanced GTA VI × Ryze lockup ------------------------------------- */
+.logo-stage{width:min(390px,64vw)!important}
+.collab-lockup{
+  width:auto!important;display:grid!important;grid-template-columns:auto auto auto!important;
+  align-items:center!important;justify-content:center!important;justify-items:center!important;
+  column-gap:clamp(2px,.28vw,5px)!important;
+}
+.collab-lockup .gta-logo,
+.ryze-gtavi-logo{
+  width:clamp(108px,7.8vw,138px)!important;
+  height:clamp(108px,7.8vw,138px)!important;
+  max-width:none!important;max-height:none!important;margin:0!important;
+  object-fit:contain!important;object-position:center!important;
+}
+.collab-x{width:clamp(28px,2.35vw,36px)!important;font-size:clamp(19px,1.7vw,25px)!important}
+
+/* --- Final five title treatment starts immediately at -05:00 ---------- */
+body.final-five-active .hero-title-wrap{margin-top:0!important}
+body.final-five-active #heroTitle{
+  max-width:92vw;margin-inline:auto;
+  font-size:clamp(27px,3.55vw,54px)!important;
+  line-height:.94!important;letter-spacing:-.045em!important;
+}
+body.final-five-active.finale-last-15 #heroTitle{font-size:clamp(24px,3.05vw,46px)!important}
+body.finale-dynamic-copy #heroTitle{
+  background:linear-gradient(90deg,#fff 0%,#ffc76f 15%,#ff5fc5 44%,#8d7cff 72%,#fff 100%)!important;
+  background-size:250% auto!important;-webkit-background-clip:text!important;background-clip:text!important;
+  color:transparent!important;-webkit-text-fill-color:transparent!important;
+  filter:drop-shadow(0 8px 26px rgba(0,0,0,.7)) drop-shadow(0 0 22px rgba(242,63,178,.28))!important;
+}
+
+/* --- Timer growth is back, but constrained to the viewport ------------- */
+body.final-five-active .countdown-shell{
+  width:min(1120px,74vw)!important;
+  margin-top:12px!important;
+  margin-bottom:var(--finale-gap,10px)!important;
+  overflow:visible!important;
+}
+body.final-five-active #countdown{
+  width:100%!important;max-width:100%!important;margin-inline:auto!important;
+  transform:scale(var(--finale-scale,1))!important;
+  transform-origin:center center!important;
+  transition:transform .32s cubic-bezier(.18,.82,.18,1),filter .3s ease!important;
+}
+body.final-five-active .time-value,
+body.final-five-active #seconds{
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+}
+body.final-five-active .milliseconds .time-value{
+  color:#fff!important;background:linear-gradient(180deg,#fff 35%,#ffd7f3 100%)!important;
+  -webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;
+}
+
+/* Last 15 seconds: illuminated panels and hotter digits. */
+body.finale-last-15 #countdown{filter:drop-shadow(0 0 18px rgba(242,63,178,.18))}
+body.finale-last-15 .time-unit{
+  border-color:rgba(255,255,255,.24)!important;
+  animation:tfwV12UnitCharge 1.15s ease-in-out infinite alternate;
+}
+body.finale-last-15 .time-value{
+  text-shadow:0 0 2px #fff,0 0 15px rgba(255,255,255,.46),0 0 30px rgba(242,63,178,.34),0 0 52px rgba(119,96,255,.22),0 12px 30px rgba(0,0,0,.62)!important;
+}
+body.finale-last-second .time-unit{animation-duration:.22s!important}
+body.finale-last-second .time-value{animation:tfwV12DigitIgnition .16s ease-in-out infinite alternate!important}
+@keyframes tfwV12UnitCharge{
+  from{box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 12px 38px rgba(0,0,0,.25),0 0 14px rgba(119,96,255,.07)}
+  to{border-color:rgba(255,105,203,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 16px 48px rgba(0,0,0,.32),0 0 32px rgba(242,63,178,.22),0 0 58px rgba(119,96,255,.12)}
+}
+@keyframes tfwV12DigitIgnition{
+  from{filter:brightness(1);transform:translateY(0) scale(1)}
+  to{filter:brightness(1.18);transform:translateY(-1px) scale(1.012)}
+}
+
+/* --- Percentage is prominent from -05:00, not only in the last 45s ---- */
+body.final-five-active .progress-block{
+  opacity:1!important;visibility:visible!important;filter:none!important;pointer-events:auto!important;
+  width:min(860px,64vw)!important;
+  transform:translateY(0) scale(var(--finale-progress-scale,1))!important;
+  transform-origin:center top!important;
+  border-color:rgba(242,63,178,.38)!important;
+  box-shadow:0 22px 66px rgba(0,0,0,.34),0 0 42px rgba(242,63,178,.14),inset 0 0 28px rgba(119,96,255,.055)!important;
+  transition:opacity .45s ease,transform .34s cubic-bezier(.18,.82,.18,1),width .45s ease,box-shadow .35s ease!important;
+  animation:tfwV12ProgressCharge 2.7s ease-in-out infinite alternate!important;
+}
+body.final-five-active .progress-meta{color:rgba(255,255,255,.9)!important}
+body.final-five-active .progress-meta strong{color:#fff!important;text-shadow:0 0 18px rgba(242,63,178,.28)}
+body.final-five-active .progress-track{height:8px!important;background:rgba(255,255,255,.15)!important}
+@keyframes tfwV12ProgressCharge{
+  to{box-shadow:0 28px 76px rgba(0,0,0,.38),0 0 60px rgba(242,63,178,.21),inset 0 0 34px rgba(119,96,255,.08)}
+}
+
+/* --- Real music visualizer lives below the percentage ------------------- */
+.finale-visualizer-wrap{
+  position:relative!important;z-index:11;width:min(760px,58vw);height:0;margin:0 auto;
+  overflow:visible;opacity:0;transform:translateY(5px) scale(.97);pointer-events:none;
+  transition:height .5s cubic-bezier(.2,.75,.2,1),margin .5s ease,opacity .45s ease,transform .45s ease;
+}
+body.final-five-active .finale-visualizer-wrap{
+  height:62px;margin-top:8px;opacity:.94;transform:none;
+}
+.finale-visualizer{
+  position:relative!important;inset:auto!important;display:block!important;width:100%!important;height:100%!important;
+  z-index:2!important;opacity:.98!important;mix-blend-mode:screen!important;filter:saturate(1.25)!important;
+  transition:opacity .35s ease!important;
+}
+body.finale-music-live .finale-visualizer{opacity:1!important}
+.finale-beat-halo{
+  position:absolute!important;inset:10% 5%!important;left:auto!important;top:auto!important;
+  width:auto!important;height:auto!important;translate:none!important;border-radius:999px!important;z-index:1!important;
+  opacity:.18!important;filter:blur(10px)!important;
+  background:radial-gradient(ellipse,rgba(255,255,255,.05),rgba(242,63,178,.13) 34%,rgba(119,96,255,.08) 55%,transparent 76%)!important;
+  transform:scale(var(--music-scale,1))!important;
+}
+body.finale-music-live .finale-beat-halo{opacity:calc(.24 + var(--music-energy,.08) * .56)!important}
+
+/* --- Accelerating screenshot rush throughout the final minute ----------- */
+body.finale-scene-rush .scene{
+  transition:opacity var(--finale-scene-transition,600ms) linear!important;
+  filter:saturate(1.11) contrast(1.035) brightness(1.015)!important;
+}
+body.finale-scene-rush .scene-sweep{animation-duration:var(--finale-scene-transition,600ms)!important}
+body.finale-last-15 .scene-sweep{display:none!important}
+body.finale-last-15 .hero-atmosphere{filter:saturate(1.08) brightness(1.02)}
+
+/* Keep the five-minute architecture intact all the way through the minute. */
+body.phase-final-minute.final-five-active .topbar,
+body.phase-final-minute.final-five-active .hero-status,
+body.phase-final-minute.final-five-active .hero-title-wrap,
+body.phase-final-minute.final-five-active .phase-pill,
+body.phase-final-minute.final-five-active .countdown,
+body.phase-final-minute.final-five-active .progress-block{
+  opacity:1!important;visibility:visible!important;filter:none!important;
+}
+body.finale-song-ended .phase-pill{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+
+@media(max-height:850px) and (min-width:901px){
+  body.final-five-active .hero-content{padding-top:18px!important}
+  .logo-stage{width:min(330px,54vw)!important}
+  .collab-lockup .gta-logo,.ryze-gtavi-logo{width:112px!important;height:112px!important}
+  body.final-five-active #heroTitle{font-size:clamp(25px,3vw,44px)!important}
+  body.final-five-active .countdown-shell{width:min(1040px,72vw)!important;margin-top:8px!important;margin-bottom:18px!important}
+  body.final-five-active .progress-block{width:min(790px,61vw)!important}
+  body.final-five-active .finale-visualizer-wrap{height:50px;margin-top:5px}
+}
+
+@media(max-width:900px){
+  .logo-stage{width:min(340px,74vw)!important}
+  .collab-lockup .gta-logo,.ryze-gtavi-logo{width:clamp(92px,16vw,116px)!important;height:clamp(92px,16vw,116px)!important}
+  .collab-x{width:30px!important;font-size:20px!important}
+  body.final-five-active .countdown-shell{width:82vw!important;margin-bottom:22px!important}
+  body.final-five-active .progress-block{width:78vw!important}
+  body.final-five-active .finale-visualizer-wrap{width:72vw;height:54px}
+}
+
+@media(max-width:700px){
+  .logo-stage{width:min(310px,84vw)!important}
+  .collab-lockup{column-gap:1px!important}
+  .collab-lockup .gta-logo,.ryze-gtavi-logo{width:clamp(78px,20vw,98px)!important;height:clamp(78px,20vw,98px)!important}
+  .collab-x{width:26px!important;font-size:18px!important}
+  body.final-five-active #heroTitle{font-size:clamp(22px,6.2vw,32px)!important;white-space:normal}
+  body.final-five-active .countdown-shell{width:91vw!important;margin-bottom:18px!important}
+  body.final-five-active #countdown{transform:scale(var(--finale-scale,1))!important}
+  body.final-five-active .progress-block{width:88vw!important;transform:scale(var(--finale-progress-scale,1))!important}
+  body.final-five-active .finale-visualizer-wrap{width:84vw;height:48px;margin-top:6px}
+}
