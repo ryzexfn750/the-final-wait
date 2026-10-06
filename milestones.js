@@ -1,8 +1,10 @@
 (() => {
   const DAY=86400000, HOUR=3600000, MIN=60000, SECOND=1000;
   const FINAL_FIVE=5*MIN;
-  const FINAL_SONG_END=41900;
-  const TICK_START=40000;
+  // The first song is 258.115918s long, so from -05:00 it naturally ends at ~-00:41.884.
+  // loadedmetadata below refreshes this value from the actual media file, keeping the handoff gapless.
+  let FINAL_SONG_END=41884;
+  let TICK_START=FINAL_SONG_END;
   const PROGRESS_FOCUS_START=45000;
   const RELEASE_TRACK_START=10000;
   const SCRUB_MAX=30*MIN;
@@ -44,13 +46,23 @@
   let musicData=null;
   let visualizerRaf=0;
   let visualizerResize=null;
+  let lastFinalSongSeekAt=0;
+  let lastLaunchSongSeekAt=0;
+  let scrubPointerId=null;
 
   const finalSong=new Audio('assets/audio/final-5-minutes.mp3');
   const launchSong=new Audio('assets/audio/final-10-release.mp4');
   finalSong.preload='auto'; finalSong.playsInline=true;
   launchSong.preload='auto'; launchSong.playsInline=true;
   finalSong.volume=.84;
-  launchSong.volume=.96;
+  // The -10 track sits under the countdown/ticks instead of overpowering them.
+  launchSong.volume=.72;
+  finalSong.addEventListener('loadedmetadata',()=>{
+    if(Number.isFinite(finalSong.duration)&&finalSong.duration>1){
+      FINAL_SONG_END=Math.max(0,FINAL_FIVE-finalSong.duration*1000);
+      TICK_START=FINAL_SONG_END;
+    }
+  });
 
   function soundEnabled(){return storage.get('tfw_sound')!=='off'}
   function clamp(v,min,max){return Math.min(max,Math.max(min,v))}
@@ -83,7 +95,10 @@
           <p>Use the timeline below to simulate any point inside the final 30 minutes. The production countdown, percentage and finale effects all follow the simulated time.</p>
           <div class="finale-scrubber">
             <div class="finale-scrub-head"><span>SIMULATED TIME</span><strong id="finaleScrubReadout">-05:00.000</strong></div>
-            <input id="finaleScrubber" type="range" min="0" max="${SCRUB_MAX}" value="${SCRUB_MAX-5*MIN}" step="10" aria-label="Simulated time before release">
+            <div class="finale-scrub-track-shell" id="finaleScrubTrack">
+              <span class="finale-scrub-fill" aria-hidden="true"></span>
+              <input id="finaleScrubber" type="range" min="0" max="${SCRUB_MAX}" value="${SCRUB_MAX-5*MIN}" step="1" aria-label="Simulated time before release">
+            </div>
             <div class="finale-scrub-scale"><span>-30:00</span><span>-15:00</span><span>00:00</span></div>
             <div class="finale-scrub-actions">
               <button type="button" id="finaleScrubPlay">PLAY FROM HERE</button>
@@ -133,13 +148,44 @@
     }
 
     const scrub=$('#finaleScrubber');
+    const scrubTrack=$('#finaleScrubTrack');
     if(scrub && !scrub.dataset.ready){
       scrub.dataset.ready='1';
-      scrub.addEventListener('input',()=>{
+      const applyScrubValue=()=>{
         pausePreviewPlayback();
         const remaining=SCRUB_MAX-Number(scrub.value);
         setStaticPreview(remaining,{syncSlider:false});
-      });
+        updateScrubVisual(remaining);
+      };
+      scrub.addEventListener('input',applyScrubValue);
+      scrub.addEventListener('change',applyScrubValue);
+      scrub.addEventListener('keydown',()=>requestAnimationFrame(applyScrubValue));
+      if(scrubTrack){
+        const seekFromPointer=e=>{
+          const rect=scrubTrack.getBoundingClientRect();
+          const fraction=clamp((e.clientX-rect.left)/Math.max(1,rect.width),0,1);
+          scrub.value=String(Math.round(fraction*SCRUB_MAX));
+          applyScrubValue();
+        };
+        scrubTrack.addEventListener('pointerdown',e=>{
+          scrubPointerId=e.pointerId;
+          try{scrubTrack.setPointerCapture(e.pointerId)}catch{}
+          seekFromPointer(e);
+          e.preventDefault();
+        });
+        scrubTrack.addEventListener('pointermove',e=>{
+          if(scrubPointerId!==e.pointerId)return;
+          seekFromPointer(e);
+          e.preventDefault();
+        });
+        const releasePointer=e=>{
+          if(scrubPointerId!==e.pointerId)return;
+          scrubPointerId=null;
+          try{scrubTrack.releasePointerCapture(e.pointerId)}catch{}
+        };
+        scrubTrack.addEventListener('pointerup',releasePointer);
+        scrubTrack.addEventListener('pointercancel',releasePointer);
+      }
       $('#finaleScrubPlay')?.addEventListener('click',()=>startFinalePreview(previewPausedRemaining,{keepPanel:true}));
       $('#finaleScrubPause')?.addEventListener('click',()=>pausePreviewPlayback());
       $('#finaleScrubReset')?.addEventListener('click',()=>setStaticPreview(5*MIN));
@@ -216,11 +262,11 @@
     const base=rapid?1040+progress*980:920;
     const length=rapid?.032:.09;
     master.gain.setValueAtTime(.0001,now);
-    master.gain.exponentialRampToValueAtTime(rapid?.115:.18,now+.002);
+    master.gain.exponentialRampToValueAtTime(rapid?.26:.48,now+.002);
     master.gain.exponentialRampToValueAtTime(.0001,now+length);
     master.connect(compressor);compressor.connect(ctx.destination);
     [1,2.02].forEach((mul,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=i?'triangle':'square';o.frequency.setValueAtTime(base*mul,now);o.frequency.exponentialRampToValueAtTime(base*mul*(rapid?1.11:.91),now+length);g.gain.value=i?.20:.68;o.connect(g);g.connect(master);o.start(now);o.stop(now+length+.01)});
-    const noise=ctx.createBufferSource(),buffer=ctx.createBuffer(1,Math.max(1,Math.floor(ctx.sampleRate*.018)),ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);noise.buffer=buffer;const ng=ctx.createGain();ng.gain.setValueAtTime(rapid?.085:.13,now);ng.gain.exponentialRampToValueAtTime(.0001,now+.018);noise.connect(ng);ng.connect(compressor);noise.start(now);
+    const noise=ctx.createBufferSource(),buffer=ctx.createBuffer(1,Math.max(1,Math.floor(ctx.sampleRate*.018)),ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);noise.buffer=buffer;const ng=ctx.createGain();ng.gain.setValueAtTime(rapid?.16:.24,now);ng.gain.exponentialRampToValueAtTime(.0001,now+.018);noise.connect(ng);ng.connect(compressor);noise.start(now);
   }
 
   function visualPulse(rapid=false){
@@ -231,18 +277,44 @@
   function setFinaleScale(remaining){
     let scale=1;
     if(remaining<=FINAL_FIVE){
-      if(remaining>MIN){const p=(FINAL_FIVE-remaining)/(FINAL_FIVE-MIN);scale=1+.025*clamp(p,0,1)}
-      else if(remaining>10000){const p=(MIN-remaining)/50000;scale=1.025+.025*clamp(p,0,1)}
-      else if(remaining>1000){const p=(10000-remaining)/9000;scale=1.05+.018*clamp(p,0,1)}
-      else {const p=(1000-remaining)/1000;scale=1.068+.012*clamp(p,0,1)}
+      if(remaining>MIN){const p=(FINAL_FIVE-remaining)/(FINAL_FIVE-MIN);scale=1+.04*clamp(p,0,1)}
+      else if(remaining>10000){const p=(MIN-remaining)/50000;scale=1.04+.04*clamp(p,0,1)}
+      else if(remaining>1000){const p=(10000-remaining)/9000;scale=1.08+.03*clamp(p,0,1)}
+      else {const p=(1000-remaining)/1000;scale=1.11+.04*clamp(p,0,1)}
     }
     const intensity=clamp((FINAL_FIVE-remaining)/FINAL_FIVE,0,1);
-    const progressScale=remaining<=PROGRESS_FOCUS_START?1+.055*clamp((PROGRESS_FOCUS_START-remaining)/PROGRESS_FOCUS_START,0,1):1;
+    const progressScale=remaining<=PROGRESS_FOCUS_START?1+.14*clamp((PROGRESS_FOCUS_START-remaining)/PROGRESS_FOCUS_START,0,1):1;
     document.documentElement.style.setProperty('--finale-scale',String(scale));
     document.documentElement.style.setProperty('--finale-progress-scale',String(progressScale));
     document.documentElement.style.setProperty('--finale-intensity',String(intensity));
-    document.documentElement.style.setProperty('--finale-glow',`${12+42*intensity}px`);
-    document.documentElement.style.setProperty('--finale-title-opacity',String(Math.max(.18,1-intensity*.82)));
+    document.documentElement.style.setProperty('--finale-glow',`${14+58*intensity}px`);
+    document.documentElement.style.setProperty('--finale-title-opacity','1');
+  }
+
+  function updateFinaleCopy(remaining){
+    const title=$('#heroTitle');
+    const pill=$('#phasePill');
+    const songEnded=remaining<=TICK_START;
+    document.body.classList.toggle('finale-song-ended',songEnded&&remaining>0);
+    document.body.classList.toggle('finale-dynamic-copy',remaining<=MIN&&remaining>0);
+
+    if(title){
+      let text='ROAD TO LEONIDA';
+      if(remaining<=10000&&remaining>0)text='THE FINAL TEN';
+      else if(remaining<=30000&&remaining>0)text='30 SECONDS TO LEONIDA';
+      else if(remaining<=MIN&&remaining>0)text='ONE MINUTE TO LEONIDA';
+      title.textContent=text;
+    }
+    if(pill){
+      let label='THE FINAL WAIT';
+      if(remaining<=5*MIN)label='FINAL FIVE MINUTES';
+      else if(remaining<=15*MIN)label='THE LAST QUARTER HOUR';
+      else if(remaining<=30*MIN)label='FINAL 30 MINUTES';
+      else if(remaining<=HOUR)label='THE FINAL HOUR';
+      if(remaining<=MIN)label='THE FINAL MINUTE';
+      if(songEnded&&remaining>0)label='';
+      pill.innerHTML=label?`<span class="phase-dot"></span> ${label}`:'<span class="phase-dot"></span>';
+    }
   }
 
   async function ensureMusicGraph(){
@@ -311,23 +383,49 @@
 
   async function syncFinalSong(remaining){
     if(!soundEnabled()){if(!finalSong.paused)finalSong.pause();return}
-    if(remaining>FINAL_FIVE||remaining<=FINAL_SONG_END){if(!finalSong.paused)finalSong.pause();return}
-    const target=(FINAL_FIVE-remaining)/1000;
-    try{if(Math.abs(finalSong.currentTime-target)>.4)finalSong.currentTime=Math.max(0,target);if(finalSong.paused)await finalSong.play()}catch{}
+    if(remaining>FINAL_FIVE){
+      if(!finalSong.paused)finalSong.pause();
+      try{finalSong.currentTime=0}catch{}
+      return;
+    }
+    const duration=Number.isFinite(finalSong.duration)&&finalSong.duration>0?finalSong.duration:258.115918;
+    const target=clamp((FINAL_FIVE-remaining)/1000,0,duration);
+    if(remaining<=FINAL_SONG_END){
+      // Let the file reach its natural end when already playing. Static seeks below the handoff stay silent.
+      if(finalSong.paused||target>=duration-.05){try{finalSong.pause();finalSong.currentTime=duration}catch{}}
+      return;
+    }
+    try{
+      const now=performance.now();
+      if(finalSong.paused){
+        finalSong.currentTime=target;
+        lastFinalSongSeekAt=now;
+        await finalSong.play();
+      }else{
+        const drift=Math.abs(finalSong.currentTime-target);
+        if(drift>1.8&&now-lastFinalSongSeekAt>5000){
+          finalSong.currentTime=target;
+          lastFinalSongSeekAt=now;
+        }
+      }
+    }catch{}
   }
 
   async function syncLaunchSong(remaining){
     if(!soundEnabled()){if(!launchSong.paused)launchSong.pause();stopVisualizer();return}
-    if(remaining>RELEASE_TRACK_START){if(!launchSong.paused)launchSong.pause();launchSong.currentTime=0;stopVisualizer();return}
+    if(remaining>RELEASE_TRACK_START){if(!launchSong.paused)launchSong.pause();try{launchSong.currentTime=0}catch{};stopVisualizer();return}
     await ensureMusicGraph();
     const target=Math.max(0,(RELEASE_TRACK_START-Math.max(0,remaining))/1000);
     try{
-      if(remaining>0){
-        if(Math.abs(launchSong.currentTime-target)>.32)launchSong.currentTime=target;
-      }else if(launchSong.currentTime<9.55){
+      const now=performance.now();
+      if(launchSong.paused){
         launchSong.currentTime=target;
+        lastLaunchSongSeekAt=now;
+        await launchSong.play();
+      }else if(remaining>0){
+        const drift=Math.abs(launchSong.currentTime-target);
+        if(drift>.9&&now-lastLaunchSongSeekAt>2500){launchSong.currentTime=target;lastLaunchSongSeekAt=now}
       }
-      if(launchSong.paused)await launchSong.play();
       startVisualizer();
     }catch{}
   }
@@ -346,7 +444,8 @@
 
   function leaveFinalFive(){
     finaleActive=false;
-    document.body.classList.remove('final-five-active','finale-last-45','finale-last-40','finale-last-10','finale-last-second');
+    document.body.classList.remove('final-five-active','finale-last-45','finale-last-40','finale-last-10','finale-last-second','finale-song-ended','finale-dynamic-copy');
+    const title=$('#heroTitle');if(title)title.textContent='ROAD TO LEONIDA';
     ['--finale-scale','--finale-progress-scale','--finale-intensity','--finale-glow','--finale-title-opacity'].forEach(v=>document.documentElement.style.removeProperty(v));
     pauseFinaleAudio(true);lastSecondTick=null;lastRapidBucket=null;
   }
@@ -362,7 +461,7 @@
   function showRelease(playAudio=true){
     if(!releaseShown){
       releaseShown=true;finaleActive=false;
-      document.body.classList.remove('final-five-active','finale-last-45','finale-last-40','finale-last-10','finale-last-second');
+      document.body.classList.remove('final-five-active','finale-last-45','finale-last-40','finale-last-10','finale-last-second','finale-song-ended','finale-dynamic-copy');
       document.body.classList.add('finale-released');
       try{finalSong.pause()}catch{}
       const release=$('#finaleRelease');if(release){release.setAttribute('aria-hidden','false');release.classList.add('active')}
@@ -380,7 +479,7 @@
   }
 
   function updateFinale(remaining,{playAudio=true,playTicks=true}={}){
-    remaining=Math.max(0,remaining);stageFor(remaining);
+    remaining=Math.max(0,remaining);stageFor(remaining);updateFinaleCopy(remaining);
     if(remaining<=0){setFinaleScale(0);showRelease(playAudio);return}
     $('#countdown')?.setAttribute('aria-hidden','false');
     if(releaseShown)resetRelease({pauseAudio:true});
@@ -394,8 +493,9 @@
     document.body.classList.toggle('finale-last-second',remaining<=1000);
 
     if(playTicks&&remaining<=TICK_START&&remaining>1000){
-      const sec=Math.ceil(remaining/1000);
-      if(sec!==lastSecondTick){lastSecondTick=sec;tickSound(clamp((TICK_START-remaining)/TICK_START,0,1),false);visualPulse(false)}
+      // First click fires exactly when song one ends, then every 1000ms from that handoff.
+      const tickIndex=Math.floor(Math.max(0,TICK_START-remaining)/1000);
+      if(tickIndex!==lastSecondTick){lastSecondTick=tickIndex;tickSound(clamp((TICK_START-remaining)/TICK_START,0,1),false);visualPulse(false)}
     }
     if(playTicks&&remaining<=1000){
       const interval=rapidIntervalFor(remaining);const bucket=Math.floor(remaining/interval);const key=`${interval}:${bucket}`;
@@ -435,11 +535,18 @@
     const canvas=$('#finaleFireworks');if(canvas){if(canvas._tfwResize)window.removeEventListener('resize',canvas._tfwResize);canvas._tfwResize=null;if(clear){const c=canvas.getContext('2d');c?.clearRect(0,0,canvas.width,canvas.height)}}
   }
 
+  function updateScrubVisual(remaining){
+    const fraction=(SCRUB_MAX-clamp(remaining,0,SCRUB_MAX))/SCRUB_MAX;
+    document.documentElement.style.setProperty('--scrub-progress',`${(fraction*100).toFixed(4)}%`);
+    const readout=$('#finaleScrubReadout');
+    if(readout)readout.textContent=remaining<=0?'00:00.000':formatRemaining(remaining,true);
+  }
+
   function syncScrubber(remaining){
     previewPausedRemaining=Math.max(0,remaining);
-    const scrub=$('#finaleScrubber'),readout=$('#finaleScrubReadout');
+    const scrub=$('#finaleScrubber');
     if(scrub)scrub.value=String(SCRUB_MAX-clamp(previewPausedRemaining,0,SCRUB_MAX));
-    if(readout)readout.textContent=previewPausedRemaining<=0?'00:00.000':formatRemaining(previewPausedRemaining,true);
+    updateScrubVisual(previewPausedRemaining);
   }
 
   function setPreviewClock(remaining){

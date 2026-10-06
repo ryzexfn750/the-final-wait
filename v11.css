@@ -1,0 +1,193 @@
+/* V11 — polish pass for the final countdown simulator and collaboration lockup. */
+
+/* --- Collaboration lockup ------------------------------------------------ */
+.logo-stage{width:min(560px,72vw);display:grid;place-items:center}
+.logo-halo{width:92%;height:76%}
+.collab-lockup{
+  position:relative;z-index:2;width:100%;display:grid;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;justify-items:center;column-gap:clamp(13px,1.5vw,24px);
+}
+.collab-lockup .gta-logo{
+  justify-self:end;width:auto!important;height:clamp(104px,10.2vw,156px)!important;max-height:none!important;margin:0!important;
+  object-fit:contain;filter:drop-shadow(0 18px 34px rgba(0,0,0,.6));
+}
+.ryze-gtavi-logo{
+  justify-self:start;width:auto;height:clamp(88px,8.8vw,134px);object-fit:contain;
+  filter:drop-shadow(0 17px 30px rgba(0,0,0,.62)) drop-shadow(0 0 18px rgba(242,63,178,.12));
+  user-select:none;-webkit-user-drag:none;
+}
+.collab-x{
+  display:grid;place-items:center;width:clamp(30px,3vw,44px);aspect-ratio:1;border-radius:50%;
+  font:300 clamp(20px,2.1vw,31px)/1 Arial,sans-serif;color:rgba(255,255,255,.88);
+  border:1px solid rgba(255,255,255,.12);background:rgba(8,7,13,.2);
+  box-shadow:0 0 30px rgba(242,63,178,.06),inset 0 0 18px rgba(255,255,255,.025);
+  text-shadow:0 0 16px rgba(255,255,255,.2);
+}
+
+/* The separator between seconds and milliseconds is a real colon again. */
+.milliseconds-separator{align-items:center!important;padding-bottom:0!important}
+
+/* --- Final-five composition: keep the same architecture all the way down. */
+body.final-five-active .hero-content{width:min(1360px,95vw)!important}
+body.final-five-active .countdown-shell{
+  width:min(1180px,76.5vw);margin-top:15px!important;overflow:visible!important;
+  transition:width .75s cubic-bezier(.2,.78,.2,1),margin .5s ease;
+}
+body.final-five-active #countdown{
+  width:100%;margin-inline:auto;transform:scale(var(--finale-scale,1))!important;
+  transform-origin:center center!important;
+  transition:transform .34s cubic-bezier(.2,.78,.2,1),filter .34s ease!important;
+}
+
+/* The -05:00 layout remains the visual base. Do NOT collapse navigation/title/logo at -45/-10/-1. */
+body.phase-final-minute .topbar,
+body.phase-final-minute .hero-status,
+body.phase-final-minute .hero-title-wrap,
+body.phase-final-minute .phase-pill,
+body.phase-final-minute .countdown,
+body.phase-final-minute .progress-block,
+body.phase-final-minute .scroll-cue{
+  opacity:1!important;visibility:visible!important;pointer-events:auto!important;filter:none!important;
+}
+body.phase-final-minute .topbar{transform:none!important}
+body.phase-final-minute .hero-title-wrap{transform:none!important}
+body.phase-final-minute .countdown{display:grid!important}
+body.phase-final-minute .final-minute-countdown{display:none!important}
+body.phase-final-minute .gta-logo{width:auto!important;height:clamp(104px,10.2vw,156px)!important;max-height:none!important;margin:0!important}
+body.phase-final-minute.final-five-active .release-hud{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+body.phase-final-minute.final-five-active .next-scene{opacity:0!important;pointer-events:none!important}
+
+body.finale-last-45 .hero-title-wrap,
+body.finale-last-10 .hero-title-wrap{
+  opacity:1!important;transform:none!important;filter:none!important;pointer-events:auto!important;
+}
+body.finale-last-45 .logo-stage,
+body.finale-last-10 .logo-stage{
+  opacity:1!important;transform:none!important;filter:none!important;
+}
+body.finale-last-45 .phase-pill,
+body.finale-last-10 .phase-pill{
+  opacity:1!important;transform:none!important;filter:none!important;pointer-events:auto!important;
+}
+body.finale-song-ended .phase-pill{
+  opacity:0!important;transform:translateY(-5px) scale(.96)!important;filter:blur(3px)!important;pointer-events:none!important;
+}
+
+/* The phase capsule remains useful from 30m to the end of song one. */
+.phase-pill{
+  transition:opacity .48s ease,transform .48s ease,filter .48s ease,border-color .35s ease,box-shadow .35s ease!important;
+}
+body.countdown-stage-30m .phase-pill,
+body.countdown-stage-15m .phase-pill,
+body.countdown-stage-5m .phase-pill,
+body.countdown-stage-minute .phase-pill{
+  border-color:rgba(242,63,178,.34);box-shadow:0 0 28px rgba(242,63,178,.1),inset 0 0 18px rgba(119,96,255,.04);
+}
+
+/* Dynamic Road-to-Leonida copy gets the same premium gradient language as 00:00. */
+body.finale-dynamic-copy #heroTitle{
+  position:relative;
+  background:linear-gradient(90deg,#fff 0%,#ffc06f 18%,#ff57c0 47%,#9580ff 73%,#fff 100%);
+  background-size:230% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.62)) drop-shadow(0 0 18px rgba(242,63,178,.2));
+  animation:tfwV11TitleFlow 3.4s linear infinite,tfwV11TitleBreath 2.1s ease-in-out infinite;
+}
+body.finale-dynamic-copy #heroTitle:after{
+  content:'';position:absolute;left:50%;bottom:-11px;width:62%;height:1px;translate:-50% 0;
+  background:linear-gradient(90deg,transparent,rgba(119,96,255,.72),#fff,rgba(242,63,178,.72),transparent);
+  box-shadow:0 0 18px rgba(242,63,178,.24);animation:tfwV11TitleLine 2.1s ease-in-out infinite;
+}
+@keyframes tfwV11TitleFlow{to{background-position:230% center}}
+@keyframes tfwV11TitleBreath{50%{filter:drop-shadow(0 10px 30px rgba(0,0,0,.66)) drop-shadow(0 0 36px rgba(242,63,178,.34)) brightness(1.06)}}
+@keyframes tfwV11TitleLine{50%{width:78%;filter:brightness(1.45)}}
+
+/* Restore the dramatic growth, but keep it contained inside the viewport. */
+body.finale-last-45 .progress-block,
+body.finale-last-10 .progress-block{
+  opacity:1!important;filter:none!important;pointer-events:auto!important;
+  width:min(900px,68vw)!important;
+  transform:translateY(clamp(12px,1.7vh,22px)) scale(var(--finale-progress-scale,1))!important;
+  transform-origin:center top!important;
+  border-color:rgba(242,63,178,.38)!important;
+  box-shadow:0 24px 72px rgba(0,0,0,.34),0 0 46px rgba(242,63,178,.13),inset 0 0 30px rgba(119,96,255,.05)!important;
+  animation:tfwV11ProgressFloat 2.8s ease-in-out infinite alternate;
+}
+body.finale-last-45 .progress-meta{font-size:clamp(7px,.72vw,11px)!important;color:rgba(255,255,255,.82)!important}
+body.finale-last-45 .progress-meta strong{font-size:clamp(10px,.9vw,14px)!important}
+body.finale-last-45 .progress-track{height:8px!important}
+@keyframes tfwV11ProgressFloat{to{box-shadow:0 28px 80px rgba(0,0,0,.38),0 0 58px rgba(242,63,178,.19),inset 0 0 36px rgba(119,96,255,.07)}}
+
+/* Keep the -10 music visualization, but without shrinking the identity lockup. */
+body.finale-last-10 .finale-visualizer{opacity:.72}
+body.finale-last-10 .hero-content:after{translate:-50% -20%!important;height:min(38vw,470px)!important}
+
+/* --- Real, draggable 30-minute scrubber --------------------------------- */
+.finale-scrubber{user-select:none}
+.finale-scrub-track-shell{
+  position:relative;height:38px;margin:2px 0 0;cursor:ew-resize;touch-action:none;
+  display:flex;align-items:center;
+}
+.finale-scrub-track-shell:before{
+  content:'';position:absolute;left:0;right:0;top:50%;height:8px;translate:0 -50%;border-radius:999px;
+  background:rgba(255,255,255,.09);box-shadow:inset 0 1px 2px rgba(0,0,0,.45),0 0 18px rgba(119,96,255,.05);
+}
+.finale-scrub-fill{
+  position:absolute;z-index:1;left:0;top:50%;width:var(--scrub-progress,83.3333%);height:8px;translate:0 -50%;border-radius:999px;
+  background:linear-gradient(90deg,#7760ff,#f23fb2,#ff9c43);box-shadow:0 0 20px rgba(242,63,178,.32);
+  pointer-events:none;
+}
+.finale-scrub-track-shell:after{
+  content:'';position:absolute;z-index:3;left:var(--scrub-progress,83.3333%);top:50%;width:20px;height:20px;
+  translate:-50% -50%;border-radius:50%;background:#fff;border:4px solid #f23fb2;
+  box-shadow:0 0 0 5px rgba(242,63,178,.09),0 0 24px rgba(242,63,178,.62);pointer-events:none;
+  transition:box-shadow .18s ease;
+}
+#finaleScrubber{
+  position:absolute;z-index:4;inset:0;width:100%;height:100%;margin:0;opacity:.001;cursor:ew-resize;
+  appearance:none;-webkit-appearance:none;background:transparent;touch-action:none;
+}
+#finaleScrubber::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:28px;height:34px;cursor:ew-resize}
+#finaleScrubber::-moz-range-thumb{width:28px;height:34px;border:0;background:transparent;cursor:ew-resize}
+.finale-scrub-track-shell:hover:after{box-shadow:0 0 0 7px rgba(242,63,178,.12),0 0 34px rgba(242,63,178,.78)}
+.finale-scrub-scale{margin-top:2px!important}
+
+/* Fireworks and release energy remain persistent at 00:00. */
+body.finale-released .finale-fireworks{opacity:1!important}
+body.finale-released .finale-release{animation:tfwV11ReleaseHover 3.4s ease-in-out infinite alternate}
+body.finale-released .finale-release-kicker{font-size:clamp(18px,1.55vw,27px)!important;letter-spacing:.29em!important}
+@keyframes tfwV11ReleaseHover{to{transform:scale(1.018);filter:brightness(1.05)}}
+
+/* Shorter displays: preserve spacing while keeping all elements visible. */
+@media(max-height:820px) and (min-width:701px){
+  body.final-five-active .hero-content{padding-top:24px!important}
+  body.final-five-active .logo-stage{width:min(470px,62vw)}
+  body.final-five-active .collab-lockup .gta-logo{height:clamp(88px,8.5vw,124px)!important}
+  body.final-five-active .ryze-gtavi-logo{height:clamp(74px,7.4vw,106px)}
+  body.final-five-active .hero-title-wrap{margin-top:2px}
+  body.final-five-active .phase-pill{margin-top:11px}
+  body.final-five-active .countdown-shell{margin-top:11px!important}
+  body.finale-last-45 .progress-block,body.finale-last-10 .progress-block{transform:translateY(8px) scale(var(--finale-progress-scale,1))!important}
+}
+
+@media(max-width:900px){
+  .logo-stage{width:min(440px,78vw)}
+  .collab-lockup .gta-logo{height:clamp(92px,18vw,128px)!important}
+  .ryze-gtavi-logo{height:clamp(76px,15.5vw,108px)}
+  .collab-x{width:34px;font-size:23px}
+  body.final-five-active .countdown-shell{width:88vw}
+  body.finale-last-45 .progress-block,body.finale-last-10 .progress-block{width:82vw!important}
+}
+
+@media(max-width:700px){
+  .logo-stage{width:min(390px,86vw)}
+  .collab-lockup{column-gap:9px}
+  .collab-lockup .gta-logo{height:clamp(74px,20vw,104px)!important}
+  .ryze-gtavi-logo{height:clamp(62px,17vw,88px)}
+  .collab-x{width:28px;font-size:19px}
+  body.final-five-active .countdown-shell{width:94vw}
+  body.final-five-active #countdown{transform:scale(1.035)!important}
+  body.finale-last-45 .progress-block,body.finale-last-10 .progress-block{width:88vw!important;transform:translateY(8px) scale(1.03)!important}
+  body.finale-dynamic-copy #heroTitle{font-size:clamp(23px,7vw,34px)!important}
+  body.phase-final-minute .topbar{opacity:1!important}
+}

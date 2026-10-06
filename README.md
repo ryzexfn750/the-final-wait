@@ -160,3 +160,13 @@ Finale audio:
 - Tick cues begin at `-00:40` and accelerate during the final second.
 
 At `00:00` the timer is replaced in-place by the release message. Fireworks and the release-state visual effects remain active for as long as the release state is displayed.
+
+## V11 finale refinements
+- true draggable final-30-minute simulator (millisecond-level seek)
+- gapless handoff from the -5 minute song to the ticking sequence
+- more stable audio sync to prevent repeated-seek glitches
+- louder ticks and slightly lower -10 release track
+- GTA VI × Ryze GTA VI collaboration lockup
+- restored final-five layout through -45s/-10s/-1m with safe responsive growth
+- dynamic final-minute headline effects and milestone pill copy
+- fixed seconds-to-milliseconds colon
