@@ -1,0 +1,77 @@
+/* V13 — logo simplification, lower visualizer, later scene rush and polish. */
+
+/* Remove the GTA VI + X lockup and keep only the small Ryze logo in the bottom-left. */
+.ryze-corner-stage{
+  position:absolute!important;
+  left:clamp(14px,2.1vw,28px)!important;
+  bottom:clamp(16px,2.1vw,30px)!important;
+  width:auto!important;
+  z-index:12!important;
+  pointer-events:none!important;
+}
+.ryze-corner-stage .logo-halo{
+  width:110%!important;
+  height:82%!important;
+  opacity:.38!important;
+  filter:blur(18px)!important;
+}
+.ryze-corner-logo{
+  position:relative;
+  display:block;
+  width:clamp(72px,8.5vw,116px)!important;
+  height:auto!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 12px 24px rgba(0,0,0,.48));
+  opacity:.95;
+}
+body.final-five-active .ryze-corner-stage{bottom:clamp(18px,2.4vw,34px)!important}
+body.finale-released .ryze-corner-stage{opacity:.92!important}
+
+/* Visualizer sits much lower, almost above the ENTER LEONIDA cue. */
+.finale-visualizer-wrap{
+  position:absolute!important;
+  left:50%!important;
+  bottom:54px!important;
+  z-index:10!important;
+  width:min(720px,58vw)!important;
+  height:0!important;
+  margin:0!important;
+  translate:-50% 0!important;
+}
+body.final-five-active .finale-visualizer-wrap{
+  height:44px!important;
+  opacity:.9!important;
+  transform:none!important;
+}
+body.final-five-active .finale-visualizer{opacity:.95!important}
+body.finale-released .finale-visualizer-wrap{height:0!important;opacity:0!important;visibility:hidden!important}
+body.finale-released .finale-visualizer{opacity:0!important}
+body.final-five-active .scroll-cue{bottom:20px!important}
+
+/* Keep the scroll cue readable even while the visualizer is active. */
+body.final-five-active .scroll-cue span{
+  text-shadow:0 0 14px rgba(0,0,0,.48),0 0 18px rgba(242,63,178,.18);
+}
+
+/* Performance-friendly hints. */
+body.final-five-active #countdown,
+body.final-five-active .progress-block,
+body.final-five-active .finale-visualizer-wrap,
+body.final-five-active .scene{
+  will-change:transform,opacity,filter;
+  backface-visibility:hidden;
+}
+body.final-five-active .scene{transform:translate3d(var(--scene-x),var(--scene-y),0) scale(1.055)}
+
+@media (max-width:900px){
+  .ryze-corner-logo{width:clamp(64px,14vw,96px)!important}
+  .finale-visualizer-wrap{width:min(78vw,540px)!important;bottom:50px!important}
+  body.final-five-active .finale-visualizer-wrap{height:40px!important}
+}
+
+@media (max-width:700px){
+  .ryze-corner-stage{left:10px!important;bottom:10px!important}
+  .ryze-corner-logo{width:clamp(58px,18vw,84px)!important}
+  .finale-visualizer-wrap{width:86vw!important;bottom:44px!important}
+  body.final-five-active .finale-visualizer-wrap{height:34px!important}
+}

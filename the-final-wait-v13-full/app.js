@@ -301,17 +301,17 @@ function primeFinaleSceneDeck(){
   finaleDeckPrimed=true;
   const candidates=scenes.map((scene,index)=>({scene,index})).filter(({index})=>index!==currentIndex);
   for(let i=candidates.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[candidates[i],candidates[j]]=[candidates[j],candidates[i]]}
-  finaleSceneDeck=candidates.slice(0,Math.min(36,candidates.length));
+  finaleSceneDeck=candidates.slice(0,Math.min(20,candidates.length));
   finaleSceneCursor=0;
-  // Prime a compact deck during the five-minute lead-in so the final-second rush does not wait on network decoding.
-  finaleSceneDeck.forEach((choice,i)=>setTimeout(()=>preloadChoice(choice),i*180));
+  // Prime a smaller deck during the five-minute lead-in so the final-second rush stays smooth without overloading decoding.
+  finaleSceneDeck.forEach((choice,i)=>setTimeout(()=>preloadChoice(choice),i*120));
 }
 
 window.addEventListener('tfw:finale-start',primeFinaleSceneDeck);
 // The finale controller can request scene changes faster than the normal 10s rotation.
 // This path intentionally bypasses the final-minute lock while preserving the normal lock elsewhere.
 window.addEventListener('tfw:finale-scene-step',()=>{
-  if(!scenes.length || currentPhase==='released')return;
+  if(document.hidden || !scenes.length || currentPhase==='released')return;
   primeFinaleSceneDeck();
   const choice=finaleSceneDeck.length?finaleSceneDeck[finaleSceneCursor++%finaleSceneDeck.length]:null;
   changeScene(choice,true);

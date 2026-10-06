@@ -7,7 +7,7 @@
   let TICK_START=FINAL_SONG_END;
   const PROGRESS_FOCUS_START=FINAL_FIVE;
   const VOICE_TRACK_START=60000;
-  const SEQUENCE_TRACK_START=30000;
+  const SEQUENCE_TRACK_START=31000;
   const LAST_FIFTEEN=15000;
   const SCRUB_MAX=30*MIN;
   const storage={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
@@ -57,7 +57,7 @@
   const voiceSong=new Audio('assets/audio/final-1-minute-voice.mp4');
   const sequenceSong=new Audio('assets/audio/final-30-sequence.mp4');
   for(const audio of [finalSong,voiceSong,sequenceSong]){audio.preload='auto';audio.playsInline=true}
-  finalSong.volume=.78;
+  finalSong.volume=.72;
   voiceSong.volume=1;
   sequenceSong.volume=.68;
   finalSong.addEventListener('loadedmetadata',()=>{
@@ -126,9 +126,9 @@
           <i class="release-spark spark-a"></i><i class="release-spark spark-b"></i><i class="release-spark spark-c"></i><i class="release-spark spark-d"></i>
         </div>`);
     }
-    const progress=$('.progress-block');
-    if(progress && !$('#finaleVisualizer')){
-      progress.insertAdjacentHTML('afterend',`<div class="finale-visualizer-wrap" id="finaleVisualizerWrap" aria-hidden="true"><canvas class="finale-visualizer" id="finaleVisualizer"></canvas><div class="finale-beat-halo" id="finaleBeatHalo"></div></div>`);
+    const scrollCue=$('.scroll-cue');
+    if(scrollCue && !$('#finaleVisualizer')){
+      scrollCue.insertAdjacentHTML('beforebegin',`<div class="finale-visualizer-wrap" id="finaleVisualizerWrap" aria-hidden="true"><canvas class="finale-visualizer" id="finaleVisualizer"></canvas><div class="finale-beat-halo" id="finaleBeatHalo"></div></div>`);
     }
     const hero=$('#hero');
     if(hero && !$('#finaleFireworks')){
@@ -158,15 +158,24 @@
     const scrubTrack=$('#finaleScrubTrack');
     if(scrub && !scrub.dataset.ready){
       scrub.dataset.ready='1';
-      const applyScrubValue=()=>{
+      let scrubFrame=0;
+      let scrubPending=SCRUB_MAX-Number(scrub.value||0);
+      const commitScrub=()=>{
+        scrubFrame=0;
         pausePreviewPlayback();
-        const remaining=SCRUB_MAX-Number(scrub.value);
+        const remaining=clamp(scrubPending,0,SCRUB_MAX);
         setStaticPreview(remaining,{syncSlider:false});
         updateScrubVisual(remaining);
+      };
+      const applyScrubValue=()=>{
+        scrubPending=SCRUB_MAX-Number(scrub.value);
+        if(scrubFrame)return;
+        scrubFrame=requestAnimationFrame(commitScrub);
       };
       scrub.addEventListener('input',applyScrubValue);
       scrub.addEventListener('change',applyScrubValue);
       scrub.addEventListener('keydown',()=>requestAnimationFrame(applyScrubValue));
+      scrub.addEventListener('pointerdown',()=>scrub.focus({preventScroll:true}));
       if(scrubTrack){
         const seekFromPointer=e=>{
           const rect=scrubTrack.getBoundingClientRect();
@@ -269,11 +278,11 @@
     const base=rapid?1040+progress*980:920;
     const length=rapid?.032:.09;
     master.gain.setValueAtTime(.0001,now);
-    master.gain.exponentialRampToValueAtTime(rapid?.40:.76,now+.002);
+    master.gain.exponentialRampToValueAtTime(rapid?.48:.9,now+.002);
     master.gain.exponentialRampToValueAtTime(.0001,now+length);
     master.connect(compressor);compressor.connect(ctx.destination);
     [1,2.02].forEach((mul,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=i?'triangle':'square';o.frequency.setValueAtTime(base*mul,now);o.frequency.exponentialRampToValueAtTime(base*mul*(rapid?1.11:.91),now+length);g.gain.value=i?.20:.68;o.connect(g);g.connect(master);o.start(now);o.stop(now+length+.01)});
-    const noise=ctx.createBufferSource(),buffer=ctx.createBuffer(1,Math.max(1,Math.floor(ctx.sampleRate*.018)),ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);noise.buffer=buffer;const ng=ctx.createGain();ng.gain.setValueAtTime(rapid?.24:.38,now);ng.gain.exponentialRampToValueAtTime(.0001,now+.018);noise.connect(ng);ng.connect(compressor);noise.start(now);
+    const noise=ctx.createBufferSource(),buffer=ctx.createBuffer(1,Math.max(1,Math.floor(ctx.sampleRate*.018)),ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);noise.buffer=buffer;const ng=ctx.createGain();ng.gain.setValueAtTime(rapid?.28:.44,now);ng.gain.exponentialRampToValueAtTime(.0001,now+.018);noise.connect(ng);ng.connect(compressor);noise.start(now);
   }
 
   function visualPulse(rapid=false){
@@ -423,13 +432,13 @@
   async function syncFinalSong(remaining){
     if(!soundEnabled()){if(!finalSong.paused)finalSong.pause();return}
     if(remaining>FINAL_FIVE){if(!finalSong.paused)finalSong.pause();try{finalSong.currentTime=0}catch{};return}
-    await ensureMusicGraph();startVisualizer();
+    if(!document.body.classList.contains('finale-released')){await ensureMusicGraph();startVisualizer();}
     const duration=Number.isFinite(finalSong.duration)&&finalSong.duration>0?finalSong.duration:258.115918;
     const target=clamp((FINAL_FIVE-remaining)/1000,0,duration);
     if(remaining<=FINAL_SONG_END){return}
     const voiceDuration=Number.isFinite(voiceSong.duration)&&voiceSong.duration>0?voiceSong.duration:3.114667;
     const voiceActive=remaining<=VOICE_TRACK_START&&remaining>VOICE_TRACK_START-voiceDuration*1000;
-    finalSong.volume=voiceActive?.48:.78;
+    finalSong.volume=voiceActive?.44:.72;
     try{
       if(finalSong.paused){
         finalSong.currentTime=target;
@@ -452,7 +461,7 @@
   async function syncSequenceSong(remaining){
     if(!soundEnabled()){if(!sequenceSong.paused)sequenceSong.pause();return}
     if(remaining>SEQUENCE_TRACK_START){if(!sequenceSong.paused)sequenceSong.pause();try{sequenceSong.currentTime=0}catch{};return}
-    await ensureMusicGraph();startVisualizer();
+    if(!document.body.classList.contains('finale-released')){await ensureMusicGraph();startVisualizer();}
     const target=Math.max(0,(SEQUENCE_TRACK_START-Math.max(0,remaining))/1000);
     try{
       if(sequenceSong.paused){sequenceSong.currentTime=target;await sequenceSong.play()}
@@ -461,7 +470,7 @@
   }
 
   function pauseFinaleAudio(reset=false){
-    try{finalSong.pause();if(reset)finalSong.currentTime=0;finalSong.volume=.78}catch{}
+    try{finalSong.pause();if(reset)finalSong.currentTime=0;finalSong.volume=.72}catch{}
     try{voiceSong.pause();if(reset)voiceSong.currentTime=0}catch{}
     try{sequenceSong.pause();if(reset)sequenceSong.currentTime=0}catch{}
     stopVisualizer();
@@ -490,17 +499,16 @@
   }
 
   function sceneIntervalFor(remaining){
-    if(remaining>MIN)return Infinity;
-    if(remaining>30000)return 2200-(MIN-remaining)/30000*950;
-    if(remaining>15000)return 1250-(30000-remaining)/15000*650;
-    if(remaining>10000)return 600-(15000-remaining)/5000*190;
-    if(remaining>5000)return 410-(10000-remaining)/5000*180;
-    if(remaining>1000)return 230-(5000-remaining)/4000*125;
-    return 105-(1000-remaining)/1000*67;
+    if(remaining>10000)return Infinity;
+    if(remaining>7000)return 620-(10000-remaining)/3000*170;
+    if(remaining>5000)return 450-(7000-remaining)/2000*115;
+    if(remaining>3000)return 335-(5000-remaining)/2000*110;
+    if(remaining>1000)return 225-(3000-remaining)/2000*95;
+    return 108-(1000-remaining)/1000*70;
   }
 
   function updateSceneRush(remaining,enabled){
-    const active=enabled&&remaining<=MIN&&remaining>0;
+    const active=enabled&&remaining<=10000&&remaining>0;
     document.body.classList.toggle('finale-scene-rush',active);
     if(!active){lastSceneStepAt=0;sceneRushPrimed=false;document.documentElement.style.removeProperty('--finale-scene-transition');return}
     const interval=Math.max(38,sceneIntervalFor(remaining));
@@ -523,7 +531,7 @@
       const release=$('#finaleRelease');if(release){release.setAttribute('aria-hidden','false');release.classList.add('active')}
       $('#countdown')?.setAttribute('aria-hidden','true');$('#finaleFlash')?.classList.add('fire');startFireworks();
     }
-    if(playAudio)syncSequenceSong(0);else pauseFinaleAudio(false);
+    if(playAudio){syncSequenceSong(0);stopVisualizer(true);}else pauseFinaleAudio(false);
   }
 
   function resetRelease({pauseAudio=true}={}){
