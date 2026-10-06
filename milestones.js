@@ -52,6 +52,8 @@
   let scrubPointerId=null;
   let lastSceneStepAt=0;
   let sceneRushPrimed=false;
+  let titleFlowRaf=0;
+  let titleFlowStartedAt=0;
 
   const finalSong=new Audio('assets/audio/final-5-minutes.mp3');
   const voiceSong=new Audio('assets/audio/final-1-minute-voice.mp4');
@@ -330,12 +332,41 @@
     document.documentElement.style.setProperty('--finale-title-opacity','1');
   }
 
+  function startTitleColorFlow(){
+    if(titleFlowRaf)return;
+    titleFlowStartedAt=performance.now();
+    const step=now=>{
+      const title=$('#heroTitle');
+      const active=Boolean(title&&document.body.classList.contains('final-five-active')&&document.body.classList.contains('finale-dynamic-copy')&&!document.body.classList.contains('finale-released'));
+      if(!active){
+        titleFlowRaf=0;
+        if(title)title.style.removeProperty('background-position');
+        return;
+      }
+      const cycle=3800;
+      const phase=((now-titleFlowStartedAt)%cycle)/cycle;
+      // Match the release-title motion exactly, but drive it inline so later CSS cannot freeze it.
+      title.style.setProperty('background-position',`${(phase*220).toFixed(3)}% 50%`,'important');
+      titleFlowRaf=requestAnimationFrame(step);
+    };
+    titleFlowRaf=requestAnimationFrame(step);
+  }
+
+  function stopTitleColorFlow(){
+    if(titleFlowRaf)cancelAnimationFrame(titleFlowRaf);
+    titleFlowRaf=0;
+    const title=$('#heroTitle');
+    if(title)title.style.removeProperty('background-position');
+  }
+
   function updateFinaleCopy(remaining){
     const title=$('#heroTitle');
     const pill=$('#phasePill');
     const songEnded=remaining<=TICK_START;
     document.body.classList.toggle('finale-song-ended',songEnded&&remaining>0);
-    document.body.classList.toggle('finale-dynamic-copy',remaining<=FINAL_FIVE&&remaining>0);
+    const dynamicTitle=remaining<=FINAL_FIVE&&remaining>0;
+    document.body.classList.toggle('finale-dynamic-copy',dynamicTitle);
+    if(dynamicTitle)startTitleColorFlow();else stopTitleColorFlow();
 
     if(title){
       let text='ROAD TO LEONIDA';
@@ -491,6 +522,7 @@
   }
 
   function leaveFinalFive(){
+    stopTitleColorFlow();
     finaleActive=false;
     document.body.classList.remove('final-five-active','finale-last-45','finale-last-40','finale-last-15','finale-last-10','finale-last-second','finale-scene-rush','finale-song-ended','finale-dynamic-copy');
     const title=$('#heroTitle');if(title)title.textContent='ROAD TO LEONIDA';
@@ -530,6 +562,7 @@
   }
 
   function showRelease(playAudio=true){
+    stopTitleColorFlow();
     if(!releaseShown){
       releaseShown=true;finaleActive=false;
       document.body.classList.remove('final-five-active','finale-last-45','finale-last-40','finale-last-15','finale-last-10','finale-last-second','finale-scene-rush','finale-song-ended','finale-dynamic-copy');
