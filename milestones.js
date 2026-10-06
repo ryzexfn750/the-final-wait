@@ -4,11 +4,11 @@
   // The first song is 258.115918s long, so from -05:00 it naturally ends at ~-00:41.884.
   // loadedmetadata below refreshes this value from the actual media file, keeping the handoff gapless.
   let FINAL_SONG_END=41884;
-  let TICK_START=FINAL_SONG_END;
+  let TICK_START=43000;
   const PROGRESS_FOCUS_START=FINAL_FIVE;
-  const VOICE_TRACK_START=60000;
-  const SEQUENCE_TRACK_START=31000;
-  const LAST_FIFTEEN=15000;
+  const VOICE_TRACK_START=-1;
+  const SEQUENCE_TRACK_START=30000;
+  const LAST_FIFTEEN=6500;
   const SCRUB_MAX=30*MIN;
   const storage={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
   const $=s=>document.querySelector(s);
@@ -63,7 +63,6 @@
   finalSong.addEventListener('loadedmetadata',()=>{
     if(Number.isFinite(finalSong.duration)&&finalSong.duration>1){
       FINAL_SONG_END=Math.max(0,FINAL_FIVE-finalSong.duration*1000);
-      TICK_START=FINAL_SONG_END;
     }
   });
 
@@ -340,7 +339,9 @@
 
     if(title){
       let text='ROAD TO LEONIDA';
-      if(remaining<=10000&&remaining>0)text='THE FINAL TEN';
+      if(remaining<=1000&&remaining>0)text='ONE SECOND TO LEONIDA';
+      else if(remaining<=5000&&remaining>0)text='FIVE SECONDS TO LEONIDA';
+      else if(remaining<=10000&&remaining>0)text='TEN SECONDS TO LEONIDA';
       else if(remaining<=15000&&remaining>0)text='FIFTEEN SECONDS TO LEONIDA';
       else if(remaining<=30000&&remaining>0)text='30 SECONDS TO LEONIDA';
       else if(remaining<=MIN&&remaining>0)text='ONE MINUTE TO LEONIDA';
@@ -349,14 +350,17 @@
     }
     if(pill){
       let label='THE FINAL WAIT';
-      if(remaining<=5*MIN)label='FIVE MINUTES. STAY HERE.';
-      else if(remaining<=15*MIN)label='THE LAST QUARTER HOUR';
-      else if(remaining<=30*MIN)label='FINAL 30 MINUTES';
-      else if(remaining<=HOUR)label='THE FINAL HOUR';
-      if(remaining<=MIN)label='THE FINAL MINUTE';
-      if(remaining<=30000)label='THE FINAL THIRTY';
-      if(songEnded&&remaining>0)label='';
-      pill.innerHTML=label?`<span class="phase-dot"></span> ${label}`:'<span class="phase-dot"></span>';
+      if(remaining<=FINAL_FIVE&&remaining>MIN)label='5 MINUTES LEFT. STAY HERE.';
+      else if(remaining<=MIN&&remaining>30000)label='THE FINAL MINUTE';
+      else if(remaining<=30000&&remaining>15000)label='-30';
+      else if(remaining<=15000&&remaining>10000)label='-15';
+      else if(remaining<=10000&&remaining>5000)label='-10';
+      else if(remaining<=5000&&remaining>4000)label='-5';
+      else if(remaining<=4000&&remaining>3000)label='-4';
+      else if(remaining<=3000&&remaining>2000)label='-3';
+      else if(remaining<=2000&&remaining>1000)label='-2';
+      else if(remaining<=1000&&remaining>0)label='-1';
+      pill.innerHTML=`<span class="phase-dot"></span> ${label}`;
     }
   }
 
@@ -449,13 +453,8 @@
   }
 
   async function syncVoiceSong(remaining){
-    if(!soundEnabled()){if(!voiceSong.paused)voiceSong.pause();return}
-    const duration=Number.isFinite(voiceSong.duration)&&voiceSong.duration>0?voiceSong.duration:3.114667;
-    const endAt=VOICE_TRACK_START-duration*1000;
-    if(remaining>VOICE_TRACK_START){if(!voiceSong.paused)voiceSong.pause();try{voiceSong.currentTime=0}catch{};return}
-    if(remaining<=endAt){if(!voiceSong.paused)voiceSong.pause();return}
-    const target=clamp((VOICE_TRACK_START-remaining)/1000,0,duration);
-    try{if(voiceSong.paused){voiceSong.currentTime=target;await voiceSong.play()}}catch{}
+    try{voiceSong.pause();voiceSong.currentTime=0}catch{}
+    return;
   }
 
   async function syncSequenceSong(remaining){
@@ -469,16 +468,17 @@
     }catch{}
   }
 
-  function pauseFinaleAudio(reset=false){
+  function pauseFinaleAudio(reset=false,keepVisualizer=false){
     try{finalSong.pause();if(reset)finalSong.currentTime=0;finalSong.volume=.72}catch{}
     try{voiceSong.pause();if(reset)voiceSong.currentTime=0}catch{}
     try{sequenceSong.pause();if(reset)sequenceSong.currentTime=0}catch{}
-    stopVisualizer();
+    if(!keepVisualizer)stopVisualizer();
   }
 
   function enterFinalFive(remaining){
     if(finaleActive)return;
     finaleActive=true;document.body.classList.add('final-five-active');
+    startVisualizer();
     window.dispatchEvent(new CustomEvent('tfw:finale-start',{detail:{remaining,preview:finalePreview}}));
   }
 
@@ -531,7 +531,8 @@
       const release=$('#finaleRelease');if(release){release.setAttribute('aria-hidden','false');release.classList.add('active')}
       $('#countdown')?.setAttribute('aria-hidden','true');$('#finaleFlash')?.classList.add('fire');startFireworks();
     }
-    if(playAudio){syncSequenceSong(0);stopVisualizer(true);}else pauseFinaleAudio(false);
+    startVisualizer();
+    if(playAudio){syncSequenceSong(0);}else pauseFinaleAudio(false,true);
   }
 
   function resetRelease({pauseAudio=true}={}){
@@ -675,9 +676,9 @@
   ['pointerdown','keydown','touchstart'].forEach(ev=>window.addEventListener(ev,unlockFinaleAudio,{once:true,capture:true,passive:true}));
   window.addEventListener('tfw:countdown',e=>{const ms=Number(e.detail?.remaining);if(Number.isFinite(ms))maybeTrigger(ms,Boolean(e.detail?.preview))});
   window.addEventListener('tfw:sound-change',()=>{
-    if(!soundEnabled()){pauseFinaleAudio(false);return}
+    if(!soundEnabled()){startVisualizer();pauseFinaleAudio(false,true);return}
     const remaining=finalePreview?Number(window.__tfwPreviewRemainingMs):lastRemaining;
-    if(Number.isFinite(remaining)&&remaining<=FINAL_FIVE){syncFinalSong(remaining);syncVoiceSong(remaining);syncSequenceSong(remaining)}
+    if(Number.isFinite(remaining)&&remaining<=FINAL_FIVE){startVisualizer();syncFinalSong(remaining);syncVoiceSong(remaining);syncSequenceSong(remaining)}
   });
   window.addEventListener('tfw:finale-audio-enable',()=>{
     const remaining=finalePreview?Number(window.__tfwPreviewRemainingMs):lastRemaining;

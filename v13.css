@@ -75,3 +75,128 @@ body.final-five-active .scene{transform:translate3d(var(--scene-x),var(--scene-y
   .finale-visualizer-wrap{width:86vw!important;bottom:44px!important}
   body.final-five-active .finale-visualizer-wrap{height:34px!important}
 }
+
+
+/* V14 user-request polish patch */
+.brand-ryze-logo{
+  display:block;
+  width:clamp(34px,2.8vw,46px);
+  height:auto;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 18px rgba(0,0,0,.42));
+}
+.footer-socials{
+  display:flex;
+  align-items:center;
+  justify-self:end;
+  gap:12px;
+}
+.footer-ryze-logo{
+  width:52px;
+  height:auto;
+  object-fit:contain;
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,.35));
+}
+.ryze-corner-stage{display:none!important}
+.topbar.idle{opacity:1!important;transform:none!important}
+body.phase-final-minute .topbar,
+body.phase-final-minute .hero-status,
+body.phase-final-minute .hero-title-wrap,
+body.phase-final-minute .phase-pill,
+body.phase-final-minute .countdown,
+body.phase-final-minute .release-hud,
+body.phase-final-minute .progress-block,
+body.phase-final-minute .next-scene,
+body.phase-final-minute .scroll-cue{opacity:1!important;visibility:visible!important;pointer-events:auto!important}
+.zone-topbar-button{display:none}
+body.final-five-active .zone-topbar-button,
+body.phase-final-minute .zone-topbar-button,
+body.finale-released .zone-topbar-button{display:inline-flex!important;align-items:center}
+body.final-five-active .hero-content{padding-top:88px!important}
+body.final-five-active .hero-title-wrap{margin-top:10px!important;max-width:min(980px,92vw)}
+body.final-five-active .eyebrow{font-size:clamp(10px,.86vw,15px)!important;letter-spacing:.22em!important}
+body.final-five-active #heroTitle{
+  font-size:clamp(34px,4.55vw,76px)!important;
+  line-height:.92!important;
+}
+body.final-five-active .phase-pill{
+  margin-top:16px!important;
+  padding:10px 18px!important;
+  font-size:clamp(9px,.82vw,13px)!important;
+  letter-spacing:.18em!important;
+}
+body.final-five-active .countdown-shell{width:min(1160px,78vw)!important;margin-top:16px!important}
+body.final-five-active #countdown{transform:scale(1.06)!important}
+body.final-five-active .progress-block{width:min(900px,70vw)!important;margin-top:24px!important}
+body.final-five-active .release-hud{margin-top:18px!important}
+body.final-five-active .progress-meta strong{font-size:clamp(12px,.95vw,16px)!important}
+body.final-five-active .time-value,
+body.final-five-active .milliseconds .time-value,
+.milliseconds .time-value{
+  color:#fff!important;
+  background:none!important;
+  -webkit-background-clip:border-box!important;
+  background-clip:border-box!important;
+  -webkit-text-fill-color:#fff!important;
+}
+body.finale-dynamic-copy #heroTitle,
+body.final-five-active .phase-pill{
+  background-image:linear-gradient(90deg,#ffffff 0%,#ffc56f 18%,#ff5fc5 46%,#8d7cff 72%,#ffffff 100%)!important;
+  background-size:240% auto!important;
+  animation:tfwFlowGradient 6s linear infinite!important;
+}
+body.finale-dynamic-copy #heroTitle{
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+}
+body.final-five-active .phase-pill{
+  color:#fff!important;
+  box-shadow:0 0 30px rgba(242,63,178,.16), inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+body.final-five-active .phase-pill .phase-dot{background:#fff!important;box-shadow:0 0 20px rgba(255,255,255,.75)!important}
+@keyframes tfwFlowGradient{to{background-position:240% center}}
+body.finale-released .finale-visualizer-wrap{
+  height:44px!important;
+  opacity:.92!important;
+  visibility:visible!important;
+}
+body.finale-released .finale-visualizer{opacity:.95!important}
+body.finale-released .finale-music-live .finale-visualizer{opacity:1!important}
+.finale-release h2{line-height:.84!important;padding-inline:14px!important;word-break:keep-all;overflow-wrap:normal}
+.gtranslate_wrapper,.language-widget{display:flex;align-items:center;min-height:38px}
+.gtranslate_wrapper select,
+.language-widget select,
+.gtranslate_wrapper .gt_selector,
+.language-widget .gt_selector{
+  appearance:none;
+  border:1px solid rgba(255,255,255,.18)!important;
+  border-radius:999px!important;
+  background:linear-gradient(135deg,rgba(119,96,255,.18),rgba(242,63,178,.18),rgba(255,156,67,.14))!important;
+  color:#fff!important;
+  padding:10px 14px!important;
+  font:800 7px/1 Arial,Helvetica,sans-serif!important;
+  letter-spacing:.14em!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 14px 30px rgba(0,0,0,.18)!important;
+}
+.gtranslate_wrapper option,.language-widget option{background:#130f1d!important;color:#fff!important}
+@media (max-width:900px){
+  .brand-ryze-logo{width:34px}
+  .footer-socials{justify-self:start}
+  body.final-five-active .hero-content{padding-top:64px!important}
+  body.final-five-active #heroTitle{font-size:clamp(30px,6.8vw,52px)!important}
+  body.final-five-active .countdown-shell{width:88vw!important}
+  body.final-five-active .progress-block{width:84vw!important}
+}
+@media (max-width:700px){
+  .footer-socials{gap:10px;flex-wrap:wrap}
+  .footer-ryze-logo{width:44px}
+  body.final-five-active .hero-content{padding-top:48px!important}
+  body.final-five-active #heroTitle{font-size:clamp(28px,7.4vw,40px)!important}
+  body.final-five-active .eyebrow{font-size:8px!important}
+  body.final-five-active .phase-pill{font-size:7px!important;padding:9px 12px!important}
+  body.final-five-active .countdown-shell{width:92vw!important}
+  body.final-five-active #countdown{transform:scale(1.035)!important}
+  body.finale-released .finale-visualizer-wrap{height:34px!important}
+}

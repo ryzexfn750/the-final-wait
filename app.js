@@ -551,7 +551,11 @@ function bindUi(){
   $('#shareButton').addEventListener('click',()=>openShare('site')); $('#mobileShareButton').addEventListener('click',()=>openShare('site')); $('#dailyShare').addEventListener('click',()=>openShare('article'));
   $('#closeShare').addEventListener('click',()=>closeModals()); $('#closeTimezone').addEventListener('click',()=>closeModals()); els.modalBackdrop.addEventListener('click',()=>closeModals());
   $$('[data-share]').forEach(b=>b.addEventListener('click',()=>doShare(b.dataset.share)));
-  $('#zoneButton').addEventListener('click',()=>{renderTimeZones();openModal(els.timezoneModal);setTimeout(()=>els.timezoneSearch.focus(),50)}); els.timezoneSearch.addEventListener('input',()=>renderTimeZones(els.timezoneSearch.value));
+  const openTimezonePicker=()=>{renderTimeZones();openModal(els.timezoneModal);setTimeout(()=>els.timezoneSearch.focus(),50)};
+  $('#zoneButton').addEventListener('click',openTimezonePicker);
+  $('#topbarZoneButton')?.addEventListener('click',openTimezonePicker);
+  $('#mobileZoneButton')?.addEventListener('click',openTimezonePicker);
+  els.timezoneSearch.addEventListener('input',()=>renderTimeZones(els.timezoneSearch.value));
   $('#fullscreenButton').addEventListener('click',toggleFullscreen); $('#mobileFullscreenButton').addEventListener('click',toggleFullscreen); if(!document.documentElement.requestFullscreen){$('#fullscreenButton').hidden=true;$('#mobileFullscreenButton').hidden=true}
   $('#soundButton').addEventListener('click',e=>{e.stopPropagation();toggleSound()}); $('#mobileSoundButton').addEventListener('click',e=>{e.stopPropagation();toggleSound()}); els.menuButton.addEventListener('click',toggleMobileMenu); $$('#mobileMenu a').forEach(a=>a.addEventListener('click',closeMobileMenu));
   $$('#intelFilter button').forEach(b=>b.addEventListener('click',()=>{$$('#intelFilter button').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderIntel(b.dataset.filter);track('intel_filter',{filter:b.dataset.filter})}));
