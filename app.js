@@ -279,7 +279,7 @@ function pickNextScene(){
 }
 function preloadChoice(choice){ if (!choice) return; const img = new Image(); img.decoding='async'; img.src=srcFor(choice.scene); }
 function changeScene(forceChoice=null, allowFinale=false){
-  if (!scenes.length || currentPhase==='released' || (currentPhase==='final-minute' && !allowFinale)) return;
+  if (!scenes.length || ((currentPhase==='released' || currentPhase==='final-minute') && !allowFinale)) return;
   const choice = forceChoice || pickNextScene(); if (!choice) return;
   const incoming = activeLayer === 0 ? els.sceneB : els.sceneA;
   const outgoing = activeLayer === 0 ? els.sceneA : els.sceneB;
@@ -547,7 +547,7 @@ function loadAnalytics(id){if(window.gtag)return;const s=document.createElement(
 function track(name,params={}){if(window.gtag)window.gtag('event',name,params)}
 
 function bindUi(){
-  $('#nextScene').addEventListener('click',()=>{changeScene();stopSceneRotation();scheduleSceneRotation()});
+  $('#nextScene').addEventListener('click',()=>{changeScene(null,true);stopSceneRotation();scheduleSceneRotation()});
   $('#shareButton').addEventListener('click',()=>openShare('site')); $('#mobileShareButton').addEventListener('click',()=>openShare('site')); $('#dailyShare').addEventListener('click',()=>openShare('article'));
   $('#closeShare').addEventListener('click',()=>closeModals()); $('#closeTimezone').addEventListener('click',()=>closeModals()); els.modalBackdrop.addEventListener('click',()=>closeModals());
   $$('[data-share]').forEach(b=>b.addEventListener('click',()=>doShare(b.dataset.share)));

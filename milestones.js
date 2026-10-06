@@ -345,21 +345,19 @@
       else if(remaining<=15000&&remaining>0)text='FIFTEEN SECONDS TO LEONIDA';
       else if(remaining<=30000&&remaining>0)text='30 SECONDS TO LEONIDA';
       else if(remaining<=MIN&&remaining>0)text='ONE MINUTE TO LEONIDA';
+      else if(remaining<=2*MIN&&remaining>0)text='TWO MINUTES TO LEONIDA';
+      else if(remaining<=3*MIN&&remaining>0)text='THREE MINUTES TO LEONIDA';
+      else if(remaining<=4*MIN&&remaining>0)text='FOUR MINUTES TO LEONIDA';
       else if(remaining<=FINAL_FIVE&&remaining>0)text='FIVE MINUTES TO LEONIDA';
       title.textContent=text;
     }
     if(pill){
       let label='THE FINAL WAIT';
-      if(remaining<=FINAL_FIVE&&remaining>MIN)label='5 MINUTES LEFT. STAY HERE.';
-      else if(remaining<=MIN&&remaining>30000)label='THE FINAL MINUTE';
-      else if(remaining<=30000&&remaining>15000)label='-30';
-      else if(remaining<=15000&&remaining>10000)label='-15';
-      else if(remaining<=10000&&remaining>5000)label='-10';
-      else if(remaining<=5000&&remaining>4000)label='-5';
-      else if(remaining<=4000&&remaining>3000)label='-4';
-      else if(remaining<=3000&&remaining>2000)label='-3';
-      else if(remaining<=2000&&remaining>1000)label='-2';
-      else if(remaining<=1000&&remaining>0)label='-1';
+      if(remaining<=MIN&&remaining>0)label='THE FINAL MINUTE';
+      else if(remaining<=FINAL_FIVE&&remaining>0)label='5 MINUTES LEFT. STAY HERE.';
+      else if(remaining<=15*MIN)label='THE LAST QUARTER HOUR';
+      else if(remaining<=30*MIN)label='FINAL 30 MINUTES';
+      else if(remaining<=HOUR)label='THE FINAL HOUR';
       pill.innerHTML=`<span class="phase-dot"></span> ${label}`;
     }
   }
@@ -499,16 +497,15 @@
   }
 
   function sceneIntervalFor(remaining){
-    if(remaining>10000)return Infinity;
-    if(remaining>7000)return 620-(10000-remaining)/3000*170;
-    if(remaining>5000)return 450-(7000-remaining)/2000*115;
-    if(remaining>3000)return 335-(5000-remaining)/2000*110;
-    if(remaining>1000)return 225-(3000-remaining)/2000*95;
-    return 108-(1000-remaining)/1000*70;
+    if(remaining>6500)return Infinity;
+    if(remaining>5000)return 620-(6500-remaining)/1500*120;
+    if(remaining>3000)return 500-(5000-remaining)/2000*190;
+    if(remaining>1000)return 310-(3000-remaining)/2000*175;
+    return 135-(1000-remaining)/1000*97;
   }
 
   function updateSceneRush(remaining,enabled){
-    const active=enabled&&remaining<=10000&&remaining>0;
+    const active=enabled&&remaining<=6500&&remaining>0;
     document.body.classList.toggle('finale-scene-rush',active);
     if(!active){lastSceneStepAt=0;sceneRushPrimed=false;document.documentElement.style.removeProperty('--finale-scene-transition');return}
     const interval=Math.max(38,sceneIntervalFor(remaining));

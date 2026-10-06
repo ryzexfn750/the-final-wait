@@ -1,0 +1,116 @@
+/* V15 — requested layout/timing refinements only. */
+
+/* Top navigation must never fade when the page is idle. */
+.topbar.idle,
+.topbar.idle .nav,
+.topbar.idle .desktop-nav,
+.topbar.idle .mobile-controls,
+.topbar.idle .language-widget,
+.topbar.idle .brand{
+  opacity:1!important;
+  transform:none!important;
+  visibility:visible!important;
+}
+
+/* Slightly larger Ryze mark beside THE FINAL WAIT / ROAD TO LEONIDA. */
+.brand-ryze-logo{
+  width:clamp(40px,3.25vw,54px)!important;
+}
+
+/* Much larger Ryze mark beside the footer X chip. */
+.footer-ryze-logo{
+  width:clamp(92px,8vw,132px)!important;
+}
+
+/* Final-five layout: move heading upward without moving the status pill with it. */
+body.final-five-active .hero-title-wrap{
+  transform:translateY(-30px)!important;
+  margin-top:0!important;
+}
+body.final-five-active .eyebrow{
+  font-size:clamp(10px,.9vw,15px)!important;
+}
+body.final-five-active #heroTitle{
+  font-size:clamp(36px,4.8vw,78px)!important;
+}
+
+/* The animated separator follows the raised title and sits a little farther below it. */
+body.final-five-active.finale-dynamic-copy #heroTitle:after{
+  bottom:-16px!important;
+}
+
+/* Keep the small status pill visually fixed; animated color belongs to the main title only. */
+body.final-five-active .phase-pill{
+  margin-top:14px!important;
+  background:linear-gradient(135deg,rgba(25,20,33,.88),rgba(12,10,18,.78))!important;
+  background-image:linear-gradient(135deg,rgba(25,20,33,.88),rgba(12,10,18,.78))!important;
+  color:#fff!important;
+  animation:none!important;
+  border-color:rgba(255,255,255,.22)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 34px rgba(0,0,0,.22),0 0 24px rgba(242,63,178,.10)!important;
+}
+body.final-five-active .phase-pill .phase-dot{
+  background:var(--accent)!important;
+  box-shadow:0 0 16px var(--accent)!important;
+}
+
+/* Main countdown title keeps the moving GTA VI-inspired gradient. */
+body.final-five-active.finale-dynamic-copy #heroTitle{
+  background:linear-gradient(90deg,#fff 0%,#ffc06f 18%,#ff57c0 47%,#9580ff 73%,#fff 100%)!important;
+  background-size:230% auto!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  animation:tfwV11TitleFlow 3.4s linear infinite,tfwV11TitleBreath 2.1s ease-in-out infinite!important;
+}
+
+/* The final-minute pill must remain visible and unchanged through 00:00. */
+body.finale-song-ended .phase-pill{
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+
+/* Glow begins at -6.5s and fades in slowly instead of appearing abruptly. */
+body.finale-last-15 #countdown{
+  animation:tfwV15CountdownGlowIn 3.4s ease-out forwards!important;
+}
+body.finale-last-15 .time-unit{
+  animation:tfwV15UnitGlowIn 3.4s ease-out forwards,tfwV12UnitCharge 1.35s 3.4s ease-in-out infinite alternate!important;
+}
+body.finale-last-15 .time-value{
+  animation:tfwV15DigitGlowIn 3.4s ease-out forwards!important;
+}
+body.finale-last-second .time-unit{
+  animation:tfwV12UnitCharge .22s ease-in-out infinite alternate!important;
+}
+body.finale-last-second .time-value{
+  animation:tfwV12DigitIgnition .16s ease-in-out infinite alternate!important;
+}
+@keyframes tfwV15CountdownGlowIn{
+  from{filter:drop-shadow(0 0 0 rgba(242,63,178,0))}
+  to{filter:drop-shadow(0 0 18px rgba(242,63,178,.18))}
+}
+@keyframes tfwV15UnitGlowIn{
+  from{border-color:rgba(255,255,255,.23);box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 18px 50px rgba(0,0,0,.22),0 0 0 rgba(242,63,178,0)}
+  to{border-color:rgba(255,105,203,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 16px 48px rgba(0,0,0,.30),0 0 30px rgba(242,63,178,.18),0 0 52px rgba(119,96,255,.10)}
+}
+@keyframes tfwV15DigitGlowIn{
+  from{text-shadow:0 0 2px #fff,0 0 0 rgba(255,255,255,0),0 0 0 rgba(242,63,178,0),0 12px 30px rgba(0,0,0,.6)}
+  to{text-shadow:0 0 2px #fff,0 0 15px rgba(255,255,255,.46),0 0 30px rgba(242,63,178,.34),0 0 52px rgba(119,96,255,.22),0 12px 30px rgba(0,0,0,.62)}
+}
+
+@media(max-width:900px){
+  .brand-ryze-logo{width:40px!important}
+  .footer-ryze-logo{width:96px!important}
+  body.final-five-active .hero-title-wrap{transform:translateY(-22px)!important}
+  body.final-five-active #heroTitle{font-size:clamp(31px,7vw,54px)!important}
+}
+
+@media(max-width:700px){
+  .brand-ryze-logo{width:36px!important}
+  .footer-ryze-logo{width:84px!important}
+  body.final-five-active .hero-title-wrap{transform:translateY(-15px)!important}
+  body.final-five-active #heroTitle{font-size:clamp(28px,7.6vw,42px)!important}
+}
