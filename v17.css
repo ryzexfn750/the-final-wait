@@ -1,0 +1,53 @@
+/* V17 — exact requested visual fixes only. */
+
+/* Main final-five titles use the exact same moving gradient + breathing glow as WELCOME TO LEONIDA. */
+body.final-five-active.finale-dynamic-copy #heroTitle{
+  position:relative!important;
+  background:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%)!important;
+  background-size:220% auto!important;
+  background-position:0% center!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.65)) drop-shadow(0 0 22px rgba(242,63,178,.25))!important;
+  animation:tfwReleaseGradient 3.8s linear infinite,tfwReleaseBreath 2.25s ease-in-out infinite!important;
+}
+
+/* The glow now actually dissolves onto the countdown digits from -6.5s to about -1s. */
+body.final-five-active #countdown{
+  transition:transform .32s cubic-bezier(.18,.82,.18,1),filter 5.5s cubic-bezier(.22,.61,.36,1)!important;
+}
+body.final-five-active .time-unit{
+  transition:transform .24s ease,border-color 5.5s cubic-bezier(.22,.61,.36,1),box-shadow 5.5s cubic-bezier(.22,.61,.36,1),background .35s ease!important;
+}
+body.final-five-active .time-value{
+  transition:text-shadow 5.5s cubic-bezier(.22,.61,.36,1),filter 5.5s cubic-bezier(.22,.61,.36,1)!important;
+}
+body.final-five-active:not(.finale-last-15) #countdown{
+  filter:drop-shadow(0 0 0 rgba(242,63,178,0))!important;
+}
+body.final-five-active:not(.finale-last-15) .time-unit{
+  border-color:rgba(255,255,255,.23)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -18px 34px rgba(0,0,0,.14),0 18px 50px rgba(0,0,0,.22),0 0 0 rgba(242,63,178,0)!important;
+}
+body.final-five-active:not(.finale-last-15) .time-value{
+  text-shadow:0 0 2px #fff,0 0 22px rgba(242,63,178,.14),0 12px 30px rgba(0,0,0,.6)!important;
+}
+body.finale-last-15:not(.finale-last-second) #countdown{
+  animation:none!important;
+  filter:drop-shadow(0 0 18px rgba(242,63,178,.18))!important;
+}
+body.finale-last-15:not(.finale-last-second) .time-unit{
+  animation:none!important;
+  border-color:rgba(255,105,203,.50)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 16px 48px rgba(0,0,0,.32),0 0 32px rgba(242,63,178,.22),0 0 58px rgba(119,96,255,.12)!important;
+}
+body.finale-last-15:not(.finale-last-second) .time-value{
+  animation:none!important;
+  text-shadow:0 0 2px #fff,0 0 15px rgba(255,255,255,.46),0 0 30px rgba(242,63,178,.34),0 0 52px rgba(119,96,255,.22),0 12px 30px rgba(0,0,0,.62)!important;
+}
+
+/* The language dropdown must start directly with a real language; no white placeholder entry. */
+.gtranslate_wrapper option:first-child:disabled,
+.language-widget option:first-child:disabled{display:none!important}
