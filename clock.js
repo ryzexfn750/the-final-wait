@@ -153,6 +153,10 @@
   let currentMilestone=null;
   let milestoneAudio=null;
   let audioGestureArmed=false;
+  let previewStage=null;
+  let previewFinalFive=false;
+  let backgroundStoppedForLaunch=Date.now()>=RELEASE_CET-5*MINUTE;
+  let previewCardHoldUntil=0;
 
   function normalizeTime(seconds,duration){
     if(!Number.isFinite(duration)||duration<=0)return 0;
@@ -180,17 +184,19 @@
     return bgAudio;
   }
   function soundButtons(){return [byId('soundButton'),byId('mobileSoundButton')].filter(Boolean)}
+  function backgroundAllowed(){
+    if(!backgroundStoppedForLaunch&&Date.now()>=RELEASE_CET-5*MINUTE)backgroundStoppedForLaunch=true;
+    return !backgroundStoppedForLaunch&&!previewFinalFive;
+  }
   function syncSoundUi(){
-    const playing=Boolean(bgAudio&&!bgAudio.paused&&!bgAudio.ended);
     soundButtons().forEach(button=>{
       button.setAttribute('aria-pressed',String(bgWanted));
       const label=button.querySelector('.sound-label');
-      if(label)label.textContent=bgWanted?(playing?'SOUND':'SOUND ARMED'):'MUTED';
+      if(label)label.textContent=bgWanted?'SOUND':'MUTED';
     });
   }
   function desiredBgVolume(){
-    const finale=document.body.classList.contains('final-five-active')&&!document.body.classList.contains('finale-released');
-    return currentMilestone||finale?BG_DUCK_VOLUME:BG_VOLUME;
+    return currentMilestone?BG_DUCK_VOLUME:BG_VOLUME;
   }
   function setBgVolume(value,duration=240){
     const a=ensureBackgroundAudio();
@@ -209,7 +215,7 @@
     bgVolumeRaf=requestAnimationFrame(step);
   }
   async function playBackground({hardSync=true}={}){
-    if(!bgWanted)return false;
+    if(!bgWanted||!backgroundAllowed()){pauseBackground();return false}
     const a=ensureBackgroundAudio();
     try{await bgMetadataPromise}catch{}
     if(hardSync&&Number.isFinite(a.duration)&&a.duration>0){
@@ -225,7 +231,7 @@
     syncSoundUi();
   }
   function resyncBackground(){
-    if(!bgWanted||!bgAudio||bgAudio.paused||!Number.isFinite(bgAudio.duration)||bgAudio.duration<=0)return;
+    if(!bgWanted||!backgroundAllowed()||!bgAudio||bgAudio.paused||!Number.isFinite(bgAudio.duration)||bgAudio.duration<=0)return;
     const target=liveAudioPosition();
     const duration=bgAudio.duration;
     let drift=Math.abs(bgAudio.currentTime-target);
@@ -233,11 +239,15 @@
     if(drift>.55){try{bgAudio.currentTime=target}catch{}}
   }
   function armAudioGesture(){
-    const retry=()=>{
-      if(bgWanted)playBackground({hardSync:true});
+    const types=['pointerdown','touchstart','keydown'];
+    const remove=()=>types.forEach(type=>removeEventListener(type,retry,true));
+    const retry=event=>{
+      if(event?.target?.closest?.('#soundButton,#mobileSoundButton'))return;
+      remove();
+      if(bgWanted&&backgroundAllowed())playBackground({hardSync:true});
       setTimeout(syncSoundUi,40);
     };
-    ['pointerdown','touchstart','keydown'].forEach(type=>addEventListener(type,retry,{capture:true,passive:true}));
+    types.forEach(type=>addEventListener(type,retry,{capture:true,passive:true}));
   }
   armAudioGesture();
   bgResyncTimer=setInterval(()=>{if(!document.hidden)resyncBackground()},15000);
@@ -252,16 +262,19 @@
     const enabled=Boolean(event.detail&&event.detail.enabled);
     bgWanted=enabled;
     storage.set('tfw_sound',enabled?'on':'off');
-    if(enabled) playBackground({hardSync:true});
+    if(enabled&&backgroundAllowed()) playBackground({hardSync:true});
     else{
       pauseBackground();
       if(milestoneAudio){try{milestoneAudio.pause()}catch{}}
     }
+    // Once launch has happened, never let the legacy finale listener seek an old
+    // track back to a fixed timestamp when SOUND is toggled.
+    if(document.body.classList.contains('finale-released')||Date.now()>=RELEASE_CET)event.stopImmediatePropagation();
     setTimeout(syncSoundUi,0);
   });
-  addEventListener('pageshow',()=>{if(bgWanted)playBackground({hardSync:true})});
+  addEventListener('pageshow',()=>{if(bgWanted&&backgroundAllowed())playBackground({hardSync:true})});
   document.addEventListener('visibilitychange',()=>{
-    if(!document.hidden&&bgWanted)playBackground({hardSync:true});
+    if(!document.hidden&&bgWanted&&backgroundAllowed())playBackground({hardSync:true});
   });
 
   /* ----- synchronized in-layout milestones ----------------------------- */
@@ -280,18 +293,7 @@
   let liveTitleBase='ROAD TO LEONIDA';
   let lastMilestoneCheck=0;
 
-  function ensureMilestoneTag(){
-    let tag=byId('tfwLiveMilestoneTag');
-    const titleWrap=document.querySelector('.hero-title-wrap');
-    if(!tag&&titleWrap){
-      tag=document.createElement('div');
-      tag.id='tfwLiveMilestoneTag';
-      tag.className='tfw-live-milestone-tag';
-      tag.innerHTML='<span></span><strong></strong>';
-      titleWrap.insertAdjacentElement('afterend',tag);
-    }
-    return tag;
-  }
+  function ensureMilestoneTag(){return null}
   function findMilestone(remaining){
     return milestones.find(m=>remaining<=m.at&&remaining>m.at-MILESTONE_WINDOW)||null;
   }
@@ -312,14 +314,38 @@
     if(audio.readyState>=1)seekAndPlay();
     else audio.addEventListener('loadedmetadata',seekAndPlay,{once:true});
   }
+  function previewStageFor(remaining){
+    if(!Number.isFinite(remaining)||remaining>24*HOUR||remaining<=5*MINUTE)return null;
+    if(remaining<=15*MINUTE)return milestones.find(m=>m.id==='15m')||null;
+    if(remaining<=30*MINUTE)return milestones.find(m=>m.id==='30m')||null;
+    if(remaining<=HOUR)return milestones.find(m=>m.id==='hour')||null;
+    if(remaining<=6*HOUR)return milestones.find(m=>m.id==='6h')||null;
+    if(remaining<=12*HOUR)return milestones.find(m=>m.id==='12h')||null;
+    return milestones.find(m=>m.id==='day')||null;
+  }
+  function activatePreviewStage(m){
+    if(!m)return deactivatePreviewStage();
+    previewStage=m;
+    const title=byId('heroTitle');
+    if(title)title.textContent=m.title;
+    document.body.classList.add('tfw-preview-stage-title');
+    document.body.dataset.tfwPreviewStage=m.id;
+  }
+  function deactivatePreviewStage(){
+    if(!previewStage&&!document.body.classList.contains('tfw-preview-stage-title'))return;
+    previewStage=null;
+    document.body.classList.remove('tfw-preview-stage-title');
+    delete document.body.dataset.tfwPreviewStage;
+    const title=byId('heroTitle');
+    if(title&&!document.body.classList.contains('tfw-milestone-live')&&!document.body.classList.contains('final-five-active')&&!document.body.classList.contains('finale-released'))title.textContent='ROAD TO LEONIDA';
+  }
+
   function activateMilestone(m,remaining){
     if(currentMilestone&&currentMilestone.id===m.id)return;
     deactivateMilestone(false);
     currentMilestone=m;
     const title=byId('heroTitle');
     if(title){liveTitleBase=title.textContent||'ROAD TO LEONIDA';title.textContent=m.title}
-    const tag=ensureMilestoneTag();
-    if(tag){tag.querySelector('span').textContent=m.kicker;tag.querySelector('strong').textContent=m.accent}
     document.body.classList.add('tfw-milestone-live');
     document.body.dataset.tfwMilestone=m.id;
     setBgVolume(BG_DUCK_VOLUME,280);
@@ -331,30 +357,50 @@
     currentMilestone=null;
     document.body.classList.remove('tfw-milestone-live');
     delete document.body.dataset.tfwMilestone;
-    const tag=byId('tfwLiveMilestoneTag'); if(tag)tag.classList.remove('active');
     if(restoreTitle){
       const title=byId('heroTitle');
       if(title&&!document.body.classList.contains('final-five-active')&&!document.body.classList.contains('finale-released')) title.textContent='ROAD TO LEONIDA';
     }
     setBgVolume(desiredBgVolume(),360);
   }
-  function updateLiveMilestone(remaining){
-    if(!Number.isFinite(remaining)||remaining<=0||remaining<=5*MINUTE){deactivateMilestone();return}
+  function updateLiveMilestone(remaining,preview=false){
+    if(!Number.isFinite(remaining)||remaining<=0){deactivateMilestone();deactivatePreviewStage();return}
+    if(preview){
+      if(currentMilestone&&Date.now()<previewCardHoldUntil)return;
+      if(remaining<=5*MINUTE){deactivateMilestone();deactivatePreviewStage();return}
+      const stage=previewStageFor(remaining);
+      deactivateMilestone(false);
+      if(stage){activatePreviewStage(stage);if(stage.id==='6h')normalizeLegacyCopy()}
+      else deactivatePreviewStage();
+      return;
+    }
+    deactivatePreviewStage();
+    if(remaining<=5*MINUTE){deactivateMilestone();return}
     const m=findMilestone(remaining);
-    if(m){
-      activateMilestone(m,remaining);
-      if(m.id==='6h')normalizeLegacyCopy();
-      const tag=ensureMilestoneTag();if(tag)tag.classList.add('active');
-    }else deactivateMilestone();
+    if(m){activateMilestone(m,remaining);if(m.id==='6h')normalizeLegacyCopy()}
+    else deactivateMilestone();
   }
   addEventListener('tfw:countdown',event=>{
     const now=performance.now();
     if(now-lastMilestoneCheck<80)return;
     lastMilestoneCheck=now;
     const remaining=Number(event.detail&&event.detail.remaining);
-    updateLiveMilestone(remaining);
-    if(remaining<=5*MINUTE&&remaining>0)setBgVolume(BG_DUCK_VOLUME,300);
-    else if(remaining>5*MINUTE&&!currentMilestone)setBgVolume(BG_VOLUME,350);
+    const preview=Boolean(event.detail&&event.detail.preview);
+    if(preview){
+      previewFinalFive=remaining<=5*MINUTE&&remaining>0;
+      if(previewFinalFive)pauseBackground();
+      else if(bgWanted&&!backgroundStoppedForLaunch&&(!bgAudio||bgAudio.paused))playBackground({hardSync:true});
+    }else{
+      previewFinalFive=false;
+      if(remaining<=5*MINUTE&&remaining>0){
+        backgroundStoppedForLaunch=true;
+        pauseBackground();
+      }else if(remaining>5*MINUTE&&bgWanted&&!backgroundStoppedForLaunch&&(!bgAudio||bgAudio.paused)){
+        playBackground({hardSync:true});
+      }
+    }
+    updateLiveMilestone(remaining,preview);
+    if(remaining>5*MINUTE&&!currentMilestone&&backgroundAllowed())setBgVolume(BG_VOLUME,350);
   });
 
 
@@ -369,10 +415,11 @@
       const liveRemaining=Number(window.__tfwLastRemaining);
       if(findMilestone(liveRemaining))return;
       activateMilestone(m,m.at);
-      const tag=ensureMilestoneTag();if(tag)tag.classList.add('active');
+      previewCardHoldUntil=Date.now()+MILESTONE_WINDOW;
       clearTimeout(previewTimeout);
       previewTimeout=setTimeout(()=>{
         const remaining=Number(window.__tfwLastRemaining);
+        previewCardHoldUntil=0;
         if(currentMilestone?.id===m.id&&!findMilestone(remaining))deactivateMilestone();
       },MILESTONE_WINDOW);
     });
@@ -443,7 +490,7 @@
     releaseLoop();
     // Try autoplay once. If the browser blocks it, the next user gesture resumes at
     // the globally synchronized position instead of starting from 0.
-    if(bgWanted)playBackground({hardSync:true});
+    if(bgWanted&&backgroundAllowed())playBackground({hardSync:true});
     setTimeout(syncSoundUi,0);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootRuntime,{once:true});

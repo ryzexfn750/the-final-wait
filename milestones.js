@@ -9,7 +9,7 @@
   const VOICE_TRACK_START=-1;
   const SEQUENCE_TRACK_START=30000;
   const LAST_FIFTEEN=6500;
-  const SCRUB_MAX=30*MIN;
+  const SCRUB_MAX=24*HOUR+5*SECOND;
   const storage={get(k){try{return localStorage.getItem(k)}catch{return null}},set(k,v){try{localStorage.setItem(k,v)}catch{}}};
   const $=s=>document.querySelector(s);
 
@@ -19,7 +19,7 @@
     {id:'week',ms:7*DAY,label:'ONE WEEK',sub:'THE FINAL WEEK',accent:'7 DAYS',duration:7000},
     {id:'day',ms:DAY,label:'24 HOURS',sub:'TOMORROW, THE WAIT ENDS',accent:'FINAL DAY',duration:7600},
     {id:'12h',ms:12*HOUR,label:'12 HOURS',sub:'HALFWAY THROUGH THE FINAL DAY',accent:'12:00:00',duration:6200},
-    {id:'6h',ms:6*HOUR,label:'6 HOURS',sub:'THE NIGHT IS ALMOST OVER',accent:'06:00:00',duration:6200},
+    {id:'6h',ms:6*HOUR,label:'6 HOURS',sub:'THE WAIT IS ALMOST OVER',accent:'06:00:00',duration:6200},
     {id:'hour',ms:HOUR,label:'ONE HOUR',sub:'THE FINAL HOUR',accent:'60 MINUTES',duration:7800},
     {id:'30m',ms:30*MIN,label:'30 MINUTES',sub:'NO MORE YEARS. NO MORE MONTHS.',accent:'00:30:00',duration:6200},
     {id:'15m',ms:15*MIN,label:'15 MINUTES',sub:'THE LAST QUARTER HOUR',accent:'00:15:00',duration:6200}
@@ -73,9 +73,11 @@
   function pad(n,len=2){return String(Math.max(0,Math.floor(n))).padStart(len,'0')}
   function formatRemaining(ms,withMs=true){
     ms=Math.max(0,ms);
-    const m=Math.floor(ms/MIN);
+    const h=Math.floor(ms/HOUR);
+    const m=Math.floor((ms%HOUR)/MIN);
     const s=Math.floor((ms%MIN)/1000);
     const milli=Math.floor(ms%1000);
+    if(h>0)return `-${pad(h)}:${pad(m)}:${pad(s)}${withMs?`.${pad(milli,3)}`:''}`;
     return `-${pad(m)}:${pad(s)}${withMs?`.${pad(milli,3)}`:''}`;
   }
 
@@ -96,14 +98,14 @@
         <button class="milestone-preview-toggle" id="milestonePreviewToggle" type="button" hidden>EXPERIENCE PREVIEW</button>
         <aside class="milestone-preview-panel" id="milestonePreviewPanel" hidden>
           <div class="preview-panel-head"><strong>COUNTDOWN EXPERIENCE</strong><button type="button" id="milestonePreviewClose" aria-label="Close preview controls">×</button></div>
-          <p>Use the timeline below to simulate any point inside the final 30 minutes. The production countdown, percentage and finale effects all follow the simulated time.</p>
+          <p>Use the timeline below to simulate any point inside the final 24 hours. The production countdown, percentage and finale effects all follow the simulated time.</p>
           <div class="finale-scrubber">
             <div class="finale-scrub-head"><span>SIMULATED TIME</span><strong id="finaleScrubReadout">-05:00.000</strong></div>
             <div class="finale-scrub-track-shell" id="finaleScrubTrack">
               <span class="finale-scrub-fill" aria-hidden="true"></span>
               <input id="finaleScrubber" type="range" min="0" max="${SCRUB_MAX}" value="${SCRUB_MAX-5*MIN}" step="1" aria-label="Simulated time before release">
             </div>
-            <div class="finale-scrub-scale"><span>-30:00</span><span>-15:00</span><span>00:00</span></div>
+            <div class="finale-scrub-scale"><span>-24:00:05</span><span>-12:00:00</span><span>00:00</span></div>
             <div class="finale-scrub-actions">
               <button type="button" id="finaleScrubPlay">PLAY FROM HERE</button>
               <button type="button" id="finaleScrubPause">PAUSE</button>
