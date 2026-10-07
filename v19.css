@@ -1,7 +1,6 @@
-/* V19 — video-matched title flow + stronger/faster glow. */
+/* V19/V20 — title flow, live milestone takeover, release clock and performance pass. */
 
-/* CSS fallback for the same moving gradient used by the release title.
-   milestones.js also drives background-position inline so this cannot be frozen by older rules. */
+/* Video-matched moving gradient used by the final-five title. */
 body.final-five-active.finale-dynamic-copy #heroTitle{
   background-image:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%)!important;
   background-size:220% 100%!important;
@@ -17,7 +16,7 @@ body.final-five-active.finale-dynamic-copy #heroTitle{
   50%{filter:drop-shadow(0 10px 28px rgba(0,0,0,.70)) drop-shadow(0 0 54px rgba(242,63,178,.42)) brightness(1.10)}
 }
 
-/* Faster and more visible glow dissolve, still smooth. */
+/* Faster, smoother finale glow. */
 body.final-five-active #countdown{
   transition:transform .32s cubic-bezier(.18,.82,.18,1),filter 2.8s cubic-bezier(.18,.75,.22,1)!important;
 }
@@ -39,4 +38,225 @@ body.finale-last-15:not(.finale-last-second) .time-unit{
 body.finale-last-15:not(.finale-last-second) .time-value{
   animation:none!important;
   text-shadow:0 0 2px #fff,0 0 22px rgba(255,255,255,.72),0 0 54px rgba(242,63,178,.60),0 0 84px rgba(119,96,255,.38),0 12px 30px rgba(0,0,0,.62)!important;
+}
+
+/* ================================================================
+   V20 — milestone events happen inside the hero, never in a popup.
+   ================================================================ */
+.milestone-experience{display:none!important}
+
+.tfw-live-milestone-tag{
+  height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  overflow:hidden;
+  opacity:0;
+  translate:0 -8px;
+  transition:height .48s cubic-bezier(.2,.75,.2,1),opacity .35s ease,translate .48s cubic-bezier(.2,.75,.2,1),margin .48s ease;
+  pointer-events:none;
+}
+.tfw-live-milestone-tag.active{
+  height:26px;
+  margin-top:8px;
+  opacity:1;
+  translate:0 0;
+}
+.tfw-live-milestone-tag span,
+.tfw-live-milestone-tag strong{
+  font:900 clamp(7px,.62vw,10px)/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.18em;
+  white-space:nowrap;
+}
+.tfw-live-milestone-tag span{color:rgba(255,255,255,.66)}
+.tfw-live-milestone-tag strong{
+  color:#fff;
+  padding:7px 10px;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:999px;
+  background:linear-gradient(105deg,rgba(119,96,255,.16),rgba(242,63,178,.16),rgba(255,156,67,.11));
+  box-shadow:0 0 22px rgba(242,63,178,.10);
+}
+body.tfw-milestone-live #heroTitle{
+  background-image:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%)!important;
+  background-size:220% 100%!important;
+  background-repeat:repeat-x!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  animation:tfwV20MilestoneFlow 3.6s linear infinite,tfwV20MilestoneBreath 1.9s ease-in-out infinite!important;
+  filter:drop-shadow(0 9px 25px rgba(0,0,0,.62)) drop-shadow(0 0 34px rgba(242,63,178,.30))!important;
+}
+body.tfw-milestone-live .hero-title-wrap{translate:0 -5px;transition:translate .55s cubic-bezier(.2,.75,.2,1)}
+body.tfw-milestone-live .countdown-shell,
+body.tfw-milestone-live .release-hud,
+body.tfw-milestone-live .progress-block{
+  translate:0 26px;
+  transition:translate .7s cubic-bezier(.18,.82,.18,1)!important;
+}
+body:not(.tfw-milestone-live) .countdown-shell,
+body:not(.tfw-milestone-live) .release-hud,
+body:not(.tfw-milestone-live) .progress-block{
+  translate:0 0;
+  transition:translate .7s cubic-bezier(.18,.82,.18,1);
+}
+@keyframes tfwV20MilestoneFlow{to{background-position:220% 50%}}
+@keyframes tfwV20MilestoneBreath{50%{filter:drop-shadow(0 10px 28px rgba(0,0,0,.68)) drop-shadow(0 0 52px rgba(242,63,178,.43)) brightness(1.08)}}
+
+/* ================================================================
+   V20 — post-release elapsed timer.
+   ================================================================ */
+.release-elapsed{
+  display:none;
+  width:min(760px,82vw);
+  margin:15px auto 18px;
+  padding:12px 16px 13px;
+  border-top:1px solid rgba(255,255,255,.11);
+  border-bottom:1px solid rgba(255,255,255,.11);
+  background:linear-gradient(90deg,transparent,rgba(12,9,18,.35) 15%,rgba(18,10,25,.40) 50%,rgba(12,9,18,.35) 85%,transparent);
+}
+body.finale-released .release-elapsed,
+body.tfw-release-clock-live .release-elapsed{display:block}
+.release-elapsed-label{
+  display:block;
+  margin-bottom:10px;
+  font:900 clamp(6px,.56vw,9px)/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.20em;
+  color:rgba(255,255,255,.54);
+}
+.release-elapsed-clock{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(7px,1vw,15px);
+  font-variant-numeric:tabular-nums;
+}
+.release-elapsed-clock>div{display:grid;place-items:center;min-width:clamp(48px,6vw,78px)}
+.release-elapsed-clock strong{
+  font:900 clamp(20px,2.4vw,35px)/.9 "Arial Black",Impact,sans-serif;
+  letter-spacing:-.055em;
+  color:#fff;
+  text-shadow:0 0 18px rgba(255,255,255,.18),0 0 28px rgba(242,63,178,.15);
+}
+.release-elapsed-clock small{
+  margin-top:6px;
+  font:900 clamp(5px,.47vw,7px)/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.14em;
+  color:rgba(255,255,255,.44);
+}
+.release-elapsed-clock>i{font:900 clamp(15px,1.8vw,25px)/1 Arial;color:rgba(255,255,255,.25);font-style:normal;translate:0 -5px}
+body.finale-released .finale-release-kicker{white-space:nowrap}
+
+/* ================================================================
+   V20 — rendering performance. The look stays rich on desktop while
+   expensive continuous effects are cut where they hurt most on phones.
+   ================================================================ */
+.time-unit,.progress-block,.release-hud{contain:layout paint style}
+.time-value,#progressText{font-variant-numeric:tabular-nums}
+.scene-section,.share-section{content-visibility:auto;contain-intrinsic-size:900px 1200px}
+.scene:not(.active){will-change:auto!important}
+.scene.active{will-change:transform,opacity;backface-visibility:hidden;transform-style:flat}
+.scene-section:not(.tfw-in-view) .section-backdrop,
+.scene-section:not(.tfw-in-view) .intel-image,
+.scene-section:not(.tfw-in-view) .newspaper-image{animation-play-state:paused!important}
+html.tfw-hero-offscreen .scene,
+html.tfw-page-hidden *{animation-play-state:paused!important}
+html.tfw-hero-offscreen .scene{will-change:auto!important}
+
+/* Do not spend GPU time animating invisible duplicated scene layers. */
+.scene:not(.active){pointer-events:none}
+
+html.tfw-perf-mobile .page-noise,
+html.tfw-perf-mobile .page-grid,
+html.tfw-perf-mobile .cursor-glow,
+html.tfw-perf-mobile .hero-orbit,
+html.tfw-perf-mobile .scene-sweep{display:none!important}
+
+html.tfw-perf-mobile .glass,
+html.tfw-perf-mobile .topbar,
+html.tfw-perf-mobile .mobile-menu,
+html.tfw-perf-mobile .release-hud,
+html.tfw-perf-mobile .progress-block,
+html.tfw-perf-mobile .time-unit,
+html.tfw-perf-mobile .phase-pill{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+html.tfw-perf-mobile .time-unit{
+  background:linear-gradient(145deg,rgba(11,8,17,.78),rgba(20,12,27,.66))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.25)!important;
+}
+html.tfw-perf-mobile .digit-glow{display:none!important}
+html.tfw-perf-mobile #countdown{filter:none!important;transform:translateZ(0)}
+html.tfw-perf-mobile .time-value{
+  filter:none!important;
+  text-shadow:0 2px 10px rgba(0,0,0,.52),0 0 13px rgba(242,63,178,.16)!important;
+}
+html.tfw-perf-mobile .progress-block,
+html.tfw-perf-mobile .release-hud{
+  background:linear-gradient(135deg,rgba(10,8,15,.86),rgba(17,10,24,.76))!important;
+  box-shadow:0 9px 28px rgba(0,0,0,.22)!important;
+}
+html.tfw-perf-mobile .progress-fill{box-shadow:0 0 12px rgba(242,63,178,.28)!important}
+html.tfw-perf-mobile .section-backdrop{animation:none!important;filter:none!important;opacity:.055!important}
+html.tfw-perf-mobile .intel-image,
+html.tfw-perf-mobile .newspaper-image,
+html.tfw-perf-mobile .timeline-visual img,
+html.tfw-perf-mobile .banner-art img{animation:none!important}
+html.tfw-perf-mobile .reveal{filter:none!important;transition-duration:.45s!important}
+html.tfw-perf-mobile .magnetic{transform:none!important}
+html.tfw-perf-mobile .hero-atmosphere{opacity:.55!important;filter:none!important}
+html.tfw-perf-mobile .hero-shade{filter:none!important}
+html.tfw-perf-mobile .scene{animation-duration:24s!important;animation-timing-function:ease-in-out!important}
+html.tfw-perf-mobile .scene:not(.active){animation:none!important}
+
+/* Finale on phones: preserve the cinematic moment without stacking multiple
+   full-screen blur/conic effects on every frame. */
+html.tfw-perf-mobile body.final-five-active .finale-beat-halo{filter:none!important;opacity:.12!important}
+html.tfw-perf-mobile body.final-five-active .finale-visualizer{mix-blend-mode:normal!important;filter:none!important;opacity:.70!important}
+html.tfw-perf-mobile body.finale-released .finale-release:before,
+html.tfw-perf-mobile body.finale-released .finale-release:after,
+html.tfw-perf-mobile body.finale-released .release-radiance{filter:none!important;animation-duration:8s!important}
+html.tfw-perf-mobile body.finale-released .hero-corners span{filter:none!important}
+html.tfw-perf-mobile body.tfw-release-settled .finale-fireworks{display:none!important}
+html.tfw-perf-mobile body.tfw-release-settled .finale-release:before,
+html.tfw-perf-mobile body.tfw-release-settled .finale-release:after,
+html.tfw-perf-mobile body.tfw-release-settled .release-radiance{animation-play-state:paused!important}
+
+/* A lighter fallback for low-memory/low-core desktop devices too. */
+html.tfw-perf-lite:not(.tfw-perf-mobile) .section-backdrop{animation-duration:38s!important;filter:none!important}
+html.tfw-perf-lite:not(.tfw-perf-mobile) .cursor-glow{opacity:.45!important}
+html.tfw-perf-lite:not(.tfw-perf-mobile) .hero-orbit{opacity:.35!important}
+
+@media (max-width:900px){
+  body.tfw-milestone-live .countdown-shell,
+  body.tfw-milestone-live .release-hud,
+  body.tfw-milestone-live .progress-block{translate:0 15px}
+  .tfw-live-milestone-tag.active{height:22px;margin-top:5px}
+  .tfw-live-milestone-tag span,.tfw-live-milestone-tag strong{font-size:6px;letter-spacing:.13em}
+  .tfw-live-milestone-tag strong{padding:6px 8px}
+  .release-elapsed{width:min(88vw,650px);padding:10px 8px 11px;margin:11px auto 13px}
+  .release-elapsed-clock{gap:6px}
+  .release-elapsed-clock>div{min-width:44px}
+  .release-elapsed-clock strong{font-size:clamp(18px,5vw,28px)}
+  .release-elapsed-clock small{font-size:5px}
+}
+
+@media (max-width:560px){
+  .tfw-live-milestone-tag{gap:7px}
+  .tfw-live-milestone-tag.active{height:20px}
+  body.tfw-milestone-live #heroTitle{font-size:clamp(25px,7vw,36px)!important}
+  .release-elapsed{width:91vw}
+  .release-elapsed-clock{gap:3px}
+  .release-elapsed-clock>div{min-width:39px}
+  .release-elapsed-clock strong{font-size:clamp(17px,5.6vw,25px)}
+  .release-elapsed-clock>i{font-size:14px}
+  .release-elapsed-label{font-size:5px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  body.tfw-milestone-live #heroTitle{animation:none!important}
+  .tfw-live-milestone-tag,.countdown-shell,.release-hud,.progress-block{transition:none!important}
 }
