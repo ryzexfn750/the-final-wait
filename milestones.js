@@ -36,8 +36,8 @@
   let previewPlaying=false;
   let previewRaf=0;
   let previewStartedAt=0;
-  let previewStartRemaining=5*MIN;
-  let previewPausedRemaining=5*MIN;
+  let previewStartRemaining=SCRUB_MAX;
+  let previewPausedRemaining=SCRUB_MAX;
   let fireworksRaf=0;
   let fireworks=[];
   let fireworkNext=0;
@@ -100,16 +100,16 @@
           <div class="preview-panel-head"><strong>COUNTDOWN EXPERIENCE</strong><button type="button" id="milestonePreviewClose" aria-label="Close preview controls">×</button></div>
           <p>Use the timeline below to simulate any point inside the final 24 hours. The production countdown, percentage and finale effects all follow the simulated time.</p>
           <div class="finale-scrubber">
-            <div class="finale-scrub-head"><span>SIMULATED TIME</span><strong id="finaleScrubReadout">-05:00.000</strong></div>
+            <div class="finale-scrub-head"><span>SIMULATED TIME</span><strong id="finaleScrubReadout">-24:00:05.000</strong></div>
             <div class="finale-scrub-track-shell" id="finaleScrubTrack">
               <span class="finale-scrub-fill" aria-hidden="true"></span>
-              <input id="finaleScrubber" type="range" min="0" max="${SCRUB_MAX}" value="${SCRUB_MAX-5*MIN}" step="1" aria-label="Simulated time before release">
+              <input id="finaleScrubber" type="range" min="0" max="${SCRUB_MAX}" value="0" step="1" aria-label="Simulated time before release">
             </div>
             <div class="finale-scrub-scale"><span>-24:00:05</span><span>-12:00:00</span><span>00:00</span></div>
             <div class="finale-scrub-actions">
               <button type="button" id="finaleScrubPlay">PLAY FROM HERE</button>
               <button type="button" id="finaleScrubPause">PAUSE</button>
-              <button type="button" id="finaleScrubReset">RESET −05:00</button>
+              <button type="button" id="finaleScrubReset">RESET −24:00:05</button>
             </div>
           </div>
           <div class="preview-quick-label">QUICK JUMPS</div>
@@ -152,7 +152,11 @@
       ].join('');
       grid.addEventListener('click',e=>{
         const b=e.target.closest('button');if(!b)return;
-        if(b.dataset.previewMilestone){const m=milestones.find(x=>x.id===b.dataset.previewMilestone);if(m)playCard(m,true);return}
+        if(b.dataset.previewMilestone){
+          const m=milestones.find(x=>x.id===b.dataset.previewMilestone);
+          if(m){pausePreviewPlayback();setStaticPreview(m.ms);}
+          return;
+        }
         if(b.dataset.scrubJump!==undefined){setStaticPreview(Number(b.dataset.scrubJump));return}
       });
     }
@@ -219,7 +223,7 @@
       $('#milestonePreviewPanel').hidden=false;
       if(!document.body.dataset.previewAutoStarted){
         document.body.dataset.previewAutoStarted='1';
-        setTimeout(()=>setStaticPreview(5*MIN),0);
+        setTimeout(()=>setStaticPreview(SCRUB_MAX),0);
       }
     }
   }

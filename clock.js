@@ -186,6 +186,7 @@
   function soundButtons(){return [byId('soundButton'),byId('mobileSoundButton')].filter(Boolean)}
   function backgroundAllowed(){
     if(!backgroundStoppedForLaunch&&Date.now()>=RELEASE_CET-5*MINUTE)backgroundStoppedForLaunch=true;
+    if(document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released'))return false;
     return !backgroundStoppedForLaunch&&!previewFinalFive;
   }
   function syncSoundUi(){
@@ -275,6 +276,19 @@
   addEventListener('pageshow',()=>{if(bgWanted&&backgroundAllowed())playBackground({hardSync:true})});
   document.addEventListener('visibilitychange',()=>{
     if(!document.hidden&&bgWanted&&backgroundAllowed())playBackground({hardSync:true});
+  });
+  addEventListener('tfw:finale-start',event=>{
+    const remaining=Number(event.detail&&event.detail.remaining);
+    if(Number.isFinite(remaining)&&remaining<=5*MINUTE){
+      backgroundStoppedForLaunch=true;
+      previewFinalFive=true;
+      pauseBackground();
+    }
+  });
+  addEventListener('tfw:finale-release',()=>{
+    backgroundStoppedForLaunch=true;
+    previewFinalFive=true;
+    pauseBackground();
   });
 
   /* ----- synchronized in-layout milestones ----------------------------- */
@@ -366,10 +380,16 @@
   function updateLiveMilestone(remaining,preview=false){
     if(!Number.isFinite(remaining)||remaining<=0){deactivateMilestone();deactivatePreviewStage();return}
     if(preview){
-      if(currentMilestone&&Date.now()<previewCardHoldUntil)return;
       if(remaining<=5*MINUTE){deactivateMilestone();deactivatePreviewStage();return}
-      const stage=previewStageFor(remaining);
+      const exact=findMilestone(remaining);
+      if(exact){
+        deactivatePreviewStage();
+        activateMilestone(exact,remaining);
+        if(exact.id==='6h')normalizeLegacyCopy();
+        return;
+      }
       deactivateMilestone(false);
+      const stage=previewStageFor(remaining);
       if(stage){activatePreviewStage(stage);if(stage.id==='6h')normalizeLegacyCopy()}
       else deactivatePreviewStage();
       return;
@@ -382,14 +402,18 @@
   }
   addEventListener('tfw:countdown',event=>{
     const now=performance.now();
-    if(now-lastMilestoneCheck<80)return;
+    if(now-lastMilestoneCheck<55)return;
     lastMilestoneCheck=now;
     const remaining=Number(event.detail&&event.detail.remaining);
     const preview=Boolean(event.detail&&event.detail.preview);
     if(preview){
       previewFinalFive=remaining<=5*MINUTE&&remaining>0;
-      if(previewFinalFive)pauseBackground();
-      else if(bgWanted&&!backgroundStoppedForLaunch&&(!bgAudio||bgAudio.paused))playBackground({hardSync:true});
+      if(previewFinalFive){
+        backgroundStoppedForLaunch=true;
+        pauseBackground();
+      }else if(bgWanted&&!backgroundStoppedForLaunch&&(!bgAudio||bgAudio.paused)){
+        playBackground({hardSync:true});
+      }
     }else{
       previewFinalFive=false;
       if(remaining<=5*MINUTE&&remaining>0){
@@ -405,25 +429,8 @@
 
 
   function installMilestonePreviewBridge(){
-    if(!document.body||!('MutationObserver' in window))return;
-    let previewTimeout=0;
-    const observer=new MutationObserver(()=>{
-      if(!document.body.classList.contains('milestone-playing'))return;
-      const label=(byId('milestoneNumber')?.textContent||'').trim();
-      const m=milestones.find(item=>item.kicker===label);
-      if(!m)return;
-      const liveRemaining=Number(window.__tfwLastRemaining);
-      if(findMilestone(liveRemaining))return;
-      activateMilestone(m,m.at);
-      previewCardHoldUntil=Date.now()+MILESTONE_WINDOW;
-      clearTimeout(previewTimeout);
-      previewTimeout=setTimeout(()=>{
-        const remaining=Number(window.__tfwLastRemaining);
-        previewCardHoldUntil=0;
-        if(currentMilestone?.id===m.id&&!findMilestone(remaining))deactivateMilestone();
-      },MILESTONE_WINDOW);
-    });
-    observer.observe(document.body,{attributes:true,attributeFilter:['class']});
+    /* V22: quick jumps drive the simulator clock directly.
+       The legacy popup bridge is disabled to avoid title/audio races. */
   }
 
   /* Old milestone window is intentionally suppressed visually; patch the
@@ -443,19 +450,25 @@
     const legacy=byId('releaseOverlay');
     if(legacy){const p=legacy.querySelector('p');if(p)p.textContent='THE WAIT IS OVER!'}
     if(!byId('releaseElapsed')){
-      const date=releaseBox.querySelector('.finale-release-date');
       const elapsed=document.createElement('div');
       elapsed.id='releaseElapsed';
       elapsed.className='release-elapsed';
       elapsed.innerHTML=`
         <span class="release-elapsed-label">TIME SINCE GTA VI RELEASE</span>
-        <div class="release-elapsed-clock" aria-live="off">
-          <div><strong data-release-unit="days">0</strong><small>DAYS</small></div><i>:</i>
-          <div><strong data-release-unit="hours">00</strong><small>HOURS</small></div><i>:</i>
-          <div><strong data-release-unit="minutes">00</strong><small>MINUTES</small></div><i>:</i>
-          <div><strong data-release-unit="seconds">00</strong><small>SECONDS</small></div>
+        <div class="release-elapsed-clock countdown" aria-live="off">
+          <div class="time-unit days"><span class="digit-glow"></span><span class="time-value" data-release-unit="days">0</span><span class="time-label">DAYS</span></div>
+          <div class="time-separator">:</div>
+          <div class="time-unit"><span class="digit-glow"></span><span class="time-value" data-release-unit="hours">00</span><span class="time-label">HOURS</span></div>
+          <div class="time-separator">:</div>
+          <div class="time-unit"><span class="digit-glow"></span><span class="time-value" data-release-unit="minutes">00</span><span class="time-label">MINUTES</span></div>
+          <div class="time-separator">:</div>
+          <div class="time-unit"><span class="digit-glow"></span><span class="time-value" data-release-unit="seconds">00</span><span class="time-label">SECONDS</span></div>
+          <div class="time-separator milliseconds-separator">:</div>
+          <div class="time-unit milliseconds"><span class="digit-glow"></span><span class="time-value" data-release-unit="milliseconds">000</span><span class="time-label">MILLISECONDS</span></div>
         </div>`;
-      if(date)releaseBox.insertBefore(elapsed,date);else releaseBox.appendChild(elapsed);
+      const line=releaseBox.querySelector('.release-line');
+      if(line)line.insertAdjacentElement('afterend',elapsed);
+      else releaseBox.appendChild(elapsed);
     }
     return true;
   }
@@ -466,14 +479,19 @@
     const hours=Math.floor((elapsed%DAY)/HOUR);
     const minutes=Math.floor((elapsed%HOUR)/MINUTE);
     const seconds=Math.floor((elapsed%MINUTE)/SECOND);
-    const map={days:String(days),hours:pad(hours),minutes:pad(minutes),seconds:pad(seconds)};
+    const milliseconds=Math.floor(elapsed%SECOND);
+    const map={days:String(days),hours:pad(hours),minutes:pad(minutes),seconds:pad(seconds),milliseconds:pad(milliseconds,3)};
     for(const [unit,value] of Object.entries(map)){
       const el=document.querySelector(`[data-release-unit="${unit}"]`);if(el&&el.textContent!==value)el.textContent=value;
     }
     const released=Date.now()>=RELEASE_CET||document.body.classList.contains('finale-released');
     document.body.classList.toggle('tfw-release-clock-live',released);
+    if(released){
+      backgroundStoppedForLaunch=true;
+      previewFinalFive=true;
+      pauseBackground();
+    }
     if(released&&elapsed>30000)document.body.classList.add('tfw-release-settled');
-    if(released&&bgWanted&&!bgAudio?.paused)resyncBackground();
   }
 
   function bootRuntime(){
@@ -485,7 +503,7 @@
     const releaseLoop=()=>{
       updateReleaseElapsed();
       const released=Date.now()>=RELEASE_CET||document.body.classList.contains('finale-released');
-      releaseUiTimer=setTimeout(releaseLoop,released?250:2000);
+      releaseUiTimer=setTimeout(releaseLoop,released?33:1500);
     };
     releaseLoop();
     // Try autoplay once. If the browser blocks it, the next user gesture resumes at

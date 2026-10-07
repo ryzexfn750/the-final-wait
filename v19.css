@@ -106,48 +106,160 @@ body:not(.tfw-milestone-live) .progress-block{
 @keyframes tfwV20MilestoneBreath{50%{filter:drop-shadow(0 10px 28px rgba(0,0,0,.68)) drop-shadow(0 0 52px rgba(242,63,178,.43)) brightness(1.08)}}
 
 /* ================================================================
-   V20 — post-release elapsed timer.
+   V22 — clean post-release layout + elapsed timer matching the main timer.
    ================================================================ */
 .release-elapsed{
   display:none;
-  width:min(760px,82vw);
-  margin:15px auto 18px;
-  padding:12px 16px 13px;
-  border-top:1px solid rgba(255,255,255,.11);
-  border-bottom:1px solid rgba(255,255,255,.11);
-  background:linear-gradient(90deg,transparent,rgba(12,9,18,.35) 15%,rgba(18,10,25,.40) 50%,rgba(12,9,18,.35) 85%,transparent);
+  width:min(900px,88vw);
+  margin:28px auto 0;
+  padding:0;
+  background:none;
+  border:0;
 }
 body.finale-released .release-elapsed,
 body.tfw-release-clock-live .release-elapsed{display:block}
 .release-elapsed-label{
   display:block;
-  margin-bottom:10px;
-  font:900 clamp(6px,.56vw,9px)/1 Arial,Helvetica,sans-serif;
-  letter-spacing:.20em;
-  color:rgba(255,255,255,.54);
+  margin:0 0 12px;
+  font:900 clamp(7px,.72vw,11px)/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.22em;
+  color:rgba(255,255,255,.76);
+  text-shadow:0 0 18px rgba(242,63,178,.22);
 }
 .release-elapsed-clock{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:clamp(7px,1vw,15px);
+  display:grid!important;
+  grid-template-columns:minmax(76px,1.08fr) auto minmax(72px,1fr) auto minmax(72px,1fr) auto minmax(72px,1fr) auto minmax(90px,1.16fr)!important;
+  align-items:stretch!important;
+  justify-content:center!important;
+  gap:clamp(5px,.65vw,10px)!important;
+  width:100%!important;
+  margin:0 auto!important;
+  transform:scale(.80)!important;
+  transform-origin:center top!important;
   font-variant-numeric:tabular-nums;
 }
-.release-elapsed-clock>div{display:grid;place-items:center;min-width:clamp(48px,6vw,78px)}
-.release-elapsed-clock strong{
-  font:900 clamp(20px,2.4vw,35px)/.9 "Arial Black",Impact,sans-serif;
-  letter-spacing:-.055em;
-  color:#fff;
-  text-shadow:0 0 18px rgba(255,255,255,.18),0 0 28px rgba(242,63,178,.15);
+.release-elapsed-clock .time-unit{
+  min-width:0!important;
+  height:clamp(72px,7.2vw,100px)!important;
+  padding:10px 11px 9px!important;
+  border:1px solid rgba(255,255,255,.20)!important;
+  border-radius:clamp(12px,1vw,17px)!important;
+  background:
+    radial-gradient(120% 100% at 50% 15%,rgba(255,255,255,.07),transparent 58%),
+    linear-gradient(145deg,rgba(14,11,21,.72),rgba(20,11,28,.64))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 10px 30px rgba(0,0,0,.28),
+    0 0 24px rgba(242,63,178,.07)!important;
 }
-.release-elapsed-clock small{
-  margin-top:6px;
-  font:900 clamp(5px,.47vw,7px)/1 Arial,Helvetica,sans-serif;
-  letter-spacing:.14em;
-  color:rgba(255,255,255,.44);
+.release-elapsed-clock .time-value{
+  font-size:clamp(27px,3.35vw,49px)!important;
+  line-height:.92!important;
+  letter-spacing:-.055em!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:none!important;
+  text-shadow:0 2px 16px rgba(0,0,0,.55),0 0 20px rgba(242,63,178,.14)!important;
 }
-.release-elapsed-clock>i{font:900 clamp(15px,1.8vw,25px)/1 Arial;color:rgba(255,255,255,.25);font-style:normal;translate:0 -5px}
+.release-elapsed-clock .time-label{
+  margin-top:7px!important;
+  font-size:clamp(5px,.46vw,7px)!important;
+  letter-spacing:.14em!important;
+  color:rgba(255,255,255,.48)!important;
+}
+.release-elapsed-clock .time-separator{
+  display:grid!important;
+  place-items:center!important;
+  min-width:8px!important;
+  font-size:clamp(18px,2vw,28px)!important;
+  color:rgba(255,255,255,.28)!important;
+}
+.release-elapsed-clock .digit-glow{opacity:.32!important}
 body.finale-released .finale-release-kicker{white-space:nowrap}
+
+/* At 00:00 the pre-release HUD is gone. Only the release composition remains. */
+body.finale-released .hero-status,
+body.finale-released .hero-title-wrap,
+body.finale-released .phase-pill,
+body.finale-released #countdown,
+body.finale-released .final-minute-countdown,
+body.finale-released .release-hud,
+body.finale-released .progress-block,
+body.finale-released .next-scene{
+  display:none!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+body.finale-released .hero-content{
+  width:min(1180px,94vw)!important;
+  padding-top:clamp(68px,8vh,108px)!important;
+}
+body.finale-released .countdown-shell{
+  width:min(1120px,94vw)!important;
+  margin:0 auto!important;
+  overflow:visible!important;
+}
+body.finale-released .finale-release{
+  position:relative!important;
+  z-index:18!important;
+  width:min(1080px,94vw)!important;
+  margin:0 auto!important;
+}
+body.finale-released .finale-release h2{
+  margin:clamp(14px,1.8vh,24px) 0 12px!important;
+  font-size:clamp(58px,9.6vw,150px)!important;
+  line-height:.82!important;
+}
+body.finale-released .finale-release-date{
+  display:block!important;
+  margin-top:8px!important;
+}
+body.finale-released .release-line{
+  margin-top:18px!important;
+}
+body.finale-released .finale-visualizer-wrap{
+  z-index:16!important;
+}
+
+@media (max-width:900px){
+  .release-elapsed{width:min(94vw,760px);margin-top:24px}
+  .release-elapsed-clock{
+    transform:scale(.74)!important;
+    width:118%!important;
+    margin-left:-9%!important;
+    gap:4px!important;
+  }
+  .release-elapsed-clock .time-unit{
+    height:clamp(64px,11vw,84px)!important;
+    padding:8px 7px!important;
+  }
+  .release-elapsed-clock .time-value{font-size:clamp(22px,6.2vw,38px)!important}
+  .release-elapsed-clock .time-separator{font-size:clamp(15px,4vw,23px)!important}
+  body.finale-released .hero-content{padding-top:64px!important}
+  body.finale-released .finale-release h2{font-size:clamp(48px,12.4vw,100px)!important}
+}
+
+@media (max-width:560px){
+  .release-elapsed{width:96vw;margin-top:22px}
+  .release-elapsed-label{font-size:6px;letter-spacing:.16em;margin-bottom:9px}
+  .release-elapsed-clock{
+    transform:scale(.68)!important;
+    width:138%!important;
+    margin-left:-19%!important;
+    gap:3px!important;
+  }
+  .release-elapsed-clock .time-unit{
+    height:64px!important;
+    border-radius:11px!important;
+    padding:7px 5px!important;
+  }
+  .release-elapsed-clock .time-value{font-size:clamp(19px,6.6vw,29px)!important}
+  .release-elapsed-clock .time-label{font-size:4.5px!important;letter-spacing:.10em!important}
+  .release-elapsed-clock .time-separator{font-size:14px!important;min-width:4px!important}
+  body.finale-released .hero-content{padding-top:54px!important}
+  body.finale-released .finale-release h2{font-size:clamp(43px,13vw,74px)!important}
+}
 
 /* ================================================================
    V20 — rendering performance. The look stays rich on desktop while
@@ -339,4 +451,62 @@ body.finale-previewing:not(.final-five-active) .progress-meta strong{
 }
 @media (prefers-reduced-motion:reduce){
   body.tfw-preview-stage-title #heroTitle{animation:none!important}
+}
+
+
+/* ================================================================
+   V22 — simulator stability.
+   ================================================================ */
+body.finale-previewing:not(.final-five-active) .hero-title-wrap,
+body.finale-previewing:not(.final-five-active) .phase-pill,
+body.finale-previewing:not(.final-five-active) #countdown,
+body.finale-previewing:not(.final-five-active) .progress-block{
+  opacity:1!important;
+  visibility:visible!important;
+  filter:none!important;
+}
+body.finale-previewing.tfw-milestone-live #heroTitle,
+body.finale-previewing.tfw-preview-stage-title #heroTitle{
+  opacity:1!important;
+  visibility:visible!important;
+}
+body.finale-previewing.tfw-milestone-live .hero-title-wrap,
+body.finale-previewing.tfw-preview-stage-title .hero-title-wrap{
+  opacity:1!important;
+  visibility:visible!important;
+  filter:none!important;
+}
+
+
+/* V22 final mobile release overrides — kept last intentionally. */
+@media (max-width:900px){
+  body.finale-released .release-elapsed{
+    width:min(94vw,760px)!important;
+    margin:24px auto 0!important;
+    padding:0!important;
+  }
+  body.finale-released .release-elapsed-clock{
+    transform:scale(.74)!important;
+    width:118%!important;
+    margin-left:-9%!important;
+    gap:4px!important;
+  }
+}
+@media (max-width:560px){
+  body.finale-released .release-elapsed{
+    width:96vw!important;
+    margin:22px auto 0!important;
+    padding:0!important;
+  }
+  body.finale-released .release-elapsed-clock{
+    transform:scale(.68)!important;
+    width:138%!important;
+    margin-left:-19%!important;
+    gap:3px!important;
+  }
+  body.finale-released .release-elapsed-label{
+    font-size:6px!important;
+    letter-spacing:.16em!important;
+    margin-bottom:9px!important;
+  }
 }
