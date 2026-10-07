@@ -1,6 +1,6 @@
 {
   "issue": "ISSUE 001",
-  "date": "OCTOBER 4, 2026",
+  "date": "OCTOBER 5, 2026",
   "category": "LEONIDA WILDLIFE",
   "headline": "LEONIDA IS ALIVE: 170+ ANIMAL SPECIES CONFIRMED",
   "dek": "Rockstar's most detailed ecosystem yet reaches land, air and sea — with rare creatures, invasive species and technology inherited from Red Dead Redemption.",
@@ -39,9 +39,56 @@
       "text": "The studio is also building on technology developed for Red Dead Redemption, including iridescence, bioluminescence, translucency, different feather types, and new hair and fur systems for coats and pelts."
     },
     {
-      "type": "quote",
-      "text": "More than 170 animal species across land, air and sea.",
-      "cite": "Game Informer, based on Rockstar Games developer interviews"
+      "type": "eyebrow",
+      "text": "THE FINAL WAIT · EDITORIAL PERSPECTIVE"
+    },
+    {
+      "type": "paragraph",
+      "text": "The headline arrives at a useful moment in the countdown. After years of studying skylines, cars, and character close-ups, wildlife asks us to think about what happens around the action. A convincing state needs things worth noticing when no one is giving the player instructions. The species announcement is interesting because it broadens the question from how Leonida looks to what might make an ordinary journey feel alive."
+    },
+    {
+      "type": "heading",
+      "text": "THE WORLD BETWEEN THE MISSIONS"
+    },
+    {
+      "type": "paragraph",
+      "text": "A main story can guide us through a place, but the time between its major events often determines whether that place stays memorable. We learn a route, recognize a view, and gradually begin noticing what is different on another visit. Wildlife can contribute to that process by making the environment reward attention at several scales: movement in the distance, a sound nearby, or something almost lost in the texture of a scene."
+    },
+    {
+      "type": "paragraph",
+      "text": "That is an editorial argument about world design, not a promise that every species has a complex behavioral model. Animation, sound, placement, and simulation can all contribute to the impression. The finished game will reveal how they work together. Before release, the useful standard is whether animals help distinguish environments and create encounters that feel tied to those environments."
+    },
+    {
+      "type": "heading",
+      "text": "BEYOND THE NUMBERS"
+    },
+    {
+      "type": "paragraph",
+      "text": "The phrase 'more than 170' should remain a lower bound. It is not a complete bestiary, and it does not tell us how many creatures appear frequently, how many require searching, or how a particular comparison counts variants. Turning it into an exact ranking against another Rockstar game would give the number a precision it does not have. Variety matters, but so does the role that variety plays during exploration."
+    },
+    {
+      "type": "paragraph",
+      "text": "A smaller encounter can be more memorable than an impressive total. The point is not to predict one scripted example, but to leave room for the player to build an association between an animal and a particular place. When someone remembers where they first noticed something, the map has started becoming personal rather than merely large."
+    },
+    {
+      "type": "heading",
+      "text": "A STATE WITH DIFFERENT RHYTHMS"
+    },
+    {
+      "type": "paragraph",
+      "text": "Vice City, the Keys, Grassrivers, and Mount Kalaga already suggest different ways of moving and looking. A city encourages quick decisions among competing signals. Open water draws attention toward distance. Dense vegetation can make the nearby environment harder to read. Wildlife has a different visual role in each setting, even before we know the complete rules of an encounter."
+    },
+    {
+      "type": "paragraph",
+      "text": "For that reason, a useful first exploration would not try to see everything at once. Choose a region, learn a route, and return when the atmosphere changes. Notice whether the surroundings become more legible through familiarity. Those are questions for the finished world to answer, and they are more revealing than treating every region as a collection of promotional screenshots."
+    },
+    {
+      "type": "heading",
+      "text": "LEAVE SOMETHING UNSEEN"
+    },
+    {
+      "type": "paragraph",
+      "text": "The best part of this announcement may be what it leaves open. We know enough to expect variety, but not enough to have exhausted the discoveries in advance. A pre-release magazine can organize the facts without replacing the pleasure of encountering them. When the countdown ends, give Leonida a little time without a guide. A world worth waiting for should still be able to interrupt your plans with something small."
     },
     {
       "type": "sources",
@@ -56,5 +103,6 @@
         }
       ]
     }
-  ]
+  ],
+  "wordCount": 666
 }

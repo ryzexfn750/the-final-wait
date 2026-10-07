@@ -510,3 +510,78 @@ body.finale-previewing.tfw-preview-stage-title .hero-title-wrap{
     margin-bottom:9px!important;
   }
 }
+
+
+/* ================================================================
+   V24 — clean simulator extension on top of the V22 production base.
+   ================================================================ */
+.precise-time-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:7px;
+  margin-top:14px;
+}
+.precise-time-row input{
+  min-width:0;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:10px;
+  background:rgba(0,0,0,.22);
+  color:#fff;
+  padding:10px 11px;
+  font:800 10px/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.05em;
+  outline:none;
+}
+.precise-time-row input:focus{
+  border-color:rgba(242,63,178,.55);
+  box-shadow:0 0 0 3px rgba(242,63,178,.08);
+}
+.precise-time-row input.invalid{
+  animation:tfwV24Invalid .35s ease;
+  border-color:#ff6c9d;
+}
+.precise-time-row button{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;
+  background:rgba(255,255,255,.045);
+  color:#fff;
+  padding:10px 12px;
+  font:900 7px/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.09em;
+  cursor:pointer;
+  transition:transform .2s,border-color .2s,background .2s;
+}
+.precise-time-row button:hover{
+  transform:translateY(-1px);
+  border-color:rgba(242,63,178,.55);
+  background:rgba(242,63,178,.09);
+}
+.precise-time-help{
+  display:block;
+  margin:7px 2px 0;
+  font:900 6px/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.14em;
+  color:rgba(255,255,255,.45);
+}
+@keyframes tfwV24Invalid{
+  25%{transform:translateX(-4px)}
+  50%{transform:translateX(4px)}
+  75%{transform:translateX(-2px)}
+}
+
+/* Keep the V22 release layout, but make the elapsed clock glow clearly
+   without reintroducing any legacy hero/logo composition. */
+body.finale-released .release-elapsed-clock .time-unit{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 10px 30px rgba(0,0,0,.30),
+    0 0 30px rgba(242,63,178,.18),
+    0 0 52px rgba(119,96,255,.10)!important;
+}
+body.finale-released .release-elapsed-clock .time-value{
+  text-shadow:
+    0 2px 16px rgba(0,0,0,.55),
+    0 0 3px rgba(255,255,255,.78),
+    0 0 22px rgba(242,63,178,.25),
+    0 0 36px rgba(119,96,255,.13)!important;
+}

@@ -47,14 +47,15 @@ async function share(kind){
 
 function renderBlock(block, index){
   switch(block.type){
+    case 'eyebrow': return `<p class="article-section-label">${escapeHtml(block.text)}</p>`;
     case 'heading': return `<h2 class="article-heading reveal">${escapeHtml(block.text)}</h2>`;
     case 'paragraph': return `<p class="article-paragraph ${index === 0 ? 'first' : ''} reveal">${escapeHtml(block.text)}</p>`;
     case 'image': {
       const scene = sceneById(block.sceneId);
-      return `<figure class="article-image reveal"><img src="${escapeHtml(srcFor(scene))}" alt="${escapeHtml(block.alt || block.caption || 'Official GTA VI screenshot')}" style="object-position:${escapeHtml(positionFor(scene))}" loading="lazy" /><figcaption>${escapeHtml(block.caption || '')}</figcaption></figure>`;
+      return `<figure class="article-image reveal"><div class="article-image-frame"><img src="${escapeHtml(srcFor(scene))}" alt="${escapeHtml(block.alt || block.caption || 'Official GTA VI screenshot')}" style="object-position:${escapeHtml(positionFor(scene))}" loading="lazy" /></div><figcaption>${escapeHtml(block.caption || '')}</figcaption></figure>`;
     }
     case 'quote': return `<blockquote class="article-quote reveal">${escapeHtml(block.text)}${block.cite ? `<cite>${escapeHtml(block.cite)}</cite>` : ''}</blockquote>`;
-    case 'sources': return `<section class="source-ledger reveal"><div class="source-ledger-head"><span>ORIGINAL SOURCES</span><h3>THE SOURCE DESK</h3><p>Primary links used to verify this story.</p></div><div class="source-ledger-list">${(block.items || []).map((x,i) => `<a class="source-ledger-entry" href="${escapeHtml(x.url)}" target="_blank" rel="noreferrer"><span class="source-ledger-index">${String(i+1).padStart(2,'0')}</span><span class="source-ledger-copy"><small>${escapeHtml(sourceHost(x.url))}</small><strong>${escapeHtml(x.label)}</strong></span><span class="source-ledger-arrow">↗</span></a>`).join('')}</div></section>`;
+    case 'sources': return `<section class="source-ledger reveal"><div class="source-ledger-head"><h3>SOURCES</h3></div><div class="source-ledger-list">${(block.items || []).map((x,i) => `<a class="source-ledger-entry" href="${escapeHtml(x.url)}" target="_blank" rel="noreferrer"><span class="source-ledger-index">${String(i+1).padStart(2,'0')}</span><span class="source-ledger-copy"><small>${escapeHtml(sourceHost(x.url))}</small><strong>${escapeHtml(x.label)}</strong></span><span class="source-ledger-arrow">↗</span></a>`).join('')}</div></section>`;
     default: return '';
   }
 }
@@ -88,9 +89,9 @@ function bindNavigationTransitions(){
   $$('a[href]').forEach(a=>{
     if(a.dataset.transitionBound)return;
     const href=a.getAttribute('href')||'';
-    if(!a.target && !href.startsWith('http') && !href.startsWith('mailto:')){
+    if(!a.target && !href.startsWith('#') && !href.startsWith('http') && !href.startsWith('mailto:')){
       a.dataset.transitionBound='1';
-      a.addEventListener('click',e=>{e.preventDefault();showRouteLoader(href.includes('#hero')?'RETURNING TO COUNTDOWN':'LOADING THE FINAL WAIT');setTimeout(()=>{location.href=a.href},620)});
+      a.addEventListener('click',e=>{if(e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||e.button!==0)return;e.preventDefault();showRouteLoader(href.includes('#hero')?'RETURNING TO COUNTDOWN':'LOADING THE FINAL WAIT');setTimeout(()=>{location.href=a.href},900)});
     }
   });
   window.addEventListener('pageshow',hideRouteLoader);
