@@ -1,7 +1,3 @@
-# The Final Wait — V10
-
-Complete V10 build for GitHub Pages. Replace the site files in your repository, keeping its .git folder, then commit and push. No build or npm installation is required.
-
 # The Final Wait: Road to Leonida
 
 Unofficial fan countdown built as a static site for GitHub Pages.
@@ -20,52 +16,27 @@ GitHub Pages will redeploy the `main` branch automatically.
 
 ## Update “Today in Leonida”
 
-The daily front-page story is controlled only by:
+The daily story is controlled by:
 
 ```text
 content/today.json
 ```
 
-You do **not** need to edit `index.html` or `today.html` for a normal daily article. Change these fields:
+Edit the issue/date/category/headline/dek and the `blocks` array. Supported block types:
 
-- `issue` — e.g. `ISSUE 002`
-- `date` — the visible publication date
-- `category` — the small category label
-- `headline` — article title
-- `dek` — short summary used on the homepage card and article hero
-- `heroSceneId` — large article-cover image
-- `cardSceneId` — image used on the homepage newspaper card
-- `readingTime` and `byline`
-- `blocks` — the actual article content
+- `paragraph`
+- `heading`
+- `image` (`sceneId` + optional `caption`)
+- `quote` (`text` + optional `cite`)
+- `sources` (array of links)
 
-Supported `blocks`:
-
-```json
-{ "type": "paragraph", "text": "..." }
-{ "type": "heading", "text": "..." }
-{ "type": "eyebrow", "text": "..." }
-{ "type": "image", "sceneId": "scene-17", "caption": "..." }
-{ "type": "quote", "text": "...", "cite": "..." }
-{ "type": "sources", "items": [{ "label": "...", "url": "https://..." }] }
-```
-
-To choose an image, open `assets/scenes.json` and use the `id` of the screenshot/artwork you want, for example `scene-17`. The image itself remains inside `assets/screenshots/desktop/` and `assets/screenshots/mobile/`; you only reference its scene ID in the article.
-
-After editing `content/today.json`, regenerate the social preview card:
+After changing the story, regenerate the social preview card:
 
 ```powershell
 python tools/build_today_card.py
 ```
 
-Then test `today.html` locally or on GitHub Pages and push the update:
-
-```powershell
-git add .
-git commit -m "Update Today in Leonida"
-git push
-```
-
-The homepage card and `today.html` read the JSON automatically, so the new article appears without duplicating the text anywhere else.
+The article is available at `today.html`. Its X/WhatsApp/share buttons point directly to that article, whose Open Graph preview uses `assets/today-card.png`.
 
 ## Add new official screenshots later
 
@@ -112,73 +83,3 @@ This is not an official Rockstar Games project. Grand Theft Auto, Grand Theft Au
 - Timeline starts on the first milestone, can center the final milestone, and includes Rockstar's February 4, 2022 development confirmation.
 - Article sources use the new Source Desk layout.
 - A persistent Countdown shortcut appears after leaving the hero.
-
-## V7
-- 141 countdown screenshots; artwork is reserved for editorial sections and the rotating final banner.
-- Shared automatic image drift plus local mouse parallax; reduced-motion preferences are respected.
-- 22 sourced timeline milestones, native touch scrolling, drag, arrows, Home/End and bounded ends.
-- 18 expanded dossiers plus the main story, with article contents and reading progress.
-- Direct loading of index.html#intel without a visible trip through the countdown.
-- Historical rumors, reports, editorial interpretation and scheduled events are labeled separately.
-- Content reviewed October 5, 2026. The countdown remains a configurable fan target at midnight, not a guarantee of a worldwide simultaneous launch.
-
-## Timeline archive stories
-
-Every timeline milestone now opens an internal long-form story at:
-
-```text
-timeline.html?story=<story-id>
-```
-
-The articles live in `content/timeline.json`. They are intentionally not listed in the general `Inside Leonida` dossier grid; the only public entry point is the horizontal timeline. Each milestone also keeps compact external source links beside the internal `READ STORY` action.
-
-## Languages
-
-The top bar includes English, French, Spanish, Russian and Italian through the GTranslate website widget. The site remains authored in English and translations are generated on the page by the external translation service, so no server or build step is required.
-
-## Countdown milestone experience / preview
-
-The live countdown automatically has cinematic sequences at 1 month, 2 weeks, 1 week, 1 day, 12 hours, 6 hours, 1 hour, 30 minutes, 15 minutes, 5 minutes, 1 minute, 30 seconds and release. Audio effects are generated in the browser with Web Audio and respect the site's SOUND preference.
-
-To preview every sequence without changing the real clock, open:
-
-```text
-https://ryzexfn750.github.io/the-final-wait/?preview=1
-```
-
-A small `EXPERIENCE PREVIEW` button appears at the bottom-left. The 30-second preview is accelerated so you can inspect the full final countdown quickly.
-
-
-## V10 finale simulator
-
-Open the site with `?preview=1` to enter the finale preview. V10 automatically starts the preview at **-05:00** and drives the real countdown UI with simulated time. The preview panel includes a scrubber covering the complete final 30 minutes, so you can drag to arbitrary positions such as `-23:56.000`, pause there, or press **PLAY FROM HERE** to resume in real time.
-
-Finale audio (current V12 behavior):
-
-- `assets/audio/final-5-minutes.mp3` starts at `-05:00` and ends naturally around `-00:41.884`.
-- `assets/audio/final-1-minute-voice.mp4` starts exactly at `-01:00`.
-- `assets/audio/final-30-sequence.mp4` starts exactly at `-00:30` and contains the later spoken/countdown cues.
-- Tick cues begin immediately when the five-minute song ends and accelerate during the final second.
-- The music visualizer appears from `-05:00`, below the percentage bar, and reacts to the five-minute song and the final sequence track.
-
-At `00:00` the timer is replaced in-place by the release message. Fireworks and the release-state visual effects remain active for as long as the release state is displayed.
-
-## V11 finale refinements
-- true draggable final-30-minute simulator (millisecond-level seek)
-- gapless handoff from the -5 minute song to the ticking sequence
-- more stable audio sync to prevent repeated-seek glitches
-- louder ticks and slightly lower -10 release track
-- GTA VI × Ryze GTA VI collaboration lockup
-- restored final-five layout through -45s/-10s/-1m with safe responsive growth
-- dynamic final-minute headline effects and milestone pill copy
-- fixed seconds-to-milliseconds colon
-
-## V12 finale refinements
-- five-minute headline now switches immediately to a cinematic gradient treatment
-- GTA VI and Ryze marks are normalized to equal pixel boxes and tightened around the × separator
-- percentage panel is fully visible and animated from -05:00
-- timer and progress growth restored with viewport-safe scale caps
-- explicit seconds color normalization plus illuminated final-15-second treatment
-- screenshots accelerate progressively through the final minute, using a preloaded finale deck for the fastest final-second cuts
-- one-minute voiceover and complete -30-second sequence replace the old -10-second track
-- continuous audio playback no longer performs repeated seek corrections, avoiding the old mid-song glitch

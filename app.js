@@ -1,4 +1,4 @@
-import { SITE_CONFIG, TIMELINE, INTEL } from './config.js?v=10';
+import { SITE_CONFIG, TIMELINE, INTEL } from './config.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -22,18 +22,10 @@ const els = {
 };
 
 let scenes = [];
-let allScenes = [];
 let currentIndex = 0;
 let activeLayer = 0;
 let recentScenes = [];
 let sceneTimer = null;
-let finaleSceneDeck = [];
-let finaleSceneCursor = 0;
-let finaleDeckPrimed = false;
-const releaseSceneIds = ['scene-64','scene-69','scene-68','scene-25','scene-134','scene-43','scene-104','scene-123'];
-let releaseSceneCursor = -1;
-let releaseSequenceActive = false;
-let releaseSequencePrimed = false;
 let releaseTriggered = false;
 let currentPhase = '';
 let lastSlowUpdate = 0;
@@ -94,8 +86,8 @@ function zoneMeta(timeZone) {
   } catch { return { short: timeZone, offset:'' }; }
 }
 
-function splitRemaining(value) {
-  let diff = Math.max(0, Number(value) || 0);
+function splitTime(now = Date.now()) {
+  let diff = Math.max(0, release - now);
   const total = diff;
   const days = Math.floor(diff / DAY); diff %= DAY;
   const hours = Math.floor(diff / 3_600_000); diff %= 3_600_000;
@@ -103,10 +95,6 @@ function splitRemaining(value) {
   const seconds = Math.floor(diff / 1000);
   const milliseconds = Math.floor(diff % 1000);
   return { days, hours, minutes, seconds, milliseconds, total };
-}
-
-function splitTime(now = Date.now()) {
-  return splitRemaining(release - now);
 }
 
 function phaseFor(ms) {
@@ -142,12 +130,12 @@ function updateCountdown() {
   const realNow = Date.now();
   const previewValue = Number(window.__tfwPreviewRemainingMs);
   const previewActive = Number.isFinite(previewValue);
-  const t = previewActive ? splitRemaining(previewValue) : splitTime(realNow);
-  const simulatedNow = previewActive ? release - t.total : realNow;
+  const now = previewActive ? release - Math.max(0, previewValue) : realNow;
+  const t = previewActive
+    ? (()=>{ let diff=Math.max(0,previewValue); const total=diff; const days=Math.floor(diff/DAY); diff%=DAY; const hours=Math.floor(diff/3_600_000); diff%=3_600_000; const minutes=Math.floor(diff/60_000); diff%=60_000; const seconds=Math.floor(diff/1000); const milliseconds=Math.floor(diff%1000); return {total,days,hours,minutes,seconds,milliseconds}; })()
+    : splitTime(realNow);
 
   // Keep the visible clock independent from every non-essential effect below.
-  // During Experience Preview the same production clock is driven by the simulated
-  // remaining time, so the timer, milliseconds and percentage are all genuine.
   setUnit(els.days, String(t.days), false);
   setUnit(els.hours, pad(t.hours));
   setUnit(els.minutes, pad(t.minutes));
@@ -159,7 +147,7 @@ function updateCountdown() {
 
   try {
     const denominator = Math.max(1, release - waitStart);
-    const progress = Math.min(1, Math.max(0, (simulatedNow - waitStart) / denominator));
+    const progress = Math.min(1, Math.max(0, (now - waitStart) / denominator));
     if (els.progressText) els.progressText.textContent = `${(progress * 100).toFixed(8)}%`;
     if (els.progressFill) els.progressFill.style.width = `${progress * 100}%`;
   } catch (error) { console.warn('Progress update skipped', error); }
@@ -172,14 +160,14 @@ function updateCountdown() {
     lastSrSecond = t.seconds;
   }
 
-  if (realNow - lastShareUpdate > 10_000) {
+  if (now - lastShareUpdate > 10_000) {
     const shareCounter = $('#shareCountdownText');
-    if (shareCounter) shareCounter.textContent = siteShareText();
-    lastShareUpdate = realNow;
+    if (shareCounter) shareCounter.textContent = shareText(false);
+    lastShareUpdate = now;
   }
-  window.__tfwLastRealRemaining = Math.max(0, release - realNow);
   window.__tfwLastRemaining = t.total;
-  try { window.dispatchEvent(new CustomEvent('tfw:countdown',{detail:{remaining:t.total,days:t.days,hours:t.hours,minutes:t.minutes,seconds:t.seconds,milliseconds:t.milliseconds,preview:previewActive}})); } catch {}
+  window.__tfwLastRealRemaining = Math.max(0, release - realNow);
+  try { window.dispatchEvent(new CustomEvent('tfw:countdown',{detail:{remaining:t.total,preview:previewActive}})); } catch {}
   if (!previewActive && t.total <= 0 && !releaseTriggered) triggerRelease();
 }
 
@@ -188,15 +176,12 @@ function safeCountdownTick(){
   catch (error) { console.error('Countdown tick failed', error); }
 }
 
-window.__tfwRefreshCountdown = safeCountdownTick;
-
 function startCountdownClock(){
   if (countdownRaf) cancelAnimationFrame(countdownRaf);
   if (countdownBackup) clearInterval(countdownBackup);
   if (window.__tfwTimer) clearInterval(window.__tfwTimer);
   const loop = timestamp => {
-    const frameBudget = Number(window.__tfwLastRemaining ?? Infinity) <= 1000 ? 14 : 32;
-    if (!document.hidden && (!lastClockFrame || timestamp - lastClockFrame >= frameBudget)) {
+    if (!lastClockFrame || timestamp - lastClockFrame >= 16) {
       safeCountdownTick();
       lastClockFrame = timestamp;
     }
@@ -205,7 +190,7 @@ function startCountdownClock(){
   safeCountdownTick();
   countdownRaf = requestAnimationFrame(loop);
   // Backup pulse keeps the clock alive if animation frames are throttled or interrupted.
-  countdownBackup = setInterval(()=>{if(!document.hidden && Date.now()-Number(window.__tfwClockHeartbeat||0)>250)safeCountdownTick()}, 300);
+  countdownBackup = setInterval(safeCountdownTick, 100);
   window.__tfwTimer = countdownBackup;
   window.__tfwClockHealthy = true;
 }
@@ -214,7 +199,7 @@ function startCountdownClock(){
 function updateZoneUI() {
   const meta = zoneMeta(currentTimeZone);
   els.zoneShort.textContent = `${meta.short} · ${meta.offset}`;
-  if (els.timezoneNote) els.timezoneNote.textContent = `THIS COUNTDOWN REFERS TO ${meta.short}${meta.offset ? ` (${meta.offset})` : ''}.`;
+  els.timezoneNote.textContent = `THIS COUNTDOWN REFERS TO ${meta.short}${meta.offset ? ` (${meta.offset})` : ''}.`;
   $$('.timezone-option').forEach(el => el.classList.toggle('active', el.dataset.zone === currentTimeZone));
 }
 
@@ -236,21 +221,15 @@ function triggerRelease() {
   releaseTriggered = true;
   stopSceneRotation();
   document.body.classList.add('phase-released');
-  // V9: the release reveal is rendered in-place by milestones.js where the timer lived.
-  // Keep the legacy overlay dormant so the site never becomes a separate full-screen release page.
-  if (els.releaseOverlay) {
-    els.releaseOverlay.classList.remove('active','sequence');
-    els.releaseOverlay.setAttribute('aria-hidden','true');
-  }
-  window.dispatchEvent(new CustomEvent('tfw:release'));
+  try { window.dispatchEvent(new CustomEvent('tfw:release-reached')); } catch {}
   track('release_sequence_shown');
+
 }
 
 async function loadScenes() {
   const response = await fetch('./assets/scenes.json', { cache:'no-cache' });
   if (!response.ok) throw new Error(`Unable to load scenes.json (${response.status})`);
-  allScenes = (await response.json()).filter(s => s.desktop && s.mobile);
-  scenes = allScenes.filter(s => s.category !== 'artwork' && s.mediaType !== 'artwork');
+  scenes = (await response.json()).filter(s => s.desktop && s.mobile);
   if (!scenes.length) throw new Error('No scenes configured');
   const preferred = scenes.findIndex(s => s.id === 'scene-02');
   currentIndex = preferred >= 0 ? preferred : 0;
@@ -263,7 +242,7 @@ async function loadScenes() {
 
 function srcFor(scene){ return isMobile() ? scene.mobile : scene.desktop; }
 function positionFor(scene){ return isMobile() ? (scene.mobilePosition || scene.position || '50% 50%') : (scene.desktopPosition || scene.position || '50% 50%'); }
-function sceneById(id){ return allScenes.find(s => s.id === id) || scenes[0]; }
+function sceneById(id){ return scenes.find(s => s.id === id) || scenes[0]; }
 function applyScene(layer, scene, immediate=false){
   if (!scene) return;
   layer.style.backgroundImage = `url("${srcFor(scene)}")`;
@@ -282,36 +261,9 @@ function pickNextScene(){
   return pool[Math.floor(Math.random()*pool.length)];
 }
 function preloadChoice(choice){ if (!choice) return; const img = new Image(); img.decoding='async'; img.src=srcFor(choice.scene); }
-function releaseChoiceForCursor(cursor){
-  const id=releaseSceneIds[cursor];
-  if(!id)return null;
-  const index=scenes.findIndex(scene=>scene.id===id);
-  return index>=0?{scene:scenes[index],index}:null;
-}
-function primeReleaseSceneSequence(){
-  if(releaseSequencePrimed||!scenes.length)return;
-  releaseSequencePrimed=true;
-  releaseSceneIds.forEach((_,i)=>{const choice=releaseChoiceForCursor(i);if(choice)setTimeout(()=>preloadChoice(choice),i*85)});
-}
-function startReleaseSceneSequence(){
-  primeReleaseSceneSequence();
-  releaseSceneCursor=0;
-  releaseSequenceActive=true;
-  const choice=releaseChoiceForCursor(releaseSceneCursor);
-  if(choice)changeScene(choice,true);
-}
-function nextReleaseSceneChoice(){
-  if(!releaseSequenceActive)return null;
-  releaseSceneCursor++;
-  if(releaseSceneCursor>=releaseSceneIds.length){releaseSequenceActive=false;return null}
-  return releaseChoiceForCursor(releaseSceneCursor);
-}
-function changeScene(forceChoice=null, allowFinale=false){
-  if (!scenes.length || (currentPhase==='final-minute' && !allowFinale)) return;
-  let choice=forceChoice;
-  if(!choice && (currentPhase==='released'||document.body.classList.contains('finale-released')))choice=nextReleaseSceneChoice();
-  if(!choice)choice=pickNextScene();
-  if (!choice) return;
+function changeScene(forceChoice=null){
+  if (!scenes.length || ['final-minute','released'].includes(currentPhase)) return;
+  const choice = forceChoice || pickNextScene(); if (!choice) return;
   const incoming = activeLayer === 0 ? els.sceneB : els.sceneA;
   const outgoing = activeLayer === 0 ? els.sceneA : els.sceneB;
   applyScene(incoming, choice.scene);
@@ -327,31 +279,6 @@ function scheduleSceneRotation(){
 }
 function stopSceneRotation(){ if(sceneTimer) clearTimeout(sceneTimer); sceneTimer=null; }
 
-function primeFinaleSceneDeck(){
-  if(finaleDeckPrimed||!scenes.length)return;
-  finaleDeckPrimed=true;
-  const candidates=scenes.map((scene,index)=>({scene,index})).filter(({index})=>index!==currentIndex);
-  for(let i=candidates.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[candidates[i],candidates[j]]=[candidates[j],candidates[i]]}
-  finaleSceneDeck=candidates.slice(0,Math.min(20,candidates.length));
-  finaleSceneCursor=0;
-  // Prime a smaller deck during the five-minute lead-in so the final-second rush stays smooth without overloading decoding.
-  finaleSceneDeck.forEach((choice,i)=>setTimeout(()=>preloadChoice(choice),i*120));
-}
-
-window.addEventListener('tfw:finale-start',()=>{primeFinaleSceneDeck();primeReleaseSceneSequence()});
-// The finale controller can request scene changes faster than the normal 10s rotation.
-// This path intentionally bypasses the final-minute lock while preserving the normal lock elsewhere.
-window.addEventListener('tfw:finale-scene-step',()=>{
-  if(document.hidden || !scenes.length || currentPhase==='released')return;
-  primeFinaleSceneDeck();
-  const choice=finaleSceneDeck.length?finaleSceneDeck[finaleSceneCursor++%finaleSceneDeck.length]:null;
-  changeScene(choice,true);
-});
-window.addEventListener('tfw:finale-release',()=>{
-  if(!scenes.length)return;
-  startReleaseSceneSequence();
-});
-
 async function loadToday(){
   const r = await fetch('./content/today.json',{cache:'no-cache'}); if(!r.ok) throw new Error('today.json failed'); todayData=await r.json();
   const scene = sceneById(todayData.cardSceneId || todayData.heroSceneId);
@@ -365,15 +292,10 @@ function escapeHtml(v){ return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<'
 function renderTimeline(){
   $('#timelineList').innerHTML = TIMELINE.map((item,i)=>{
     const scene = sceneById(item.sceneId);
-    const articleHref=`timeline.html?story=${encodeURIComponent(item.articleId || '')}`;
-    const sourceLinks=[
-      item.primaryUrl ? `<a class="timeline-source magnetic" href="${escapeHtml(item.primaryUrl)}" target="_blank" rel="noreferrer">${escapeHtml(item.primaryLabel || 'SOURCE')} ↗</a>` : '',
-      item.secondaryUrl ? `<a class="timeline-source secondary magnetic" href="${escapeHtml(item.secondaryUrl)}" target="_blank" rel="noreferrer">${escapeHtml(item.secondaryLabel || 'MORE')} ↗</a>` : ''
-    ].filter(Boolean).join('');
     return `<article class="timeline-item" data-timeline-index="${i}">
-      <div class="timeline-visual reveal"><img class="cinematic-media" src="${escapeHtml(srcFor(scene))}" alt="" loading="lazy" style="object-position:${escapeHtml(positionFor(scene))}"><span>${escapeHtml(item.type)}</span></div>
+      <div class="timeline-visual reveal"><img src="${escapeHtml(srcFor(scene))}" alt="" loading="lazy" style="object-position:${escapeHtml(positionFor(scene))}"><span>${escapeHtml(item.type)}</span></div>
       <div class="timeline-node"><i></i><time>${escapeHtml(item.date)}</time></div>
-      <div class="timeline-copy reveal"><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.text)}</p><div class="timeline-actions"><a class="timeline-link magnetic" href="${articleHref}">READ STORY <span>↗</span></a>${sourceLinks}</div></div>
+      <div class="timeline-copy reveal"><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.text)}</p><a class="timeline-link magnetic" href="${item.url}" target="_blank" rel="noreferrer">${escapeHtml(item.sourceLabel)} <span>↗</span></a></div>
     </article>`;
   }).join('');
 }
@@ -397,56 +319,62 @@ function observeReveals(){
   $$('.reveal:not(.visible)').forEach(el=>io.observe(el));
 }
 
-let timelineTarget = 0;
 function updateTimelineProgress(){
-  const viewport=$('#timelineViewport'), items=$$('.timeline-item');
-  if(!viewport || !items.length) return;
+  const viewport=$('#timelineViewport'); if(!viewport || !els.timelineProgress) return;
   const max=Math.max(0,viewport.scrollWidth-viewport.clientWidth);
-  const center=viewport.getBoundingClientRect().left+viewport.clientWidth/2;
-  let index=0, distance=Infinity;
-  items.forEach((item,i)=>{const r=item.getBoundingClientRect(),d=Math.abs(r.left+r.width/2-center);if(d<distance){distance=d;index=i}});
-  if(viewport.scrollLeft<=2)index=0;
-  if(max>0 && viewport.scrollLeft>=max-2)index=items.length-1;
-  items.forEach((item,i)=>{item.classList.toggle('active',i===index);item.classList.toggle('visited',i<index);if(i===index)item.setAttribute('aria-current','step');else item.removeAttribute('aria-current')});
-  els.timelineProgress.style.width=`${(index+1)/items.length*100}%`;
-  $('#timelinePrev').disabled=index===0;
-  $('#timelineNext').disabled=index===items.length-1;
-  const label=$('#timelinePosition');if(label)label.textContent=`${String(index+1).padStart(2,'0')} / ${items.length} · ${TIMELINE[index].date}`;
-  timelineTarget=index;
-}
-function syncTimelineEdge(){
-  const viewport=$('#timelineViewport'),list=$('#timelineList'),first=$('.timeline-item');
-  if(!viewport||!list||!first)return;
-  list.style.setProperty('--timeline-edge',`${Math.max(0,(viewport.clientWidth-first.offsetWidth)/2)}px`);
-}
-function scrollTimelineTo(index,instant=false){
-  const viewport=$('#timelineViewport'),items=$$('.timeline-item');if(!viewport||!items.length)return;
-  timelineTarget=Math.max(0,Math.min(items.length-1,index));
-  const target=items[timelineTarget];
-  const left=target.getBoundingClientRect().left-viewport.getBoundingClientRect().left+viewport.scrollLeft+(target.offsetWidth-viewport.clientWidth)/2;
-  viewport.scrollTo({left:Math.max(0,Math.min(viewport.scrollWidth-viewport.clientWidth,left)),behavior:instant||matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
-}
-function bindTimeline(){
-  const viewport=$('#timelineViewport');if(!viewport)return;
-  syncTimelineEdge();
-  $('#timelinePrev').addEventListener('click',()=>scrollTimelineTo(timelineTarget-1));
-  $('#timelineNext').addEventListener('click',()=>scrollTimelineTo(timelineTarget+1));
-  let frame=0;
-  viewport.addEventListener('scroll',()=>{if(!frame)frame=requestAnimationFrame(()=>{frame=0;updateTimelineProgress()})},{passive:true});
-  viewport.addEventListener('keydown',e=>{const keys={ArrowLeft:timelineTarget-1,ArrowRight:timelineTarget+1,Home:0,End:TIMELINE.length-1};if(e.key in keys){e.preventDefault();scrollTimelineTo(keys[e.key],e.key==='Home'||e.key==='End')}});
-  if(matchMedia('(pointer:fine)').matches){
-    let drag=null;
-    viewport.addEventListener('pointerdown',e=>{if(e.button!==0||e.target.closest('a,button'))return;drag={x:e.clientX,left:viewport.scrollLeft};viewport.setPointerCapture(e.pointerId);viewport.classList.add('dragging')});
-    viewport.addEventListener('pointermove',e=>{if(drag)viewport.scrollLeft=drag.left+drag.x-e.clientX});
-    const end=()=>{if(!drag)return;drag=null;viewport.classList.remove('dragging');updateTimelineProgress();scrollTimelineTo(timelineTarget)};
-    viewport.addEventListener('pointerup',end);viewport.addEventListener('pointercancel',end);
+  const pct=max ? Math.min(1,Math.max(0,viewport.scrollLeft/max)) : 0;
+  els.timelineProgress.style.width=`${Math.max(4,pct*100)}%`;
+  const items=$$('.timeline-item');
+  if(!items.length) return;
+  let best=items[0];
+  if(viewport.scrollLeft <= 2){
+    best=items[0];
+  } else if(max && viewport.scrollLeft >= max-2){
+    best=items[items.length-1];
+  } else {
+    const vr=viewport.getBoundingClientRect();
+    const center=vr.left+viewport.clientWidth/2;
+    let bestDist=Infinity;
+    items.forEach(item=>{ const r=item.getBoundingClientRect(); const d=Math.abs((r.left+r.width/2)-center); if(d<bestDist){bestDist=d;best=item;} });
   }
-  new ResizeObserver(()=>{syncTimelineEdge();scrollTimelineTo(timelineTarget,true)}).observe(viewport);
-  viewport.scrollLeft=0;updateTimelineProgress();
+  items.forEach(item=>item.classList.toggle('active',item===best));
+}
+
+function syncTimelineEdge(){
+  const viewport=$('#timelineViewport'); const list=$('#timelineList'); const first=$('.timeline-item');
+  if(!viewport || !list || !first) return;
+  const edge=Math.max(24,(viewport.clientWidth-first.offsetWidth)/2);
+  list.style.setProperty('--timeline-edge',`${edge}px`);
+}
+
+function scrollTimelineTo(index){
+  const viewport=$('#timelineViewport'); const items=$$('.timeline-item');
+  if(!viewport || !items.length) return;
+  const target=items[Math.max(0,Math.min(items.length-1,index))];
+  const left=target.offsetLeft + target.offsetWidth/2 - viewport.clientWidth/2;
+  viewport.scrollTo({left:Math.max(0,left),behavior:'smooth'});
+}
+
+function bindTimeline(){
+  const viewport=$('#timelineViewport'); if(!viewport)return;
+  syncTimelineEdge();
+  const activeIndex=()=>Math.max(0,$$('.timeline-item').findIndex(x=>x.classList.contains('active')));
+  $('#timelinePrev')?.addEventListener('click',()=>scrollTimelineTo(activeIndex()-1));
+  $('#timelineNext')?.addEventListener('click',()=>scrollTimelineTo(activeIndex()+1));
+  viewport.addEventListener('scroll',updateTimelineProgress,{passive:true});
+  if(matchMedia('(pointer:fine)').matches){
+    let dragging=false,startX=0,startLeft=0;
+    viewport.addEventListener('pointerdown',e=>{ if(e.target.closest('a,button'))return; dragging=true; startX=e.clientX; startLeft=viewport.scrollLeft; viewport.setPointerCapture(e.pointerId); viewport.classList.add('dragging'); });
+    viewport.addEventListener('pointermove',e=>{ if(dragging) viewport.scrollLeft=startLeft-(e.clientX-startX); });
+    const end=e=>{ if(!dragging)return; dragging=false; viewport.classList.remove('dragging'); try{viewport.releasePointerCapture(e.pointerId)}catch{}; updateTimelineProgress(); };
+    viewport.addEventListener('pointerup',end); viewport.addEventListener('pointercancel',end);
+  }
+  viewport.scrollLeft=0;
+  requestAnimationFrame(()=>{ syncTimelineEdge(); viewport.scrollLeft=0; updateTimelineProgress(); });
 }
 
 function bindParallax(){
-  if(!matchMedia('(pointer:fine)').matches || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  if(!matchMedia('(pointer:fine)').matches) return;
   document.body.classList.add('has-pointer');
   window.addEventListener('pointermove',e=>{
     els.cursorGlow.style.left=`${e.clientX}px`; els.cursorGlow.style.top=`${e.clientY}px`;
@@ -537,7 +465,6 @@ function hideRouteLoader(){ const loader=$('#routeLoader'); if(!loader)return; l
 function routeLabelFor(href){
   if(href.includes('today.html')) return 'OPENING TODAY IN LEONIDA';
   if(href.includes('intel.html')) return 'OPENING LEONIDA DOSSIER';
-  if(href.includes('timeline.html')) return 'OPENING TIMELINE STORY';
   return 'LOADING THE FINAL WAIT';
 }
 
@@ -556,10 +483,9 @@ function bindNavigationTransitions(){
     } else if(!a.target && !href.startsWith('http') && !href.startsWith('mailto:')){
       a.dataset.transitionBound='1';
       a.addEventListener('click',e=>{
-        if(e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||e.button!==0)return;
         e.preventDefault();
         showRouteLoader(routeLabelFor(href));
-        setTimeout(()=>{ location.href=a.href; },900);
+        setTimeout(()=>{ location.href=a.href; },620);
       });
     }
   });
@@ -570,27 +496,22 @@ function bindNavigationTransitions(){
 let audioCtx=null,soundtrackTimer=null,soundWanted=storage.get('tfw_sound')!=='off',soundStarted=false,chordIndex=0;
 const chords=[[110,164.81,220],[87.31,130.81,174.61],[130.81,164.81,196],[98,146.83,196]];
 function schedulePadChord(startAt){if(!audioCtx||!soundWanted)return;const chord=chords[chordIndex++%chords.length],master=audioCtx.createGain(),filter=audioCtx.createBiquadFilter();filter.type='lowpass';filter.frequency.setValueAtTime(820,startAt);master.gain.setValueAtTime(.0001,startAt);master.gain.exponentialRampToValueAtTime(.022,startAt+1.8);master.gain.setValueAtTime(.022,startAt+5.8);master.gain.exponentialRampToValueAtTime(.0001,startAt+8.2);filter.connect(master);master.connect(audioCtx.destination);chord.forEach((f,i)=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=i===1?'triangle':'sine';o.frequency.setValueAtTime(f,startAt);o.detune.setValueAtTime(i===0?-5:i===2?5:0,startAt);g.gain.value=i===0?.42:.26;o.connect(g);g.connect(filter);o.start(startAt);o.stop(startAt+8.4)})}
-async function startSoundtrack(){if(!soundWanted||soundStarted||document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released'))return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;try{audioCtx=new AC();await audioCtx.resume();if(audioCtx.state!=='running')throw new Error();soundStarted=true;chordIndex=0;schedulePadChord(audioCtx.currentTime+.05);soundtrackTimer=setInterval(()=>{if(audioCtx?.state==='running')schedulePadChord(audioCtx.currentTime+.05)},8000);updateSoundUI();track('sound_started')}catch{soundStarted=false;try{await audioCtx?.close()}catch{}audioCtx=null}}
+async function startSoundtrack(){if(!soundWanted||soundStarted||window.__tfwExternalAudioActive||document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released'))return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;try{audioCtx=new AC();await audioCtx.resume();if(audioCtx.state!=='running')throw new Error();soundStarted=true;chordIndex=0;schedulePadChord(audioCtx.currentTime+.05);soundtrackTimer=setInterval(()=>{if(audioCtx?.state==='running')schedulePadChord(audioCtx.currentTime+.05)},8000);updateSoundUI();track('sound_started')}catch{soundStarted=false;try{await audioCtx?.close()}catch{}audioCtx=null}}
 async function stopSoundtrack(){if(soundtrackTimer)clearInterval(soundtrackTimer);soundtrackTimer=null;try{await audioCtx?.close()}catch{}audioCtx=null;soundStarted=false;updateSoundUI()}
-function updateSoundUI(){[$('#soundButton'),$('#mobileSoundButton')].forEach(b=>{if(!b)return;b.setAttribute('aria-pressed',String(soundWanted));const l=$('.sound-label',b);if(l)l.textContent=soundWanted?'SOUND':'MUTED'})}
-async function toggleSound(){soundWanted=!soundWanted;storage.set('tfw_sound',soundWanted?'on':'off');const finale=document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released')||document.body.classList.contains('finale-previewing');if(soundWanted){if(finale)window.dispatchEvent(new CustomEvent('tfw:finale-audio-enable'));else await startSoundtrack()}else await stopSoundtrack();window.dispatchEvent(new CustomEvent('tfw:sound-change',{detail:{enabled:soundWanted}}));updateSoundUI();track('sound_toggle',{enabled:soundWanted})}
-function armAutoplay(){startSoundtrack();const g=()=>{if(soundWanted&&!document.body.classList.contains('final-five-active')&&!document.body.classList.contains('finale-released'))startSoundtrack()};['pointerdown','keydown','touchstart'].forEach(e=>window.addEventListener(e,g,{once:true,capture:true,passive:true}))}
-window.addEventListener('tfw:finale-start',()=>{if(soundStarted)stopSoundtrack()});
+function updateSoundUI(){[$('#soundButton'),$('#mobileSoundButton')].forEach(b=>{if(!b)return;b.setAttribute('aria-pressed',String(soundWanted));const l=$('.sound-label',b);if(l)l.textContent=soundWanted?(soundStarted?'SOUND':'SOUND ARMED'):'MUTED'})}
+async function toggleSound(){soundWanted=!soundWanted;storage.set('tfw_sound',soundWanted?'on':'off');try{window.dispatchEvent(new CustomEvent('tfw:sound-change',{detail:{enabled:soundWanted}}))}catch{};if(soundWanted)await startSoundtrack();else await stopSoundtrack();updateSoundUI();track('sound_toggle',{enabled:soundWanted})}
+function armAutoplay(){startSoundtrack();const g=()=>{if(soundWanted)startSoundtrack()};['pointerdown','keydown','touchstart'].forEach(e=>window.addEventListener(e,g,{once:true,capture:true,passive:true}))}
 
 function initAnalytics(){const id=SITE_CONFIG.gaMeasurementId?.trim();if(!id)return;$('#privacyButton').hidden=false;const saved=storage.get('tfw_analytics');if(!SITE_CONFIG.analyticsConsentRequired)return loadAnalytics(id);if(saved==='yes')return loadAnalytics(id);if(saved==='no')return;els.analyticsConsent.hidden=false}
 function loadAnalytics(id){if(window.gtag)return;const s=document.createElement('script');s.async=true;s.src=`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;document.head.appendChild(s);window.dataLayer=window.dataLayer||[];window.gtag=function(){window.dataLayer.push(arguments)};window.gtag('js',new Date());window.gtag('config',id,{anonymize_ip:true})}
 function track(name,params={}){if(window.gtag)window.gtag('event',name,params)}
 
 function bindUi(){
-  $('#nextScene').addEventListener('click',()=>{changeScene(null,true);stopSceneRotation();scheduleSceneRotation()});
+  $('#nextScene').addEventListener('click',()=>{changeScene();stopSceneRotation();scheduleSceneRotation()});
   $('#shareButton').addEventListener('click',()=>openShare('site')); $('#mobileShareButton').addEventListener('click',()=>openShare('site')); $('#dailyShare').addEventListener('click',()=>openShare('article'));
   $('#closeShare').addEventListener('click',()=>closeModals()); $('#closeTimezone').addEventListener('click',()=>closeModals()); els.modalBackdrop.addEventListener('click',()=>closeModals());
   $$('[data-share]').forEach(b=>b.addEventListener('click',()=>doShare(b.dataset.share)));
-  const openTimezonePicker=()=>{renderTimeZones();openModal(els.timezoneModal);setTimeout(()=>els.timezoneSearch.focus(),50)};
-  $('#zoneButton').addEventListener('click',openTimezonePicker);
-  $('#topbarZoneButton')?.addEventListener('click',openTimezonePicker);
-  $('#mobileZoneButton')?.addEventListener('click',openTimezonePicker);
-  els.timezoneSearch.addEventListener('input',()=>renderTimeZones(els.timezoneSearch.value));
+  $('#zoneButton').addEventListener('click',()=>{renderTimeZones();openModal(els.timezoneModal);setTimeout(()=>els.timezoneSearch.focus(),50)}); els.timezoneSearch.addEventListener('input',()=>renderTimeZones(els.timezoneSearch.value));
   $('#fullscreenButton').addEventListener('click',toggleFullscreen); $('#mobileFullscreenButton').addEventListener('click',toggleFullscreen); if(!document.documentElement.requestFullscreen){$('#fullscreenButton').hidden=true;$('#mobileFullscreenButton').hidden=true}
   $('#soundButton').addEventListener('click',e=>{e.stopPropagation();toggleSound()}); $('#mobileSoundButton').addEventListener('click',e=>{e.stopPropagation();toggleSound()}); els.menuButton.addEventListener('click',toggleMobileMenu); $$('#mobileMenu a').forEach(a=>a.addEventListener('click',closeMobileMenu));
   $$('#intelFilter button').forEach(b=>b.addEventListener('click',()=>{$$('#intelFilter button').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderIntel(b.dataset.filter);track('intel_filter',{filter:b.dataset.filter})}));
@@ -608,16 +529,10 @@ async function init(){
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden) safeCountdownTick(); });
   const initialHash=window.__tfwInitialHash;
   if(initialHash){
-    const target=document.getElementById(initialHash.slice(1));
-    if(target){
-      history.replaceState(null,'',initialHash);
-      target.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
-      const top=target.getBoundingClientRect().top+scrollY-(els.topbar?.offsetHeight||0);
-      window.scrollTo({top:Math.max(0,top),behavior:'instant'});
-    }
-    requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.remove('anchor-loading')));
+    setTimeout(()=>{
+      const target=$(initialHash);
+      if(target){ history.replaceState(null,'',initialHash); smoothScrollToTarget(target,980); }
+    },180);
   }
-  document.dispatchEvent(new Event('tfw:content-ready'));
-
 }
 init();
