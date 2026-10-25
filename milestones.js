@@ -6,7 +6,7 @@
   let FINAL_SONG_END=41884;
   let TICK_START=43000;
   const PROGRESS_FOCUS_START=FINAL_FIVE;
-  const VOICE_TRACK_START=-1;
+  const VOICE_TRACK_START=MIN;
   const SEQUENCE_TRACK_START=30000;
   const LAST_FIFTEEN=6500;
   const SCRUB_MAX=31*DAY+5*SECOND;
@@ -58,7 +58,13 @@
   const finalSong=new Audio('assets/audio/final-5-minutes.mp3');
   const voiceSong=new Audio('assets/audio/final-1-minute-voice.mp4');
   const sequenceSong=new Audio('assets/audio/final-30-sequence.mp4');
-  for(const audio of [finalSong,voiceSong,sequenceSong]){audio.preload='auto';audio.playsInline=true}
+  let finaleTracksPrimed=false;
+  for(const audio of [finalSong,voiceSong,sequenceSong]){audio.preload='none';audio.playsInline=true}
+  function primeFinaleTracks(){
+    if(finaleTracksPrimed||!soundEnabled())return;
+    finaleTracksPrimed=true;
+    for(const audio of [finalSong,voiceSong,sequenceSong]){audio.preload='auto';audio.load()}
+  }
   finalSong.volume=.72;
   voiceSong.volume=1;
   sequenceSong.volume=.68;
@@ -453,6 +459,7 @@
   function musicIsPlaying(){return !finalSong.paused||!sequenceSong.paused}
 
   function startVisualizer(){
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
     const canvas=$('#finaleVisualizer');if(!canvas||visualizerRaf)return;
     const ctx=canvas.getContext('2d');if(!ctx)return;
     document.body.classList.add('finale-music-live');
@@ -497,7 +504,12 @@
     if(clear){const canvas=$('#finaleVisualizer'),ctx=canvas?.getContext('2d');if(canvas&&ctx)ctx.clearRect(0,0,canvas.width,canvas.height)}
   }
 
+  let finaleAudioUnlocked=false;
   async function unlockFinaleAudio(){
+    const remaining=Number(window.__tfwPreviewRemainingMs??window.__tfwLastRemaining);
+    if(finaleAudioUnlocked||!soundEnabled()||!Number.isFinite(remaining)||remaining>10*MIN)return;
+    finaleAudioUnlocked=true;
+    primeFinaleTracks();
     await ensureMusicGraph();
     for(const audio of [finalSong,voiceSong,sequenceSong]){
       try{const old=audio.volume;audio.volume=0;await audio.play();audio.pause();audio.currentTime=0;audio.volume=old}catch{}
@@ -525,8 +537,15 @@
   }
 
   async function syncVoiceSong(remaining){
-    try{voiceSong.pause();voiceSong.currentTime=0}catch{}
-    return;
+    const duration=Number.isFinite(voiceSong.duration)&&voiceSong.duration>0?voiceSong.duration:3.114667;
+    const active=soundEnabled()&&remaining<=VOICE_TRACK_START&&remaining>VOICE_TRACK_START-duration*1000;
+    if(!active){if(!voiceSong.paused)voiceSong.pause();return}
+    try{
+      if(voiceSong.paused){
+        voiceSong.currentTime=clamp((VOICE_TRACK_START-remaining)/1000,0,duration);
+        await voiceSong.play();
+      }
+    }catch{}
   }
 
   async function syncSequenceSong(remaining){
@@ -618,7 +637,9 @@
   }
 
   function updateFinale(remaining,{playAudio=true,playTicks=true}={}){
-    remaining=Math.max(0,remaining);stageFor(remaining);updateFinaleCopy(remaining);
+    remaining=Math.max(0,remaining);
+    if(playAudio&&remaining<=10*MIN&&remaining>0)primeFinaleTracks();
+    stageFor(remaining);updateFinaleCopy(remaining);
     if(remaining<=0){setFinaleScale(0);showRelease(playAudio);return}
     $('#countdown')?.setAttribute('aria-hidden','false');
     if(releaseShown)resetRelease({pauseAudio:true});
@@ -654,6 +675,7 @@
   }
 
   function startFireworks(){
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
     const canvas=$('#finaleFireworks');if(!canvas||fireworksRaf)return;const ctx=canvas.getContext('2d');if(!ctx)return;
     fireworks=[];fireworkNext=0;
     const resize=()=>{const r=canvas.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d));ctx.setTransform(d,0,0,d,0,0)};
@@ -760,13 +782,11 @@
 
   sequenceSong.addEventListener('ended',()=>{if(document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released'))startVisualizer();else stopVisualizer()});
   inject();
-  ['pointerdown','keydown','touchstart'].forEach(ev=>window.addEventListener(ev,unlockFinaleAudio,{once:true,capture:true,passive:true}));
+  ['pointerdown','keydown','touchstart'].forEach(ev=>window.addEventListener(ev,unlockFinaleAudio,{capture:true,passive:true}));
   window.addEventListener('tfw:countdown',e=>{const ms=Number(e.detail?.remaining);if(Number.isFinite(ms))maybeTrigger(ms,Boolean(e.detail?.preview))});
   window.addEventListener('tfw:sound-change',()=>{
     if(!soundEnabled()){
-      document.body.classList.add('finale-music-live');
-      startVisualizer();
-      pauseFinaleAudio(false,true);
+      pauseFinaleAudio(false);
       return;
     }
     const remaining=finalePreview?Number(window.__tfwPreviewRemainingMs):lastRemaining;

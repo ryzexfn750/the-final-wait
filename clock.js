@@ -81,7 +81,7 @@
      V20 live runtime: mobile/desktop performance governor, synchronized
      background soundtrack, in-layout milestone moments, and release clock.
      ------------------------------------------------------------------ */
-  const RELEASE_CET=Date.parse('2026-11-18T23:00:00Z');
+  const releaseEpoch=()=>release;
   const SECOND=1000, MINUTE=60000, HOUR=3600000;
   const root=document.documentElement;
   const storage={
@@ -89,27 +89,7 @@
     set(k,v){try{localStorage.setItem(k,v)}catch{}}
   };
 
-  /* Stop only the old procedural pad and the old synthetic milestone hit.
-     The finale tick/visualizer AudioContexts remain untouched. */
-  (function installAudioContextGate(){
-    const patch=name=>{
-      const Real=window[name];
-      if(!Real||Real.__tfwWrapped)return;
-      function WrappedAudioContext(...args){
-        const stack=String((new Error()).stack||'');
-        if(/startSoundtrack|cardAudioHit/.test(stack)) throw new Error('TFW external soundtrack active');
-        return Reflect.construct(Real,args,Real);
-      }
-      try{Object.setPrototypeOf(WrappedAudioContext,Real)}catch{}
-      WrappedAudioContext.prototype=Real.prototype;
-      WrappedAudioContext.__tfwWrapped=true;
-      WrappedAudioContext.__tfwOriginal=Real;
-      try{window[name]=WrappedAudioContext}catch{}
-    };
-    patch('AudioContext');
-    patch('webkitAudioContext');
-  })();
-
+  // Ambient playback is managed here without overriding native AudioContext.
   function detectPerformanceTier(){
     const coarse=matchMedia('(pointer:coarse)').matches;
     const narrow=matchMedia('(max-width:900px)').matches;
@@ -155,7 +135,6 @@
   let audioGestureArmed=false;
   let previewStage=null;
   let previewFinalFive=false;
-  let backgroundStoppedForLaunch=Date.now()>=RELEASE_CET-5*MINUTE;
   let previewCardHoldUntil=0;
 
   function normalizeTime(seconds,duration){
@@ -164,7 +143,7 @@
   }
   function liveAudioPosition(){
     if(!bgAudio||!Number.isFinite(bgAudio.duration)||bgAudio.duration<=0)return 0;
-    return normalizeTime((Date.now()-RELEASE_CET)/1000,bgAudio.duration);
+    return normalizeTime((Date.now()-releaseEpoch())/1000,bgAudio.duration);
   }
   function ensureBackgroundAudio(){
     if(bgAudio)return bgAudio;
@@ -185,9 +164,8 @@
   }
   function soundButtons(){return [byId('soundButton'),byId('mobileSoundButton')].filter(Boolean)}
   function backgroundAllowed(){
-    if(!backgroundStoppedForLaunch&&Date.now()>=RELEASE_CET-5*MINUTE)backgroundStoppedForLaunch=true;
     if(document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released'))return false;
-    return !backgroundStoppedForLaunch&&!previewFinalFive;
+    return Date.now()<releaseEpoch()-5*MINUTE&&!previewFinalFive;
   }
   function syncSoundUi(){
     soundButtons().forEach(button=>{
@@ -256,7 +234,7 @@
   /* Prevent the old finale tracks from jumping back to a fixed timestamp
      when sound is re-enabled after release. */
   addEventListener('tfw:finale-audio-enable',event=>{
-    if(document.body.classList.contains('finale-released')||Date.now()>=RELEASE_CET) event.stopImmediatePropagation();
+    if(document.body.classList.contains('finale-released')||Date.now()>=releaseEpoch()) event.stopImmediatePropagation();
   },true);
 
   addEventListener('tfw:sound-change',event=>{
@@ -268,9 +246,7 @@
       pauseBackground();
       if(milestoneAudio){try{milestoneAudio.pause()}catch{}}
     }
-    // Once launch has happened, never let the legacy finale listener seek an old
-    // track back to a fixed timestamp when SOUND is toggled.
-    if(document.body.classList.contains('finale-released')||Date.now()>=RELEASE_CET)event.stopImmediatePropagation();
+    // Forward mute changes to the finale owner, even after release.
     setTimeout(syncSoundUi,0);
   });
   addEventListener('pageshow',()=>{if(bgWanted&&backgroundAllowed())playBackground({hardSync:true})});
@@ -280,13 +256,13 @@
   addEventListener('tfw:finale-start',event=>{
     const remaining=Number(event.detail&&event.detail.remaining);
     if(Number.isFinite(remaining)&&remaining<=5*MINUTE){
-      backgroundStoppedForLaunch=true;
+
       previewFinalFive=true;
       pauseBackground();
     }
   });
   addEventListener('tfw:finale-release',()=>{
-    backgroundStoppedForLaunch=true;
+
     previewFinalFive=true;
     pauseBackground();
   });
@@ -409,17 +385,17 @@
     if(preview){
       previewFinalFive=remaining<=5*MINUTE&&remaining>0;
       if(previewFinalFive){
-        backgroundStoppedForLaunch=true;
+
         pauseBackground();
-      }else if(bgWanted&&!backgroundStoppedForLaunch&&(!bgAudio||bgAudio.paused)){
+      }else if(bgWanted&&(!bgAudio||bgAudio.paused)){
         playBackground({hardSync:true});
       }
     }else{
       previewFinalFive=false;
       if(remaining<=5*MINUTE&&remaining>0){
-        backgroundStoppedForLaunch=true;
+
         pauseBackground();
-      }else if(remaining>5*MINUTE&&bgWanted&&!backgroundStoppedForLaunch&&(!bgAudio||bgAudio.paused)){
+      }else if(remaining>5*MINUTE&&bgWanted&&(!bgAudio||bgAudio.paused)){
         playBackground({hardSync:true});
       }
     }
@@ -474,7 +450,7 @@
   }
   function updateReleaseElapsed(){
     ensureReleaseUi();
-    const elapsed=Math.max(0,Date.now()-RELEASE_CET);
+    const elapsed=Math.max(0,Date.now()-releaseEpoch());
     const days=Math.floor(elapsed/DAY);
     const hours=Math.floor((elapsed%DAY)/HOUR);
     const minutes=Math.floor((elapsed%HOUR)/MINUTE);
@@ -484,14 +460,14 @@
     for(const [unit,value] of Object.entries(map)){
       const el=document.querySelector(`[data-release-unit="${unit}"]`);if(el&&el.textContent!==value)el.textContent=value;
     }
-    const released=Date.now()>=RELEASE_CET||document.body.classList.contains('finale-released');
+    const released=Date.now()>=releaseEpoch()||document.body.classList.contains('finale-released');
     document.body.classList.toggle('tfw-release-clock-live',released);
     if(released){
-      backgroundStoppedForLaunch=true;
+
       previewFinalFive=true;
       pauseBackground();
     }
-    if(released&&elapsed>30000)document.body.classList.add('tfw-release-settled');
+    document.body.classList.toggle('tfw-release-settled',released&&elapsed>30000);
   }
 
   function bootRuntime(){
@@ -502,7 +478,7 @@
     normalizeLegacyCopy();
     const releaseLoop=()=>{
       updateReleaseElapsed();
-      const released=Date.now()>=RELEASE_CET||document.body.classList.contains('finale-released');
+      const released=Date.now()>=releaseEpoch()||document.body.classList.contains('finale-released');
       releaseUiTimer=setTimeout(releaseLoop,released?33:1500);
     };
     releaseLoop();

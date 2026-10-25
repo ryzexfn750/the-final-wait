@@ -2,7 +2,7 @@
 """Add new 16:9 screenshots to The Final Wait.
 
 Usage (from the project root):
-    python tools/add_screenshots.py incoming/image1.png incoming/image2.jpg
+    python tools/add_screenshots.py incoming/ incoming/image1.png
 
 Requires Pillow:
     py -m pip install Pillow
@@ -64,11 +64,22 @@ def main(paths: list[str]) -> int:
     known_hashes = {item["sha256"] for item in known}
     next_id = max((int(s["id"].split("-")[1]) for s in scenes), default=0) + 1
 
+    supported = {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".tif", ".tiff"}
+    inputs = []
     for raw in paths:
-        src = Path(raw).expanduser().resolve()
-        if not src.exists():
-            print(f"SKIP: not found: {src}")
-            continue
+        source = Path(raw).expanduser().resolve()
+        if not source.exists():
+            print(f"SKIP: not found: {source}")
+        elif source.is_dir():
+            inputs.extend(sorted(p for p in source.rglob("*") if p.is_file() and p.suffix.lower() in supported))
+        elif source.is_file() and source.suffix.lower() in supported:
+            inputs.append(source)
+        else:
+            print(f"SKIP: unsupported file: {source}")
+    DESKTOP_DIR.mkdir(parents=True, exist_ok=True)
+    MOBILE_DIR.mkdir(parents=True, exist_ok=True)
+
+    for src in inputs:
         digest = sha256(src)
         if digest in known_hashes:
             print(f"SKIP: exact duplicate: {src.name}")

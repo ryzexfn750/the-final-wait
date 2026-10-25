@@ -28,9 +28,13 @@ async function copyText(text){
   try { await navigator.clipboard.writeText(text); }
   catch {
     const ta = document.createElement('textarea'); ta.value = text; ta.style.cssText='position:fixed;opacity:0';
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    document.body.appendChild(ta); ta.select();
+    let copied=false; try{copied=document.execCommand('copy')}catch{}
+    ta.remove();
+    if(!copied){showToast('COULD NOT COPY LINK');return false}
   }
   showToast('ARTICLE LINK COPIED');
+  return true;
 }
 async function share(kind){
   const text = shareText(), url = articleUrl();

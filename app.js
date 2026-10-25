@@ -478,7 +478,22 @@ function articleShareText(){ return todayData ? `${todayData.headline} — Today
 function sharePayload(){
   const article=shareContext==='article'; return { text:article?articleShareText():siteShareText(), url:new URL(article?'today.html':'./',location.href).href };
 }
-async function copyText(text,msg){ try{await navigator.clipboard.writeText(text);}catch{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}showToast(msg); }
+async function copyText(text,msg){
+  try {
+    if(!navigator.clipboard?.writeText)throw new Error('Clipboard API unavailable');
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const ta=document.createElement('textarea');
+    ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+    document.body.appendChild(ta);ta.select();
+    let ok=false;
+    try {ok=document.execCommand('copy');} catch {}
+    ta.remove();
+    if(!ok){showToast('COULD NOT COPY LINK');return false}
+  }
+  showToast(msg);
+  return true;
+}
 async function doShare(kind){
   const {text,url}=sharePayload(); track('share',{channel:kind,context:shareContext});
   if(kind==='x') window.open(`https://x.com/intent/post?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,'_blank','noopener');
@@ -489,8 +504,34 @@ async function doShare(kind){
   }
 }
 function openShare(context='site'){ shareContext=context; closeMobileMenu(); const p=sharePayload(); $('#modalShareText').textContent=p.text; $('#modalShareTitle').textContent=context==='article'?'SHARE TODAY IN LEONIDA.':'THE WAIT IS GETTING SHORTER.'; openModal(els.shareModal); }
-function openModal(modal){ closeModals(false); modal.hidden=false; els.modalBackdrop.hidden=false; document.body.style.overflow='hidden'; requestAnimationFrame(()=>modal.focus()); }
-function closeModals(clearOverflow=true){ if(els.shareModal)els.shareModal.hidden=true; if(els.timezoneModal)els.timezoneModal.hidden=true; els.modalBackdrop.hidden=true; if(clearOverflow && currentPhase!=='final-minute')document.body.style.overflow=''; }
+let modalReturnFocus=null;
+function openModal(modal){
+  closeModals(false);
+  modalReturnFocus=document.activeElement;
+  modal.hidden=false;els.modalBackdrop.hidden=false;
+  document.body.style.overflow='hidden';
+  requestAnimationFrame(()=>{if(!modal.hidden)(modal.querySelector('input,button')||modal).focus()});
+}
+function closeModals(clearOverflow=true){
+  const wasOpen=!els.shareModal.hidden||!els.timezoneModal.hidden;
+  els.shareModal.hidden=true;els.timezoneModal.hidden=true;els.modalBackdrop.hidden=true;
+  if(clearOverflow&&currentPhase!=='final-minute')document.body.style.overflow='';
+  if(clearOverflow&&wasOpen){modalReturnFocus?.focus?.({preventScroll:true});modalReturnFocus=null}
+}
+function keepModalFocus(event){
+  if(event.key!=='Tab')return;
+  const modal=!els.shareModal.hidden?els.shareModal:(!els.timezoneModal.hidden?els.timezoneModal:null);
+  if(!modal)return;
+  const candidates=[...modal.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),[tabindex]:not([tabindex="-1"])')]
+    .filter(element=>!element.hidden&&element.getClientRects().length);
+  if(!candidates.length){event.preventDefault();modal.focus();return}
+  const first=candidates[0],last=candidates[candidates.length-1];
+  if(event.shiftKey&&(document.activeElement===first||!modal.contains(document.activeElement))){
+    event.preventDefault();last.focus();
+  }else if(!event.shiftKey&&(document.activeElement===last||!modal.contains(document.activeElement))){
+    event.preventDefault();first.focus();
+  }
+}
 function showToast(message){ els.toast.textContent=message; els.toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer=setTimeout(()=>els.toast.classList.remove('show'),1900); }
 
 function allTimeZones(){
@@ -566,16 +607,26 @@ function bindNavigationTransitions(){
   window.addEventListener('pageshow',hideRouteLoader);
 }
 
-// Lightweight original procedural ambient pad; no copyrighted audio file is included.
-let audioCtx=null,soundtrackTimer=null,soundWanted=storage.get('tfw_sound')!=='off',soundStarted=false,chordIndex=0;
-const chords=[[110,164.81,220],[87.31,130.81,174.61],[130.81,164.81,196],[98,146.83,196]];
-function schedulePadChord(startAt){if(!audioCtx||!soundWanted)return;const chord=chords[chordIndex++%chords.length],master=audioCtx.createGain(),filter=audioCtx.createBiquadFilter();filter.type='lowpass';filter.frequency.setValueAtTime(820,startAt);master.gain.setValueAtTime(.0001,startAt);master.gain.exponentialRampToValueAtTime(.022,startAt+1.8);master.gain.setValueAtTime(.022,startAt+5.8);master.gain.exponentialRampToValueAtTime(.0001,startAt+8.2);filter.connect(master);master.connect(audioCtx.destination);chord.forEach((f,i)=>{const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=i===1?'triangle':'sine';o.frequency.setValueAtTime(f,startAt);o.detune.setValueAtTime(i===0?-5:i===2?5:0,startAt);g.gain.value=i===0?.42:.26;o.connect(g);g.connect(filter);o.start(startAt);o.stop(startAt+8.4)})}
-async function startSoundtrack(){if(!soundWanted||soundStarted||document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released'))return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;try{audioCtx=new AC();await audioCtx.resume();if(audioCtx.state!=='running')throw new Error();soundStarted=true;chordIndex=0;schedulePadChord(audioCtx.currentTime+.05);soundtrackTimer=setInterval(()=>{if(audioCtx?.state==='running')schedulePadChord(audioCtx.currentTime+.05)},8000);updateSoundUI();track('sound_started')}catch{soundStarted=false;try{await audioCtx?.close()}catch{}audioCtx=null}}
-async function stopSoundtrack(){if(soundtrackTimer)clearInterval(soundtrackTimer);soundtrackTimer=null;try{await audioCtx?.close()}catch{}audioCtx=null;soundStarted=false;updateSoundUI()}
-function updateSoundUI(){[$('#soundButton'),$('#mobileSoundButton')].forEach(b=>{if(!b)return;b.setAttribute('aria-pressed',String(soundWanted));const l=$('.sound-label',b);if(l)l.textContent=soundWanted?'SOUND':'MUTED'})}
-async function toggleSound(){soundWanted=!soundWanted;storage.set('tfw_sound',soundWanted?'on':'off');const finale=document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released')||document.body.classList.contains('finale-previewing');if(soundWanted){if(finale)window.dispatchEvent(new CustomEvent('tfw:finale-audio-enable'));else await startSoundtrack()}else await stopSoundtrack();window.dispatchEvent(new CustomEvent('tfw:sound-change',{detail:{enabled:soundWanted}}));updateSoundUI();track('sound_toggle',{enabled:soundWanted})}
-function armAutoplay(){startSoundtrack();const g=()=>{if(soundWanted&&!document.body.classList.contains('final-five-active')&&!document.body.classList.contains('finale-released'))startSoundtrack()};['pointerdown','keydown','touchstart'].forEach(e=>window.addEventListener(e,g,{once:true,capture:true,passive:true}))}
-window.addEventListener('tfw:finale-start',()=>{if(soundStarted)stopSoundtrack()});
+// Ambient audio belongs to clock.js; finale audio belongs to milestones.js.
+let soundWanted=storage.get('tfw_sound')!=='off';
+function updateSoundUI(){
+  [$('#soundButton'),$('#mobileSoundButton')].forEach(button=>{
+    if(!button)return;
+    button.setAttribute('aria-pressed',String(soundWanted));
+    const label=$('.sound-label',button);
+    if(label)label.textContent=soundWanted?'SOUND':'MUTED';
+  });
+}
+function toggleSound(){
+  soundWanted=!soundWanted;
+  storage.set('tfw_sound',soundWanted?'on':'off');
+  window.dispatchEvent(new CustomEvent('tfw:sound-change',{detail:{enabled:soundWanted}}));
+  if(soundWanted&&(document.body.classList.contains('final-five-active')||
+     document.body.classList.contains('finale-previewing')))
+    window.dispatchEvent(new CustomEvent('tfw:finale-audio-enable'));
+  updateSoundUI();
+  track('sound_toggle',{enabled:soundWanted});
+}
 
 function initAnalytics(){const id=SITE_CONFIG.gaMeasurementId?.trim();if(!id)return;$('#privacyButton').hidden=false;const saved=storage.get('tfw_analytics');if(!SITE_CONFIG.analyticsConsentRequired)return loadAnalytics(id);if(saved==='yes')return loadAnalytics(id);if(saved==='no')return;els.analyticsConsent.hidden=false}
 function loadAnalytics(id){if(window.gtag)return;const s=document.createElement('script');s.async=true;s.src=`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;document.head.appendChild(s);window.dataLayer=window.dataLayer||[];window.gtag=function(){window.dataLayer.push(arguments)};window.gtag('js',new Date());window.gtag('config',id,{anonymize_ip:true})}
@@ -595,7 +646,7 @@ function bindUi(){
   $('#soundButton').addEventListener('click',e=>{e.stopPropagation();toggleSound()}); $('#mobileSoundButton').addEventListener('click',e=>{e.stopPropagation();toggleSound()}); els.menuButton.addEventListener('click',toggleMobileMenu); $$('#mobileMenu a').forEach(a=>a.addEventListener('click',closeMobileMenu));
   $$('#intelFilter button').forEach(b=>b.addEventListener('click',()=>{$$('#intelFilter button').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderIntel(b.dataset.filter);track('intel_filter',{filter:b.dataset.filter})}));
   $('#analyticsAccept').addEventListener('click',()=>{storage.set('tfw_analytics','yes');els.analyticsConsent.hidden=true;loadAnalytics(SITE_CONFIG.gaMeasurementId.trim())}); $('#analyticsDecline').addEventListener('click',()=>{storage.set('tfw_analytics','no');els.analyticsConsent.hidden=true}); $('#privacyButton').addEventListener('click',()=>{storage.remove('tfw_analytics');els.analyticsConsent.hidden=false});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModals();closeMobileMenu()}}); document.addEventListener('visibilitychange',()=>{if(document.hidden)stopSceneRotation();else scheduleSceneRotation()});
+  document.addEventListener('keydown',e=>{keepModalFocus(e);if(e.key==='Escape'){closeModals();closeMobileMenu()}}); document.addEventListener('visibilitychange',()=>{if(document.hidden)stopSceneRotation();else scheduleSceneRotation()});
   let idleTimer; const wake=()=>{els.topbar.classList.remove('idle');clearTimeout(idleTimer);if(scrollY<innerHeight*.7&&matchMedia('(pointer:fine)').matches)idleTimer=setTimeout(()=>els.topbar.classList.add('idle'),4800)};
   window.addEventListener('scroll',()=>{els.topbar.classList.toggle('scrolled',scrollY>30);$('#returnCountdown')?.classList.toggle('visible',scrollY>innerHeight*.72);updateTimelineProgress();wake()},{passive:true}); ['pointermove','keydown'].forEach(e=>window.addEventListener(e,wake,{passive:true})); wake();
   window.addEventListener('resize',()=>{syncTimelineEdge();const next=isMobile();if(next!==mobileState&&scenes.length){mobileState=next;const current=scenes[currentIndex],active=activeLayer===0?els.sceneA:els.sceneB;active.style.backgroundImage=`url("${srcFor(current)}")`;active.style.backgroundPosition=positionFor(current);loadToday();renderIntel($('#intelFilter .active')?.dataset.filter||'ALL')}updateTimelineProgress()},{passive:true});
@@ -604,7 +655,7 @@ function bindUi(){
 async function init(){
   updateSoundUI(); bindUi(); bindParallax(); initAnalytics(); updateZoneUI();
   try{await loadScenes();await loadToday();renderTimeline();renderIntel();observeReveals();bindMagnetic();bindTilts();bindTimeline();bindNavigationTransitions();updateTimelineProgress()}catch(error){console.error(error);showToast('SOME VISUAL ASSETS COULD NOT LOAD')}
-  armAutoplay(); startCountdownClock();
+  startCountdownClock();
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden) safeCountdownTick(); });
   const initialHash=window.__tfwInitialHash;
   if(initialHash){
@@ -616,6 +667,8 @@ async function init(){
       window.scrollTo({top:Math.max(0,top),behavior:'instant'});
     }
     requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.remove('anchor-loading')));
+  }else{
+    document.documentElement.classList.remove('anchor-loading');
   }
   document.dispatchEvent(new Event('tfw:content-ready'));
 

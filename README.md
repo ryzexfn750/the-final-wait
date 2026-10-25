@@ -1,6 +1,6 @@
-# The Final Wait — V10
+# The Final Wait — V25 maintenance
 
-Complete V10 build for GitHub Pages. Replace the site files in your repository, keeping its .git folder, then commit and push. No build or npm installation is required.
+Static GitHub Pages project with no frontend build required. V25 maintenance addresses countdown/audio consistency, preview cleanup, media preloading, keyboard accessibility, and validation.
 
 # The Final Wait: Road to Leonida
 
@@ -72,7 +72,7 @@ The homepage card and `today.html` read the JSON automatically, so the new artic
 Use the existing helper:
 
 ```powershell
-python tools/add_screenshots.py <folder-with-new-images>
+python tools/add_screenshots.py incoming/  # or specify individual images
 ```
 
 Then verify `assets/scenes.json`, commit and push.
@@ -182,3 +182,7 @@ At `00:00` the timer is replaced in-place by the release message. Fireworks and 
 - screenshots accelerate progressively through the final minute, using a preloaded finale deck for the fastest final-second cuts
 - one-minute voiceover and complete -30-second sequence replace the old -10-second track
 - continuous audio playback no longer performs repeated seek corrections, avoiding the old mid-song glitch
+
+## Automated checks
+
+Run `node --test tests/*.test.mjs` before publishing. GitHub Actions runs these tests on pushes and pull requests to `main`. Finale media loads are deferred until ten minutes before the selected countdown target. The large ambient MP3 remains to be re-encoded from the original source in a separate media task.
