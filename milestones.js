@@ -46,6 +46,9 @@
   let musicAnalyser=null;
   let finalMusicSource=null;
   let sequenceMusicSource=null;
+  let voiceMusicSource=null;
+  let ambientMusicSource=null;
+  let musicResumePending=false;
   let musicData=null;
   let visualizerRaf=0;
   let visualizerResize=null;
@@ -407,7 +410,8 @@
     document.body.classList.toggle('finale-dynamic-copy',dynamicTitle);
     if(dynamicTitle)startTitleColorFlow();else stopTitleColorFlow();
 
-    if(title){
+    // clock.js owns the milestone headline before the -05:00 finale.
+    if(title&&remaining<=FINAL_FIVE){
       let text='ROAD TO LEONIDA';
       let forceBreak=false;
       if(remaining<=1000&&remaining>0)text='ONE SECOND TO LEONIDA';
@@ -436,30 +440,62 @@
     }
   }
 
-  async function ensureMusicGraph(){
+  function musicIsPlaying(){
+    const ambient=window.__tfwAmbientAudio;
+    return !finalSong.paused||!sequenceSong.paused||!voiceSong.paused||
+      Boolean(ambient&&!ambient.paused);
+  }
+
+  function ensureMusicGraph(){
     if(!soundEnabled())return null;
-    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return null;
     try{
       if(!musicCtx||musicCtx.state==='closed')musicCtx=new AC();
       if(!musicAnalyser){
         musicAnalyser=musicCtx.createAnalyser();
-        musicAnalyser.fftSize=256;musicAnalyser.smoothingTimeConstant=.78;
+        musicAnalyser.fftSize=256;
+        musicAnalyser.smoothingTimeConstant=.78;
         musicData=new Uint8Array(musicAnalyser.frequencyBinCount);
-        finalMusicSource=musicCtx.createMediaElementSource(finalSong);
-        sequenceMusicSource=musicCtx.createMediaElementSource(sequenceSong);
-        finalMusicSource.connect(musicAnalyser);
-        sequenceMusicSource.connect(musicAnalyser);
         musicAnalyser.connect(musicCtx.destination);
       }
-      if(musicCtx.state==='suspended')await musicCtx.resume();
+      const attachSources=()=>{
+        if(musicCtx.state!=='running')return;
+        if(!finalMusicSource){
+          finalMusicSource=musicCtx.createMediaElementSource(finalSong);
+          finalMusicSource.connect(musicAnalyser);
+        }
+        if(!voiceMusicSource){
+          voiceMusicSource=musicCtx.createMediaElementSource(voiceSong);
+          voiceMusicSource.connect(musicAnalyser);
+        }
+        if(!sequenceMusicSource){
+          sequenceMusicSource=musicCtx.createMediaElementSource(sequenceSong);
+          sequenceMusicSource.connect(musicAnalyser);
+        }
+        // Never reroute an auto-playing HTMLAudioElement to a suspended context.
+        const ambient=window.__tfwAmbientAudio;
+        if(ambient&&!ambientMusicSource){
+          ambientMusicSource=musicCtx.createMediaElementSource(ambient);
+          ambientMusicSource.connect(musicAnalyser);
+        }
+      };
+      attachSources();
+      if(musicCtx.state==='suspended'&&!musicResumePending){
+        musicResumePending=true;
+        musicCtx.resume().then(()=>{
+          musicResumePending=false;attachSources();
+        }).catch(error=>{
+          musicResumePending=false;console.warn('Audio analyser not unlocked',error);
+        });
+      }
       return musicCtx;
-    }catch(error){console.warn('Finale music analyser unavailable',error);return null}
+    }catch(error){console.warn('Music analyser unavailable',error);return null}
   }
-
-  function musicIsPlaying(){return !finalSong.paused||!sequenceSong.paused}
 
   function startVisualizer(){
     if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    if(!soundEnabled()||!musicIsPlaying())return;
     const canvas=$('#finaleVisualizer');if(!canvas||visualizerRaf)return;
     const ctx=canvas.getContext('2d');if(!ctx)return;
     document.body.classList.add('finale-music-live');
@@ -468,7 +504,7 @@
     const loop=t=>{
       const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);
       let energy=.045;
-      if(musicAnalyser&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()){
+      if(musicAnalyser&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(ambientMusicSource||finalMusicSource)){
         musicAnalyser.getByteFrequencyData(musicData);
         let sum=0;const take=Math.min(52,musicData.length);for(let i=0;i<take;i++)sum+=musicData[i];energy=clamp(sum/(take*255),.025,1);
       }else if(document.body.classList.contains('finale-music-live')){
@@ -520,7 +556,7 @@
   async function syncFinalSong(remaining){
     if(!soundEnabled()){if(!finalSong.paused)finalSong.pause();return}
     if(remaining>FINAL_FIVE){if(!finalSong.paused)finalSong.pause();try{finalSong.currentTime=0}catch{};return}
-    if(!document.body.classList.contains('finale-released')){await ensureMusicGraph();startVisualizer();}
+    if(!document.body.classList.contains('finale-released')){ensureMusicGraph();startVisualizer();}
     const duration=Number.isFinite(finalSong.duration)&&finalSong.duration>0?finalSong.duration:258.115918;
     const target=clamp((FINAL_FIVE-remaining)/1000,0,duration);
     if(remaining<=FINAL_SONG_END){return}
@@ -551,7 +587,7 @@
   async function syncSequenceSong(remaining){
     if(!soundEnabled()){if(!sequenceSong.paused)sequenceSong.pause();return}
     if(remaining>SEQUENCE_TRACK_START){if(!sequenceSong.paused)sequenceSong.pause();try{sequenceSong.currentTime=0}catch{};return}
-    if(!document.body.classList.contains('finale-released')){await ensureMusicGraph();startVisualizer();}
+    if(!document.body.classList.contains('finale-released')){ensureMusicGraph();startVisualizer();}
     const target=Math.max(0,(SEQUENCE_TRACK_START-Math.max(0,remaining))/1000);
     try{
       if(sequenceSong.paused){sequenceSong.currentTime=target;await sequenceSong.play()}
@@ -643,7 +679,11 @@
     if(remaining<=0){setFinaleScale(0);showRelease(playAudio);return}
     $('#countdown')?.setAttribute('aria-hidden','false');
     if(releaseShown)resetRelease({pauseAudio:true});
-    if(remaining>FINAL_FIVE){if(finaleActive)leaveFinalFive();else pauseFinaleAudio(true);return}
+    if(remaining>FINAL_FIVE){
+      if(finaleActive)leaveFinalFive();
+      // Retain background music visualizer outside the finale.
+      return;
+    }
     enterFinalFive(remaining);setFinaleScale(remaining);
     if(playAudio){syncFinalSong(remaining);syncVoiceSong(remaining);syncSequenceSong(remaining)}else pauseFinaleAudio(false);
 
@@ -783,6 +823,22 @@
   sequenceSong.addEventListener('ended',()=>{if(document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released'))startVisualizer();else stopVisualizer()});
   inject();
   ['pointerdown','keydown','touchstart'].forEach(ev=>window.addEventListener(ev,unlockFinaleAudio,{capture:true,passive:true}));
+  // Attempt to resume the analyser on genuine user gestures; browser audio
+  // playback remains independent of Web Audio until the context is running.
+  ['pointerdown','keydown','touchstart'].forEach(ev=>window.addEventListener(ev,()=>{
+    if(soundEnabled()&&window.__tfwAmbientAudio&&!window.__tfwAmbientAudio.paused)
+      ensureMusicGraph();
+  },{capture:true,passive:true}));
+  for(const track of [finalSong,voiceSong,sequenceSong]){
+    track.addEventListener('play',()=>{if(soundEnabled()){ensureMusicGraph();startVisualizer()}});
+    track.addEventListener('pause',()=>{if(!musicIsPlaying())stopVisualizer()});
+  }
+  window.addEventListener('tfw:ambient-play',()=>{
+    if(soundEnabled()){ensureMusicGraph();startVisualizer()}
+  });
+  window.addEventListener('tfw:ambient-pause',()=>{
+    if(!musicIsPlaying())stopVisualizer();
+  });
   window.addEventListener('tfw:countdown',e=>{const ms=Number(e.detail?.remaining);if(Number.isFinite(ms))maybeTrigger(ms,Boolean(e.detail?.preview))});
   window.addEventListener('tfw:sound-change',()=>{
     if(!soundEnabled()){
