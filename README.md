@@ -186,3 +186,13 @@ At `00:00` the timer is replaced in-place by the release message. Fireworks and 
 ## Automated checks
 
 Run `node --test tests/*.test.mjs` before publishing. GitHub Actions runs these tests on pushes and pull requests to `main`. Finale media loads are deferred until ten minutes before the selected countdown target. The large ambient MP3 remains to be re-encoded from the original source in a separate media task.
+
+## V26 audio and finale
+
+The default ambient soundtrack is `assets/audio/background-v26.mp3` with a fallback to
+`assets/audio/background-live.mp3` if the new asset is unavailable. Ambient playback
+stops at -30 minutes; the last-five-minute soundtrack is managed separately. Browser
+autoplay policies may require the first visitor gesture. The visualizer also displays
+ambient audio when Web Audio is available and unlocked. V26 also keeps the original
+hero vignette at -1 hour, preserves milestone headlines until the next stage and
+smooths the -5 minute layout change.

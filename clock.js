@@ -121,11 +121,14 @@
   }
 
   /* ----- synchronized background audio -------------------------------- */
-  const BG_SRC='assets/audio/background-live.mp3';
+  // A new audio-only soundtrack takes priority; retain old audio as fallback.
+  const BG_SRC='assets/audio/background-v26.mp3';
+  const BG_FALLBACK_SRC='assets/audio/background-live.mp3';
+  const BG_CUTOFF=30*MINUTE;
   const BG_VOLUME=.22;
   const BG_DUCK_VOLUME=.095;
   let bgAudio=null;
-  let bgMetadataPromise=null;
+  let bgPlayPromise=null;
   let bgWanted=storage.get('tfw_sound')!=='off';
   let bgResyncTimer=0;
   let bgVolumeTarget=BG_VOLUME;
@@ -141,9 +144,14 @@
     if(!Number.isFinite(duration)||duration<=0)return 0;
     return ((seconds%duration)+duration)%duration;
   }
+  function remainingForAudio(){
+    const preview=window.__tfwPreviewRemainingMs;
+    return Number.isFinite(preview)?preview:Math.max(0,releaseEpoch()-Date.now());
+  }
   function liveAudioPosition(){
     if(!bgAudio||!Number.isFinite(bgAudio.duration)||bgAudio.duration<=0)return 0;
-    return normalizeTime((Date.now()-releaseEpoch())/1000,bgAudio.duration);
+    // The soundtrack is synchronized to its cutoff at -30 minutes.
+    return normalizeTime((Date.now()-(releaseEpoch()-BG_CUTOFF))/1000,bgAudio.duration);
   }
   function ensureBackgroundAudio(){
     if(bgAudio)return bgAudio;
@@ -153,19 +161,31 @@
     bgAudio.loop=true;
     bgAudio.playsInline=true;
     bgAudio.volume=BG_VOLUME;
-    bgMetadataPromise=new Promise(resolve=>{
-      if(bgAudio.readyState>=1)resolve();
-      else{
-        bgAudio.addEventListener('loadedmetadata',resolve,{once:true});
-        bgAudio.addEventListener('error',resolve,{once:true});
-      }
+    window.__tfwAmbientAudio=bgAudio;
+    bgAudio.addEventListener('loadedmetadata',()=>{if(bgWanted&&backgroundAllowed())resyncBackground()});
+    bgAudio.addEventListener('play',()=>{
+      document.body.classList.add('tfw-ambient-playing');
+      dispatchEvent(new CustomEvent('tfw:ambient-play',{detail:{audio:bgAudio}}));
+    });
+    bgAudio.addEventListener('pause',()=>{
+      document.body.classList.remove('tfw-ambient-playing');
+      dispatchEvent(new CustomEvent('tfw:ambient-pause'));
+    });
+    bgAudio.addEventListener('error',()=>{
+      if(bgAudio.dataset.fallback==='1')return;
+      bgAudio.dataset.fallback='1';
+      bgAudio.src=BG_FALLBACK_SRC;
+      bgAudio.load();
+      if(bgWanted&&backgroundAllowed())setTimeout(()=>{
+        audioGestureArmed=false;playBackground({hardSync:true});
+      },0);
     });
     return bgAudio;
   }
   function soundButtons(){return [byId('soundButton'),byId('mobileSoundButton')].filter(Boolean)}
   function backgroundAllowed(){
     if(document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released'))return false;
-    return Date.now()<releaseEpoch()-5*MINUTE&&!previewFinalFive;
+    return remainingForAudio()>BG_CUTOFF&&!previewFinalFive;
   }
   function syncSoundUi(){
     soundButtons().forEach(button=>{
@@ -193,17 +213,26 @@
     };
     bgVolumeRaf=requestAnimationFrame(step);
   }
-  async function playBackground({hardSync=true}={}){
-    if(!bgWanted||!backgroundAllowed()){pauseBackground();return false}
+  function playBackground({hardSync=true}={}){
+    if(!bgWanted||!backgroundAllowed()){pauseBackground();return Promise.resolve(false)}
+    if(audioGestureArmed)return Promise.resolve(false);
+    if(bgPlayPromise)return bgPlayPromise;
     const a=ensureBackgroundAudio();
-    try{await bgMetadataPromise}catch{}
-    if(hardSync&&Number.isFinite(a.duration)&&a.duration>0){
+    if(hardSync&&a.readyState>=1&&Number.isFinite(a.duration)&&a.duration>0){
       const target=liveAudioPosition();
       try{if(Math.abs(a.currentTime-target)>.18)a.currentTime=target}catch{}
     }
     setBgVolume(desiredBgVolume(),0);
-    try{await a.play();audioGestureArmed=false;syncSoundUi();return true}
-    catch{audioGestureArmed=true;syncSoundUi();return false}
+    // Invoke play synchronously during the interaction; never await metadata first.
+    let started;
+    try{started=a.play()}catch(error){started=Promise.reject(error)}
+    bgPlayPromise=Promise.resolve(started).then(()=>{
+      if(!bgWanted||!backgroundAllowed()){pauseBackground();return false}
+      audioGestureArmed=false;syncSoundUi();return true;
+    }).catch(()=>{
+      audioGestureArmed=true;syncSoundUi();return false;
+    }).finally(()=>{bgPlayPromise=null});
+    return bgPlayPromise;
   }
   function pauseBackground(){
     if(bgAudio&&!bgAudio.paused)bgAudio.pause();
@@ -218,15 +247,15 @@
     if(drift>.55){try{bgAudio.currentTime=target}catch{}}
   }
   function armAudioGesture(){
-    const types=['pointerdown','touchstart','keydown'];
-    const remove=()=>types.forEach(type=>removeEventListener(type,retry,true));
     const retry=event=>{
       if(event?.target?.closest?.('#soundButton,#mobileSoundButton'))return;
-      remove();
-      if(bgWanted&&backgroundAllowed())playBackground({hardSync:true});
-      setTimeout(syncSoundUi,40);
+      if(bgWanted&&backgroundAllowed()&&(!bgAudio||bgAudio.paused)){
+        audioGestureArmed=false;
+        playBackground({hardSync:true});
+      }
     };
-    types.forEach(type=>addEventListener(type,retry,{capture:true,passive:true}));
+    ['pointerdown','touchstart','keydown'].forEach(type=>
+      addEventListener(type,retry,{capture:true,passive:true}));
   }
   armAudioGesture();
   bgResyncTimer=setInterval(()=>{if(!document.hidden)resyncBackground()},15000);
@@ -241,7 +270,10 @@
     const enabled=Boolean(event.detail&&event.detail.enabled);
     bgWanted=enabled;
     storage.set('tfw_sound',enabled?'on':'off');
-    if(enabled&&backgroundAllowed()) playBackground({hardSync:true});
+    if(enabled&&backgroundAllowed()){
+      audioGestureArmed=false;
+      playBackground({hardSync:true});
+    }
     else{
       pauseBackground();
       if(milestoneAudio){try{milestoneAudio.pause()}catch{}}
@@ -354,27 +386,25 @@
     setBgVolume(desiredBgVolume(),360);
   }
   function updateLiveMilestone(remaining,preview=false){
-    if(!Number.isFinite(remaining)||remaining<=0){deactivateMilestone();deactivatePreviewStage();return}
-    if(preview){
-      if(remaining<=5*MINUTE){deactivateMilestone();deactivatePreviewStage();return}
-      const exact=findMilestone(remaining);
-      if(exact){
-        deactivatePreviewStage();
-        activateMilestone(exact,remaining);
-        if(exact.id==='6h')normalizeLegacyCopy();
-        return;
-      }
-      deactivateMilestone(false);
-      const stage=previewStageFor(remaining);
-      if(stage){activatePreviewStage(stage);if(stage.id==='6h')normalizeLegacyCopy()}
-      else deactivatePreviewStage();
+    if(!Number.isFinite(remaining)||remaining<=0){
+      deactivateMilestone();deactivatePreviewStage();return;
+    }
+    if(remaining<=5*MINUTE){
+      deactivateMilestone();deactivatePreviewStage();return;
+    }
+    const exact=findMilestone(remaining);
+    if(exact){
+      deactivatePreviewStage();
+      activateMilestone(exact,remaining);
+      if(exact.id==='6h')normalizeLegacyCopy();
       return;
     }
-    deactivatePreviewStage();
-    if(remaining<=5*MINUTE){deactivateMilestone();return}
-    const m=findMilestone(remaining);
-    if(m){activateMilestone(m,remaining);if(m.id==='6h')normalizeLegacyCopy()}
-    else deactivateMilestone();
+    // Milestone headlines persist until the next threshold, in preview and live mode.
+    // Audio cues are still limited to their short scheduled windows.
+    deactivateMilestone(false);
+    const stage=previewStageFor(remaining);
+    if(stage){activatePreviewStage(stage);if(stage.id==='6h')normalizeLegacyCopy()}
+    else deactivatePreviewStage();
   }
   addEventListener('tfw:countdown',event=>{
     const now=performance.now();
@@ -387,7 +417,7 @@
       if(previewFinalFive){
 
         pauseBackground();
-      }else if(bgWanted&&(!bgAudio||bgAudio.paused)){
+      }else if(bgWanted&&backgroundAllowed()&&(!bgAudio||bgAudio.paused)){
         playBackground({hardSync:true});
       }
     }else{
@@ -395,12 +425,13 @@
       if(remaining<=5*MINUTE&&remaining>0){
 
         pauseBackground();
-      }else if(remaining>5*MINUTE&&bgWanted&&(!bgAudio||bgAudio.paused)){
+      }else if(remaining>BG_CUTOFF&&bgWanted&&backgroundAllowed()&&(!bgAudio||bgAudio.paused)){
         playBackground({hardSync:true});
       }
     }
     updateLiveMilestone(remaining,preview);
-    if(remaining>5*MINUTE&&!currentMilestone&&backgroundAllowed())setBgVolume(BG_VOLUME,350);
+    if(!backgroundAllowed())pauseBackground();
+    else if(!currentMilestone)setBgVolume(BG_VOLUME,350);
   });
 
 

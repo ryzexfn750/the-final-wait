@@ -1,0 +1,62 @@
+/* V26 — soften the -05:00 composition switch while preserving the layout. */
+.hero-content{
+  transition:width 1050ms cubic-bezier(.19,1,.22,1),
+    padding-top 1050ms cubic-bezier(.19,1,.22,1),
+    transform 1050ms cubic-bezier(.19,1,.22,1)!important;
+}
+.hero-title-wrap{
+  transition:opacity 850ms ease,transform 1100ms cubic-bezier(.19,1,.22,1),
+    margin-top 1050ms cubic-bezier(.19,1,.22,1)!important;
+}
+.countdown-shell{
+  transition:width 1150ms cubic-bezier(.19,1,.22,1),
+    margin-top 1050ms cubic-bezier(.19,1,.22,1),
+    margin-bottom 1050ms cubic-bezier(.19,1,.22,1)!important;
+}
+.logo-stage{
+  transition:width 1100ms cubic-bezier(.19,1,.22,1),
+    opacity 950ms ease,transform 1100ms cubic-bezier(.19,1,.22,1)!important;
+}
+.release-hud,.progress-block,.phase-pill,.hero-status,.next-scene,.scroll-cue{
+  transition:opacity 900ms ease,transform 1100ms cubic-bezier(.19,1,.22,1),
+    filter 900ms ease,margin 1100ms cubic-bezier(.19,1,.22,1),
+    width 1100ms cubic-bezier(.19,1,.22,1),
+    bottom 950ms ease!important;
+}
+body.final-five-active .release-hud,
+body.final-five-active .next-scene{
+  opacity:0!important;
+  pointer-events:none!important;
+}
+body.final-five-active .release-hud{
+  visibility:visible!important;
+  filter:blur(8px)!important;
+  transform:translateY(-14px) scale(.97)!important;
+  transition:opacity 800ms ease,transform 1050ms ease,filter 800ms ease,
+    visibility 0s linear 1100ms!important;
+}
+/* The headline remains legible from the final hour onward. */
+body.phase-final-hour:not(.final-five-active) .hero-title-wrap,
+body.phase-final-hour:not(.final-five-active) .progress-block{
+  opacity:1!important;
+}
+/* Show the real-audio analyser for regular soundtrack playback too. */
+body.tfw-ambient-playing:not(.final-five-active):not(.finale-released) .finale-visualizer-wrap{
+  height:44px!important;
+  opacity:.92!important;
+  visibility:visible!important;
+  transition:opacity 450ms ease,height 450ms ease!important;
+}
+body.tfw-ambient-playing .finale-visualizer{opacity:.95!important}
+@media(max-width:900px){
+  body.tfw-ambient-playing:not(.final-five-active):not(.finale-released) .finale-visualizer-wrap{
+    height:34px!important;
+    width:min(86vw,540px)!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-content,.hero-title-wrap,.countdown-shell,.logo-stage,
+  .release-hud,.progress-block,.phase-pill,.hero-status,.next-scene,.scroll-cue{
+    transition:none!important;
+  }
+}

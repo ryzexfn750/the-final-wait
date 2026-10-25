@@ -29,20 +29,55 @@ test('release midnight is correct in five IANA time zones',()=>{
     assert.equal(new Date(toUtc(zone)).toISOString(),date,zone);
 });
 
-test('secondary clock follows selected release without sticky preview flag',()=>{
-  const source=read('clock.js');
-  assert.match(source,/const releaseEpoch=\(\)=>release;/);
-  assert.doesNotMatch(source,/RELEASE_CET|backgroundStoppedForLaunch/);
-  assert.match(source,/return Date\.now\(\)<releaseEpoch\(\)-5\*MINUTE&&!previewFinalFive;/);
-  const start=source.indexOf('function backgroundAllowed()'),end=source.indexOf('function syncSoundUi()',start);
-  assert.ok(start>0&&end>start);
-  const factory=new Function('releaseEpoch','previewFinalFive','document','Date','MINUTE',source.slice(start,end)+'\nreturn backgroundAllowed;');
-  const now=Date.parse('2026-11-18T14:00:00Z');
-  const body={body:{classList:{contains:()=>false}}};
-  const time={now:()=>now};
-  assert.equal(factory(()=>now+600000,false,body,time,60000)(),true);
-  assert.equal(factory(()=>now+600000,true,body,time,60000)(),false);
-  assert.equal(factory(()=>now+240000,false,body,time,60000)(),false);
+test('ambient soundtrack stops precisely at -30 minutes',()=>{
+  const clock=read('clock.js');
+  assert.match(clock,/const releaseEpoch=\(\)=>release;/);
+  assert.doesNotMatch(clock,/RELEASE_CET|backgroundStoppedForLaunch/);
+  assert.match(clock,/const BG_CUTOFF=30\*MINUTE;/);
+  assert.match(clock,/return remainingForAudio\(\)>BG_CUTOFF&&!previewFinalFive;/);
+  const start=clock.indexOf('function backgroundAllowed()');
+  const end=clock.indexOf('function syncSoundUi()',start);
+  assert.ok(start>=0&&end>start);
+  const factory=new Function('remainingForAudio','document','BG_CUTOFF','previewFinalFive',
+    clock.slice(start,end)+'\nreturn backgroundAllowed;');
+  const document={body:{classList:{contains:()=>false}}};
+  assert.equal(factory(()=>30*60000+1,document,30*60000,false)(),true);
+  assert.equal(factory(()=>30*60000,document,30*60000,false)(),false);
+  assert.equal(factory(()=>29*60000,document,30*60000,false)(),false);
+  assert.equal(factory(()=>60*60000,document,30*60000,true)(),false);
+});
+
+test('background audio retry preserves gesture and has a valid fallback',()=>{
+  const clock=read('clock.js');
+  assert.match(clock,/const BG_SRC='assets\/audio\/background-v26.mp3'/);
+  assert.match(clock,/const BG_FALLBACK_SRC='assets\/audio\/background-live.mp3'/);
+  assert.match(clock,/if\(audioGestureArmed\)return Promise.resolve\(false\)/);
+  assert.match(clock,/started=a\.play\(\)/);
+  assert.doesNotMatch(clock,/await bgMetadataPromise/);
+});
+
+test('milestone headlines remain visible until the final five',()=>{
+  const finale=read('milestones.js');
+  const clock=read('clock.js');
+  assert.match(finale,/if\(title&&remaining<=FINAL_FIVE\)/);
+  assert.match(clock,/const stage=previewStageFor\(remaining\)/);
+  assert.match(clock,/if\(stage\)\{activatePreviewStage\(stage\)/);
+  assert.match(clock,/\{id:'hour',at:HOUR,.*THE FINAL HOUR/);
+  assert.match(clock,/\{id:'30m',at:30\*MINUTE,.*NO MORE YEARS/);
+  assert.match(clock,/\{id:'15m',at:15\*MINUTE,.*LAST QUARTER HOUR/);
+  const css=read('v8.css');
+  assert.doesNotMatch(css,/\.countdown-stage-hour \.hero-shade/);
+});
+
+test('visualizer includes ambient stream without suppressing normal playback',()=>{
+  const clock=read('clock.js'),finale=read('milestones.js');
+  assert.match(clock,/window\.__tfwAmbientAudio=bgAudio/);
+  assert.match(finale,/tfw:ambient-play/);
+  assert.match(finale,/tfw:ambient-pause/);
+  assert.match(finale,/ambientMusicSource=musicCtx\.createMediaElementSource\(ambient\)/);
+  assert.match(finale,/if\(finaleActive\)leaveFinalFive\(\);/);
+  assert.match(read('index.html'),/v26\.css\?v=26/);
+  assert.match(read('v26.css'),/body\.tfw-ambient-playing/);
 });
 
 test('all scenes and content image references resolve',()=>{
