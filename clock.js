@@ -481,7 +481,9 @@
   }
   function updateReleaseElapsed(){
     ensureReleaseUi();
-    const elapsed=Math.max(0,Date.now()-releaseEpoch());
+    const simulatedRelease=document.body.classList.contains('finale-previewing')&&document.body.classList.contains('finale-released');
+    const epoch=Number(window.__tfwPreviewReleasedAt);
+    const elapsed=simulatedRelease&&Number.isFinite(epoch)?Math.max(0,performance.now()-epoch):Math.max(0,Date.now()-releaseEpoch());
     const days=Math.floor(elapsed/DAY);
     const hours=Math.floor((elapsed%DAY)/HOUR);
     const minutes=Math.floor((elapsed%HOUR)/MINUTE);
