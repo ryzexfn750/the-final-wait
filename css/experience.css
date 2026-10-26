@@ -1,0 +1,2597 @@
+/* THE FINAL WAIT — HOME COUNTDOWN / FINALE
+ * Only index.html uses these visual layers. Cascade order preserved.
+ * Sections below are grouped historically to preserve behavior while
+ * replacing 14 versioned stylesheet requests with one maintained bundle.
+ */
+
+/* === EXPERIENCE: v9.css === */
+/* V9 — five-minute theatrical finale. This layer intentionally overrides only finale behavior. */
+
+/* Keep the final minute inside the original countdown layout rather than swapping to a separate screen. */
+body.phase-final-minute{overflow:auto}
+body.phase-final-minute .countdown{opacity:1!important;pointer-events:auto!important;display:grid!important;transform:scale(var(--finale-scale,1));transform-origin:center;transition:transform .38s cubic-bezier(.2,.8,.2,1),filter .38s ease}
+body.phase-final-minute .final-minute-countdown{display:none!important}
+body.phase-final-minute .gta-logo{width:clamp(86px,8vw,126px);margin-bottom:0}
+body.phase-final-minute .hero-title-wrap,body.phase-final-minute .phase-pill,body.phase-final-minute .release-hud,body.phase-final-minute .progress-block{transition:opacity .7s ease,filter .7s ease,transform .7s ease}
+
+/* The whole five-minute sequence remains part of the hero and becomes progressively more focused. */
+body.final-five-active #countdown{transform:scale(var(--finale-scale,1));transform-origin:center;will-change:transform,filter;filter:drop-shadow(0 16px 42px rgba(0,0,0,.52)) drop-shadow(0 0 var(--finale-glow,12px) rgba(242,63,178,.16));transition:transform .32s cubic-bezier(.2,.78,.2,1),filter .32s ease}
+body.final-five-active .hero-title-wrap{opacity:var(--finale-title-opacity,1)}
+body.final-five-active .release-hud,body.final-five-active .progress-block{opacity:var(--finale-hud-opacity,1)}
+body.final-five-active .next-scene{opacity:0!important;pointer-events:none!important}
+body.final-five-active .scene{transition:opacity 2.4s ease,transform .85s ease,filter .85s ease;filter:saturate(1.08) contrast(1.025)}
+body.final-five-active .hero-shade{background:radial-gradient(circle at 50% 47%,rgba(13,9,20,.06),rgba(7,5,12,.33) 52%,rgba(4,3,8,.82) 100%),linear-gradient(180deg,rgba(6,4,10,.1),rgba(5,4,9,.42));transition:background .8s ease}
+body.final-five-active .time-unit{box-shadow:0 18px 55px rgba(0,0,0,.22),inset 0 0 0 1px rgba(255,255,255,.035);transition:box-shadow .3s,border-color .3s,background .3s}
+body.final-five-active .time-value{text-shadow:0 7px 35px rgba(0,0,0,.78),0 0 24px rgba(255,255,255,.14)}
+
+/* Forty seconds: every second has a visible heartbeat. */
+body.finale-last-40 .hero-atmosphere{opacity:.72;filter:saturate(1.16)}
+body.finale-last-40 .time-unit{border-color:rgba(255,255,255,.2)}
+#hero.finale-second-pulse .time-unit{animation:tfwSecondPulse .34s cubic-bezier(.15,.8,.25,1)}
+#hero.finale-second-pulse .hero-orbit-a{animation:tfwOrbitPulse .48s ease-out}
+@keyframes tfwSecondPulse{0%{transform:scale(1);box-shadow:0 15px 45px rgba(0,0,0,.24)}35%{transform:scale(1.025);border-color:rgba(242,63,178,.62);box-shadow:0 18px 58px rgba(0,0,0,.3),0 0 36px rgba(242,63,178,.18)}100%{transform:scale(1);box-shadow:0 15px 45px rgba(0,0,0,.24)}}
+@keyframes tfwOrbitPulse{0%{opacity:.16;transform:scale(.99)}35%{opacity:.48;transform:scale(1.015)}100%{opacity:.16;transform:scale(1)}}
+
+/* Final ten seconds: the UI falls away so the clock becomes the scene. */
+body.finale-last-10 .hero-title-wrap,body.finale-last-10 .phase-pill,body.finale-last-10 .release-hud,body.finale-last-10 .progress-block{opacity:.06!important;filter:blur(5px);pointer-events:none}
+body.finale-last-10 #countdown{z-index:8}
+body.finale-last-10 .hero-content:after{content:'';position:absolute;left:50%;top:50%;width:min(84vw,1100px);height:min(34vw,430px);translate:-50% -28%;border-radius:50%;background:radial-gradient(ellipse,rgba(242,63,178,.13),rgba(119,96,255,.04) 43%,transparent 72%);filter:blur(22px);pointer-events:none;z-index:-1}
+body.finale-last-second #countdown{filter:drop-shadow(0 0 38px rgba(242,63,178,.24)) drop-shadow(0 0 75px rgba(119,96,255,.14));transition:none}
+#hero.finale-rapid-pulse .countdown{animation:tfwRapidPulse .095s linear}
+#hero.finale-rapid-pulse .finale-edge-glow{animation:tfwEdgeHit .12s ease-out}
+@keyframes tfwRapidPulse{50%{filter:brightness(1.23) drop-shadow(0 0 48px rgba(255,255,255,.22))}}
+@keyframes tfwEdgeHit{0%{opacity:.15}35%{opacity:.75}100%{opacity:.15}}
+
+.finale-edge-glow{position:absolute;inset:10px;z-index:11;pointer-events:none;border:1px solid rgba(255,255,255,.09);border-radius:22px;opacity:0;box-shadow:inset 0 0 38px rgba(242,63,178,.14),0 0 38px rgba(119,96,255,.08)}
+.finale-flash{position:absolute;inset:0;z-index:12;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 48%,#fff 0,rgba(255,255,255,.94) 8%,rgba(255,122,200,.45) 24%,rgba(119,96,255,.12) 52%,transparent 76%)}
+.finale-flash.fire{animation:tfwReleaseFlash 2.1s cubic-bezier(.15,.7,.2,1) forwards}
+@keyframes tfwReleaseFlash{0%{opacity:0}5%{opacity:1}18%{opacity:.78}48%{opacity:.12}100%{opacity:0}}
+
+.countdown-shell{position:relative}
+
+/* 00:00 replaces the timer in-place. It is not a full-screen overlay. */
+.finale-release{position:absolute;left:50%;top:50%;translate:-50% -50%;z-index:18;width:min(1000px,92vw);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;opacity:0;visibility:hidden;pointer-events:none;transform:scale(.78);filter:blur(20px);transition:opacity .65s ease,transform 1.15s cubic-bezier(.16,.9,.25,1),filter .8s ease}
+.finale-release.active{opacity:1;visibility:visible;transform:scale(1);filter:none}
+.finale-release-kicker{font:900 clamp(8px,.72vw,12px)/1 Arial;letter-spacing:.34em;color:#fff;text-shadow:0 0 18px rgba(255,255,255,.45);opacity:0;animation:tfwReleaseKicker .9s .25s ease forwards}
+.finale-release h2{position:relative;margin:18px 0 12px;font:900 clamp(50px,8.6vw,145px)/.77 'Arial Black',Impact,sans-serif;letter-spacing:-.075em;text-transform:uppercase;background:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%);background-size:220% auto;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 8px 24px rgba(0,0,0,.65)) drop-shadow(0 0 22px rgba(242,63,178,.25));animation:tfwReleaseGradient 3.8s linear infinite,tfwReleaseBreath 2.6s ease-in-out infinite}
+.finale-release h2:before,.finale-release h2:after{content:'';position:absolute;inset:-18px -28px;border:1px solid rgba(255,255,255,.14);border-radius:26px;opacity:.6;box-shadow:0 0 34px rgba(242,63,178,.14),inset 0 0 30px rgba(119,96,255,.08);animation:tfwReleaseFrame 2.8s ease-in-out infinite}
+.finale-release h2:after{inset:-30px -42px;border-color:rgba(242,63,178,.11);animation-delay:-1.4s}
+.finale-release-date{font:900 clamp(7px,.68vw,11px)/1 Arial;letter-spacing:.25em;color:rgba(255,255,255,.7);opacity:0;animation:tfwReleaseKicker .9s .85s ease forwards}
+@keyframes tfwReleaseKicker{to{opacity:1;transform:none}}
+@keyframes tfwReleaseGradient{to{background-position:220% center}}
+@keyframes tfwReleaseBreath{50%{filter:drop-shadow(0 10px 28px rgba(0,0,0,.7)) drop-shadow(0 0 52px rgba(242,63,178,.36)) brightness(1.08)}}
+@keyframes tfwReleaseFrame{50%{opacity:1;transform:scale(1.018);border-color:rgba(255,255,255,.27);box-shadow:0 0 48px rgba(242,63,178,.23),inset 0 0 38px rgba(119,96,255,.13)}}
+
+.release-spark{position:absolute;width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 12px #fff,0 0 24px #f23fb2;opacity:0}
+.release-spark:before,.release-spark:after{content:'';position:absolute;left:50%;top:50%;width:36px;height:1px;translate:-50% -50%;background:linear-gradient(90deg,transparent,#fff,transparent)}
+.release-spark:after{rotate:90deg}.spark-a{left:8%;top:18%;animation:tfwSpark 2.4s .4s ease-in-out infinite}.spark-b{right:9%;top:24%;animation:tfwSpark 2.7s .9s ease-in-out infinite}.spark-c{left:14%;bottom:17%;animation:tfwSpark 3s 1.3s ease-in-out infinite}.spark-d{right:13%;bottom:14%;animation:tfwSpark 2.2s .15s ease-in-out infinite}@keyframes tfwSpark{0%,100%{opacity:0;transform:scale(.2) rotate(0)}35%,60%{opacity:1;transform:scale(1) rotate(45deg)}}
+
+body.finale-released #countdown,body.finale-released .final-minute-countdown{opacity:0!important;visibility:hidden!important;pointer-events:none!important;transform:scale(.72)!important}
+body.finale-released .hero-title-wrap,body.finale-released .phase-pill,body.finale-released .release-hud,body.finale-released .progress-block{opacity:0!important;pointer-events:none!important}
+body.finale-released .hero-content{z-index:15}
+body.finale-released .hero-shade{background:radial-gradient(circle at 50% 48%,rgba(26,12,40,.05),rgba(7,4,13,.34) 52%,rgba(3,2,7,.75) 100%)}
+body.finale-released .hero-orbit{opacity:.5;filter:drop-shadow(0 0 22px rgba(242,63,178,.22))}
+body.finale-released .release-overlay{display:none!important}
+.finale-fireworks{position:absolute;inset:0;width:100%;height:100%;z-index:14;pointer-events:none;mix-blend-mode:screen}
+
+.finale-preview-exit{position:fixed;right:18px;bottom:18px;z-index:5400;border:1px solid rgba(255,255,255,.22);border-radius:999px;background:rgba(8,7,13,.88);backdrop-filter:blur(18px);color:#fff;padding:13px 17px;font:900 7px/1 Arial;letter-spacing:.13em;cursor:pointer;box-shadow:0 18px 50px rgba(0,0,0,.32)}
+body.finale-previewing .milestone-preview-toggle{opacity:.35;pointer-events:none}
+
+/* The old fixed release page is disabled in V9; release now lives where the timer was. */
+.release-overlay{display:none!important}
+
+@media(max-width:700px){
+  body.final-five-active #countdown{transform:scale(1.035)}
+  body.finale-last-10 #countdown{transform:scale(1.055)}
+  body.finale-last-second #countdown{transform:scale(1.075)}
+  .finale-release{width:94vw}.finale-release h2{font-size:clamp(42px,15vw,88px)}.finale-release h2:before{inset:-12px -14px}.finale-release h2:after{inset:-21px -22px}
+  .finale-preview-exit{right:10px;bottom:10px;font-size:6px;padding:11px 13px}
+}
+@media(prefers-reduced-motion:reduce){
+  body.final-five-active #countdown,.finale-release,.finale-release h2,.release-spark,.finale-flash{animation:none!important;transition:none!important}
+}
+
+
+/* === EXPERIENCE: v10.css === */
+/* V10 — final-30-minute simulator + refined theatrical finale. Loaded after V9. */
+
+/* Keep the finale large but inside the viewport at every stage. */
+body.final-five-active .hero-content{
+  width:min(1260px,90vw);
+  transition:width .9s cubic-bezier(.2,.78,.2,1),transform .35s ease;
+}
+body.final-five-active .countdown-shell{margin-top:10px;overflow:visible}
+body.final-five-active #countdown{
+  width:100%;margin-inline:auto;
+  transform:scale(var(--finale-scale,1));
+  transform-origin:center center;
+}
+
+/* At -05:00 the release/time-zone HUD leaves the composition completely. */
+.release-hud{max-height:120px;transition:opacity .75s ease,filter .75s ease,transform .75s ease,max-height .75s cubic-bezier(.2,.72,.2,1),margin .75s ease,border-color .5s ease}
+body.final-five-active .release-hud{
+  opacity:0!important;filter:blur(9px);transform:translateY(16px) scale(.96);
+  max-height:0;margin-top:0!important;border-color:transparent!important;overflow:hidden;pointer-events:none!important;
+}
+
+/* Percentage becomes a co-star from -00:45 onward instead of fading away. */
+body.final-five-active .progress-block{opacity:.58!important;filter:none!important;transition:opacity .55s ease,filter .55s ease,transform .55s cubic-bezier(.18,.82,.18,1),width .55s ease,box-shadow .4s ease,border-color .4s ease}
+body.finale-last-45 .progress-block,
+body.finale-last-10 .progress-block{
+  opacity:1!important;filter:none!important;pointer-events:auto!important;
+  width:min(980px,91%);
+  transform:translateY(clamp(16px,2.6vh,30px)) scale(var(--finale-progress-scale,1));
+  border-color:rgba(242,63,178,.32);
+  box-shadow:0 22px 60px rgba(0,0,0,.3),0 0 34px rgba(242,63,178,.1),inset 0 0 26px rgba(119,96,255,.035);
+  background:linear-gradient(135deg,rgba(12,9,18,.76),rgba(18,10,25,.62));
+}
+body.finale-last-45 .progress-meta{font-size:clamp(7px,.67vw,10px);color:rgba(255,255,255,.77)}
+body.finale-last-45 .progress-meta strong{
+  font-size:clamp(9px,.82vw,13px);color:#fff;
+  text-shadow:0 0 18px rgba(242,63,178,.4);
+}
+body.finale-last-45 .progress-track{height:8px;box-shadow:0 0 22px rgba(119,96,255,.1)}
+body.finale-last-45 .progress-fill{box-shadow:0 0 24px rgba(242,63,178,.42),0 0 42px rgba(119,96,255,.18)}
+body.finale-last-10 .progress-fill i{animation:tfwProgressFinalPulse .7s ease-in-out infinite alternate}
+@keyframes tfwProgressFinalPulse{to{transform:translate(50%,-50%) scale(1.45);box-shadow:0 0 22px #fff,0 0 52px var(--accent),0 0 78px rgba(119,96,255,.32)}}
+
+/* Free vertical room before the last ten seconds so the enlarged timer never collides with the title. */
+body.finale-last-45 .hero-title-wrap{opacity:0!important;transform:translateY(-12px) scale(.92);filter:blur(4px);pointer-events:none!important}
+body.finale-last-45 .phase-pill{opacity:0!important;transform:translateY(-9px) scale(.92);pointer-events:none!important}
+body.finale-last-45 .logo-stage{transform:translateY(-4px) scale(.88);transition:transform .7s ease,opacity .7s ease}
+body.finale-last-10 .hero-title-wrap,body.finale-last-10 .phase-pill{opacity:0!important;filter:blur(5px);pointer-events:none!important;transform:translateY(-16px) scale(.88)}
+body.finale-last-10 .logo-stage{opacity:.28;transform:translateY(-8px) scale(.72)}
+body.finale-last-10 #countdown{z-index:9}
+body.finale-last-second #countdown{transition:none!important}
+
+/* Music-reactive layer. It is driven by a real Web Audio analyser. */
+.finale-visualizer{
+  position:absolute;inset:0;width:100%;height:100%;z-index:7;pointer-events:none;
+  opacity:0;mix-blend-mode:screen;filter:saturate(1.18) blur(.15px);
+  transition:opacity .65s ease;
+}
+body.finale-music-live .finale-visualizer{opacity:.68}
+.finale-beat-halo{
+  position:absolute;left:50%;top:49%;z-index:6;width:min(1080px,82vw);height:min(430px,38vw);
+  translate:-50% -50%;border-radius:50%;pointer-events:none;opacity:0;
+  background:radial-gradient(ellipse,rgba(255,255,255,.055) 0%,rgba(242,63,178,.12) 24%,rgba(119,96,255,.075) 48%,transparent 72%);
+  box-shadow:0 0 80px rgba(242,63,178,.1),inset 0 0 70px rgba(119,96,255,.06);
+  transform:scale(var(--music-scale,1));transition:opacity .5s ease;filter:blur(13px);
+}
+body.finale-music-live .finale-beat-halo{opacity:calc(.18 + var(--music-energy,.08) * .82)}
+body.finale-music-live .finale-edge-glow{opacity:calc(.1 + var(--music-energy,.08) * .5);box-shadow:inset 0 0 58px rgba(242,63,178,.16),0 0 54px rgba(119,96,255,.09)}
+
+/* Release remains exactly where the timer was, but now behaves like a persistent finale. */
+.finale-release{
+  width:min(1060px,91vw);isolation:isolate;
+  filter:blur(20px) brightness(.8);
+}
+.finale-release.active{filter:none}
+.finale-release:before{
+  content:'';position:absolute;z-index:-2;left:50%;top:50%;width:120%;height:190%;translate:-50% -50%;border-radius:50%;
+  background:conic-gradient(from 0deg,transparent 0 8%,rgba(242,63,178,.08) 13%,transparent 21% 37%,rgba(119,96,255,.1) 43%,transparent 52% 68%,rgba(255,156,67,.075) 76%,transparent 85%);
+  filter:blur(22px);animation:tfwReleaseAurora 13s linear infinite;
+}
+.finale-release:after{
+  content:'';position:absolute;z-index:-1;inset:-38% -12%;border-radius:48%;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.08),rgba(242,63,178,.08) 24%,rgba(119,96,255,.045) 44%,transparent 68%);
+  animation:tfwReleaseAura 3.1s ease-in-out infinite;
+}
+.release-radiance{position:absolute;left:50%;top:50%;z-index:-1;width:135%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;border:1px solid rgba(255,255,255,.08);box-shadow:0 0 70px rgba(242,63,178,.13),inset 0 0 80px rgba(119,96,255,.07);animation:tfwRadianceRing 4s ease-in-out infinite}
+.finale-release-kicker{
+  font:900 clamp(16px,1.42vw,24px)/1 Arial!important;letter-spacing:.25em!important;
+  background:linear-gradient(90deg,#fff,#ffc073,#ff59c0,#9c88ff,#fff);background-size:240% auto;-webkit-background-clip:text;background-clip:text;color:transparent!important;
+  text-shadow:none!important;filter:drop-shadow(0 0 14px rgba(255,255,255,.22));
+  animation:tfwReleaseKicker .7s .15s ease forwards,tfwKickerFlow 4.5s linear infinite!important;
+}
+.finale-release h2{margin:22px 0 18px!important;display:flex;flex-direction:column;gap:0;line-height:.74!important;animation:tfwReleaseGradient 3.8s linear infinite,tfwReleaseBreath 2.25s ease-in-out infinite!important}
+.finale-release h2 span{font-size:.56em;letter-spacing:-.055em;opacity:.92}
+.finale-release h2 em{font:inherit;font-size:1em;font-style:normal;letter-spacing:-.08em}
+.finale-release-date{
+  font:900 clamp(9px,.86vw,14px)/1.35 Arial!important;letter-spacing:.18em!important;color:rgba(255,255,255,.84)!important;
+  text-shadow:0 0 22px rgba(255,255,255,.2),0 0 30px rgba(242,63,178,.14);
+}
+.release-line{width:min(440px,58vw);height:1px;margin-top:18px;background:linear-gradient(90deg,transparent,rgba(119,96,255,.8),#fff,rgba(242,63,178,.8),transparent);box-shadow:0 0 20px rgba(242,63,178,.35);animation:tfwReleaseLine 2.2s ease-in-out infinite}
+body.finale-released .hero-corners span{border-color:rgba(255,255,255,.45);filter:drop-shadow(0 0 10px rgba(242,63,178,.65));animation:tfwCornerAlive 2.1s ease-in-out infinite alternate}
+body.finale-released .finale-edge-glow{opacity:.35;animation:tfwReleaseEdge 2.4s ease-in-out infinite}
+@keyframes tfwReleaseAurora{to{transform:rotate(360deg)}}
+@keyframes tfwReleaseAura{50%{transform:scale(1.08);opacity:.66}}
+@keyframes tfwRadianceRing{50%{transform:scale(1.055);opacity:.68;border-color:rgba(242,63,178,.18)}}
+@keyframes tfwKickerFlow{to{background-position:240% center}}
+@keyframes tfwReleaseLine{50%{width:min(520px,68vw);filter:brightness(1.5)}}
+@keyframes tfwCornerAlive{to{opacity:.6;filter:drop-shadow(0 0 19px rgba(242,63,178,.9))}}
+@keyframes tfwReleaseEdge{50%{opacity:.78;border-color:rgba(255,255,255,.24);box-shadow:inset 0 0 76px rgba(242,63,178,.2),0 0 62px rgba(119,96,255,.13)}}
+
+/* Final release fireworks are deliberately allowed to continue for the entire release state. */
+.finale-fireworks{z-index:14}
+
+/* V10 preview controls — true timeline scrubber for the final 30 minutes. */
+.milestone-preview-panel{width:min(470px,calc(100vw - 36px));max-height:min(82vh,720px);padding:18px 18px 20px}
+.preview-panel-head{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.finale-scrubber{margin:15px 0 16px;padding:14px;border:1px solid rgba(255,255,255,.11);border-radius:16px;background:linear-gradient(145deg,rgba(255,255,255,.045),rgba(242,63,178,.025));box-shadow:inset 0 0 26px rgba(119,96,255,.025)}
+.finale-scrub-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.finale-scrub-head span,.preview-quick-label{font:900 7px/1 Arial;letter-spacing:.16em;color:rgba(255,255,255,.55)}.finale-scrub-head strong{font:900 13px/1 Arial;letter-spacing:.08em;font-variant-numeric:tabular-nums;color:#fff;text-shadow:0 0 18px rgba(242,63,178,.3)}
+#finaleScrubber{width:100%;height:24px;accent-color:#f23fb2;cursor:ew-resize}
+.finale-scrub-scale{display:flex;justify-content:space-between;margin-top:1px;font:800 6px/1 Arial;letter-spacing:.08em;color:rgba(255,255,255,.38)}
+.finale-scrub-actions{display:grid;grid-template-columns:1.25fr .8fr 1fr;gap:6px;margin-top:12px}.finale-scrub-actions button{border:1px solid rgba(255,255,255,.12);border-radius:9px;background:rgba(255,255,255,.04);color:#fff;padding:9px 7px;font:900 6.5px/1 Arial;letter-spacing:.08em;cursor:pointer;transition:border-color .2s,background .2s,transform .2s}.finale-scrub-actions button:first-child{border-color:rgba(242,63,178,.34);background:linear-gradient(100deg,rgba(119,96,255,.16),rgba(242,63,178,.16))}.finale-scrub-actions button:hover{border-color:rgba(242,63,178,.6);background:rgba(242,63,178,.1);transform:translateY(-1px)}
+.preview-quick-label{margin:2px 0 8px}
+body.finale-previewing .milestone-preview-toggle{opacity:.28;pointer-events:none}
+.finale-preview-exit{font-size:7px!important;letter-spacing:.14em!important;border-color:rgba(242,63,178,.34)!important;box-shadow:0 18px 50px rgba(0,0,0,.34),0 0 24px rgba(242,63,178,.08)!important}
+
+@media(max-width:900px){
+  body.final-five-active .hero-content{width:88vw}
+  body.finale-last-45 .progress-block,body.finale-last-10 .progress-block{width:92%;transform:translateY(14px) scale(1.025)}
+}
+@media(max-width:700px){
+  body.final-five-active .hero-content{width:91vw}
+  body.final-five-active #countdown,body.finale-last-10 #countdown,body.finale-last-second #countdown{transform:scale(1)!important}
+  body.finale-last-45 .hero-title-wrap,body.finale-last-45 .phase-pill{opacity:.12!important}
+  body.finale-last-45 .progress-block,body.finale-last-10 .progress-block{width:96%;transform:translateY(10px) scale(1)!important}
+  body.finale-last-45 .progress-meta{font-size:6px}.finale-release-kicker{font-size:clamp(12px,3.4vw,18px)!important}.finale-release h2{font-size:clamp(44px,14vw,82px)!important}.finale-release-date{font-size:clamp(7px,2vw,10px)!important;letter-spacing:.12em!important}
+  .finale-beat-halo{width:92vw;height:52vw}.milestone-preview-panel{left:10px;bottom:58px;width:calc(100vw - 20px);max-height:72vh}.finale-scrub-actions{grid-template-columns:1fr 1fr}.finale-scrub-actions button:first-child{grid-column:1/-1}
+}
+@media(prefers-reduced-motion:reduce){
+  .finale-release:before,.finale-release:after,.release-radiance,.release-line,body.finale-released .hero-corners span{animation:none!important}
+  body.finale-music-live .finale-visualizer{opacity:.28}
+}
+
+
+/* === EXPERIENCE: v11.css === */
+/* V11 — polish pass for the final countdown simulator and collaboration lockup. */
+
+/* --- Collaboration lockup ------------------------------------------------ */
+.logo-stage{width:min(560px,72vw);display:grid;place-items:center}
+.logo-halo{width:92%;height:76%}
+.collab-lockup{
+  position:relative;z-index:2;width:100%;display:grid;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);
+  align-items:center;justify-items:center;column-gap:clamp(13px,1.5vw,24px);
+}
+.collab-lockup .gta-logo{
+  justify-self:end;width:auto!important;height:clamp(104px,10.2vw,156px)!important;max-height:none!important;margin:0!important;
+  object-fit:contain;filter:drop-shadow(0 18px 34px rgba(0,0,0,.6));
+}
+.ryze-gtavi-logo{
+  justify-self:start;width:auto;height:clamp(88px,8.8vw,134px);object-fit:contain;
+  filter:drop-shadow(0 17px 30px rgba(0,0,0,.62)) drop-shadow(0 0 18px rgba(242,63,178,.12));
+  user-select:none;-webkit-user-drag:none;
+}
+.collab-x{
+  display:grid;place-items:center;width:clamp(30px,3vw,44px);aspect-ratio:1;border-radius:50%;
+  font:300 clamp(20px,2.1vw,31px)/1 Arial,sans-serif;color:rgba(255,255,255,.88);
+  border:1px solid rgba(255,255,255,.12);background:rgba(8,7,13,.2);
+  box-shadow:0 0 30px rgba(242,63,178,.06),inset 0 0 18px rgba(255,255,255,.025);
+  text-shadow:0 0 16px rgba(255,255,255,.2);
+}
+
+/* The separator between seconds and milliseconds is a real colon again. */
+.milliseconds-separator{align-items:center!important;padding-bottom:0!important}
+
+/* --- Final-five composition: keep the same architecture all the way down. */
+body.final-five-active .hero-content{width:min(1360px,95vw)!important}
+body.final-five-active .countdown-shell{
+  width:min(1180px,76.5vw);margin-top:15px!important;overflow:visible!important;
+  transition:width .75s cubic-bezier(.2,.78,.2,1),margin .5s ease;
+}
+body.final-five-active #countdown{
+  width:100%;margin-inline:auto;transform:scale(var(--finale-scale,1))!important;
+  transform-origin:center center!important;
+  transition:transform .34s cubic-bezier(.2,.78,.2,1),filter .34s ease!important;
+}
+
+/* The -05:00 layout remains the visual base. Do NOT collapse navigation/title/logo at -45/-10/-1. */
+body.phase-final-minute .topbar,
+body.phase-final-minute .hero-status,
+body.phase-final-minute .hero-title-wrap,
+body.phase-final-minute .phase-pill,
+body.phase-final-minute .countdown,
+body.phase-final-minute .progress-block,
+body.phase-final-minute .scroll-cue{
+  opacity:1!important;visibility:visible!important;pointer-events:auto!important;filter:none!important;
+}
+body.phase-final-minute .topbar{transform:none!important}
+body.phase-final-minute .hero-title-wrap{transform:none!important}
+body.phase-final-minute .countdown{display:grid!important}
+body.phase-final-minute .final-minute-countdown{display:none!important}
+body.phase-final-minute .gta-logo{width:auto!important;height:clamp(104px,10.2vw,156px)!important;max-height:none!important;margin:0!important}
+body.phase-final-minute.final-five-active .release-hud{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+body.phase-final-minute.final-five-active .next-scene{opacity:0!important;pointer-events:none!important}
+
+body.finale-last-45 .hero-title-wrap,
+body.finale-last-10 .hero-title-wrap{
+  opacity:1!important;transform:none!important;filter:none!important;pointer-events:auto!important;
+}
+body.finale-last-45 .logo-stage,
+body.finale-last-10 .logo-stage{
+  opacity:1!important;transform:none!important;filter:none!important;
+}
+body.finale-last-45 .phase-pill,
+body.finale-last-10 .phase-pill{
+  opacity:1!important;transform:none!important;filter:none!important;pointer-events:auto!important;
+}
+body.finale-song-ended .phase-pill{
+  opacity:0!important;transform:translateY(-5px) scale(.96)!important;filter:blur(3px)!important;pointer-events:none!important;
+}
+
+/* The phase capsule remains useful from 30m to the end of song one. */
+.phase-pill{
+  transition:opacity .48s ease,transform .48s ease,filter .48s ease,border-color .35s ease,box-shadow .35s ease!important;
+}
+body.countdown-stage-30m .phase-pill,
+body.countdown-stage-15m .phase-pill,
+body.countdown-stage-5m .phase-pill,
+body.countdown-stage-minute .phase-pill{
+  border-color:rgba(242,63,178,.34);box-shadow:0 0 28px rgba(242,63,178,.1),inset 0 0 18px rgba(119,96,255,.04);
+}
+
+/* Dynamic Road-to-Leonida copy gets the same premium gradient language as 00:00. */
+body.finale-dynamic-copy #heroTitle{
+  position:relative;
+  background:linear-gradient(90deg,#fff 0%,#ffc06f 18%,#ff57c0 47%,#9580ff 73%,#fff 100%);
+  background-size:230% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.62)) drop-shadow(0 0 18px rgba(242,63,178,.2));
+  animation:tfwV11TitleFlow 3.4s linear infinite,tfwV11TitleBreath 2.1s ease-in-out infinite;
+}
+body.finale-dynamic-copy #heroTitle:after{
+  content:'';position:absolute;left:50%;bottom:-11px;width:62%;height:1px;translate:-50% 0;
+  background:linear-gradient(90deg,transparent,rgba(119,96,255,.72),#fff,rgba(242,63,178,.72),transparent);
+  box-shadow:0 0 18px rgba(242,63,178,.24);animation:tfwV11TitleLine 2.1s ease-in-out infinite;
+}
+@keyframes tfwV11TitleFlow{to{background-position:230% center}}
+@keyframes tfwV11TitleBreath{50%{filter:drop-shadow(0 10px 30px rgba(0,0,0,.66)) drop-shadow(0 0 36px rgba(242,63,178,.34)) brightness(1.06)}}
+@keyframes tfwV11TitleLine{50%{width:78%;filter:brightness(1.45)}}
+
+/* Restore the dramatic growth, but keep it contained inside the viewport. */
+body.finale-last-45 .progress-block,
+body.finale-last-10 .progress-block{
+  opacity:1!important;filter:none!important;pointer-events:auto!important;
+  width:min(900px,68vw)!important;
+  transform:translateY(clamp(12px,1.7vh,22px)) scale(var(--finale-progress-scale,1))!important;
+  transform-origin:center top!important;
+  border-color:rgba(242,63,178,.38)!important;
+  box-shadow:0 24px 72px rgba(0,0,0,.34),0 0 46px rgba(242,63,178,.13),inset 0 0 30px rgba(119,96,255,.05)!important;
+  animation:tfwV11ProgressFloat 2.8s ease-in-out infinite alternate;
+}
+body.finale-last-45 .progress-meta{font-size:clamp(7px,.72vw,11px)!important;color:rgba(255,255,255,.82)!important}
+body.finale-last-45 .progress-meta strong{font-size:clamp(10px,.9vw,14px)!important}
+body.finale-last-45 .progress-track{height:8px!important}
+@keyframes tfwV11ProgressFloat{to{box-shadow:0 28px 80px rgba(0,0,0,.38),0 0 58px rgba(242,63,178,.19),inset 0 0 36px rgba(119,96,255,.07)}}
+
+/* Keep the -10 music visualization, but without shrinking the identity lockup. */
+body.finale-last-10 .finale-visualizer{opacity:.72}
+body.finale-last-10 .hero-content:after{translate:-50% -20%!important;height:min(38vw,470px)!important}
+
+/* --- Real, draggable 30-minute scrubber --------------------------------- */
+.finale-scrubber{user-select:none}
+.finale-scrub-track-shell{
+  position:relative;height:38px;margin:2px 0 0;cursor:ew-resize;touch-action:none;
+  display:flex;align-items:center;
+}
+.finale-scrub-track-shell:before{
+  content:'';position:absolute;left:0;right:0;top:50%;height:8px;translate:0 -50%;border-radius:999px;
+  background:rgba(255,255,255,.09);box-shadow:inset 0 1px 2px rgba(0,0,0,.45),0 0 18px rgba(119,96,255,.05);
+}
+.finale-scrub-fill{
+  position:absolute;z-index:1;left:0;top:50%;width:var(--scrub-progress,83.3333%);height:8px;translate:0 -50%;border-radius:999px;
+  background:linear-gradient(90deg,#7760ff,#f23fb2,#ff9c43);box-shadow:0 0 20px rgba(242,63,178,.32);
+  pointer-events:none;
+}
+.finale-scrub-track-shell:after{
+  content:'';position:absolute;z-index:3;left:var(--scrub-progress,83.3333%);top:50%;width:20px;height:20px;
+  translate:-50% -50%;border-radius:50%;background:#fff;border:4px solid #f23fb2;
+  box-shadow:0 0 0 5px rgba(242,63,178,.09),0 0 24px rgba(242,63,178,.62);pointer-events:none;
+  transition:box-shadow .18s ease;
+}
+#finaleScrubber{
+  position:absolute;z-index:4;inset:0;width:100%;height:100%;margin:0;opacity:.001;cursor:ew-resize;
+  appearance:none;-webkit-appearance:none;background:transparent;touch-action:none;
+}
+#finaleScrubber::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:28px;height:34px;cursor:ew-resize}
+#finaleScrubber::-moz-range-thumb{width:28px;height:34px;border:0;background:transparent;cursor:ew-resize}
+.finale-scrub-track-shell:hover:after{box-shadow:0 0 0 7px rgba(242,63,178,.12),0 0 34px rgba(242,63,178,.78)}
+.finale-scrub-scale{margin-top:2px!important}
+
+/* Fireworks and release energy remain persistent at 00:00. */
+body.finale-released .finale-fireworks{opacity:1!important}
+body.finale-released .finale-release{animation:tfwV11ReleaseHover 3.4s ease-in-out infinite alternate}
+body.finale-released .finale-release-kicker{font-size:clamp(18px,1.55vw,27px)!important;letter-spacing:.29em!important}
+@keyframes tfwV11ReleaseHover{to{transform:scale(1.018);filter:brightness(1.05)}}
+
+/* Shorter displays: preserve spacing while keeping all elements visible. */
+@media(max-height:820px) and (min-width:701px){
+  body.final-five-active .hero-content{padding-top:24px!important}
+  body.final-five-active .logo-stage{width:min(470px,62vw)}
+  body.final-five-active .collab-lockup .gta-logo{height:clamp(88px,8.5vw,124px)!important}
+  body.final-five-active .ryze-gtavi-logo{height:clamp(74px,7.4vw,106px)}
+  body.final-five-active .hero-title-wrap{margin-top:2px}
+  body.final-five-active .phase-pill{margin-top:11px}
+  body.final-five-active .countdown-shell{margin-top:11px!important}
+  body.finale-last-45 .progress-block,body.finale-last-10 .progress-block{transform:translateY(8px) scale(var(--finale-progress-scale,1))!important}
+}
+
+@media(max-width:900px){
+  .logo-stage{width:min(440px,78vw)}
+  .collab-lockup .gta-logo{height:clamp(92px,18vw,128px)!important}
+  .ryze-gtavi-logo{height:clamp(76px,15.5vw,108px)}
+  .collab-x{width:34px;font-size:23px}
+  body.final-five-active .countdown-shell{width:88vw}
+  body.finale-last-45 .progress-block,body.finale-last-10 .progress-block{width:82vw!important}
+}
+
+@media(max-width:700px){
+  .logo-stage{width:min(390px,86vw)}
+  .collab-lockup{column-gap:9px}
+  .collab-lockup .gta-logo{height:clamp(74px,20vw,104px)!important}
+  .ryze-gtavi-logo{height:clamp(62px,17vw,88px)}
+  .collab-x{width:28px;font-size:19px}
+  body.final-five-active .countdown-shell{width:94vw}
+  body.final-five-active #countdown{transform:scale(1.035)!important}
+  body.finale-last-45 .progress-block,body.finale-last-10 .progress-block{width:88vw!important;transform:translateY(8px) scale(1.03)!important}
+  body.finale-dynamic-copy #heroTitle{font-size:clamp(23px,7vw,34px)!important}
+  body.phase-final-minute .topbar{opacity:1!important}
+}
+
+
+/* === EXPERIENCE: v12.css === */
+/* V12 — final-five timing, audio staging, scene rush and visual polish. */
+
+/* --- Balanced GTA VI × Ryze lockup ------------------------------------- */
+.logo-stage{width:min(390px,64vw)!important}
+.collab-lockup{
+  width:auto!important;display:grid!important;grid-template-columns:auto auto auto!important;
+  align-items:center!important;justify-content:center!important;justify-items:center!important;
+  column-gap:clamp(2px,.28vw,5px)!important;
+}
+.collab-lockup .gta-logo,
+.ryze-gtavi-logo{
+  width:clamp(108px,7.8vw,138px)!important;
+  height:clamp(108px,7.8vw,138px)!important;
+  max-width:none!important;max-height:none!important;margin:0!important;
+  object-fit:contain!important;object-position:center!important;
+}
+.collab-x{width:clamp(28px,2.35vw,36px)!important;font-size:clamp(19px,1.7vw,25px)!important}
+
+/* --- Final five title treatment starts immediately at -05:00 ---------- */
+body.final-five-active .hero-title-wrap{margin-top:0!important}
+body.final-five-active #heroTitle{
+  max-width:92vw;margin-inline:auto;
+  font-size:clamp(27px,3.55vw,54px)!important;
+  line-height:.94!important;letter-spacing:-.045em!important;
+}
+body.final-five-active.finale-last-15 #heroTitle{font-size:clamp(24px,3.05vw,46px)!important}
+body.finale-dynamic-copy #heroTitle{
+  background:linear-gradient(90deg,#fff 0%,#ffc76f 15%,#ff5fc5 44%,#8d7cff 72%,#fff 100%)!important;
+  background-size:250% auto!important;-webkit-background-clip:text!important;background-clip:text!important;
+  color:transparent!important;-webkit-text-fill-color:transparent!important;
+  filter:drop-shadow(0 8px 26px rgba(0,0,0,.7)) drop-shadow(0 0 22px rgba(242,63,178,.28))!important;
+}
+
+/* --- Timer growth is back, but constrained to the viewport ------------- */
+body.final-five-active .countdown-shell{
+  width:min(1120px,74vw)!important;
+  margin-top:12px!important;
+  margin-bottom:var(--finale-gap,10px)!important;
+  overflow:visible!important;
+}
+body.final-five-active #countdown{
+  width:100%!important;max-width:100%!important;margin-inline:auto!important;
+  transform:scale(var(--finale-scale,1))!important;
+  transform-origin:center center!important;
+  transition:transform .32s cubic-bezier(.18,.82,.18,1),filter .3s ease!important;
+}
+body.final-five-active .time-value,
+body.final-five-active #seconds{
+  color:#fff!important;-webkit-text-fill-color:#fff!important;
+}
+body.final-five-active .milliseconds .time-value{
+  color:#fff!important;background:linear-gradient(180deg,#fff 35%,#ffd7f3 100%)!important;
+  -webkit-background-clip:text!important;background-clip:text!important;-webkit-text-fill-color:transparent!important;
+}
+
+/* Last 15 seconds: illuminated panels and hotter digits. */
+body.finale-last-15 #countdown{filter:drop-shadow(0 0 18px rgba(242,63,178,.18))}
+body.finale-last-15 .time-unit{
+  border-color:rgba(255,255,255,.24)!important;
+  animation:tfwV12UnitCharge 1.15s ease-in-out infinite alternate;
+}
+body.finale-last-15 .time-value{
+  text-shadow:0 0 2px #fff,0 0 15px rgba(255,255,255,.46),0 0 30px rgba(242,63,178,.34),0 0 52px rgba(119,96,255,.22),0 12px 30px rgba(0,0,0,.62)!important;
+}
+body.finale-last-second .time-unit{animation-duration:.22s!important}
+body.finale-last-second .time-value{animation:tfwV12DigitIgnition .16s ease-in-out infinite alternate!important}
+@keyframes tfwV12UnitCharge{
+  from{box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 12px 38px rgba(0,0,0,.25),0 0 14px rgba(119,96,255,.07)}
+  to{border-color:rgba(255,105,203,.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 16px 48px rgba(0,0,0,.32),0 0 32px rgba(242,63,178,.22),0 0 58px rgba(119,96,255,.12)}
+}
+@keyframes tfwV12DigitIgnition{
+  from{filter:brightness(1);transform:translateY(0) scale(1)}
+  to{filter:brightness(1.18);transform:translateY(-1px) scale(1.012)}
+}
+
+/* --- Percentage is prominent from -05:00, not only in the last 45s ---- */
+body.final-five-active .progress-block{
+  opacity:1!important;visibility:visible!important;filter:none!important;pointer-events:auto!important;
+  width:min(860px,64vw)!important;
+  transform:translateY(0) scale(var(--finale-progress-scale,1))!important;
+  transform-origin:center top!important;
+  border-color:rgba(242,63,178,.38)!important;
+  box-shadow:0 22px 66px rgba(0,0,0,.34),0 0 42px rgba(242,63,178,.14),inset 0 0 28px rgba(119,96,255,.055)!important;
+  transition:opacity .45s ease,transform .34s cubic-bezier(.18,.82,.18,1),width .45s ease,box-shadow .35s ease!important;
+  animation:tfwV12ProgressCharge 2.7s ease-in-out infinite alternate!important;
+}
+body.final-five-active .progress-meta{color:rgba(255,255,255,.9)!important}
+body.final-five-active .progress-meta strong{color:#fff!important;text-shadow:0 0 18px rgba(242,63,178,.28)}
+body.final-five-active .progress-track{height:8px!important;background:rgba(255,255,255,.15)!important}
+@keyframes tfwV12ProgressCharge{
+  to{box-shadow:0 28px 76px rgba(0,0,0,.38),0 0 60px rgba(242,63,178,.21),inset 0 0 34px rgba(119,96,255,.08)}
+}
+
+/* --- Real music visualizer lives below the percentage ------------------- */
+.finale-visualizer-wrap{
+  position:relative!important;z-index:11;width:min(760px,58vw);height:0;margin:0 auto;
+  overflow:visible;opacity:0;transform:translateY(5px) scale(.97);pointer-events:none;
+  transition:height .5s cubic-bezier(.2,.75,.2,1),margin .5s ease,opacity .45s ease,transform .45s ease;
+}
+body.final-five-active .finale-visualizer-wrap{
+  height:62px;margin-top:8px;opacity:.94;transform:none;
+}
+.finale-visualizer{
+  position:relative!important;inset:auto!important;display:block!important;width:100%!important;height:100%!important;
+  z-index:2!important;opacity:.98!important;mix-blend-mode:screen!important;filter:saturate(1.25)!important;
+  transition:opacity .35s ease!important;
+}
+body.finale-music-live .finale-visualizer{opacity:1!important}
+.finale-beat-halo{
+  position:absolute!important;inset:10% 5%!important;left:auto!important;top:auto!important;
+  width:auto!important;height:auto!important;translate:none!important;border-radius:999px!important;z-index:1!important;
+  opacity:.18!important;filter:blur(10px)!important;
+  background:radial-gradient(ellipse,rgba(255,255,255,.05),rgba(242,63,178,.13) 34%,rgba(119,96,255,.08) 55%,transparent 76%)!important;
+  transform:scale(var(--music-scale,1))!important;
+}
+body.finale-music-live .finale-beat-halo{opacity:calc(.24 + var(--music-energy,.08) * .56)!important}
+
+/* --- Accelerating screenshot rush throughout the final minute ----------- */
+body.finale-scene-rush .scene{
+  transition:opacity var(--finale-scene-transition,600ms) linear!important;
+  filter:saturate(1.11) contrast(1.035) brightness(1.015)!important;
+}
+body.finale-scene-rush .scene-sweep{animation-duration:var(--finale-scene-transition,600ms)!important}
+body.finale-last-15 .scene-sweep{display:none!important}
+body.finale-last-15 .hero-atmosphere{filter:saturate(1.08) brightness(1.02)}
+
+/* Keep the five-minute architecture intact all the way through the minute. */
+body.phase-final-minute.final-five-active .topbar,
+body.phase-final-minute.final-five-active .hero-status,
+body.phase-final-minute.final-five-active .hero-title-wrap,
+body.phase-final-minute.final-five-active .phase-pill,
+body.phase-final-minute.final-five-active .countdown,
+body.phase-final-minute.final-five-active .progress-block{
+  opacity:1!important;visibility:visible!important;filter:none!important;
+}
+body.finale-song-ended .phase-pill{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+
+@media(max-height:850px) and (min-width:901px){
+  body.final-five-active .hero-content{padding-top:18px!important}
+  .logo-stage{width:min(330px,54vw)!important}
+  .collab-lockup .gta-logo,.ryze-gtavi-logo{width:112px!important;height:112px!important}
+  body.final-five-active #heroTitle{font-size:clamp(25px,3vw,44px)!important}
+  body.final-five-active .countdown-shell{width:min(1040px,72vw)!important;margin-top:8px!important;margin-bottom:18px!important}
+  body.final-five-active .progress-block{width:min(790px,61vw)!important}
+  body.final-five-active .finale-visualizer-wrap{height:50px;margin-top:5px}
+}
+
+@media(max-width:900px){
+  .logo-stage{width:min(340px,74vw)!important}
+  .collab-lockup .gta-logo,.ryze-gtavi-logo{width:clamp(92px,16vw,116px)!important;height:clamp(92px,16vw,116px)!important}
+  .collab-x{width:30px!important;font-size:20px!important}
+  body.final-five-active .countdown-shell{width:82vw!important;margin-bottom:22px!important}
+  body.final-five-active .progress-block{width:78vw!important}
+  body.final-five-active .finale-visualizer-wrap{width:72vw;height:54px}
+}
+
+@media(max-width:700px){
+  .logo-stage{width:min(310px,84vw)!important}
+  .collab-lockup{column-gap:1px!important}
+  .collab-lockup .gta-logo,.ryze-gtavi-logo{width:clamp(78px,20vw,98px)!important;height:clamp(78px,20vw,98px)!important}
+  .collab-x{width:26px!important;font-size:18px!important}
+  body.final-five-active #heroTitle{font-size:clamp(22px,6.2vw,32px)!important;white-space:normal}
+  body.final-five-active .countdown-shell{width:91vw!important;margin-bottom:18px!important}
+  body.final-five-active #countdown{transform:scale(var(--finale-scale,1))!important}
+  body.final-five-active .progress-block{width:88vw!important;transform:scale(var(--finale-progress-scale,1))!important}
+  body.final-five-active .finale-visualizer-wrap{width:84vw;height:48px;margin-top:6px}
+}
+
+
+/* === EXPERIENCE: v13.css === */
+/* V13 — logo simplification, lower visualizer, later scene rush and polish. */
+
+/* Remove the GTA VI + X lockup and keep only the small Ryze logo in the bottom-left. */
+.ryze-corner-stage{
+  position:absolute!important;
+  left:clamp(14px,2.1vw,28px)!important;
+  bottom:clamp(16px,2.1vw,30px)!important;
+  width:auto!important;
+  z-index:12!important;
+  pointer-events:none!important;
+}
+.ryze-corner-stage .logo-halo{
+  width:110%!important;
+  height:82%!important;
+  opacity:.38!important;
+  filter:blur(18px)!important;
+}
+.ryze-corner-logo{
+  position:relative;
+  display:block;
+  width:clamp(72px,8.5vw,116px)!important;
+  height:auto!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 12px 24px rgba(0,0,0,.48));
+  opacity:.95;
+}
+body.final-five-active .ryze-corner-stage{bottom:clamp(18px,2.4vw,34px)!important}
+body.finale-released .ryze-corner-stage{opacity:.92!important}
+
+/* Visualizer sits much lower, almost above the ENTER LEONIDA cue. */
+.finale-visualizer-wrap{
+  position:absolute!important;
+  left:50%!important;
+  bottom:54px!important;
+  z-index:10!important;
+  width:min(720px,58vw)!important;
+  height:0!important;
+  margin:0!important;
+  translate:-50% 0!important;
+}
+body.final-five-active .finale-visualizer-wrap{
+  height:44px!important;
+  opacity:.9!important;
+  transform:none!important;
+}
+body.final-five-active .finale-visualizer{opacity:.95!important}
+body.finale-released .finale-visualizer-wrap{height:0!important;opacity:0!important;visibility:hidden!important}
+body.finale-released .finale-visualizer{opacity:0!important}
+body.final-five-active .scroll-cue{bottom:20px!important}
+
+/* Keep the scroll cue readable even while the visualizer is active. */
+body.final-five-active .scroll-cue span{
+  text-shadow:0 0 14px rgba(0,0,0,.48),0 0 18px rgba(242,63,178,.18);
+}
+
+/* Performance-friendly hints. */
+body.final-five-active #countdown,
+body.final-five-active .progress-block,
+body.final-five-active .finale-visualizer-wrap,
+body.final-five-active .scene{
+  will-change:transform,opacity,filter;
+  backface-visibility:hidden;
+}
+body.final-five-active .scene{transform:translate3d(var(--scene-x),var(--scene-y),0) scale(1.055)}
+
+@media (max-width:900px){
+  .ryze-corner-logo{width:clamp(64px,14vw,96px)!important}
+  .finale-visualizer-wrap{width:min(78vw,540px)!important;bottom:50px!important}
+  body.final-five-active .finale-visualizer-wrap{height:40px!important}
+}
+
+@media (max-width:700px){
+  .ryze-corner-stage{left:10px!important;bottom:10px!important}
+  .ryze-corner-logo{width:clamp(58px,18vw,84px)!important}
+  .finale-visualizer-wrap{width:86vw!important;bottom:44px!important}
+  body.final-five-active .finale-visualizer-wrap{height:34px!important}
+}
+
+
+/* V14 user-request polish patch */
+.brand-ryze-logo{
+  display:block;
+  width:clamp(34px,2.8vw,46px);
+  height:auto;
+  object-fit:contain;
+  filter:drop-shadow(0 8px 18px rgba(0,0,0,.42));
+}
+.footer-socials{
+  display:flex;
+  align-items:center;
+  justify-self:end;
+  gap:12px;
+}
+.footer-ryze-logo{
+  width:52px;
+  height:auto;
+  object-fit:contain;
+  filter:drop-shadow(0 10px 18px rgba(0,0,0,.35));
+}
+.ryze-corner-stage{display:none!important}
+.topbar.idle{opacity:1!important;transform:none!important}
+body.phase-final-minute .topbar,
+body.phase-final-minute .hero-status,
+body.phase-final-minute .hero-title-wrap,
+body.phase-final-minute .phase-pill,
+body.phase-final-minute .countdown,
+body.phase-final-minute .release-hud,
+body.phase-final-minute .progress-block,
+body.phase-final-minute .next-scene,
+body.phase-final-minute .scroll-cue{opacity:1!important;visibility:visible!important;pointer-events:auto!important}
+.zone-topbar-button{display:none}
+body.final-five-active .zone-topbar-button,
+body.phase-final-minute .zone-topbar-button,
+body.finale-released .zone-topbar-button{display:inline-flex!important;align-items:center}
+body.final-five-active .hero-content{padding-top:88px!important}
+body.final-five-active .hero-title-wrap{margin-top:10px!important;max-width:min(980px,92vw)}
+body.final-five-active .eyebrow{font-size:clamp(10px,.86vw,15px)!important;letter-spacing:.22em!important}
+body.final-five-active #heroTitle{
+  font-size:clamp(34px,4.55vw,76px)!important;
+  line-height:.92!important;
+}
+body.final-five-active .phase-pill{
+  margin-top:16px!important;
+  padding:10px 18px!important;
+  font-size:clamp(9px,.82vw,13px)!important;
+  letter-spacing:.18em!important;
+}
+body.final-five-active .countdown-shell{width:min(1160px,78vw)!important;margin-top:16px!important}
+body.final-five-active #countdown{transform:scale(1.06)!important}
+body.final-five-active .progress-block{width:min(900px,70vw)!important;margin-top:24px!important}
+body.final-five-active .release-hud{margin-top:18px!important}
+body.final-five-active .progress-meta strong{font-size:clamp(12px,.95vw,16px)!important}
+body.final-five-active .time-value,
+body.final-five-active .milliseconds .time-value,
+.milliseconds .time-value{
+  color:#fff!important;
+  background:none!important;
+  -webkit-background-clip:border-box!important;
+  background-clip:border-box!important;
+  -webkit-text-fill-color:#fff!important;
+}
+body.finale-dynamic-copy #heroTitle,
+body.final-five-active .phase-pill{
+  background-image:linear-gradient(90deg,#ffffff 0%,#ffc56f 18%,#ff5fc5 46%,#8d7cff 72%,#ffffff 100%)!important;
+  background-size:240% auto!important;
+  animation:tfwFlowGradient 6s linear infinite!important;
+}
+body.finale-dynamic-copy #heroTitle{
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+}
+body.final-five-active .phase-pill{
+  color:#fff!important;
+  box-shadow:0 0 30px rgba(242,63,178,.16), inset 0 1px 0 rgba(255,255,255,.08)!important;
+}
+body.final-five-active .phase-pill .phase-dot{background:#fff!important;box-shadow:0 0 20px rgba(255,255,255,.75)!important}
+@keyframes tfwFlowGradient{to{background-position:240% center}}
+body.finale-released .finale-visualizer-wrap{
+  height:44px!important;
+  opacity:.92!important;
+  visibility:visible!important;
+}
+body.finale-released .finale-visualizer{opacity:.95!important}
+body.finale-released .finale-music-live .finale-visualizer{opacity:1!important}
+.finale-release h2{line-height:.84!important;padding-inline:14px!important;word-break:keep-all;overflow-wrap:normal}
+.gtranslate_wrapper,.language-widget{display:flex;align-items:center;min-height:38px}
+.gtranslate_wrapper select,
+.language-widget select,
+.gtranslate_wrapper .gt_selector,
+.language-widget .gt_selector{
+  appearance:none;
+  border:1px solid rgba(255,255,255,.18)!important;
+  border-radius:999px!important;
+  background:linear-gradient(135deg,rgba(119,96,255,.18),rgba(242,63,178,.18),rgba(255,156,67,.14))!important;
+  color:#fff!important;
+  padding:10px 14px!important;
+  font:800 7px/1 Arial,Helvetica,sans-serif!important;
+  letter-spacing:.14em!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 14px 30px rgba(0,0,0,.18)!important;
+}
+.gtranslate_wrapper option,.language-widget option{background:#130f1d!important;color:#fff!important}
+@media (max-width:900px){
+  .brand-ryze-logo{width:34px}
+  .footer-socials{justify-self:start}
+  body.final-five-active .hero-content{padding-top:64px!important}
+  body.final-five-active #heroTitle{font-size:clamp(30px,6.8vw,52px)!important}
+  body.final-five-active .countdown-shell{width:88vw!important}
+  body.final-five-active .progress-block{width:84vw!important}
+}
+@media (max-width:700px){
+  .footer-socials{gap:10px;flex-wrap:wrap}
+  .footer-ryze-logo{width:44px}
+  body.final-five-active .hero-content{padding-top:48px!important}
+  body.final-five-active #heroTitle{font-size:clamp(28px,7.4vw,40px)!important}
+  body.final-five-active .eyebrow{font-size:8px!important}
+  body.final-five-active .phase-pill{font-size:7px!important;padding:9px 12px!important}
+  body.final-five-active .countdown-shell{width:92vw!important}
+  body.final-five-active #countdown{transform:scale(1.035)!important}
+  body.finale-released .finale-visualizer-wrap{height:34px!important}
+}
+
+
+/* === EXPERIENCE: v15.css === */
+/* V15 — requested layout/timing refinements only. */
+
+/* Top navigation must never fade when the page is idle. */
+.topbar.idle,
+.topbar.idle .nav,
+.topbar.idle .desktop-nav,
+.topbar.idle .mobile-controls,
+.topbar.idle .language-widget,
+.topbar.idle .brand{
+  opacity:1!important;
+  transform:none!important;
+  visibility:visible!important;
+}
+
+/* Slightly larger Ryze mark beside THE FINAL WAIT / ROAD TO LEONIDA. */
+.brand-ryze-logo{
+  width:clamp(40px,3.25vw,54px)!important;
+}
+
+/* Much larger Ryze mark beside the footer X chip. */
+.footer-ryze-logo{
+  width:clamp(92px,8vw,132px)!important;
+}
+
+/* Final-five layout: move heading upward without moving the status pill with it. */
+body.final-five-active .hero-title-wrap{
+  transform:translateY(-30px)!important;
+  margin-top:0!important;
+}
+body.final-five-active .eyebrow{
+  font-size:clamp(10px,.9vw,15px)!important;
+}
+body.final-five-active #heroTitle{
+  font-size:clamp(36px,4.8vw,78px)!important;
+}
+
+/* The animated separator follows the raised title and sits a little farther below it. */
+body.final-five-active.finale-dynamic-copy #heroTitle:after{
+  bottom:-16px!important;
+}
+
+/* Keep the small status pill visually fixed; animated color belongs to the main title only. */
+body.final-five-active .phase-pill{
+  margin-top:14px!important;
+  background:linear-gradient(135deg,rgba(25,20,33,.88),rgba(12,10,18,.78))!important;
+  background-image:linear-gradient(135deg,rgba(25,20,33,.88),rgba(12,10,18,.78))!important;
+  color:#fff!important;
+  animation:none!important;
+  border-color:rgba(255,255,255,.22)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 12px 34px rgba(0,0,0,.22),0 0 24px rgba(242,63,178,.10)!important;
+}
+body.final-five-active .phase-pill .phase-dot{
+  background:var(--accent)!important;
+  box-shadow:0 0 16px var(--accent)!important;
+}
+
+/* Main countdown title keeps the moving GTA VI-inspired gradient. */
+body.final-five-active.finale-dynamic-copy #heroTitle{
+  background:linear-gradient(90deg,#fff 0%,#ffc06f 18%,#ff57c0 47%,#9580ff 73%,#fff 100%)!important;
+  background-size:230% auto!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  animation:tfwV11TitleFlow 3.4s linear infinite,tfwV11TitleBreath 2.1s ease-in-out infinite!important;
+}
+
+/* The final-minute pill must remain visible and unchanged through 00:00. */
+body.finale-song-ended .phase-pill{
+  opacity:1!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+}
+
+/* Glow begins at -6.5s and fades in slowly instead of appearing abruptly. */
+body.finale-last-15 #countdown{
+  animation:tfwV15CountdownGlowIn 3.4s ease-out forwards!important;
+}
+body.finale-last-15 .time-unit{
+  animation:tfwV15UnitGlowIn 3.4s ease-out forwards,tfwV12UnitCharge 1.35s 3.4s ease-in-out infinite alternate!important;
+}
+body.finale-last-15 .time-value{
+  animation:tfwV15DigitGlowIn 3.4s ease-out forwards!important;
+}
+body.finale-last-second .time-unit{
+  animation:tfwV12UnitCharge .22s ease-in-out infinite alternate!important;
+}
+body.finale-last-second .time-value{
+  animation:tfwV12DigitIgnition .16s ease-in-out infinite alternate!important;
+}
+@keyframes tfwV15CountdownGlowIn{
+  from{filter:drop-shadow(0 0 0 rgba(242,63,178,0))}
+  to{filter:drop-shadow(0 0 18px rgba(242,63,178,.18))}
+}
+@keyframes tfwV15UnitGlowIn{
+  from{border-color:rgba(255,255,255,.23);box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 18px 50px rgba(0,0,0,.22),0 0 0 rgba(242,63,178,0)}
+  to{border-color:rgba(255,105,203,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 16px 48px rgba(0,0,0,.30),0 0 30px rgba(242,63,178,.18),0 0 52px rgba(119,96,255,.10)}
+}
+@keyframes tfwV15DigitGlowIn{
+  from{text-shadow:0 0 2px #fff,0 0 0 rgba(255,255,255,0),0 0 0 rgba(242,63,178,0),0 12px 30px rgba(0,0,0,.6)}
+  to{text-shadow:0 0 2px #fff,0 0 15px rgba(255,255,255,.46),0 0 30px rgba(242,63,178,.34),0 0 52px rgba(119,96,255,.22),0 12px 30px rgba(0,0,0,.62)}
+}
+
+@media(max-width:900px){
+  .brand-ryze-logo{width:40px!important}
+  .footer-ryze-logo{width:96px!important}
+  body.final-five-active .hero-title-wrap{transform:translateY(-22px)!important}
+  body.final-five-active #heroTitle{font-size:clamp(31px,7vw,54px)!important}
+}
+
+@media(max-width:700px){
+  .brand-ryze-logo{width:36px!important}
+  .footer-ryze-logo{width:84px!important}
+  body.final-five-active .hero-title-wrap{transform:translateY(-15px)!important}
+  body.final-five-active #heroTitle{font-size:clamp(28px,7.6vw,42px)!important}
+}
+
+
+/* === EXPERIENCE: v16.css === */
+/* V16 — requested fixes only. */
+
+/* Never allow finale transforms to create browser scrollbars. */
+html{overflow-x:hidden!important}
+body.phase-final-minute,
+body.finale-last-second,
+body.finale-released{overflow:hidden!important}
+#hero{overflow:hidden!important}
+
+/* Larger Ryze logo beside THE FINAL WAIT / ROAD TO LEONIDA. */
+.brand-ryze-logo{width:clamp(50px,4vw,68px)!important}
+
+/* Keep the dynamic title geometry stable when the -6.5s finale effects begin. */
+body.final-five-active #heroTitle,
+body.final-five-active.finale-last-15 #heroTitle{
+  width:min(980px,92vw)!important;
+  max-width:min(980px,92vw)!important;
+  min-height:1.84em;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  font-size:clamp(36px,4.8vw,78px)!important;
+  line-height:.9!important;
+  text-wrap:balance;
+}
+
+/* Same visibly moving colour treatment as the release title. */
+body.final-five-active.finale-dynamic-copy #heroTitle{
+  background:linear-gradient(90deg,#fff 0%,#ffb05f 18%,#ff52bd 45%,#8e78ff 72%,#fff 100%)!important;
+  background-size:280% 100%!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  animation:tfwV16TitleFlow 2.65s linear infinite,tfwV16TitleBreath 2.5s ease-in-out infinite!important;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.62)) drop-shadow(0 0 20px rgba(242,63,178,.24))!important;
+}
+@keyframes tfwV16TitleFlow{from{background-position:0% 50%}to{background-position:280% 50%}}
+@keyframes tfwV16TitleBreath{50%{filter:drop-shadow(0 8px 24px rgba(0,0,0,.62)) drop-shadow(0 0 34px rgba(242,63,178,.38)) brightness(1.1)}}
+
+/* Slower glow dissolve from -6.5 seconds. */
+body.finale-last-15 #countdown{animation:tfwV15CountdownGlowIn 5.4s ease-out forwards!important}
+body.finale-last-15 .time-unit{
+  animation:tfwV15UnitGlowIn 5.4s ease-out forwards,tfwV12UnitCharge 1.35s 5.4s ease-in-out infinite alternate!important;
+}
+body.finale-last-15 .time-value{animation:tfwV15DigitGlowIn 5.4s ease-out forwards!important}
+
+/* Visualizer remains visible and animated when audio is muted and after 00:00. */
+body.final-five-active .finale-visualizer-wrap,
+body.finale-released .finale-visualizer-wrap{
+  visibility:visible!important;
+  opacity:.92!important;
+}
+body.finale-released .finale-visualizer-wrap{height:44px!important}
+body.finale-released .finale-visualizer{opacity:.95!important}
+body.final-five-active .sound-button[aria-pressed="false"] ~ * .finale-visualizer-wrap{opacity:.92!important}
+
+@media(max-width:900px){
+  .brand-ryze-logo{width:48px!important}
+  body.final-five-active #heroTitle,
+  body.final-five-active.finale-last-15 #heroTitle{width:min(760px,90vw)!important;max-width:min(760px,90vw)!important;font-size:clamp(31px,7vw,54px)!important}
+}
+@media(max-width:700px){
+  .brand-ryze-logo{width:44px!important}
+  body.final-five-active #heroTitle,
+  body.final-five-active.finale-last-15 #heroTitle{width:91vw!important;max-width:91vw!important;font-size:clamp(28px,7.6vw,42px)!important}
+}
+
+
+/* === EXPERIENCE: v17.css === */
+/* V17 — exact requested visual fixes only. */
+
+/* Main final-five titles use the exact same moving gradient + breathing glow as WELCOME TO LEONIDA. */
+body.final-five-active.finale-dynamic-copy #heroTitle{
+  position:relative!important;
+  background:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%)!important;
+  background-size:220% auto!important;
+  background-position:0% center;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.65)) drop-shadow(0 0 22px rgba(242,63,178,.25))!important;
+  animation:tfwReleaseGradient 2.75s linear infinite,tfwReleaseBreath 2.25s ease-in-out infinite!important;
+}
+
+/* The glow now actually dissolves onto the countdown digits from -6.5s to about -1s. */
+body.final-five-active #countdown{
+  transition:transform .32s cubic-bezier(.18,.82,.18,1),filter 4.0s cubic-bezier(.22,.61,.36,1)!important;
+}
+body.final-five-active .time-unit{
+  transition:transform .24s ease,border-color 4.0s cubic-bezier(.22,.61,.36,1),box-shadow 4.0s cubic-bezier(.22,.61,.36,1),background .35s ease!important;
+}
+body.final-five-active .time-value{
+  transition:text-shadow 4.0s cubic-bezier(.22,.61,.36,1),filter 4.0s cubic-bezier(.22,.61,.36,1)!important;
+}
+body.final-five-active:not(.finale-last-15) #countdown{
+  filter:drop-shadow(0 0 0 rgba(242,63,178,0))!important;
+}
+body.final-five-active:not(.finale-last-15) .time-unit{
+  border-color:rgba(255,255,255,.23)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -18px 34px rgba(0,0,0,.14),0 18px 50px rgba(0,0,0,.22),0 0 0 rgba(242,63,178,0)!important;
+}
+body.final-five-active:not(.finale-last-15) .time-value{
+  text-shadow:0 0 2px #fff,0 0 22px rgba(242,63,178,.14),0 12px 30px rgba(0,0,0,.6)!important;
+}
+body.finale-last-15:not(.finale-last-second) #countdown{
+  animation:none!important;
+  filter:drop-shadow(0 0 28px rgba(242,63,178,.30))!important;
+}
+body.finale-last-15:not(.finale-last-second) .time-unit{
+  animation:none!important;
+  border-color:rgba(255,105,203,.62)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.20),0 16px 48px rgba(0,0,0,.32),0 0 42px rgba(242,63,178,.31),0 0 72px rgba(119,96,255,.19)!important;
+}
+body.finale-last-15:not(.finale-last-second) .time-value{
+  animation:none!important;
+  text-shadow:0 0 2px #fff,0 0 18px rgba(255,255,255,.58),0 0 42px rgba(242,63,178,.48),0 0 68px rgba(119,96,255,.30),0 12px 30px rgba(0,0,0,.62)!important;
+}
+
+/* The language dropdown must start directly with a real language; no white placeholder entry. */
+.gtranslate_wrapper option:first-child:disabled,
+.language-widget option:first-child:disabled{display:none!important}
+
+
+/* V18: explicit moving gradient; no !important static background-position may override this animation. */
+@keyframes tfwV18TitleGradient{
+  0%{background-position:0% 50%}
+  100%{background-position:220% 50%}
+}
+body.final-five-active.finale-dynamic-copy #heroTitle{
+  animation:tfwV18TitleGradient 2.75s linear infinite,tfwReleaseBreath 2.25s ease-in-out infinite!important;
+}
+
+
+/* === EXPERIENCE: v19.css === */
+/* V19/V20 — title flow, live milestone takeover, release clock and performance pass. */
+
+/* Video-matched moving gradient used by the final-five title. */
+body.final-five-active.finale-dynamic-copy #heroTitle{
+  background-image:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%)!important;
+  background-size:220% 100%!important;
+  background-repeat:repeat-x!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.65)) drop-shadow(0 0 26px rgba(242,63,178,.30))!important;
+  animation:tfwV19TitleBreath 2.25s ease-in-out infinite!important;
+}
+@keyframes tfwV19TitleBreath{
+  50%{filter:drop-shadow(0 10px 28px rgba(0,0,0,.70)) drop-shadow(0 0 54px rgba(242,63,178,.42)) brightness(1.10)}
+}
+
+/* Faster, smoother finale glow. */
+body.final-five-active #countdown{
+  transition:transform .32s cubic-bezier(.18,.82,.18,1),filter 2.8s cubic-bezier(.18,.75,.22,1)!important;
+}
+body.final-five-active .time-unit{
+  transition:transform .24s ease,border-color 2.8s cubic-bezier(.18,.75,.22,1),box-shadow 2.8s cubic-bezier(.18,.75,.22,1),background .35s ease!important;
+}
+body.final-five-active .time-value{
+  transition:text-shadow 2.8s cubic-bezier(.18,.75,.22,1),filter 2.8s cubic-bezier(.18,.75,.22,1)!important;
+}
+body.finale-last-15:not(.finale-last-second) #countdown{
+  animation:none!important;
+  filter:drop-shadow(0 0 36px rgba(242,63,178,.40)) drop-shadow(0 0 64px rgba(119,96,255,.18))!important;
+}
+body.finale-last-15:not(.finale-last-second) .time-unit{
+  animation:none!important;
+  border-color:rgba(255,105,203,.72)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 16px 48px rgba(0,0,0,.32),0 0 52px rgba(242,63,178,.40),0 0 88px rgba(119,96,255,.24)!important;
+}
+body.finale-last-15:not(.finale-last-second) .time-value{
+  animation:none!important;
+  text-shadow:0 0 2px #fff,0 0 22px rgba(255,255,255,.72),0 0 54px rgba(242,63,178,.60),0 0 84px rgba(119,96,255,.38),0 12px 30px rgba(0,0,0,.62)!important;
+}
+
+/* ================================================================
+   V20 — milestone events happen inside the hero, never in a popup.
+   ================================================================ */
+.milestone-experience{display:none!important}
+
+.tfw-live-milestone-tag{
+  height:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  overflow:hidden;
+  opacity:0;
+  translate:0 -8px;
+  transition:height .48s cubic-bezier(.2,.75,.2,1),opacity .35s ease,translate .48s cubic-bezier(.2,.75,.2,1),margin .48s ease;
+  pointer-events:none;
+}
+.tfw-live-milestone-tag.active{
+  height:26px;
+  margin-top:8px;
+  opacity:1;
+  translate:0 0;
+}
+.tfw-live-milestone-tag span,
+.tfw-live-milestone-tag strong{
+  font:900 clamp(7px,.62vw,10px)/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.18em;
+  white-space:nowrap;
+}
+.tfw-live-milestone-tag span{color:rgba(255,255,255,.66)}
+.tfw-live-milestone-tag strong{
+  color:#fff;
+  padding:7px 10px;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:999px;
+  background:linear-gradient(105deg,rgba(119,96,255,.16),rgba(242,63,178,.16),rgba(255,156,67,.11));
+  box-shadow:0 0 22px rgba(242,63,178,.10);
+}
+body.tfw-milestone-live #heroTitle{
+  background-image:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%)!important;
+  background-size:220% 100%!important;
+  background-repeat:repeat-x!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  animation:tfwV20MilestoneFlow 3.6s linear infinite,tfwV20MilestoneBreath 1.9s ease-in-out infinite!important;
+  filter:drop-shadow(0 9px 25px rgba(0,0,0,.62)) drop-shadow(0 0 34px rgba(242,63,178,.30))!important;
+}
+body.tfw-milestone-live .hero-title-wrap{translate:0 -5px;transition:translate .55s cubic-bezier(.2,.75,.2,1)}
+body.tfw-milestone-live .countdown-shell,
+body.tfw-milestone-live .release-hud,
+body.tfw-milestone-live .progress-block{
+  translate:0 26px;
+  transition:translate .7s cubic-bezier(.18,.82,.18,1)!important;
+}
+body:not(.tfw-milestone-live) .countdown-shell,
+body:not(.tfw-milestone-live) .release-hud,
+body:not(.tfw-milestone-live) .progress-block{
+  translate:0 0;
+  transition:translate .7s cubic-bezier(.18,.82,.18,1);
+}
+@keyframes tfwV20MilestoneFlow{to{background-position:220% 50%}}
+@keyframes tfwV20MilestoneBreath{50%{filter:drop-shadow(0 10px 28px rgba(0,0,0,.68)) drop-shadow(0 0 52px rgba(242,63,178,.43)) brightness(1.08)}}
+
+/* ================================================================
+   V22 — clean post-release layout + elapsed timer matching the main timer.
+   ================================================================ */
+.release-elapsed{
+  display:none;
+  width:min(900px,88vw);
+  margin:28px auto 0;
+  padding:0;
+  background:none;
+  border:0;
+}
+body.finale-released .release-elapsed,
+body.tfw-release-clock-live .release-elapsed{display:block}
+.release-elapsed-label{
+  display:block;
+  margin:0 0 12px;
+  font:900 clamp(7px,.72vw,11px)/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.22em;
+  color:rgba(255,255,255,.76);
+  text-shadow:0 0 18px rgba(242,63,178,.22);
+}
+.release-elapsed-clock{
+  display:grid!important;
+  grid-template-columns:minmax(76px,1.08fr) auto minmax(72px,1fr) auto minmax(72px,1fr) auto minmax(72px,1fr) auto minmax(90px,1.16fr)!important;
+  align-items:stretch!important;
+  justify-content:center!important;
+  gap:clamp(5px,.65vw,10px)!important;
+  width:100%!important;
+  margin:0 auto!important;
+  transform:scale(.80)!important;
+  transform-origin:center top!important;
+  font-variant-numeric:tabular-nums;
+}
+.release-elapsed-clock .time-unit{
+  min-width:0!important;
+  height:clamp(72px,7.2vw,100px)!important;
+  padding:10px 11px 9px!important;
+  border:1px solid rgba(255,255,255,.20)!important;
+  border-radius:clamp(12px,1vw,17px)!important;
+  background:
+    radial-gradient(120% 100% at 50% 15%,rgba(255,255,255,.07),transparent 58%),
+    linear-gradient(145deg,rgba(14,11,21,.72),rgba(20,11,28,.64))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 10px 30px rgba(0,0,0,.28),
+    0 0 24px rgba(242,63,178,.07)!important;
+}
+.release-elapsed-clock .time-value{
+  font-size:clamp(27px,3.35vw,49px)!important;
+  line-height:.92!important;
+  letter-spacing:-.055em!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:none!important;
+  text-shadow:0 2px 16px rgba(0,0,0,.55),0 0 20px rgba(242,63,178,.14)!important;
+}
+.release-elapsed-clock .time-label{
+  margin-top:7px!important;
+  font-size:clamp(5px,.46vw,7px)!important;
+  letter-spacing:.14em!important;
+  color:rgba(255,255,255,.48)!important;
+}
+.release-elapsed-clock .time-separator{
+  display:grid!important;
+  place-items:center!important;
+  min-width:8px!important;
+  font-size:clamp(18px,2vw,28px)!important;
+  color:rgba(255,255,255,.28)!important;
+}
+.release-elapsed-clock .digit-glow{opacity:.32!important}
+body.finale-released .finale-release-kicker{white-space:nowrap}
+
+/* At 00:00 the pre-release HUD is gone. Only the release composition remains. */
+body.finale-released .hero-status,
+body.finale-released .hero-title-wrap,
+body.finale-released .phase-pill,
+body.finale-released #countdown,
+body.finale-released .final-minute-countdown,
+body.finale-released .release-hud,
+body.finale-released .progress-block,
+body.finale-released .next-scene{
+  display:none!important;
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+body.finale-released .hero-content{
+  width:min(1180px,94vw)!important;
+  padding-top:clamp(68px,8vh,108px)!important;
+}
+body.finale-released .countdown-shell{
+  width:min(1120px,94vw)!important;
+  margin:0 auto!important;
+  overflow:visible!important;
+}
+body.finale-released .finale-release{
+  position:relative!important;
+  z-index:18!important;
+  width:min(1080px,94vw)!important;
+  margin:0 auto!important;
+}
+body.finale-released .finale-release h2{
+  margin:clamp(14px,1.8vh,24px) 0 12px!important;
+  font-size:clamp(58px,9.6vw,150px)!important;
+  line-height:.82!important;
+}
+body.finale-released .finale-release-date{
+  display:block!important;
+  margin-top:8px!important;
+}
+body.finale-released .release-line{
+  margin-top:18px!important;
+}
+body.finale-released .finale-visualizer-wrap{
+  z-index:16!important;
+}
+
+@media (max-width:900px){
+  .release-elapsed{width:min(94vw,760px);margin-top:24px}
+  .release-elapsed-clock{
+    transform:scale(.74)!important;
+    width:118%!important;
+    margin-left:-9%!important;
+    gap:4px!important;
+  }
+  .release-elapsed-clock .time-unit{
+    height:clamp(64px,11vw,84px)!important;
+    padding:8px 7px!important;
+  }
+  .release-elapsed-clock .time-value{font-size:clamp(22px,6.2vw,38px)!important}
+  .release-elapsed-clock .time-separator{font-size:clamp(15px,4vw,23px)!important}
+  body.finale-released .hero-content{padding-top:64px!important}
+  body.finale-released .finale-release h2{font-size:clamp(48px,12.4vw,100px)!important}
+}
+
+@media (max-width:560px){
+  .release-elapsed{width:96vw;margin-top:22px}
+  .release-elapsed-label{font-size:6px;letter-spacing:.16em;margin-bottom:9px}
+  .release-elapsed-clock{
+    transform:scale(.68)!important;
+    width:138%!important;
+    margin-left:-19%!important;
+    gap:3px!important;
+  }
+  .release-elapsed-clock .time-unit{
+    height:64px!important;
+    border-radius:11px!important;
+    padding:7px 5px!important;
+  }
+  .release-elapsed-clock .time-value{font-size:clamp(19px,6.6vw,29px)!important}
+  .release-elapsed-clock .time-label{font-size:4.5px!important;letter-spacing:.10em!important}
+  .release-elapsed-clock .time-separator{font-size:14px!important;min-width:4px!important}
+  body.finale-released .hero-content{padding-top:54px!important}
+  body.finale-released .finale-release h2{font-size:clamp(43px,13vw,74px)!important}
+}
+
+/* ================================================================
+   V20 — rendering performance. The look stays rich on desktop while
+   expensive continuous effects are cut where they hurt most on phones.
+   ================================================================ */
+.time-unit,.progress-block,.release-hud{contain:layout paint style}
+.time-value,#progressText{font-variant-numeric:tabular-nums}
+.scene-section,.share-section{content-visibility:auto;contain-intrinsic-size:900px 1200px}
+.scene:not(.active){will-change:auto!important}
+.scene.active{will-change:transform,opacity;backface-visibility:hidden;transform-style:flat}
+.scene-section:not(.tfw-in-view) .section-backdrop,
+.scene-section:not(.tfw-in-view) .intel-image,
+.scene-section:not(.tfw-in-view) .newspaper-image{animation-play-state:paused!important}
+html.tfw-hero-offscreen .scene,
+html.tfw-page-hidden *{animation-play-state:paused!important}
+html.tfw-hero-offscreen .scene{will-change:auto!important}
+
+/* Do not spend GPU time animating invisible duplicated scene layers. */
+.scene:not(.active){pointer-events:none}
+
+html.tfw-perf-mobile .page-noise,
+html.tfw-perf-mobile .page-grid,
+html.tfw-perf-mobile .cursor-glow,
+html.tfw-perf-mobile .hero-orbit,
+html.tfw-perf-mobile .scene-sweep{display:none!important}
+
+html.tfw-perf-mobile .glass,
+html.tfw-perf-mobile .topbar,
+html.tfw-perf-mobile .mobile-menu,
+html.tfw-perf-mobile .release-hud,
+html.tfw-perf-mobile .progress-block,
+html.tfw-perf-mobile .time-unit,
+html.tfw-perf-mobile .phase-pill{
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+html.tfw-perf-mobile .time-unit{
+  background:linear-gradient(145deg,rgba(11,8,17,.78),rgba(20,12,27,.66))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 8px 24px rgba(0,0,0,.25)!important;
+}
+html.tfw-perf-mobile .digit-glow{display:none!important}
+html.tfw-perf-mobile #countdown{filter:none!important;transform:translateZ(0)}
+html.tfw-perf-mobile .time-value{
+  filter:none!important;
+  text-shadow:0 2px 10px rgba(0,0,0,.52),0 0 13px rgba(242,63,178,.16)!important;
+}
+html.tfw-perf-mobile .progress-block,
+html.tfw-perf-mobile .release-hud{
+  background:linear-gradient(135deg,rgba(10,8,15,.86),rgba(17,10,24,.76))!important;
+  box-shadow:0 9px 28px rgba(0,0,0,.22)!important;
+}
+html.tfw-perf-mobile .progress-fill{box-shadow:0 0 12px rgba(242,63,178,.28)!important}
+html.tfw-perf-mobile .section-backdrop{animation:none!important;filter:none!important;opacity:.055!important}
+html.tfw-perf-mobile .intel-image,
+html.tfw-perf-mobile .newspaper-image,
+html.tfw-perf-mobile .timeline-visual img,
+html.tfw-perf-mobile .banner-art img{animation:none!important}
+html.tfw-perf-mobile .reveal{filter:none!important;transition-duration:.45s!important}
+html.tfw-perf-mobile .magnetic{transform:none!important}
+html.tfw-perf-mobile .hero-atmosphere{opacity:.55!important;filter:none!important}
+html.tfw-perf-mobile .hero-shade{filter:none!important}
+html.tfw-perf-mobile .scene{animation-duration:24s!important;animation-timing-function:ease-in-out!important}
+html.tfw-perf-mobile .scene:not(.active){animation:none!important}
+
+/* Finale on phones: preserve the cinematic moment without stacking multiple
+   full-screen blur/conic effects on every frame. */
+html.tfw-perf-mobile body.final-five-active .finale-beat-halo{filter:none!important;opacity:.12!important}
+html.tfw-perf-mobile body.final-five-active .finale-visualizer{mix-blend-mode:normal!important;filter:none!important;opacity:.70!important}
+html.tfw-perf-mobile body.finale-released .finale-release:before,
+html.tfw-perf-mobile body.finale-released .finale-release:after,
+html.tfw-perf-mobile body.finale-released .release-radiance{filter:none!important;animation-duration:8s!important}
+html.tfw-perf-mobile body.finale-released .hero-corners span{filter:none!important}
+html.tfw-perf-mobile body.tfw-release-settled .finale-fireworks{display:none!important}
+html.tfw-perf-mobile body.tfw-release-settled .finale-release:before,
+html.tfw-perf-mobile body.tfw-release-settled .finale-release:after,
+html.tfw-perf-mobile body.tfw-release-settled .release-radiance{animation-play-state:paused!important}
+
+/* A lighter fallback for low-memory/low-core desktop devices too. */
+html.tfw-perf-lite:not(.tfw-perf-mobile) .section-backdrop{animation-duration:38s!important;filter:none!important}
+html.tfw-perf-lite:not(.tfw-perf-mobile) .cursor-glow{opacity:.45!important}
+html.tfw-perf-lite:not(.tfw-perf-mobile) .hero-orbit{opacity:.35!important}
+
+@media (max-width:900px){
+  body.tfw-milestone-live .countdown-shell,
+  body.tfw-milestone-live .release-hud,
+  body.tfw-milestone-live .progress-block{translate:0 15px}
+  .tfw-live-milestone-tag.active{height:22px;margin-top:5px}
+  .tfw-live-milestone-tag span,.tfw-live-milestone-tag strong{font-size:6px;letter-spacing:.13em}
+  .tfw-live-milestone-tag strong{padding:6px 8px}
+  .release-elapsed{width:min(88vw,650px);padding:10px 8px 11px;margin:11px auto 13px}
+  .release-elapsed-clock{gap:6px}
+  .release-elapsed-clock>div{min-width:44px}
+  .release-elapsed-clock strong{font-size:clamp(18px,5vw,28px)}
+  .release-elapsed-clock small{font-size:5px}
+}
+
+@media (max-width:560px){
+  .tfw-live-milestone-tag{gap:7px}
+  .tfw-live-milestone-tag.active{height:20px}
+  body.tfw-milestone-live #heroTitle{font-size:clamp(25px,7vw,36px)!important}
+  .release-elapsed{width:91vw}
+  .release-elapsed-clock{gap:3px}
+  .release-elapsed-clock>div{min-width:39px}
+  .release-elapsed-clock strong{font-size:clamp(17px,5.6vw,25px)}
+  .release-elapsed-clock>i{font-size:14px}
+  .release-elapsed-label{font-size:5px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  body.tfw-milestone-live #heroTitle{animation:none!important}
+  .tfw-live-milestone-tag,.countdown-shell,.release-hud,.progress-block{transition:none!important}
+}
+
+/* ================================================================
+   V21 — preview polish, stable SOUND control and cleaner milestones.
+   ================================================================ */
+
+/* The timer + animated title are enough information during milestone moments. */
+.tfw-live-milestone-tag{display:none!important}
+
+/* Scrubbing the simulator uses the same animated title language as the
+   final five minutes, instead of leaving ROAD TO LEONIDA in place. */
+body.tfw-preview-stage-title #heroTitle{
+  background-image:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%)!important;
+  background-size:220% 100%!important;
+  background-repeat:repeat-x!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.65)) drop-shadow(0 0 30px rgba(242,63,178,.32))!important;
+  animation:tfwV21PreviewTitleFlow 3.8s linear infinite,tfwV21PreviewTitleBreath 2.25s ease-in-out infinite!important;
+}
+body.tfw-preview-stage-title .hero-title-wrap{
+  opacity:1!important;
+  visibility:visible!important;
+  filter:none!important;
+  translate:0 0!important;
+}
+@keyframes tfwV21PreviewTitleFlow{to{background-position:220% 50%}}
+@keyframes tfwV21PreviewTitleBreath{
+  50%{filter:drop-shadow(0 10px 28px rgba(0,0,0,.70)) drop-shadow(0 0 54px rgba(242,63,178,.44)) brightness(1.10)}
+}
+
+/* Preview must have the same legibility as the live site above -05:00. */
+body.finale-previewing:not(.final-five-active) .hero-title-wrap,
+body.finale-previewing:not(.final-five-active) .phase-pill,
+body.finale-previewing:not(.final-five-active) #countdown,
+body.finale-previewing:not(.final-five-active) .progress-block{
+  opacity:1!important;
+  visibility:visible!important;
+  filter:none!important;
+}
+body.finale-previewing:not(.final-five-active) .progress-block{
+  border-color:rgba(255,255,255,.15)!important;
+  background:linear-gradient(135deg,rgba(12,9,18,.78),rgba(18,10,25,.68))!important;
+  box-shadow:0 18px 48px rgba(0,0,0,.26),0 0 28px rgba(242,63,178,.08)!important;
+}
+body.finale-previewing:not(.final-five-active) .progress-meta{
+  color:rgba(255,255,255,.76)!important;
+}
+body.finale-previewing:not(.final-five-active) .progress-meta strong{
+  color:#fff!important;
+  opacity:1!important;
+}
+
+/* Keep the top navigation perfectly still while SOUND is toggled. */
+.desktop-nav .sound-button{
+  min-width:94px;
+  width:94px;
+  justify-content:center;
+  contain:layout paint;
+}
+.desktop-nav .sound-button .sound-label{
+  display:inline-block;
+  width:48px;
+  text-align:center;
+}
+
+@media (max-width:900px){
+  body.tfw-preview-stage-title #heroTitle{
+    font-size:clamp(30px,6.8vw,52px)!important;
+  }
+}
+@media (max-width:560px){
+  body.tfw-preview-stage-title #heroTitle{
+    font-size:clamp(25px,7vw,36px)!important;
+  }
+}
+@media (prefers-reduced-motion:reduce){
+  body.tfw-preview-stage-title #heroTitle{animation:none!important}
+}
+
+
+/* ================================================================
+   V22 — simulator stability.
+   ================================================================ */
+body.finale-previewing:not(.final-five-active) .hero-title-wrap,
+body.finale-previewing:not(.final-five-active) .phase-pill,
+body.finale-previewing:not(.final-five-active) #countdown,
+body.finale-previewing:not(.final-five-active) .progress-block{
+  opacity:1!important;
+  visibility:visible!important;
+  filter:none!important;
+}
+body.finale-previewing.tfw-milestone-live #heroTitle,
+body.finale-previewing.tfw-preview-stage-title #heroTitle{
+  opacity:1!important;
+  visibility:visible!important;
+}
+body.finale-previewing.tfw-milestone-live .hero-title-wrap,
+body.finale-previewing.tfw-preview-stage-title .hero-title-wrap{
+  opacity:1!important;
+  visibility:visible!important;
+  filter:none!important;
+}
+
+
+/* V22 final mobile release overrides — kept last intentionally. */
+@media (max-width:900px){
+  body.finale-released .release-elapsed{
+    width:min(94vw,760px)!important;
+    margin:24px auto 0!important;
+    padding:0!important;
+  }
+  body.finale-released .release-elapsed-clock{
+    transform:scale(.74)!important;
+    width:118%!important;
+    margin-left:-9%!important;
+    gap:4px!important;
+  }
+}
+@media (max-width:560px){
+  body.finale-released .release-elapsed{
+    width:96vw!important;
+    margin:22px auto 0!important;
+    padding:0!important;
+  }
+  body.finale-released .release-elapsed-clock{
+    transform:scale(.68)!important;
+    width:138%!important;
+    margin-left:-19%!important;
+    gap:3px!important;
+  }
+  body.finale-released .release-elapsed-label{
+    font-size:6px!important;
+    letter-spacing:.16em!important;
+    margin-bottom:9px!important;
+  }
+}
+
+
+/* ================================================================
+   V24 — clean simulator extension on top of the V22 production base.
+   ================================================================ */
+.precise-time-row{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:7px;
+  margin-top:14px;
+}
+.precise-time-row input{
+  min-width:0;
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:10px;
+  background:rgba(0,0,0,.22);
+  color:#fff;
+  padding:10px 11px;
+  font:800 10px/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.05em;
+  outline:none;
+}
+.precise-time-row input:focus{
+  border-color:rgba(242,63,178,.55);
+  box-shadow:0 0 0 3px rgba(242,63,178,.08);
+}
+.precise-time-row input.invalid{
+  animation:tfwV24Invalid .35s ease;
+  border-color:#ff6c9d;
+}
+.precise-time-row button{
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;
+  background:rgba(255,255,255,.045);
+  color:#fff;
+  padding:10px 12px;
+  font:900 7px/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.09em;
+  cursor:pointer;
+  transition:transform .2s,border-color .2s,background .2s;
+}
+.precise-time-row button:hover{
+  transform:translateY(-1px);
+  border-color:rgba(242,63,178,.55);
+  background:rgba(242,63,178,.09);
+}
+.precise-time-help{
+  display:block;
+  margin:7px 2px 0;
+  font:900 6px/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.14em;
+  color:rgba(255,255,255,.45);
+}
+@keyframes tfwV24Invalid{
+  25%{transform:translateX(-4px)}
+  50%{transform:translateX(4px)}
+  75%{transform:translateX(-2px)}
+}
+
+/* Keep the V22 release layout, but make the elapsed clock glow clearly
+   without reintroducing any legacy hero/logo composition. */
+body.finale-released .release-elapsed-clock .time-unit{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 10px 30px rgba(0,0,0,.30),
+    0 0 30px rgba(242,63,178,.18),
+    0 0 52px rgba(119,96,255,.10)!important;
+}
+body.finale-released .release-elapsed-clock .time-value{
+  text-shadow:
+    0 2px 16px rgba(0,0,0,.55),
+    0 0 3px rgba(255,255,255,.78),
+    0 0 22px rgba(242,63,178,.25),
+    0 0 36px rgba(119,96,255,.13)!important;
+}
+
+
+/* === EXPERIENCE: v26.css === */
+/* V26 — soften the -05:00 composition switch while preserving the layout. */
+.hero-content{
+  transition:width 1050ms cubic-bezier(.19,1,.22,1),
+    padding-top 1050ms cubic-bezier(.19,1,.22,1),
+    transform 1050ms cubic-bezier(.19,1,.22,1)!important;
+}
+.hero-title-wrap{
+  transition:opacity 850ms ease,transform 1100ms cubic-bezier(.19,1,.22,1),
+    margin-top 1050ms cubic-bezier(.19,1,.22,1)!important;
+}
+.countdown-shell{
+  transition:width 1150ms cubic-bezier(.19,1,.22,1),
+    margin-top 1050ms cubic-bezier(.19,1,.22,1),
+    margin-bottom 1050ms cubic-bezier(.19,1,.22,1)!important;
+}
+.logo-stage{
+  transition:width 1100ms cubic-bezier(.19,1,.22,1),
+    opacity 950ms ease,transform 1100ms cubic-bezier(.19,1,.22,1)!important;
+}
+.release-hud,.progress-block,.phase-pill,.hero-status,.next-scene,.scroll-cue{
+  transition:opacity 900ms ease,transform 1100ms cubic-bezier(.19,1,.22,1),
+    filter 900ms ease,margin 1100ms cubic-bezier(.19,1,.22,1),
+    width 1100ms cubic-bezier(.19,1,.22,1),
+    bottom 950ms ease!important;
+}
+body.final-five-active .release-hud,
+body.final-five-active .next-scene{
+  opacity:0!important;
+  pointer-events:none!important;
+}
+body.final-five-active .release-hud{
+  visibility:visible!important;
+  filter:blur(8px)!important;
+  transform:translateY(-14px) scale(.97)!important;
+  transition:opacity 800ms ease,transform 1050ms ease,filter 800ms ease,
+    visibility 0s linear 1100ms!important;
+}
+/* The headline remains legible from the final hour onward. */
+body.phase-final-hour:not(.final-five-active) .hero-title-wrap,
+body.phase-final-hour:not(.final-five-active) .progress-block{
+  opacity:1!important;
+}
+/* Show the real-audio analyser for regular soundtrack playback too. */
+body.tfw-ambient-playing:not(.final-five-active):not(.finale-released) .finale-visualizer-wrap{
+  height:44px!important;
+  opacity:.92!important;
+  visibility:visible!important;
+  transition:opacity 450ms ease,height 450ms ease!important;
+}
+body.tfw-ambient-playing .finale-visualizer{opacity:.95!important}
+@media(max-width:900px){
+  body.tfw-ambient-playing:not(.final-five-active):not(.finale-released) .finale-visualizer-wrap{
+    height:34px!important;
+    width:min(86vw,540px)!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-content,.hero-title-wrap,.countdown-shell,.logo-stage,
+  .release-hud,.progress-block,.phase-pill,.hero-status,.next-scene,.scroll-cue{
+    transition:none!important;
+  }
+}
+
+/* === EXPERIENCE: v27.css === */
+/* V27 — controlled final glow, cinematic entry, true analyser and release layout. */
+/* Keep -05:00 focused while allowing the release-date HUD to collapse smoothly. */
+.release-hud{
+  max-height:180px;
+  box-sizing:border-box;
+  overflow:hidden;
+  transition:max-height 1200ms cubic-bezier(.2,.76,.2,1),
+    opacity 900ms ease,filter 950ms ease,
+    transform 1100ms cubic-bezier(.19,1,.22,1),
+    padding 950ms ease,margin 1100ms cubic-bezier(.19,1,.22,1),
+    border-color 950ms ease!important;
+}
+body.final-five-active .release-hud{
+  transition:max-height 1200ms cubic-bezier(.2,.76,.2,1),
+    opacity 900ms ease,filter 950ms ease,
+    transform 1100ms cubic-bezier(.19,1,.22,1),
+    padding 950ms ease,margin 1100ms cubic-bezier(.19,1,.22,1),
+    border-color 950ms ease!important;
+  max-height:0!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  margin-top:0!important;
+  margin-bottom:0!important;
+  border-color:transparent!important;
+  opacity:0!important;
+  visibility:visible!important;
+  transform:translateY(-18px) scale(.98)!important;
+  filter:blur(8px)!important;
+  pointer-events:none!important;
+}
+body.final-five-active .countdown-shell{
+  transition:width 1150ms cubic-bezier(.19,1,.22,1),
+    margin 1150ms cubic-bezier(.19,1,.22,1),
+    padding 1100ms ease!important;
+}
+body.final-five-active .progress-block{
+  transition:opacity 950ms ease,transform 1100ms cubic-bezier(.19,1,.22,1),
+    width 1100ms cubic-bezier(.19,1,.22,1),
+    margin 1100ms cubic-bezier(.19,1,.22,1)!important;
+}
+/* All legacy instant-glow rules lose to this single time-driven envelope.
+   JS sets 0 at -6.5 seconds and exactly 1 at -100 milliseconds. */
+body.final-five-active.finale-last-15 #countdown,
+body.final-five-active.finale-last-15.finale-last-second #countdown{
+  animation:none!important;
+  transition:transform .34s cubic-bezier(.2,.78,.2,1)!important;
+  filter:
+    drop-shadow(0 14px 40px rgba(0,0,0,.48))
+    drop-shadow(0 0 calc(39px * var(--tfw-approach-glow,0)) rgba(242,63,178,calc(.47 * var(--tfw-approach-glow,0))))
+    drop-shadow(0 0 calc(65px * var(--tfw-approach-glow,0)) rgba(119,96,255,calc(.22 * var(--tfw-approach-glow,0))))!important;
+}
+body.final-five-active.finale-last-15 .time-unit{
+  animation:none!important;
+  transition:transform .35s ease,background .35s ease!important;
+  border-color:rgba(255,calc(255 - 100 * var(--tfw-approach-glow,0)),calc(255 - 36 * var(--tfw-approach-glow,0)),calc(.23 + .45 * var(--tfw-approach-glow,0)))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 16px 48px rgba(0,0,0,.29),
+    0 0 calc(51px * var(--tfw-approach-glow,0)) rgba(242,63,178,calc(.38 * var(--tfw-approach-glow,0)))),
+    0 0 calc(80px * var(--tfw-approach-glow,0)) rgba(119,96,255,calc(.20 * var(--tfw-approach-glow,0))))!important;
+}
+body.final-five-active.finale-last-15 .time-value{
+  animation:none!important;
+  transition:none!important;
+  text-shadow:
+    0 0 2px #fff,
+    0 0 calc(20px * var(--tfw-approach-glow,0)) rgba(255,255,255,calc(.60 * var(--tfw-approach-glow,0)))),
+    0 0 calc(49px * var(--tfw-approach-glow,0)) rgba(242,63,178,calc(.58 * var(--tfw-approach-glow,0)))),
+    0 0 calc(75px * var(--tfw-approach-glow,0)) rgba(119,96,255,calc(.33 * var(--tfw-approach-glow,0)))),
+    0 12px 30px rgba(0,0,0,.62)!important;
+}
+/* Always display the analyser, including when muted (quiet baseline).
+   Its animation comes only from real audio FFT data. */
+body.tfw-visualizer-ready .finale-visualizer-wrap,
+body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{
+  display:block!important;
+  height:44px!important;
+  opacity:.96!important;
+  visibility:visible!important;
+  transform:none!important;
+  pointer-events:none!important;
+}
+body.tfw-visualizer-ready .finale-visualizer,
+body.tfw-visualizer-ready.finale-released .finale-visualizer{
+  display:block!important;
+  height:100%!important;
+  opacity:.96!important;
+  visibility:visible!important;
+}
+/* Release view must not inherit the -50% relative-position translation
+   of the original absolute overlay. The hero grows instead of clipping. */
+body.finale-released{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+}
+body.finale-released .hero{
+  height:auto!important;
+  min-height:100svh!important;
+  overflow:hidden!important;
+  display:grid!important;
+  place-items:center!important;
+  box-sizing:border-box;
+}
+body.finale-released .hero-content{
+  width:min(1360px,95vw)!important;
+  padding-top:clamp(76px,9svh,116px)!important;
+  padding-bottom:clamp(64px,8svh,102px)!important;
+  margin:0 auto!important;
+  transform:none!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:center!important;
+}
+body.finale-released .countdown-shell{
+  width:min(1250px,94vw)!important;
+  max-width:100%!important;
+  margin:0 auto!important;
+  transform:none!important;
+  overflow:visible!important;
+}
+body.finale-released .finale-release,
+body.finale-released .finale-release.active{
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  translate:0 0!important;
+  transform:none!important;
+  margin:0 auto!important;
+  width:min(1200px,94vw)!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:center!important;
+}
+body.finale-released .finale-release h2{
+  max-width:100%!important;
+  font-size:clamp(56px,8.7vw,132px)!important;
+  line-height:.86!important;
+}
+body.finale-released .release-elapsed{
+  width:min(1160px,88vw)!important;
+  max-width:100%!important;
+  margin:clamp(28px,4svh,52px) auto 0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+}
+body.finale-released .release-elapsed-clock.countdown{
+  display:grid!important;
+  width:100%!important;
+  margin:0 auto!important;
+  margin-left:0!important;
+  transform:none!important;
+  transform-origin:center center!important;
+  grid-template-columns:
+    minmax(0,1.18fr) 12px
+    minmax(0,1fr) 12px
+    minmax(0,1fr) 12px
+    minmax(0,1fr) 12px
+    minmax(0,1.12fr)!important;
+  align-items:stretch!important;
+  column-gap:clamp(4px,.55vw,9px)!important;
+}
+body.finale-released .release-elapsed-clock .time-unit{
+  min-width:0!important;
+  height:clamp(96px,10.6vw,150px)!important;
+  padding:clamp(10px,1.3vw,18px) 7px 11px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:center!important;
+  border-color:rgba(255,115,211,.56)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.15),
+    0 16px 48px rgba(0,0,0,.30),
+    0 0 34px rgba(242,63,178,.27),
+    0 0 58px rgba(119,96,255,.15)!important;
+}
+body.finale-released .release-elapsed-clock .time-value{
+  font-size:clamp(40px,6.15vw,91px)!important;
+  line-height:.88!important;
+  max-width:100%!important;
+  font-variant-numeric:tabular-nums!important;
+  text-shadow:
+    0 0 2px #fff,0 0 16px rgba(255,255,255,.48),
+    0 0 39px rgba(242,63,178,.42),
+    0 0 58px rgba(119,96,255,.23),
+    0 12px 30px rgba(0,0,0,.62)!important;
+}
+body.finale-released .release-elapsed-clock .time-label{
+  font-size:clamp(6px,.58vw,10px)!important;
+  letter-spacing:.13em!important;
+  margin-top:12px!important;
+}
+body.finale-released .release-elapsed-clock .time-separator{
+  min-width:0!important;
+  font-size:clamp(17px,1.9vw,28px)!important;
+}
+body.finale-released .release-elapsed-clock .digit-glow{opacity:.62!important}
+@media(max-width:900px){
+  body.finale-released .hero-content{
+    padding-top:clamp(74px,9svh,98px)!important;
+    padding-bottom:clamp(54px,7svh,80px)!important;
+  }
+  body.finale-released .finale-release h2{font-size:clamp(49px,10.6vw,95px)!important}
+  body.finale-released .release-elapsed{width:94vw!important;margin-top:28px!important}
+  body.finale-released .release-elapsed-clock.countdown{
+    grid-template-columns:minmax(0,1.18fr) 7px minmax(0,1fr) 7px minmax(0,1fr) 7px minmax(0,1fr) 7px minmax(0,1.12fr)!important;
+    gap:3px!important;
+    width:100%!important;
+    transform:none!important;
+  }
+  body.finale-released .release-elapsed-clock .time-unit{
+    height:clamp(72px,11vw,105px)!important;
+    padding:8px 3px!important;
+  }
+  body.finale-released .release-elapsed-clock .time-value{font-size:clamp(23px,5.7vw,49px)!important}
+  body.finale-released .release-elapsed-clock .time-label{font-size:clamp(5px,.75vw,7px)!important;margin-top:8px!important}
+  body.tfw-visualizer-ready .finale-visualizer-wrap{height:36px!important}
+}
+@media(max-width:560px){
+  body.finale-released .hero-content{width:100%!important;padding-top:76px!important;padding-bottom:42px!important}
+  body.finale-released .finale-release h2{font-size:clamp(43px,12.8vw,74px)!important}
+  body.finale-released .release-elapsed{width:96vw!important;margin-top:24px!important}
+  body.finale-released .release-elapsed-clock.countdown{gap:2px!important}
+  body.finale-released .release-elapsed-clock .time-unit{
+    height:68px!important;padding:8px 2px!important;border-radius:11px!important
+  }
+  body.finale-released .release-elapsed-clock .time-value{font-size:clamp(19px,5.1vw,30px)!important}
+  body.finale-released .release-elapsed-clock .time-label{font-size:4.5px!important;letter-spacing:.09em!important;margin-top:7px!important}
+  body.finale-released .release-elapsed-clock .time-separator{font-size:14px!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .release-hud{transition:none!important}
+  body.finale-released .finale-release{animation:none!important}
+}
+
+
+/* === EXPERIENCE: v28.css === */
+/* V28: one time-based glow, stable milestones, compact release and visible fireworks. */
+
+/* Reserve the same two-line title area in normal and milestone modes.
+   Do not move the timer when the headline changes or its text wraps. */
+body:not(.final-five-active):not(.finale-released) .hero-title-wrap{
+  height:clamp(92px,8.1vw,132px)!important;
+  min-height:0!important;
+  width:min(1140px,94vw);
+  display:flex!important;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  margin-top:8px!important;
+  box-sizing:border-box;
+  translate:0 0!important;
+  transform:none!important;
+}
+body:not(.final-five-active):not(.finale-released) #heroTitle{
+  min-height:1.9em;
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  max-width:100%;
+  text-wrap:balance;
+}
+body.tfw-milestone-live .hero-title-wrap,
+body.tfw-preview-stage-title .hero-title-wrap{
+  translate:0 0!important;
+  transform:none!important;
+}
+body.tfw-milestone-live .countdown-shell,
+body.tfw-milestone-live .release-hud,
+body.tfw-milestone-live .progress-block,
+body.tfw-preview-stage-title .countdown-shell,
+body.tfw-preview-stage-title .release-hud,
+body.tfw-preview-stage-title .progress-block{
+  translate:0 0!important;
+  transform:none;
+}
+
+/* The first instant of the last six seconds looks exactly like earlier
+   seconds. Only the JS time envelope changes these effects, reaching 1
+   at -200ms. Never switch to a pre-charged milestone or pulse glow. */
+body.final-five-active #countdown,
+body.final-five-active:not(.finale-last-15) #countdown,
+body.finale-last-15:not(.finale-last-second) #countdown,
+body.final-five-active.finale-last-15 #countdown,
+body.final-five-active.finale-last-second #countdown{
+  animation:none!important;
+  filter:
+    drop-shadow(0 14px 40px rgba(0,0,0,.48))
+    drop-shadow(0 0 var(--tfw-glow-radius,0px) rgba(242,63,178,var(--tfw-glow-pink,0)))
+    drop-shadow(0 0 var(--tfw-glow-wide,0px) rgba(119,96,255,var(--tfw-glow-violet,0)))!important;
+  transition:transform .34s cubic-bezier(.2,.78,.2,1)!important;
+}
+body.final-five-active .time-unit,
+body.final-five-active:not(.finale-last-15) .time-unit,
+body.finale-last-15:not(.finale-last-second) .time-unit,
+body.final-five-active.finale-last-15 .time-unit,
+body.final-five-active.finale-last-second .time-unit{
+  animation:none!important;
+  border-color:rgba(255,255,255,.23)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 16px 48px rgba(0,0,0,.29),
+    0 0 var(--tfw-glow-radius,0px) rgba(242,63,178,var(--tfw-glow-pink,0)),
+    0 0 var(--tfw-glow-wide,0px) rgba(119,96,255,var(--tfw-glow-violet,0)))!important;
+  transition:transform .35s ease!important;
+}
+body.final-five-active .time-value,
+body.final-five-active:not(.finale-last-15) .time-value,
+body.finale-last-15:not(.finale-last-second) .time-value,
+body.final-five-active.finale-last-15 .time-value,
+body.final-five-active.finale-last-second .time-value{
+  animation:none!important;
+  text-shadow:
+    0 0 2px #fff,
+    0 0 var(--tfw-glow-radius,0px) rgba(255,255,255,var(--tfw-glow-white,0)),
+    0 0 var(--tfw-glow-radius,0px) rgba(242,63,178,var(--tfw-glow-pink,0)),
+    0 0 var(--tfw-glow-wide,0px) rgba(119,96,255,var(--tfw-glow-violet,0)),
+    0 12px 30px rgba(0,0,0,.62)!important;
+  transition:none!important;
+}
+body.final-five-active #hero.finale-rapid-pulse #countdown{
+  animation:none!important;
+}
+
+/* Release overlays fade in instead of abruptly replacing the countdown. */
+.finale-release{
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .55s ease-out,filter .55s ease-out,
+    visibility 0s linear .55s!important;
+}
+body.finale-released .finale-release.active{
+  opacity:1!important;
+  visibility:visible!important;
+  filter:none!important;
+  transition:opacity .55s ease-out,filter .55s ease-out,
+    visibility 0s!important;
+}
+#countdown{transition:opacity .52s ease,transform .35s ease!important}
+body.finale-released.tfw-release-entering #countdown{
+  display:grid!important;
+  position:absolute!important;
+  top:0!important;
+  left:0!important;
+  width:100%!important;
+  opacity:0!important;
+  visibility:visible!important;
+  pointer-events:none!important;
+}
+body.finale-released .finale-release-kicker,
+body.finale-released .finale-release-date,
+body.finale-released .release-line{
+  transition:opacity .45s ease-out!important;
+}
+body.finale-released .finale-release-date{
+  width:min(900px,92vw);
+  max-width:100%;
+  text-wrap:balance;
+  line-height:1.4!important;
+  letter-spacing:.14em!important;
+}
+
+/* Retain the existing fireworks engine; make its canvas visible above
+   the dark hero layers, while never blocking mouse or touch input. */
+body.finale-released .finale-fireworks{
+  display:block!important;
+  visibility:visible!important;
+  opacity:.94!important;
+  position:absolute!important;
+  inset:0!important;
+  z-index:17!important;
+  mix-blend-mode:screen!important;
+  pointer-events:none!important;
+}
+/* Less intrusive elapsed clock: its glow is decorative, not the focal point. */
+body.finale-released .release-elapsed{
+  width:min(740px,77vw)!important;
+  max-width:100%!important;
+  margin:clamp(22px,3svh,34px) auto 0!important;
+}
+body.finale-released .release-elapsed-label{
+  font-size:clamp(7px,.62vw,9px)!important;
+  letter-spacing:.18em!important;
+  opacity:.78!important;
+  margin-bottom:10px!important;
+}
+body.finale-released .release-elapsed-clock.countdown{
+  column-gap:clamp(3px,.42vw,7px)!important;
+}
+body.finale-released .release-elapsed-clock .time-unit{
+  height:clamp(72px,7.8vw,105px)!important;
+  border-color:rgba(255,255,255,.28)!important;
+  border-radius:13px!important;
+  padding:9px 5px!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.10),
+    0 9px 27px rgba(0,0,0,.27),
+    0 0 20px rgba(242,63,178,.15),
+    0 0 38px rgba(119,96,255,.09)!important;
+}
+body.finale-released .release-elapsed-clock .time-value{
+  font-size:clamp(28px,4.0vw,59px)!important;
+  text-shadow:
+    0 0 2px rgba(255,255,255,.7),
+    0 0 17px rgba(242,63,178,.19),
+    0 0 29px rgba(119,96,255,.12),
+    0 8px 21px rgba(0,0,0,.58)!important;
+}
+body.finale-released .release-elapsed-clock .digit-glow{opacity:.26!important}
+body.finale-released .release-elapsed-clock .time-label{
+  font-size:clamp(5px,.45vw,7px)!important;
+  margin-top:9px!important;
+}
+@media(max-width:900px){
+  body.finale-released .release-elapsed{width:min(720px,91vw)!important;margin-top:23px!important}
+  body.finale-released .release-elapsed-clock .time-unit{height:clamp(66px,10vw,85px)!important}
+  body.finale-released .release-elapsed-clock .time-value{font-size:clamp(22px,5.1vw,39px)!important}
+}
+@media(max-width:560px){
+  body:not(.final-five-active):not(.finale-released) .hero-title-wrap{height:96px!important;width:95vw}
+  body.finale-released .release-elapsed{width:94vw!important;margin-top:20px!important}
+  body.finale-released .release-elapsed-clock.countdown{gap:2px!important}
+  body.finale-released .release-elapsed-clock .time-unit{
+    height:64px!important;border-radius:10px!important;padding:7px 2px!important;
+  }
+  body.finale-released .release-elapsed-clock .time-value{
+    font-size:clamp(18px,4.9vw,27px)!important;
+  }
+  body.finale-released .release-elapsed-clock .time-label{
+    font-size:4.3px!important;letter-spacing:.07em!important;margin-top:6px!important;
+  }
+  body.finale-released .finale-release-date{font-size:clamp(8px,2.1vw,10px)!important;letter-spacing:.08em!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .finale-release,body.finale-released .finale-release.active,
+  #countdown{transition:none!important}
+}
+
+
+/* === EXPERIENCE: v29-phase1.css === */
+
+/* V29 — PHASE 1 ONLY. No milestone titles, scene rotation, or ambient cutoff changes. */
+/* All finale backlights share the same JS envelope: 0 at -6s, 1 at -200ms.
+   The independent -6.5s scene-rush class must not flash violet suddenly. */
+body.final-five-active .hero-content::after,
+body.final-five-active.finale-last-10 .hero-content::after,
+body.final-five-active.finale-scene-rush .hero-content::after{
+  opacity:var(--tfw-glow-strength,0)!important;
+  animation:none!important;
+  transition:none!important;
+}
+body.final-five-active .finale-beat-halo,
+body.final-five-active.finale-music-live .finale-beat-halo{
+  opacity:calc(.54 * var(--tfw-glow-strength,0))!important;
+  transform:scale(calc(.96 + .04 * var(--tfw-glow-strength,0)))!important;
+  transition:none!important;
+}
+body.final-five-active .finale-edge-glow,
+body.final-five-active.finale-music-live .finale-edge-glow,
+body.final-five-active #hero.finale-rapid-pulse .finale-edge-glow{
+  opacity:calc(.28 * var(--tfw-glow-strength,0))!important;
+  animation:none!important;
+  box-shadow:
+    inset 0 0 var(--tfw-glow-wide,0px) rgba(242,63,178,var(--tfw-glow-pink,0)),
+    0 0 var(--tfw-glow-radius,0px) rgba(119,96,255,var(--tfw-glow-violet,0))!important;
+  transition:none!important;
+}
+/* Keep the center of the clock free of legacy fixed illumination. */
+body.final-five-active .digit-glow,
+body.final-five-active.finale-last-15 .digit-glow,
+body.final-five-active.finale-last-second .digit-glow{
+  opacity:calc(.28 * var(--tfw-glow-strength,0))!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+/* The post-release clock is a quiet, secondary status element. */
+body.finale-released .release-elapsed{
+  display:block!important;
+  position:relative!important;
+  top:clamp(13px,2svh,23px)!important;
+  width:min(455px,84vw)!important;
+  max-width:96vw!important;
+  padding:0!important;
+  margin:clamp(21px,3svh,31px) auto 0!important;
+  overflow:visible!important;
+}
+body.finale-released .release-elapsed-label{
+  display:block!important;
+  opacity:1!important;
+  visibility:visible!important;
+  width:100%!important;
+  margin:0 auto 13px!important;
+  font:900 clamp(11px,.96vw,14px)/1.3 Arial,Helvetica,sans-serif!important;
+  letter-spacing:.12em!important;
+  text-align:center!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  text-shadow:0 2px 8px rgba(0,0,0,.85),0 0 14px rgba(255,255,255,.32)!important;
+}
+body.finale-released .release-elapsed-clock.countdown{
+  width:100%!important;
+  max-width:100%!important;
+  transform:none!important;
+  grid-template-columns:
+    minmax(0,1.1fr) 6px minmax(0,1fr) 6px minmax(0,1fr)
+    6px minmax(0,1fr) 6px minmax(0,1.24fr)!important;
+  column-gap:4px!important;
+  align-items:stretch!important;
+  justify-content:center!important;
+}
+body.finale-released .release-elapsed-clock .time-unit{
+  min-width:0!important;
+  height:clamp(53px,5.8vw,69px)!important;
+  padding:7px 3px!important;
+  border-radius:10px!important;
+  border-color:rgba(255,154,222,.43)!important;
+  background:linear-gradient(145deg,rgba(15,11,23,.77),rgba(26,12,35,.68))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 6px 18px rgba(0,0,0,.25),
+    0 0 21px rgba(242,63,178,.28),
+    0 0 43px rgba(119,96,255,.19)!important;
+}
+body.finale-released .release-elapsed-clock .time-value{
+  font-size:clamp(24px,3vw,39px)!important;
+  line-height:1!important;
+  letter-spacing:-.04em!important;
+  text-shadow:
+    0 0 2px rgba(255,255,255,.96),
+    0 0 13px rgba(255,255,255,.32),
+    0 0 23px rgba(242,63,178,.43),
+    0 0 39px rgba(119,96,255,.25),
+    0 3px 9px rgba(0,0,0,.66)!important;
+}
+body.finale-released .release-elapsed-clock .time-label{
+  font-size:clamp(5px,.48vw,7px)!important;
+  letter-spacing:.06em!important;
+  margin-top:6px!important;
+}
+body.finale-released .release-elapsed-clock .digit-glow{
+  opacity:.52!important;
+  background:radial-gradient(ellipse,rgba(242,63,178,.21),rgba(119,96,255,.08) 48%,transparent 74%)!important;
+}
+body.finale-released .release-elapsed-clock .time-separator{
+  font-size:16px!important;
+  min-width:0!important;
+}
+
+/* The release words belong to one tall, neatly framed title block. */
+body.finale-released .finale-release h2{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:center!important;
+  gap:clamp(8px,1.15svh,13px)!important;
+  width:min(1020px,89vw)!important;
+  max-width:100%!important;
+  padding:clamp(14px,2svh,23px) clamp(10px,3vw,40px)!important;
+  margin:clamp(10px,2svh,23px) auto 0!important;
+  overflow:visible!important;
+  line-height:.93!important;
+  text-align:center!important;
+  box-sizing:border-box!important;
+  /* Gradient and animation belong to the actual glyphs, not the parent. */
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:none!important;
+  -webkit-background-clip:border-box!important;
+  background-clip:border-box!important;
+  animation:none!important;
+  filter:none!important;
+}
+body.finale-released .finale-release h2::before{
+  inset:-4px -12px!important;
+  border-radius:31px!important;
+}
+body.finale-released .finale-release h2::after{
+  inset:-14px -24px!important;
+  border-radius:38px!important;
+}
+body.finale-released .finale-release h2 .finale-release-kicker{
+  display:block!important;
+  position:relative!important;
+  z-index:1!important;
+  width:auto!important;
+  max-width:100%!important;
+  opacity:1!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:none!important;
+  font:900 clamp(12px,1.45vw,21px)/1.2 Arial,Helvetica,sans-serif!important;
+  letter-spacing:.20em!important;
+  text-shadow:0 0 15px rgba(255,255,255,.32)!important;
+  animation:none!important;
+}
+body.finale-released .finale-release h2 .finale-release-main{
+  display:block!important;
+  position:relative!important;
+  z-index:1!important;
+  margin:0!important;
+  width:max-content!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  padding:0 .11em .07em!important;
+  overflow:visible!important;
+  font-style:normal!important;
+  font-size:clamp(47px,8.4vw,126px)!important;
+  font-weight:900!important;
+  line-height:.90!important;
+  letter-spacing:-.045em!important;
+  text-align:center!important;
+  background-image:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%)!important;
+  background-size:220% 100%!important;
+  background-position:0 50%;
+  background-repeat:repeat-x!important;
+  background-clip:text!important;
+  -webkit-background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  animation:tfwV30ReleaseTextFlow 4.7s linear infinite!important;
+}
+@keyframes tfwV30ReleaseTextFlow{
+  to{background-position:220% 50%}
+}
+body.finale-released .finale-release-date{
+  display:block!important;
+  width:min(870px,90vw)!important;
+  max-width:100%!important;
+  margin:clamp(30px,4svh,44px) auto 0!important;
+  padding:0 8px!important;
+  box-sizing:border-box!important;
+  font:900 clamp(12px,1.2vw,19px)/1.4 Arial,Helvetica,sans-serif!important;
+  letter-spacing:.10em!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  text-shadow:
+    0 0 6px rgba(255,255,255,.85),
+    0 0 17px rgba(255,255,255,.61),
+    0 0 34px rgba(255,255,255,.32),
+    0 3px 12px rgba(0,0,0,.82)!important;
+  opacity:1!important;
+  animation:none!important;
+  filter:none!important;
+  text-align:center!important;
+}
+body.finale-released .release-line{
+  margin-top:clamp(13px,1.7svh,19px)!important;
+}
+
+/* Fireworks are attached directly to body at release: never clipped by
+   .hero, .hero-content, or the changing layout. */
+body:not(.finale-released) canvas#finaleFireworks{display:none!important}
+body.finale-released canvas#finaleFireworks{
+  display:block!important;
+  position:fixed!important;
+  left:0!important;
+  top:0!important;
+  right:auto!important;
+  bottom:auto!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:90!important;
+  opacity:1!important;
+  visibility:visible!important;
+  mix-blend-mode:screen!important;
+  pointer-events:none!important;
+}
+
+/* Visible, live FFT bars remain within the viewport after 00:00.
+   The analyser's internal bitmap is separately resized by milestones.js. */
+body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{
+  display:block!important;
+  position:fixed!important;
+  left:50%!important;
+  top:auto!important;
+  /* Preserve exactly the pre-release FFT dimensions; raise it above CTA. */
+  bottom:clamp(88px,11.5svh,126px)!important;
+  width:min(720px,58vw)!important;
+  height:44px!important;
+  opacity:1!important;
+  visibility:visible!important;
+  margin:0!important;
+  translate:-50% 0!important;
+  transform:none!important;
+  z-index:105!important;
+  pointer-events:none!important;
+}
+body.tfw-visualizer-ready.finale-released .finale-visualizer{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+@media(max-width:900px){
+  body.finale-released .release-elapsed{width:min(445px,89vw)!important}
+  body.finale-released .release-elapsed-clock .time-unit{height:57px!important}
+  body.finale-released .release-elapsed-clock .time-value{font-size:clamp(21px,4.6vw,31px)!important}
+  body.finale-released .finale-release h2 .finale-release-main{font-size:clamp(44px,10.8vw,82px)!important}
+  body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{
+    width:min(78vw,540px)!important;
+    height:36px!important;
+  }
+}
+@media(max-width:700px){
+  body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{
+    width:86vw!important;
+    height:36px!important;
+  }
+}
+@media(max-width:560px){
+  body.finale-released .release-elapsed{width:92vw!important}
+  body.finale-released .release-elapsed-label{font-size:11px!important;letter-spacing:.095em!important}
+  body.finale-released .release-elapsed-clock.countdown{column-gap:2px!important;gap:2px!important}
+  body.finale-released .release-elapsed-clock .time-unit{height:49px!important;padding:6px 2px!important}
+  body.finale-released .release-elapsed-clock .time-value{font-size:clamp(18px,5vw,26px)!important}
+  body.finale-released .release-elapsed-clock .time-label{font-size:4.2px!important;margin-top:5px!important}
+  body.finale-released .release-elapsed-clock .time-separator{font-size:12px!important}
+  body.finale-released .finale-release h2{
+    width:90vw!important;
+    padding:clamp(11px,1.7svh,17px) 6px!important;
+    gap:8px!important;
+  }
+  body.finale-released .finale-release h2 .finale-release-kicker{
+    font-size:clamp(10px,2.5vw,14px)!important;
+    letter-spacing:.14em!important;
+  }
+  body.finale-released .finale-release h2 .finale-release-main{
+    font-size:clamp(43px,11.5vw,67px)!important;
+  }
+  body.finale-released .finale-release-date{
+    margin-top:clamp(21px,3svh,29px)!important;
+    font-size:clamp(10px,2.65vw,13px)!important;
+    line-height:1.46!important;
+    letter-spacing:.065em!important;
+  }
+  body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{
+    bottom:clamp(84px,11.5svh,103px)!important;
+    width:86vw!important;
+    height:36px!important;
+  }
+}
+
+
+/* === EXPERIENCE: v29-phase2.css === */
+/* V29 phase two: stable hero copy and milestone capsule.
+   Phase one glow, post-release, fireworks and analyser remain unchanged. */
+
+/* A consistent fixed title slot prevents the countdown from moving when
+   a long milestone headline wraps across two lines. The whole block sits
+   a little lower than V28, while the typography is more prominent. */
+body:not(.final-five-active):not(.finale-released) .hero-title-wrap{
+  width:min(1210px,95vw)!important;
+  height:clamp(144px,13vw,190px)!important;
+  min-height:0!important;
+  margin-top:clamp(24px,3svh,40px)!important;
+  padding:0 8px!important;
+  box-sizing:border-box!important;
+  justify-content:center!important;
+  gap:0!important;
+  translate:0 0!important;
+  transform:none!important;
+}
+body:not(.final-five-active):not(.finale-released) .hero-title-wrap .eyebrow{
+  display:block!important;
+  font-size:clamp(12px,1.25vw,18px)!important;
+  line-height:1.2!important;
+  margin:0 0 clamp(2px,.48svh,6px)!important;
+  letter-spacing:.24em!important;
+  color:rgba(255,255,255,.94)!important;
+  text-shadow:0 0 17px rgba(255,255,255,.15)!important;
+}
+body:not(.final-five-active):not(.finale-released) #heroTitle,
+body.tfw-milestone-live:not(.final-five-active):not(.finale-released) #heroTitle,
+body.tfw-preview-stage-title:not(.final-five-active):not(.finale-released) #heroTitle{
+  font-size:clamp(44px,6.30vw,91px)!important;
+  line-height:.98!important;
+  letter-spacing:-.057em!important;
+  min-height:0!important;
+  height:auto!important;
+  flex:0 0 auto!important;
+  flex-direction:column!important;
+  max-width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+  text-wrap:balance!important;
+  transform:none!important;
+}
+body:not(.final-five-active):not(.finale-released) #heroTitle .tfw-headline-line{
+  display:block;
+  width:100%;
+  white-space:nowrap;
+  line-height:1.0;
+  text-align:center;
+}
+
+/* Invisible before the first 24-hour milestone, yet reserve the same
+   layout space so the clock will not jump when the capsule appears. */
+#phasePill.tfw-phase-pill-dormant{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+  filter:none!important;
+  transform:none!important;
+  user-select:none!important;
+}
+#phasePill:not(.tfw-phase-pill-dormant){
+  visibility:visible!important;
+}
+
+/* Hold all headline variants in the same geometry. */
+body.tfw-milestone-live:not(.final-five-active) .hero-title-wrap,
+body.tfw-preview-stage-title:not(.final-five-active) .hero-title-wrap{
+  translate:0 0!important;
+  transform:none!important;
+}
+body.tfw-milestone-live .countdown-shell,
+body.tfw-preview-stage-title .countdown-shell{
+  translate:0 0!important;
+}
+
+/* Mobile headings remain big but never push the timer on each text swap. */
+@media(max-width:900px){
+  body:not(.final-five-active):not(.finale-released) .hero-title-wrap{
+    width:96vw!important;
+    height:clamp(144px,17.5vw,172px)!important;
+    margin-top:clamp(23px,2.8svh,33px)!important;
+  }
+  body:not(.final-five-active):not(.finale-released) #heroTitle,
+  body.tfw-milestone-live:not(.final-five-active):not(.finale-released) #heroTitle,
+  body.tfw-preview-stage-title:not(.final-five-active):not(.finale-released) #heroTitle{
+    font-size:clamp(34px,7.8vw,62px)!important;
+    min-height:0!important;
+  }
+}
+@media(max-width:560px){
+  body:not(.final-five-active):not(.finale-released) .hero-title-wrap{
+    height:152px!important;
+    width:96vw!important;
+    margin-top:24px!important;
+  }
+  body:not(.final-five-active):not(.finale-released) .hero-title-wrap .eyebrow{
+    font-size:clamp(11px,3.2vw,15px)!important;
+    margin-bottom:3px!important;
+  }
+  body:not(.final-five-active):not(.finale-released) #heroTitle,
+  body.tfw-milestone-live:not(.final-five-active):not(.finale-released) #heroTitle,
+  body.tfw-preview-stage-title:not(.final-five-active):not(.finale-released) #heroTitle{
+    font-size:clamp(31px,8.6vw,48px)!important;
+    line-height:1.01!important;
+    min-height:0!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #phasePill{transition:none!important}
+}
+/* While the manual scene is decoding/fading, user clicks cannot queue work. */
+#nextScene:disabled,
+#nextScene[aria-busy="true"]{
+  opacity:.56!important;
+  cursor:progress!important;
+  pointer-events:none!important;
+  filter:saturate(.62)!important;
+}
+

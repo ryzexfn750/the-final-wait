@@ -4,16 +4,27 @@ import {readFileSync, existsSync} from 'node:fs';
 
 const root=new URL('../',import.meta.url);
 const read=path=>readFileSync(new URL(path,root),'utf8');
+const section=oldName=>{
+  const path=['v6.css','v8.css','styles.css'].includes(oldName)?'css/base.css':'css/experience.css';
+  const all=read(path);
+  const prefix=path==='css/base.css'?'SHARED':'EXPERIENCE';
+  const mark=`/* === ${prefix}: ${oldName} === */`;
+  const start=all.indexOf(mark);
+  if(start<0)throw new Error('Missing CSS section: '+oldName);
+  const next=all.indexOf('/* === ',start+mark.length);
+  return all.slice(start,next<0?undefined:next);
+};
+
 
 test('all JavaScript sources parse',()=>{
-  for(const path of ['app.js','clock.js','milestones.js','article.js','timeline-article.js','intel-article.js','language.js','motion.js']){
+  for(const path of ['js/app.js','js/clock.js','js/milestones.js','js/article.js','js/timeline-article.js','js/intel-article.js','js/language.js','js/motion.js']){
     const source=read(path).replace(/^import\s+.*\n/,'');
     assert.doesNotThrow(()=>new Function(source),path);
   }
 });
 
 test('release midnight is correct in five IANA time zones',()=>{
-  const source=read('app.js');
+  const source=read('js/app.js');
   const a=source.indexOf('function partsInZone('),b=source.indexOf('function zoneMeta(',a);
   assert.ok(a>=0&&b>a);
   const factory=new Function('SITE_CONFIG','currentTimeZone',source.slice(a,b)+'\nreturn zonedTargetToUtc;');
@@ -30,7 +41,7 @@ test('release midnight is correct in five IANA time zones',()=>{
 });
 
 test('ambient soundtrack stops precisely at -30 minutes',()=>{
-  const clock=read('clock.js');
+  const clock=read('js/clock.js');
   assert.match(clock,/const releaseEpoch=\(\)=>release;/);
   assert.doesNotMatch(clock,/RELEASE_CET|backgroundStoppedForLaunch/);
   assert.match(clock,/const BG_CUTOFF=30\*MINUTE;/);
@@ -48,7 +59,7 @@ test('ambient soundtrack stops precisely at -30 minutes',()=>{
 });
 
 test('background audio retry preserves gesture and has a valid fallback',()=>{
-  const clock=read('clock.js');
+  const clock=read('js/clock.js');
   assert.match(clock,/const BG_SRC='assets\/audio\/background-v26.mp3'/);
   assert.match(clock,/const BG_FALLBACK_SRC='assets\/audio\/background-live.mp3'/);
   assert.match(clock,/if\(audioGestureArmed\)return Promise.resolve\(false\)/);
@@ -57,27 +68,27 @@ test('background audio retry preserves gesture and has a valid fallback',()=>{
 });
 
 test('milestone headlines remain visible until the final five',()=>{
-  const finale=read('milestones.js');
-  const clock=read('clock.js');
+  const finale=read('js/milestones.js');
+  const clock=read('js/clock.js');
   assert.match(finale,/if\(title&&remaining<=FINAL_FIVE\)/);
   assert.match(clock,/const stage=previewStageFor\(remaining\)/);
   assert.match(clock,/if\(stage\)\{activatePreviewStage\(stage\)/);
   assert.match(clock,/\{id:'hour',at:HOUR,.*THE FINAL HOUR/);
   assert.match(clock,/\{id:'30m',at:30\*MINUTE,.*NO MORE YEARS/);
   assert.match(clock,/\{id:'15m',at:15\*MINUTE,.*LAST QUARTER HOUR/);
-  const css=read('v8.css');
+  const css=section('v8.css');
   assert.doesNotMatch(css,/\.countdown-stage-hour \.hero-shade/);
 });
 
 test('visualizer includes ambient stream without suppressing normal playback',()=>{
-  const clock=read('clock.js'),finale=read('milestones.js');
+  const clock=read('js/clock.js'),finale=read('js/milestones.js');
   assert.match(clock,/window\.__tfwAmbientAudio=bgAudio/);
   assert.match(finale,/tfw:ambient-play/);
   assert.match(finale,/tfw:ambient-pause/);
   assert.match(finale,/ambientMusicSource=musicCtx\.createMediaElementSource\(ambient\)/);
   assert.match(finale,/if\(finaleActive\)leaveFinalFive\(\);/);
-  assert.match(read('index.html'),/v26\.css\?v=26/);
-  assert.match(read('v26.css'),/body\.tfw-ambient-playing/);
+  assert.match(read('index.html'),/css\/experience\.css\?v=31/);
+  assert.match(section('v26.css'),/body\.tfw-ambient-playing/);
 });
 
 test('all scenes and content image references resolve',()=>{
@@ -100,11 +111,11 @@ test('all scenes and content image references resolve',()=>{
         assert.ok(ids.has(block.sceneId),file+' '+block.sceneId);
     }
   }
-  assert.match(read('app.js'),/s\.category !== 'artwork' && s\.mediaType !== 'artwork'/);
+  assert.match(read('js/app.js'),/s\.category !== 'artwork' && s\.mediaType !== 'artwork'/);
 });
 
 test('timeline and intel cards link to existing articles',()=>{
-  const conf=read('config.js');
+  const conf=read('js/config.js');
   const timeline=JSON.parse(conf.match(/export const TIMELINE\s*=\s*(\[[\s\S]*?\]);/)[1]);
   const timelineIDs=new Set(JSON.parse(read('content/timeline.json')).map(a=>a.id));
   for(const item of timeline)assert.ok(timelineIDs.has(item.articleId),item.articleId);
@@ -122,7 +133,7 @@ test('home page anchor navigation points to real elements',()=>{
 });
 
 test('finale soundtrack is lazy and voice cue is enabled',()=>{
-  const finale=read('milestones.js'),html=read('index.html');
+  const finale=read('js/milestones.js'),html=read('index.html');
   assert.match(finale,/VOICE_TRACK_START=MIN/);
   assert.match(finale,/audio\.preload='none'/);
   assert.match(finale,/if\(playAudio&&remaining<=10\*MIN&&remaining>0\)primeFinaleTracks\(\)/);
@@ -132,7 +143,7 @@ test('finale soundtrack is lazy and voice cue is enabled',()=>{
 
 
 test('V27 stage pill updates exactly at -5, -4, -3 and -2 minutes',()=>{
-  const js=read('milestones.js');
+  const js=read('js/milestones.js');
   const a=js.indexOf('function updateFinaleCopy(remaining){');
   const b=js.indexOf('function musicIsPlaying()',a);
   assert.ok(a>=0&&b>a);
@@ -160,7 +171,7 @@ test('V27 stage pill updates exactly at -5, -4, -3 and -2 minutes',()=>{
 });
 
 test('V28 glow is monotonic from -6 seconds to full at -200ms',()=>{
-  const js=read('milestones.js');
+  const js=read('js/milestones.js');
   const a=js.indexOf('function setFinaleScale(remaining){');
   const b=js.indexOf('function startTitleColorFlow()',a);
   assert.ok(a>=0&&b>a);
@@ -188,14 +199,14 @@ test('V28 glow is monotonic from -6 seconds to full at -200ms',()=>{
   assert.ok(levels[7].strength<1,'-201ms should not be max');
   assert.equal(levels[8].strength,1);
   assert.equal(levels[9].strength,1);
-  const css=read('v28.css');
+  const css=section('v28.css');
   assert.match(css,/var\(--tfw-glow-radius,0px\)/);
   assert.match(css,/body\.final-five-active\.finale-last-second #countdown/);
   assert.match(css,/body\.final-five-active #hero\.finale-rapid-pulse #countdown/);
 });
 
 test('V27 simulated release elapsed clock advances independently of wall clock',()=>{
-  const js=read('clock.js');
+  const js=read('js/clock.js');
   const a=js.indexOf('function updateReleaseElapsed(){');
   const b=js.indexOf('function bootRuntime()',a);
   assert.ok(a>=0&&b>a);
@@ -222,7 +233,7 @@ test('V27 simulated release elapsed clock advances independently of wall clock',
 });
 
 test('V27 audio bars are rendered from FFT and release layout uses real dimensions',()=>{
-  const js=read('milestones.js'),css=read('v27.css'),html=read('index.html');
+  const js=read('js/milestones.js'),css=section('v27.css'),html=read('index.html');
   assert.match(js,/musicAnalyser\.getByteFrequencyData\(musicData\)/);
   assert.match(js,/const hasSignal=Boolean\(soundEnabled\(\)/);
   assert.match(js,/startVisualizer\(\);\s*\['pointerdown','keydown','touchstart'\]/);
@@ -233,19 +244,19 @@ test('V27 audio bars are rendered from FFT and release layout uses real dimensio
   assert.match(css,/body\.finale-released \.release-elapsed-clock\.countdown/);
   assert.match(css,/transform:none!important/);
   assert.match(css,/max-height 1200ms/);
-  assert.match(html,/v27\.css\?v=27/);
-  assert.match(html,/clock\.js\?v=30/);
-  assert.match(html,/milestones\.js\?v=30/);
+  assert.match(html,/css\/experience\.css\?v=31/);
+  assert.match(html,/js\/clock\.js\?v=31/);
+  assert.match(html,/js\/milestones\.js\?v=31/);
 });
 
 test('V28 starts the release clock without waiting for the next polling cycle',()=>{
-  const js=read('clock.js');
+  const js=read('js/clock.js');
   assert.match(js,/addEventListener\('tfw:finale-release',\(\)=>\{/);
   assert.match(js,/if\(releaseUiTimer\)clearTimeout\(releaseUiTimer\);\s*releaseLoop\(\);/);
 });
 
 test('V28 restores fireworks at release with an immediate opening volley',()=>{
-  const js=read('milestones.js'),css=read('v28.css');
+  const js=read('js/milestones.js'),css=section('v28.css');
   assert.match(js,/startFireworks\(\)/);
   assert.match(js,/makeBurst\(opening\.width\*\.24,opening\.height\*\.37,76,1\.22\)/);
   assert.match(js,/makeBurst\(opening\.width\*\.76,opening\.height\*\.32,76,1\.22\)/);
@@ -256,7 +267,7 @@ test('V28 restores fireworks at release with an immediate opening volley',()=>{
 });
 
 test('V28 keeps the milestone title footprint stable without moving the timer',()=>{
-  const css=read('v28.css');
+  const css=section('v28.css');
   assert.match(css,/body\.tfw-milestone-live \.countdown-shell/);
   assert.match(css,/body\.tfw-preview-stage-title \.countdown-shell/);
   assert.match(css,/translate:0 0!important/);
@@ -264,7 +275,7 @@ test('V28 keeps the milestone title footprint stable without moving the timer',(
 });
 
 test('V28 audio graph retries suspended playback on a real user gesture',async()=>{
-  const js=read('milestones.js');
+  const js=read('js/milestones.js');
   const a=js.indexOf('function ensureMusicGraph({userGesture=false}={})');
   const b=js.indexOf('function startVisualizer()',a);
   assert.ok(a>0&&b>a);
@@ -293,19 +304,19 @@ test('V28 audio graph retries suspended playback on a real user gesture',async()
 });
 
 test('V28 release message and secondary-scale elapsed layout are present',()=>{
-  const js=read('milestones.js'),css=read('v28.css'),html=read('index.html');
+  const js=read('js/milestones.js'),css=section('v28.css'),html=read('index.html');
   assert.match(js,/GO LAUNCH THAT FUCKING GTA VI RIGHT NOW!/);
   assert.doesNotMatch(js,/AFTER MORE THAN A DECADE, HERE WE ARE/);
   assert.match(css,/width:min\(740px,77vw\)!important/);
   assert.match(css,/height:clamp\(72px,7\.8vw,105px\)!important/);
-  assert.match(html,/v28\.css\?v=28/);
-  assert.match(html,/clock\.js\?v=30/);
-  assert.match(html,/milestones\.js\?v=30/);
+  assert.match(html,/css\/experience\.css\?v=31/);
+  assert.match(html,/js\/clock\.js\?v=31/);
+  assert.match(html,/js\/milestones\.js\?v=31/);
 });
 
 
 test('V29 phase-one neon backlights use the same -6s to -200ms envelope',()=>{
-  const css=read('v29-phase1.css'),js=read('milestones.js');
+  const css=section('v29-phase1.css'),js=read('js/milestones.js');
   assert.match(css,/body\.final-five-active\.finale-scene-rush \.hero-content::after/);
   assert.match(css,/opacity:var\(--tfw-glow-strength,0\)!important/);
   assert.match(css,/body\.final-five-active\.finale-music-live \.finale-beat-halo/);
@@ -314,14 +325,14 @@ test('V29 phase-one neon backlights use the same -6s to -200ms envelope',()=>{
   assert.match(js,/const glowLinear=clamp\(\(6000-remaining\)\/5800,0,1\)/);
 });
 test('V29 elapsed status is small and legible',()=>{
-  const css=read('v29-phase1.css');
+  const css=section('v29-phase1.css');
   assert.match(css,/width:min\(455px,84vw\)!important/);
   assert.match(css,/height:clamp\(53px,5\.8vw,69px\)!important/);
   assert.match(css,/body\.finale-released \.release-elapsed-label/);
   assert.match(css,/color:#fff!important/);
 });
 test('V29 visualizer resizes its initially hidden bitmap and receives FFT',()=>{
-  const js=read('milestones.js');
+  const js=read('js/milestones.js');
   const a=js.indexOf('function startVisualizer(){'),b=js.indexOf('function stopVisualizer(',a);
   assert.ok(a>=0&&b>a);
   let height=0,samples=0,draws=0,nextFrame=null;
@@ -348,7 +359,7 @@ test('V29 visualizer resizes its initially hidden bitmap and receives FFT',()=>{
   assert.ok(draws>0,'bars drawn');
 });
 test('V29 release heading, fireworks and visualizer are brought forward',()=>{
-  const js=read('milestones.js'),css=read('v29-phase1.css');
+  const js=read('js/milestones.js'),css=section('v29-phase1.css');
   assert.match(js,/<h2><span class="finale-release-kicker">THE WAIT IS OVER!<\/span>/);
   assert.match(js,/WELCOME TO<br>LEONIDA!/);
   assert.match(js,/if\(canvas\.parentElement!==document\.body\)document\.body\.appendChild\(canvas\)/);
@@ -359,7 +370,7 @@ test('V29 release heading, fireworks and visualizer are brought forward',()=>{
 
 
 test('V29 ambient fade is slow before -30m and reaches zero at cutoff',()=>{
-  const js=read('clock.js');
+  const js=read('js/clock.js');
   const a=js.indexOf('function bgFadeFactor(');
   const b=js.indexOf('function setBgVolume(',a);
   assert.ok(a>=0&&b>a);
@@ -379,7 +390,7 @@ test('V29 ambient fade is slow before -30m and reaches zero at cutoff',()=>{
 });
 
 test('V30 decoded scene reaches the viewport only in the animation frame',async()=>{
- const js=read('app.js');const a=js.indexOf('function changeScene(forceChoice=null, allowFinale=false){');
+ const js=read('js/app.js');const a=js.indexOf('function changeScene(forceChoice=null, allowFinale=false){');
  const b=js.indexOf('function updateSceneCounter()',a);assert.ok(a>0&&b>a);
  let decode;const frames=[],log=[];
  const fakeLayer=name=>({classList:{add(k){log.push(name+'.'+k+'.on')},remove(k){log.push(name+'.'+k+'.off')}}});
@@ -401,7 +412,7 @@ test('V30 decoded scene reaches the viewport only in the animation frame',async(
 });
 
 test('V29 phase pill first appears at 24h and tracks milestones',()=>{
-  const js=read('app.js');
+  const js=read('js/app.js');
   const a=js.indexOf('function phaseFor(ms) {');
   const b=js.indexOf('function setUnit(',a);
   assert.ok(a>=0&&b>a);
@@ -437,22 +448,22 @@ test('V29 phase pill first appears at 24h and tracks milestones',()=>{
 });
 
 test('V29 phase-two typography uses one fixed title footprint',()=>{
-  const css=read('v29-phase2.css'),html=read('index.html'),js=read('milestones.js');
+  const css=section('v29-phase2.css'),html=read('index.html'),js=read('js/milestones.js');
   assert.match(css,/height:clamp\(144px,13vw,190px\)!important/);
   assert.match(css,/font-size:clamp\(44px,6\.30vw,91px\)!important/);
   assert.match(css,/#phasePill\.tfw-phase-pill-dormant/);
   assert.match(css,/margin-top:clamp\(24px,3svh,40px\)!important/);
-  assert.match(html,/v29-phase1\.css\?v=30/);
-  assert.match(html,/v29-phase2\.css\?v=30/);
-  assert.match(html,/app\.js\?v=30/);
-  assert.match(html,/clock\.js\?v=30/);
-  assert.match(html,/milestones\.js\?v=30/);
+  assert.match(html,/css\/experience\.css\?v=31/);
+  assert.match(html,/css\/experience\.css\?v=31/);
+  assert.match(html,/js\/app\.js\?v=31/);
+  assert.match(html,/js\/clock\.js\?v=31/);
+  assert.match(html,/js\/milestones\.js\?v=31/);
   assert.match(js,/if\(pill&&remaining>0&&remaining<=FINAL_FIVE\)/);
 });
 
 
 test('V30 phase one: elapsed status shifts alone and gets persistent neon/white glow',()=>{
-  const css=read('v29-phase1.css');
+  const css=section('v29-phase1.css');
   const elapsed=css.slice(css.indexOf('body.finale-released .release-elapsed{'),css.indexOf('body.finale-released .release-elapsed-label{'));
   assert.match(elapsed,/position:relative!important/);
   assert.match(elapsed,/top:clamp\(13px,2svh,23px\)!important/);
@@ -466,7 +477,7 @@ test('V30 phase one: elapsed status shifts alone and gets persistent neon/white 
 });
 
 test('V30 phase one: release FFT preserves pre-release dimensions and clears CTA',()=>{
-  const css=read('v29-phase1.css');
+  const css=section('v29-phase1.css');
   const rule=css.slice(css.indexOf('body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{'));
   assert.match(rule,/bottom:clamp\(88px,11\.5svh,126px\)!important/);
   assert.match(rule,/width:min\(720px,58vw\)!important/);
@@ -478,7 +489,7 @@ test('V30 phase one: release FFT preserves pre-release dimensions and clears CTA
 });
 
 test('V30 phase one: heading is compact and gradient animates directly on unclipped text',()=>{
-  const css=read('v29-phase1.css');
+  const css=section('v29-phase1.css');
   const h=css.slice(css.indexOf('body.finale-released .finale-release h2{'),css.indexOf('body.finale-released .finale-release h2::before{'));
   assert.match(h,/gap:clamp\(8px,1\.15svh,13px\)!important/);
   assert.match(h,/padding:clamp\(14px,2svh,23px\)/);
@@ -493,18 +504,18 @@ test('V30 phase one: heading is compact and gradient animates directly on unclip
 });
 
 test('V30 phase one: larger white glowing release instruction remains above the line',()=>{
-  const css=read('v29-phase1.css'),html=read('index.html');
+  const css=section('v29-phase1.css'),html=read('index.html');
   const phrase=css.slice(css.indexOf('body.finale-released .finale-release-date{'),css.indexOf('body.finale-released .release-line{'));
   assert.match(phrase,/font:900 clamp\(12px,1\.2vw,19px\)\/1\.4/);
   assert.match(phrase,/0 0 17px rgba\(255,255,255,\.61\)/);
   assert.match(phrase,/margin:clamp\(30px,4svh,44px\) auto 0!important/);
   assert.match(css,/body.finale-released .release-line\{\s*margin-top:clamp\(13px,1\.7svh,19px\)!important/);
-  assert.match(html,/v29-phase1\.css\?v=30/);
-  assert.match(html,/v29-phase2\.css\?v=30/);
+  assert.match(html,/css\/experience\.css\?v=31/);
+  assert.match(html,/css\/experience\.css\?v=31/);
 });
 
 test('V30 fireworks continue beyond one minute with regular and reduced motion',()=>{
- const js=read('milestones.js');
+ const js=read('js/milestones.js');
  const a=js.indexOf('function makeBurst('),b=js.indexOf('function stopFireworks(',a);
  assert.ok(a>0&&b>a);
  for(const reduced of [false,true]){
@@ -536,7 +547,7 @@ test('V30 fireworks continue beyond one minute with regular and reduced motion',
 });
 
 test('V30 manual scene control prevents spam during decode and fade',async()=>{
- const js=read('app.js'),a=js.indexOf('function sceneOpacityTransitionMs(layer){'),
+ const js=read('js/app.js'),a=js.indexOf('function sceneOpacityTransitionMs(layer){'),
    b=js.indexOf('function scheduleSceneRotation(){',a);
  assert.ok(a>0&&b>a);
  let resolveImage,numberOfRequests=0,stops=0,restarts=0,finishFade=null;
@@ -562,11 +573,11 @@ test('V30 manual scene control prevents spam during decode and fade',async()=>{
  assert.equal(await first,true);
  assert.equal(button.disabled,false);assert.equal(button['aria-busy'],'false');
  assert.equal(stops,1);assert.equal(restarts,1);
- assert.match(read('v29-phase2.css'),/#nextScene:disabled/);
+ assert.match(section('v29-phase2.css'),/#nextScene:disabled/);
 });
 
 test('V30 headline wraps at 24h and 6h and does not rewrite a stable stage',()=>{
- const js=read('clock.js'),css=read('v29-phase2.css');
+ const js=read('js/clock.js'),css=section('v29-phase2.css');
  const a=js.indexOf('function renderMilestoneHeadline(title,m){'),
    b=js.indexOf('function deactivatePreviewStage(){',a);
  assert.ok(a>0&&b>a);

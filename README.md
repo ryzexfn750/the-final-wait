@@ -1,198 +1,120 @@
-# The Final Wait — V25 maintenance
+# The Final Wait — Road to Leonida
 
-Static GitHub Pages project with no frontend build required. V25 maintenance addresses countdown/audio consistency, preview cleanup, media preloading, keyboard accessibility, and validation.
+Sito fan-made e non ufficiale dedicato al conto alla rovescia di **Grand Theft Auto VI**.
+Sviluppato come progetto **statico per GitHub Pages**, senza backend e senza dipendenze JavaScript runtime.
 
-# The Final Wait: Road to Leonida
+Sito pubblico: https://ryzexfn750.github.io/the-final-wait/
 
-Unofficial fan countdown built as a static site for GitHub Pages.
-
-## Publish / update on GitHub Pages
-
-From the repository folder:
-
-```powershell
-git add .
-git commit -m "Update The Final Wait"
-git push
-```
-
-GitHub Pages will redeploy the `main` branch automatically.
-
-## Update “Today in Leonida”
-
-The daily front-page story is controlled only by:
+## Struttura della repository
 
 ```text
-content/today.json
+/
+├── index.html                  Countdown, timeline e contenuti principali
+├── today.html                  Articolo del giorno
+├── timeline.html               Articoli dell'archivio cronologico
+├── intel.html                  Dossier Inside Leonida
+├── css/
+│   ├── base.css                Design condiviso dalle quattro pagine
+│   └── experience.css          Countdown, preview e finale (solo homepage)
+├── js/
+│   ├── config.js               Configurazione, timeline e schede Intel
+│   ├── app.js                  Timer, scene, UI e navigazione
+│   ├── clock.js                Audio di background e milestone
+│   ├── milestones.js           Simulatore, musica e finale
+│   ├── motion.js               Animazioni condivise
+│   ├── language.js             Integrazione traduzioni
+│   ├── article.js              Pagina Today
+│   ├── timeline-article.js     Pagina Timeline
+│   └── intel-article.js        Pagina Intel
+├── content/
+│   ├── today.json              Articolo del giorno
+│   ├── timeline.json           Articoli storico/timeline
+│   └── intel.json              Dossier
+├── assets/
+│   ├── scenes.json             Catalogo delle scene
+│   ├── screenshots/desktop/    Immagini WebP desktop
+│   ├── screenshots/mobile/     Immagini WebP smartphone
+│   └── audio/                  Audio di sottofondo e finale
+├── tools/                      Utility Python per immagini e social card
+└── tests/                      Test logici e integrità del sito
 ```
 
-You do **not** need to edit `index.html` or `today.html` for a normal daily article. Change these fields:
+## Fogli CSS
 
-- `issue` — e.g. `ISSUE 002`
-- `date` — the visible publication date
-- `category` — the small category label
-- `headline` — article title
-- `dek` — short summary used on the homepage card and article hero
-- `heroSceneId` — large article-cover image
-- `cardSceneId` — image used on the homepage newspaper card
-- `readingTime` and `byline`
-- `blocks` — the actual article content
+La homepage carica **`css/base.css`** e **`css/experience.css`**. Le altre tre pagine
+caricano soltanto **`css/base.css`**.
 
-Supported `blocks`:
+I precedenti fogli `v6.css` ... `v29-phase2.css` sono stati consolidati mantenendo
+l'ordine originale delle regole: in questo modo non cambiano le priorità della cascata.
+Dentro i bundle, i commenti `SHARED` / `EXPERIENCE` individuano le sezioni, mentre
+il refactoring progressivo può successivamente sostituire le sovrascritture obsolete
+**solo dopo un controllo visivo**. Non rimuovere selettori solo perché duplicati:
+potrebbero appartenere a breakpoint o stati diversi.
 
-```json
-{ "type": "paragraph", "text": "..." }
-{ "type": "heading", "text": "..." }
-{ "type": "eyebrow", "text": "..." }
-{ "type": "image", "sceneId": "scene-17", "caption": "..." }
-{ "type": "quote", "text": "...", "cite": "..." }
-{ "type": "sources", "items": [{ "label": "...", "url": "https://..." }] }
-```
+Quando un CSS viene modificato, aggiornare la query `?v=` dei link negli HTML
+per evitare versioni in cache.
 
-To choose an image, open `assets/scenes.json` and use the `id` of the screenshot/artwork you want, for example `scene-17`. The image itself remains inside `assets/screenshots/desktop/` and `assets/screenshots/mobile/`; you only reference its scene ID in the article.
+## Modificare contenuti e scene
 
-After editing `content/today.json`, regenerate the social preview card:
+- **Articolo del giorno:** aggiornare `content/today.json`.
+- **Archivio timeline:** aggiornare `content/timeline.json` e, se necessario, le
+  schede/ID in `js/config.js`.
+- **Intel:** aggiornare `content/intel.json` e le schede in `js/config.js`.
+- **Immagini:** usare gli ID di `assets/scenes.json`, non incollare nuove URL
+  direttamente nei file HTML. Le scene hanno versioni desktop e mobile.
 
-```powershell
+Per creare/aggiornare la social card:
+
+```bash
+python -m pip install pillow
 python tools/build_today_card.py
 ```
 
-Then test `today.html` locally or on GitHub Pages and push the update:
+Per aggiungere nuove immagini:
 
-```powershell
-git add .
-git commit -m "Update Today in Leonida"
-git push
+```bash
+python tools/add_screenshots.py incoming/
 ```
 
-The homepage card and `today.html` read the JSON automatically, so the new article appears without duplicating the text anywhere else.
+Questa utility aggiorna `assets/scenes.json`, i WebP e
+`assets/source-hashes.json`, conservato appositamente per rilevare duplicati.
 
-## Add new official screenshots later
+## Countdown, audio e simulatore
 
-Use the existing helper:
+La data predefinita del conto alla rovescia è **19 novembre 2026, 00:00, Europa/Roma**,
+modificabile dal selettore dei fusi orari. L'impostazione del visitatore è salvata
+nel browser. La data è un target del sito fan e non una garanzia dell'orario di
+uscita globale.
 
-```powershell
-python tools/add_screenshots.py incoming/  # or specify individual images
+Per vedere il simulatore delle milestone senza cambiare l'orologio reale:
+
+https://ryzexfn750.github.io/the-final-wait/?preview=1
+
+L'audio ambientale principale è `assets/audio/background-v26.mp3`, con
+`background-live.mp3` come **fallback intenzionale**: non cancellarlo come se
+fosse una vecchia traccia inutilizzata. La musica ambientale sfuma prima dei
+-30 minuti. Il sistema di finale usa le sue tracce audio dedicate. Alcuni browser
+richiedono un'interazione dell'utente prima di consentire la riproduzione.
+
+## Test e pubblicazione
+
+Servono Node.js 22+ e Python per verificare il progetto:
+
+```bash
+node --test tests/*.test.mjs
+python -m py_compile tools/add_screenshots.py tools/build_today_card.py
 ```
 
-Then verify `assets/scenes.json`, commit and push.
+I test includono integrità dei link locali, riferimenti alle risorse, struttura
+di ogni pagina, scene, eventi del countdown e regressioni del finale.
 
-## Time zone behavior
-
-The default countdown is midnight on **November 19, 2026 in Europe/Rome (CET / UTC+1 on that date)**. Visitors can switch the target to midnight in another IANA time zone through the time-zone selector. Their selection is saved locally in the browser.
-
-## Analytics
-
-Set `gaMeasurementId` in `config.js` if you want Google Analytics 4. The site includes an optional analytics-consent prompt.
-
-## Main files
-
-- `index.html` — main experience
-- `today.html` / `article.js` — newspaper article page
-- `config.js` — timeline, Leonida Intel, site configuration
-- `content/today.json` — manually editable daily story
-- `styles.css` — visual system and animations
-- `app.js` — countdown, time zones, backgrounds, shares, timeline, audio and interactions
+GitHub Actions esegue i test automaticamente sulle pull request e sui push a
+`main`. Pubblicare tramite una pull request, controllare l'esito della pipeline
+e verificare il deploy di GitHub Pages prima di considerare la versione pronta.
+I test automatici non sostituiscono la verifica visiva in browser del finale.
 
 ## Disclaimer
 
-This is not an official Rockstar Games project. Grand Theft Auto, Grand Theft Auto VI, Rockstar Games, related trademarks, names and official imagery belong to their respective owners. This fan-made website is not affiliated with or endorsed by Rockstar Games or Take-Two Interactive.
-
-
-## V3 content
-- `content/today.json` controls the daily newspaper article.
-- `content/intel.json` controls the internal Inside Leonida dossiers.
-- `intel.html?article=<id>` opens an internal dossier.
-- Hero scenes rotate every 10 seconds.
-
-## V4 interaction fixes
-- Countdown now has a dedicated watchdog clock plus the main animation clock, so the timer and percentage keep updating in real time.
-- Internal section navigation uses eased animated scrolling instead of abrupt hash jumps.
-- Story/dossier navigation shows a full-screen loading transition.
-- Timeline starts on the first milestone, can center the final milestone, and includes Rockstar's February 4, 2022 development confirmation.
-- Article sources use the new Source Desk layout.
-- A persistent Countdown shortcut appears after leaving the hero.
-
-## V7
-- 141 countdown screenshots; artwork is reserved for editorial sections and the rotating final banner.
-- Shared automatic image drift plus local mouse parallax; reduced-motion preferences are respected.
-- 22 sourced timeline milestones, native touch scrolling, drag, arrows, Home/End and bounded ends.
-- 18 expanded dossiers plus the main story, with article contents and reading progress.
-- Direct loading of index.html#intel without a visible trip through the countdown.
-- Historical rumors, reports, editorial interpretation and scheduled events are labeled separately.
-- Content reviewed October 5, 2026. The countdown remains a configurable fan target at midnight, not a guarantee of a worldwide simultaneous launch.
-
-## Timeline archive stories
-
-Every timeline milestone now opens an internal long-form story at:
-
-```text
-timeline.html?story=<story-id>
-```
-
-The articles live in `content/timeline.json`. They are intentionally not listed in the general `Inside Leonida` dossier grid; the only public entry point is the horizontal timeline. Each milestone also keeps compact external source links beside the internal `READ STORY` action.
-
-## Languages
-
-The top bar includes English, French, Spanish, Russian and Italian through the GTranslate website widget. The site remains authored in English and translations are generated on the page by the external translation service, so no server or build step is required.
-
-## Countdown milestone experience / preview
-
-The live countdown automatically has cinematic sequences at 1 month, 2 weeks, 1 week, 1 day, 12 hours, 6 hours, 1 hour, 30 minutes, 15 minutes, 5 minutes, 1 minute, 30 seconds and release. Audio effects are generated in the browser with Web Audio and respect the site's SOUND preference.
-
-To preview every sequence without changing the real clock, open:
-
-```text
-https://ryzexfn750.github.io/the-final-wait/?preview=1
-```
-
-A small `EXPERIENCE PREVIEW` button appears at the bottom-left. The 30-second preview is accelerated so you can inspect the full final countdown quickly.
-
-
-## V10 finale simulator
-
-Open the site with `?preview=1` to enter the finale preview. V10 automatically starts the preview at **-05:00** and drives the real countdown UI with simulated time. The preview panel includes a scrubber covering the complete final 30 minutes, so you can drag to arbitrary positions such as `-23:56.000`, pause there, or press **PLAY FROM HERE** to resume in real time.
-
-Finale audio (current V12 behavior):
-
-- `assets/audio/final-5-minutes.mp3` starts at `-05:00` and ends naturally around `-00:41.884`.
-- `assets/audio/final-1-minute-voice.mp4` starts exactly at `-01:00`.
-- `assets/audio/final-30-sequence.mp4` starts exactly at `-00:30` and contains the later spoken/countdown cues.
-- Tick cues begin immediately when the five-minute song ends and accelerate during the final second.
-- The music visualizer appears from `-05:00`, below the percentage bar, and reacts to the five-minute song and the final sequence track.
-
-At `00:00` the timer is replaced in-place by the release message. Fireworks and the release-state visual effects remain active for as long as the release state is displayed.
-
-## V11 finale refinements
-- true draggable final-30-minute simulator (millisecond-level seek)
-- gapless handoff from the -5 minute song to the ticking sequence
-- more stable audio sync to prevent repeated-seek glitches
-- louder ticks and slightly lower -10 release track
-- GTA VI × Ryze GTA VI collaboration lockup
-- restored final-five layout through -45s/-10s/-1m with safe responsive growth
-- dynamic final-minute headline effects and milestone pill copy
-- fixed seconds-to-milliseconds colon
-
-## V12 finale refinements
-- five-minute headline now switches immediately to a cinematic gradient treatment
-- GTA VI and Ryze marks are normalized to equal pixel boxes and tightened around the × separator
-- percentage panel is fully visible and animated from -05:00
-- timer and progress growth restored with viewport-safe scale caps
-- explicit seconds color normalization plus illuminated final-15-second treatment
-- screenshots accelerate progressively through the final minute, using a preloaded finale deck for the fastest final-second cuts
-- one-minute voiceover and complete -30-second sequence replace the old -10-second track
-- continuous audio playback no longer performs repeated seek corrections, avoiding the old mid-song glitch
-
-## Automated checks
-
-Run `node --test tests/*.test.mjs` before publishing. GitHub Actions runs these tests on pushes and pull requests to `main`. Finale media loads are deferred until ten minutes before the selected countdown target. The large ambient MP3 remains to be re-encoded from the original source in a separate media task.
-
-## V26 audio and finale
-
-The default ambient soundtrack is `assets/audio/background-v26.mp3` with a fallback to
-`assets/audio/background-live.mp3` if the new asset is unavailable. Ambient playback
-stops at -30 minutes; the last-five-minute soundtrack is managed separately. Browser
-autoplay policies may require the first visitor gesture. The visualizer also displays
-ambient audio when Web Audio is available and unlocked. V26 also keeps the original
-hero vignette at -1 hour, preserves milestone headlines until the next stage and
-smooths the -5 minute layout change.
+Questo è un progetto fan non ufficiale, senza affiliazione o approvazione di
+Rockstar Games o Take-Two Interactive. Marchi e immagini appartengono ai
+rispettivi titolari.
