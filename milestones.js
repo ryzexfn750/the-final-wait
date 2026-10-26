@@ -136,8 +136,7 @@
       shell.insertAdjacentHTML('beforeend',`
         <div class="finale-release" id="finaleRelease" aria-hidden="true">
           <span class="release-radiance" aria-hidden="true"></span>
-          <span class="finale-release-kicker">THE WAIT IS OVER.</span>
-          <h2>WELCOME TO<br>LEONIDA.</h2>
+          <h2><span class="finale-release-kicker">THE WAIT IS OVER!</span><em class="finale-release-main">WELCOME TO<br>LEONIDA!</em></h2>
           <span class="finale-release-date">GO LAUNCH THAT FUCKING GTA VI RIGHT NOW!</span>
           <span class="release-line" aria-hidden="true"></span>
           <i class="release-spark spark-a"></i><i class="release-spark spark-b"></i><i class="release-spark spark-c"></i><i class="release-spark spark-d"></i>
@@ -441,7 +440,9 @@
       else if(remaining<=FINAL_FIVE&&remaining>0)text='FIVE MINUTES TO LEONIDA';
       if(forceBreak)title.innerHTML='TEN SECONDS TO<br>LEONIDA';else title.textContent=text;
     }
-    if(pill){
+    // app.js owns all milestone capsules before -05:00. Do not
+    // overwrite its 24h / 12h / 6h messaging from this per-frame loop.
+    if(pill&&remaining>0&&remaining<=FINAL_FIVE){
       let label='THE FINAL WAIT';
       if(remaining<=MIN&&remaining>0)label='THE FINAL MINUTE';
       else if(remaining<=FINAL_FIVE&&remaining>0)label=`${Math.ceil(remaining/MIN)} MINUTES LEFT. STAY HERE.`;
@@ -514,19 +515,26 @@
     const canvas=$('#finaleVisualizer');if(!canvas||visualizerRaf)return;
     const ctx=canvas.getContext('2d');if(!ctx)return;
     const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(reducedMotion&&document.body.classList.contains('tfw-visualizer-ready'))return;
+    // Reduced-motion users get a calmer lower-FPS analyser, not a frozen one.
     document.body.classList.add('finale-music-live','tfw-visualizer-ready');
-    const resize=()=>{const r=canvas.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d));ctx.setTransform(d,0,0,d,0,0)};
+    // The widget initially has zero CSS height. Reallocate its pixel
+    // buffer whenever it becomes visible or moves into the release view.
+    const resize=()=>{
+      const r=canvas.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);
+      const w=Math.max(1,Math.round(r.width*d)),h=Math.max(1,Math.round(r.height*d));
+      if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;ctx.setTransform(d,0,0,d,0,0);}
+    };
     visualizerResize=resize;resize();window.addEventListener('resize',resize,{passive:true});
     let lastDraw=-Infinity;
     const loop=t=>{
       const hasSignal=Boolean(soundEnabled()&&musicAnalyser&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(ambientMusicSource||finalMusicSource));
       // ~30 FPS when real music plays; ~3 FPS while silent. Idle bars
       // remain visible without continuously creating gradients on phones.
-      if(!reducedMotion&&t-lastDraw<(hasSignal?33:300)){
+      if(t-lastDraw<(hasSignal?(reducedMotion?85:33):(reducedMotion?600:300))){
         visualizerRaf=requestAnimationFrame(loop);return;
       }
       lastDraw=t;
+      resize();
       const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);
       let energy=.025;
       if(hasSignal){
@@ -552,7 +560,7 @@
         const g=ctx.createLinearGradient(0,centerY-h,0,centerY+h);g.addColorStop(0,'rgba(119,96,255,.18)');g.addColorStop(.42,`rgba(119,96,255,${.32+amp*.5})`);g.addColorStop(.58,`rgba(242,63,178,${.36+amp*.56})`);g.addColorStop(1,'rgba(255,156,67,.16)');ctx.fillStyle=g;ctx.fillRect(x,centerY-h,barW,h*2);
       }
       ctx.restore();
-      if(document.body.classList.contains('finale-music-live')&&!reducedMotion)visualizerRaf=requestAnimationFrame(loop);
+      if(document.body.classList.contains('finale-music-live'))visualizerRaf=requestAnimationFrame(loop);
       else visualizerRaf=0;
     };
     visualizerRaf=requestAnimationFrame(loop);
@@ -613,7 +621,7 @@
   async function syncSequenceSong(remaining){
     if(!soundEnabled()){if(!sequenceSong.paused)sequenceSong.pause();return}
     if(remaining>SEQUENCE_TRACK_START){if(!sequenceSong.paused)sequenceSong.pause();try{sequenceSong.currentTime=0}catch{};return}
-    if(!document.body.classList.contains('finale-released')){ensureMusicGraph();startVisualizer();}
+    ensureMusicGraph();startVisualizer();
     const target=Math.max(0,(SEQUENCE_TRACK_START-Math.max(0,remaining))/1000);
     try{
       if(sequenceSong.paused){sequenceSong.currentTime=target;await sequenceSong.play()}
@@ -693,8 +701,14 @@
       $('#countdown')?.setAttribute('aria-hidden','true');$('#finaleFlash')?.classList.add('fire');startFireworks();
       window.dispatchEvent(new CustomEvent('tfw:finale-release'));
     }
+    // Keep the bars fixed in the viewport during the tall post-release view.
+    const wave=$('#finaleVisualizerWrap');
+    if(wave&&wave.parentElement!==document.body){
+      document.body.appendChild(wave);
+      visualizerResize?.();
+    }
     startVisualizer();
-    if(playAudio){syncSequenceSong(0);}else pauseFinaleAudio(false,true);
+    if(playAudio){ensureMusicGraph();syncSequenceSong(0);}else pauseFinaleAudio(false,true);
   }
 
   function resetRelease({pauseAudio=true}={}){
@@ -704,6 +718,10 @@
     document.body.classList.remove('finale-released','tfw-release-entering');
     const release=$('#finaleRelease');if(release){release.classList.remove('active');release.setAttribute('aria-hidden','true')}
     $('#countdown')?.setAttribute('aria-hidden','false');$('#finaleFlash')?.classList.remove('fire');stopFireworks();
+    const wave=$('#finaleVisualizerWrap'),cue=$('.scroll-cue');
+    if(wave&&cue&&wave.parentElement===document.body){
+      cue.insertAdjacentElement('beforebegin',wave);visualizerResize?.();
+    }
     if(pauseAudio)pauseFinaleAudio(false);
   }
 
@@ -750,26 +768,32 @@
   }
 
   function startFireworks(){
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
-    const canvas=$('#finaleFireworks');if(!canvas||fireworksRaf)return;const ctx=canvas.getContext('2d');if(!ctx)return;
+    // With reduced motion, show only the initial celebration volley.
+    const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const canvas=$('#finaleFireworks');if(!canvas||fireworksRaf)return;
+    if(canvas.parentElement!==document.body)document.body.appendChild(canvas);
+    const ctx=canvas.getContext('2d');if(!ctx)return;
     fireworks=[];fireworkNext=0;
     const resize=()=>{const r=canvas.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d));ctx.setTransform(d,0,0,d,0,0)};
     resize();window.addEventListener('resize',resize,{passive:true});canvas._tfwResize=resize;
     // Fire an immediate opening volley, without waiting for the first RAF.
     const opening=canvas.getBoundingClientRect();
     if(opening.width>0&&opening.height>0){
-      makeBurst(opening.width*.23,opening.height*.34,66,1.25);
-      makeBurst(opening.width*.78,opening.height*.31,66,1.25);
+      makeBurst(opening.width*.24,opening.height*.37,76,1.22);
+      makeBurst(opening.width*.76,opening.height*.32,76,1.22);
+      makeBurst(opening.width*.50,opening.height*.23,58,1.03);
     }
     const loop=t=>{
-      const r=canvas.getBoundingClientRect();ctx.globalCompositeOperation='source-over';ctx.fillStyle='rgba(4,3,8,.15)';ctx.fillRect(0,0,r.width,r.height);ctx.globalCompositeOperation='lighter';
-      if(releaseShown&&t>=fireworkNext){
+      const r=canvas.getBoundingClientRect();
+      ctx.globalCompositeOperation='source-over';ctx.clearRect(0,0,r.width,r.height);
+      ctx.globalCompositeOperation='lighter';
+      if(!reducedMotion&&releaseShown&&t>=fireworkNext){
         const firstRush=fireworks.length<40;const side=Math.random()<.5?.25:.75;makeBurst(r.width*(side+(Math.random()-.5)*.24),r.height*(.18+Math.random()*.42),firstRush?58:34,firstRush?1.18:.94);fireworkNext=t+(firstRush?260+Math.random()*360:650+Math.random()*1050);
       }
       fireworks=fireworks.filter(p=>p.life>0.02);
       for(const p of fireworks){p.trail.push([p.x,p.y]);if(p.trail.length>6)p.trail.shift();p.x+=p.vx;p.y+=p.vy;p.vy+=.035;p.vx*=.992;p.life-=p.decay;ctx.globalAlpha=Math.max(0,p.life);ctx.strokeStyle=p.color;ctx.lineWidth=Math.max(.5,p.size*.5);ctx.beginPath();if(p.trail.length){ctx.moveTo(p.trail[0][0],p.trail[0][1]);for(const q of p.trail)ctx.lineTo(q[0],q[1]);ctx.lineTo(p.x,p.y);ctx.stroke()}ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()}
       ctx.globalAlpha=1;
-      if(releaseShown||fireworks.length)fireworksRaf=requestAnimationFrame(loop);else stopFireworks(false);
+      if((releaseShown&&!reducedMotion)||fireworks.length)fireworksRaf=requestAnimationFrame(loop);else stopFireworks(false);
     };
     fireworksRaf=requestAnimationFrame(loop);
   }

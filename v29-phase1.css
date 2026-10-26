@@ -1,0 +1,235 @@
+
+/* V29 — PHASE 1 ONLY. No milestone titles, scene rotation, or ambient cutoff changes. */
+/* All finale backlights share the same JS envelope: 0 at -6s, 1 at -200ms.
+   The independent -6.5s scene-rush class must not flash violet suddenly. */
+body.final-five-active .hero-content::after,
+body.final-five-active.finale-last-10 .hero-content::after,
+body.final-five-active.finale-scene-rush .hero-content::after{
+  opacity:var(--tfw-glow-strength,0)!important;
+  animation:none!important;
+  transition:none!important;
+}
+body.final-five-active .finale-beat-halo,
+body.final-five-active.finale-music-live .finale-beat-halo{
+  opacity:calc(.54 * var(--tfw-glow-strength,0))!important;
+  transform:scale(calc(.96 + .04 * var(--tfw-glow-strength,0)))!important;
+  transition:none!important;
+}
+body.final-five-active .finale-edge-glow,
+body.final-five-active.finale-music-live .finale-edge-glow,
+body.final-five-active #hero.finale-rapid-pulse .finale-edge-glow{
+  opacity:calc(.28 * var(--tfw-glow-strength,0))!important;
+  animation:none!important;
+  box-shadow:
+    inset 0 0 var(--tfw-glow-wide,0px) rgba(242,63,178,var(--tfw-glow-pink,0)),
+    0 0 var(--tfw-glow-radius,0px) rgba(119,96,255,var(--tfw-glow-violet,0))!important;
+  transition:none!important;
+}
+/* Keep the center of the clock free of legacy fixed illumination. */
+body.final-five-active .digit-glow,
+body.final-five-active.finale-last-15 .digit-glow,
+body.final-five-active.finale-last-second .digit-glow{
+  opacity:calc(.28 * var(--tfw-glow-strength,0))!important;
+  animation:none!important;
+  transition:none!important;
+}
+
+/* The post-release clock is a quiet, secondary status element. */
+body.finale-released .release-elapsed{
+  display:block!important;
+  width:min(455px,84vw)!important;
+  max-width:96vw!important;
+  padding:0!important;
+  margin:clamp(21px,3svh,31px) auto 0!important;
+  overflow:visible!important;
+}
+body.finale-released .release-elapsed-label{
+  display:block!important;
+  opacity:1!important;
+  visibility:visible!important;
+  width:100%!important;
+  margin:0 auto 13px!important;
+  font:900 clamp(11px,.96vw,14px)/1.3 Arial,Helvetica,sans-serif!important;
+  letter-spacing:.12em!important;
+  text-align:center!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  text-shadow:0 2px 8px rgba(0,0,0,.85),0 0 14px rgba(255,255,255,.32)!important;
+}
+body.finale-released .release-elapsed-clock.countdown{
+  width:100%!important;
+  max-width:100%!important;
+  transform:none!important;
+  grid-template-columns:
+    minmax(0,1.1fr) 6px minmax(0,1fr) 6px minmax(0,1fr)
+    6px minmax(0,1fr) 6px minmax(0,1.24fr)!important;
+  column-gap:4px!important;
+  align-items:stretch!important;
+  justify-content:center!important;
+}
+body.finale-released .release-elapsed-clock .time-unit{
+  min-width:0!important;
+  height:clamp(53px,5.8vw,69px)!important;
+  padding:7px 3px!important;
+  border-radius:10px!important;
+  border-color:rgba(255,255,255,.20)!important;
+  box-shadow:0 6px 18px rgba(0,0,0,.23),0 0 14px rgba(242,63,178,.09)!important;
+}
+body.finale-released .release-elapsed-clock .time-value{
+  font-size:clamp(24px,3vw,39px)!important;
+  line-height:1!important;
+  letter-spacing:-.04em!important;
+  text-shadow:0 2px 9px rgba(0,0,0,.55),0 0 13px rgba(242,63,178,.14)!important;
+}
+body.finale-released .release-elapsed-clock .time-label{
+  font-size:clamp(5px,.48vw,7px)!important;
+  letter-spacing:.06em!important;
+  margin-top:6px!important;
+}
+body.finale-released .release-elapsed-clock .time-separator{
+  font-size:16px!important;
+  min-width:0!important;
+}
+
+/* The release words belong to one tall, neatly framed title block. */
+body.finale-released .finale-release h2{
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:center!important;
+  align-items:center!important;
+  gap:clamp(12px,1.9svh,22px)!important;
+  width:min(1020px,89vw)!important;
+  max-width:100%!important;
+  padding:clamp(28px,4.6svh,53px) clamp(10px,3vw,40px)!important;
+  margin:clamp(10px,2svh,23px) auto 0!important;
+  overflow:visible!important;
+  line-height:.88!important;
+  text-align:center!important;
+}
+body.finale-released .finale-release h2::before{
+  inset:-4px -12px!important;
+  border-radius:31px!important;
+}
+body.finale-released .finale-release h2::after{
+  inset:-14px -24px!important;
+  border-radius:38px!important;
+}
+body.finale-released .finale-release h2 .finale-release-kicker{
+  display:block!important;
+  position:relative!important;
+  z-index:1!important;
+  width:auto!important;
+  max-width:100%!important;
+  opacity:1!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:none!important;
+  font:900 clamp(12px,1.45vw,21px)/1.2 Arial,Helvetica,sans-serif!important;
+  letter-spacing:.20em!important;
+  text-shadow:0 0 15px rgba(255,255,255,.32)!important;
+  animation:none!important;
+}
+body.finale-released .finale-release h2 .finale-release-main{
+  display:block!important;
+  position:relative!important;
+  z-index:1!important;
+  margin:0!important;
+  font-style:normal!important;
+  font-size:clamp(47px,8.4vw,126px)!important;
+  font-weight:900!important;
+  line-height:.83!important;
+  letter-spacing:-.075em!important;
+  background:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%)!important;
+  background-size:220% auto!important;
+  background-clip:text!important;
+  -webkit-background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+}
+body.finale-released .finale-release-date{
+  margin:clamp(25px,3.2svh,37px) auto 0!important;
+  font-size:clamp(9px,.94vw,13px)!important;
+  opacity:1!important;
+}
+body.finale-released .release-line{
+  margin-top:11px!important;
+}
+
+/* Fireworks are attached directly to body at release: never clipped by
+   .hero, .hero-content, or the changing layout. */
+body:not(.finale-released) canvas#finaleFireworks{display:none!important}
+body.finale-released canvas#finaleFireworks{
+  display:block!important;
+  position:fixed!important;
+  left:0!important;
+  top:0!important;
+  right:auto!important;
+  bottom:auto!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  z-index:90!important;
+  opacity:1!important;
+  visibility:visible!important;
+  mix-blend-mode:screen!important;
+  pointer-events:none!important;
+}
+
+/* Visible, live FFT bars remain within the viewport after 00:00.
+   The analyser's internal bitmap is separately resized by milestones.js. */
+body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{
+  display:block!important;
+  position:fixed!important;
+  left:50%!important;
+  top:auto!important;
+  bottom:clamp(17px,3svh,36px)!important;
+  width:min(590px,82vw)!important;
+  height:44px!important;
+  opacity:1!important;
+  visibility:visible!important;
+  margin:0!important;
+  translate:-50% 0!important;
+  transform:none!important;
+  z-index:105!important;
+  pointer-events:none!important;
+}
+body.tfw-visualizer-ready.finale-released .finale-visualizer{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+@media(max-width:900px){
+  body.finale-released .release-elapsed{width:min(445px,89vw)!important}
+  body.finale-released .release-elapsed-clock .time-unit{height:57px!important}
+  body.finale-released .release-elapsed-clock .time-value{font-size:clamp(21px,4.6vw,31px)!important}
+  body.finale-released .finale-release h2 .finale-release-main{font-size:clamp(44px,10.8vw,82px)!important}
+}
+@media(max-width:560px){
+  body.finale-released .release-elapsed{width:92vw!important}
+  body.finale-released .release-elapsed-label{font-size:11px!important;letter-spacing:.095em!important}
+  body.finale-released .release-elapsed-clock.countdown{column-gap:2px!important;gap:2px!important}
+  body.finale-released .release-elapsed-clock .time-unit{height:49px!important;padding:6px 2px!important}
+  body.finale-released .release-elapsed-clock .time-value{font-size:clamp(18px,5vw,26px)!important}
+  body.finale-released .release-elapsed-clock .time-label{font-size:4.2px!important;margin-top:5px!important}
+  body.finale-released .release-elapsed-clock .time-separator{font-size:12px!important}
+  body.finale-released .finale-release h2{
+    width:90vw!important;
+    padding:30px 6px!important;
+    gap:14px!important;
+  }
+  body.finale-released .finale-release h2 .finale-release-kicker{
+    font-size:clamp(10px,2.5vw,14px)!important;
+    letter-spacing:.14em!important;
+  }
+  body.finale-released .finale-release h2 .finale-release-main{
+    font-size:clamp(43px,11.5vw,67px)!important;
+  }
+  body.finale-released .finale-release-date{margin-top:27px!important;font-size:clamp(8px,2.1vw,10px)!important}
+  body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{
+    bottom:17px!important;
+    width:86vw!important;
+    height:35px!important;
+  }
+}
