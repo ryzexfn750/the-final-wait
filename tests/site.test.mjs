@@ -234,8 +234,8 @@ test('V27 audio bars are rendered from FFT and release layout uses real dimensio
   assert.match(css,/transform:none!important/);
   assert.match(css,/max-height 1200ms/);
   assert.match(html,/v27\.css\?v=27/);
-  assert.match(html,/clock\.js\?v=27/);
-  assert.match(html,/milestones\.js\?v=27/);
+  assert.match(html,/clock\.js\?v=28/);
+  assert.match(html,/milestones\.js\?v=28/);
 });
 
 test('V28 starts the release clock without waiting for the next polling cycle',()=>{
