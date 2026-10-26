@@ -26,6 +26,7 @@ let allScenes = [];
 let currentIndex = 0;
 let activeLayer = 0;
 let sceneSwapToken = 0;
+let sceneUserBusy = false;
 const sceneDecodeCache = new Map();
 let recentScenes = [];
 let sceneTimer = null;
@@ -345,23 +346,23 @@ function nextReleaseSceneChoice(){
   return releaseChoiceForCursor(releaseSceneCursor);
 }
 function changeScene(forceChoice=null, allowFinale=false){
-  if(!scenes.length||(currentPhase==='final-minute'&&!allowFinale))return;
+  if(!scenes.length||(currentPhase==='final-minute'&&!allowFinale))return Promise.resolve(false);
   let choice=forceChoice;
   if(!choice&&(currentPhase==='released'||document.body.classList.contains('finale-released')))
     choice=nextReleaseSceneChoice();
   if(!choice)choice=pickNextScene();
-  if(!choice)return;
+  if(!choice)return Promise.resolve(false);
   const ticket=++sceneSwapToken;
   // If a visitor clicks again during decoding, only the last request wins.
   // Neither visible layer is touched until the new image is fully decoded.
   return readySceneImage(choice.scene).then(()=>{
-    if(ticket!==sceneSwapToken)return;
+    if(ticket!==sceneSwapToken)return false;
     const incoming=activeLayer===0?els.sceneB:els.sceneA;
     const outgoing=activeLayer===0?els.sceneA:els.sceneB;
     applyScene(incoming,choice.scene);
     // Prime the decoded background in the hidden layer before crossfading.
-    requestAnimationFrame(()=>{
-      if(ticket!==sceneSwapToken)return;
+    return new Promise(resolve=>requestAnimationFrame(()=>{
+      if(ticket!==sceneSwapToken){resolve(false);return}
       els.hero.classList.remove('scene-changing');
       void els.hero.offsetWidth;
       els.hero.classList.add('scene-changing');
@@ -374,10 +375,71 @@ function changeScene(forceChoice=null, allowFinale=false){
       updateSceneCounter();
       preloadChoice(pickNextScene());
       track('scene_change',{scene:choice.scene.id});
-    });
-  }).catch(error=>console.warn('Scene kept until next image is ready:',error));
+      resolve(true);
+    }));
+  }).catch(error=>{
+    console.warn('Scene kept until next image is ready:',error);
+    return false;
+  });
 }
 function updateSceneCounter(){ if (scenes.length) els.sceneCounter.textContent=`SCENE: ${currentIndex+1} / ${scenes.length}`; }
+
+// Only the manual button is locked. The finale's automatic rapid scene
+// changes must remain responsive during the final seconds.
+function sceneOpacityTransitionMs(layer){
+  const style=getComputedStyle(layer);
+  const durations=style.transitionDuration.split(',').map(v=>{
+    const t=parseFloat(v)||0;return v.trim().endsWith('ms')?t:t*1000;
+  });
+  const delays=style.transitionDelay.split(',').map(v=>{
+    const t=parseFloat(v)||0;return v.trim().endsWith('ms')?t:t*1000;
+  });
+  const properties=style.transitionProperty.split(',').map(v=>v.trim());
+  return Math.max(0,...durations.map((duration,i)=>
+    properties[i%properties.length]==='opacity'||properties[i%properties.length]==='all'
+      ?duration+delays[i%delays.length]:0));
+}
+async function changeSceneFromButton(){
+  if(sceneUserBusy)return false;
+  sceneUserBusy=true;
+  const button=$('#nextScene');
+  if(button){
+    button.disabled=true;
+    button.setAttribute('aria-busy','true');
+  }
+  stopSceneRotation();
+  try{
+    const changed=await changeScene(null,true);
+    if(changed){
+      const active=activeLayer===0?els.sceneA:els.sceneB;
+      const ms=sceneOpacityTransitionMs(active);
+      if(ms>0)await new Promise(resolve=>{
+        let finished=false;
+        let timeout=0;
+        const done=()=>{
+          if(finished)return;
+          finished=true;
+          active.removeEventListener('transitionend',onEnd);
+          clearTimeout(timeout);
+          resolve();
+        };
+        const onEnd=event=>{
+          if(event.target===active&&event.propertyName==='opacity')done();
+        };
+        active.addEventListener('transitionend',onEnd);
+        timeout=setTimeout(done,Math.ceil(ms)+180);
+      });
+    }
+    return changed;
+  }finally{
+    sceneUserBusy=false;
+    if(button){
+      button.disabled=false;
+      button.setAttribute('aria-busy','false');
+    }
+    scheduleSceneRotation();
+  }
+}
 function scheduleSceneRotation(){
   if (sceneTimer || !scenes.length || ['final-minute','released'].includes(currentPhase)) return;
   sceneTimer=setTimeout(function rotate(){ sceneTimer=null; if(!document.hidden) changeScene(); scheduleSceneRotation(); }, SITE_CONFIG.backgroundIntervalMs);
@@ -690,7 +752,7 @@ function loadAnalytics(id){if(window.gtag)return;const s=document.createElement(
 function track(name,params={}){if(window.gtag)window.gtag('event',name,params)}
 
 function bindUi(){
-  $('#nextScene').addEventListener('click',()=>{changeScene(null,true);stopSceneRotation();scheduleSceneRotation()});
+  $('#nextScene').addEventListener('click',changeSceneFromButton);
   $('#shareButton').addEventListener('click',()=>openShare('site')); $('#mobileShareButton').addEventListener('click',()=>openShare('site')); $('#dailyShare').addEventListener('click',()=>openShare('article'));
   $('#closeShare').addEventListener('click',()=>closeModals()); $('#closeTimezone').addEventListener('click',()=>closeModals()); els.modalBackdrop.addEventListener('click',()=>closeModals());
   $$('[data-share]').forEach(b=>b.addEventListener('click',()=>doShare(b.dataset.share)));

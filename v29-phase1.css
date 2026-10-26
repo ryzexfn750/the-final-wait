@@ -37,6 +37,8 @@ body.final-five-active.finale-last-second .digit-glow{
 /* The post-release clock is a quiet, secondary status element. */
 body.finale-released .release-elapsed{
   display:block!important;
+  position:relative!important;
+  top:clamp(13px,2svh,23px)!important;
   width:min(455px,84vw)!important;
   max-width:96vw!important;
   padding:0!important;
@@ -72,19 +74,33 @@ body.finale-released .release-elapsed-clock .time-unit{
   height:clamp(53px,5.8vw,69px)!important;
   padding:7px 3px!important;
   border-radius:10px!important;
-  border-color:rgba(255,255,255,.20)!important;
-  box-shadow:0 6px 18px rgba(0,0,0,.23),0 0 14px rgba(242,63,178,.09)!important;
+  border-color:rgba(255,154,222,.43)!important;
+  background:linear-gradient(145deg,rgba(15,11,23,.77),rgba(26,12,35,.68))!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 6px 18px rgba(0,0,0,.25),
+    0 0 21px rgba(242,63,178,.28),
+    0 0 43px rgba(119,96,255,.19)!important;
 }
 body.finale-released .release-elapsed-clock .time-value{
   font-size:clamp(24px,3vw,39px)!important;
   line-height:1!important;
   letter-spacing:-.04em!important;
-  text-shadow:0 2px 9px rgba(0,0,0,.55),0 0 13px rgba(242,63,178,.14)!important;
+  text-shadow:
+    0 0 2px rgba(255,255,255,.96),
+    0 0 13px rgba(255,255,255,.32),
+    0 0 23px rgba(242,63,178,.43),
+    0 0 39px rgba(119,96,255,.25),
+    0 3px 9px rgba(0,0,0,.66)!important;
 }
 body.finale-released .release-elapsed-clock .time-label{
   font-size:clamp(5px,.48vw,7px)!important;
   letter-spacing:.06em!important;
   margin-top:6px!important;
+}
+body.finale-released .release-elapsed-clock .digit-glow{
+  opacity:.52!important;
+  background:radial-gradient(ellipse,rgba(242,63,178,.21),rgba(119,96,255,.08) 48%,transparent 74%)!important;
 }
 body.finale-released .release-elapsed-clock .time-separator{
   font-size:16px!important;
@@ -97,14 +113,23 @@ body.finale-released .finale-release h2{
   flex-direction:column!important;
   justify-content:center!important;
   align-items:center!important;
-  gap:clamp(12px,1.9svh,22px)!important;
+  gap:clamp(8px,1.15svh,13px)!important;
   width:min(1020px,89vw)!important;
   max-width:100%!important;
-  padding:clamp(28px,4.6svh,53px) clamp(10px,3vw,40px)!important;
+  padding:clamp(14px,2svh,23px) clamp(10px,3vw,40px)!important;
   margin:clamp(10px,2svh,23px) auto 0!important;
   overflow:visible!important;
-  line-height:.88!important;
+  line-height:.93!important;
   text-align:center!important;
+  box-sizing:border-box!important;
+  /* Gradient and animation belong to the actual glyphs, not the parent. */
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  background:none!important;
+  -webkit-background-clip:border-box!important;
+  background-clip:border-box!important;
+  animation:none!important;
+  filter:none!important;
 }
 body.finale-released .finale-release h2::before{
   inset:-4px -12px!important;
@@ -134,25 +159,53 @@ body.finale-released .finale-release h2 .finale-release-main{
   position:relative!important;
   z-index:1!important;
   margin:0!important;
+  width:max-content!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  padding:0 .11em .07em!important;
+  overflow:visible!important;
   font-style:normal!important;
   font-size:clamp(47px,8.4vw,126px)!important;
   font-weight:900!important;
-  line-height:.83!important;
-  letter-spacing:-.075em!important;
-  background:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%)!important;
-  background-size:220% auto!important;
+  line-height:.90!important;
+  letter-spacing:-.045em!important;
+  text-align:center!important;
+  background-image:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%)!important;
+  background-size:220% 100%!important;
+  background-position:0 50%;
+  background-repeat:repeat-x!important;
   background-clip:text!important;
   -webkit-background-clip:text!important;
   color:transparent!important;
   -webkit-text-fill-color:transparent!important;
+  animation:tfwV30ReleaseTextFlow 4.7s linear infinite!important;
+}
+@keyframes tfwV30ReleaseTextFlow{
+  to{background-position:220% 50%}
 }
 body.finale-released .finale-release-date{
-  margin:clamp(25px,3.2svh,37px) auto 0!important;
-  font-size:clamp(9px,.94vw,13px)!important;
+  display:block!important;
+  width:min(870px,90vw)!important;
+  max-width:100%!important;
+  margin:clamp(30px,4svh,44px) auto 0!important;
+  padding:0 8px!important;
+  box-sizing:border-box!important;
+  font:900 clamp(12px,1.2vw,19px)/1.4 Arial,Helvetica,sans-serif!important;
+  letter-spacing:.10em!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  text-shadow:
+    0 0 6px rgba(255,255,255,.85),
+    0 0 17px rgba(255,255,255,.61),
+    0 0 34px rgba(255,255,255,.32),
+    0 3px 12px rgba(0,0,0,.82)!important;
   opacity:1!important;
+  animation:none!important;
+  filter:none!important;
+  text-align:center!important;
 }
 body.finale-released .release-line{
-  margin-top:11px!important;
+  margin-top:clamp(13px,1.7svh,19px)!important;
 }
 
 /* Fireworks are attached directly to body at release: never clipped by
@@ -182,8 +235,9 @@ body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{
   position:fixed!important;
   left:50%!important;
   top:auto!important;
-  bottom:clamp(17px,3svh,36px)!important;
-  width:min(590px,82vw)!important;
+  /* Preserve exactly the pre-release FFT dimensions; raise it above CTA. */
+  bottom:clamp(88px,11.5svh,126px)!important;
+  width:min(720px,58vw)!important;
   height:44px!important;
   opacity:1!important;
   visibility:visible!important;
@@ -205,6 +259,16 @@ body.tfw-visualizer-ready.finale-released .finale-visualizer{
   body.finale-released .release-elapsed-clock .time-unit{height:57px!important}
   body.finale-released .release-elapsed-clock .time-value{font-size:clamp(21px,4.6vw,31px)!important}
   body.finale-released .finale-release h2 .finale-release-main{font-size:clamp(44px,10.8vw,82px)!important}
+  body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{
+    width:min(78vw,540px)!important;
+    height:36px!important;
+  }
+}
+@media(max-width:700px){
+  body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{
+    width:86vw!important;
+    height:36px!important;
+  }
 }
 @media(max-width:560px){
   body.finale-released .release-elapsed{width:92vw!important}
@@ -216,8 +280,8 @@ body.tfw-visualizer-ready.finale-released .finale-visualizer{
   body.finale-released .release-elapsed-clock .time-separator{font-size:12px!important}
   body.finale-released .finale-release h2{
     width:90vw!important;
-    padding:30px 6px!important;
-    gap:14px!important;
+    padding:clamp(11px,1.7svh,17px) 6px!important;
+    gap:8px!important;
   }
   body.finale-released .finale-release h2 .finale-release-kicker{
     font-size:clamp(10px,2.5vw,14px)!important;
@@ -226,10 +290,15 @@ body.tfw-visualizer-ready.finale-released .finale-visualizer{
   body.finale-released .finale-release h2 .finale-release-main{
     font-size:clamp(43px,11.5vw,67px)!important;
   }
-  body.finale-released .finale-release-date{margin-top:27px!important;font-size:clamp(8px,2.1vw,10px)!important}
+  body.finale-released .finale-release-date{
+    margin-top:clamp(21px,3svh,29px)!important;
+    font-size:clamp(10px,2.65vw,13px)!important;
+    line-height:1.46!important;
+    letter-spacing:.065em!important;
+  }
   body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{
-    bottom:17px!important;
+    bottom:clamp(84px,11.5svh,103px)!important;
     width:86vw!important;
-    height:35px!important;
+    height:36px!important;
   }
 }

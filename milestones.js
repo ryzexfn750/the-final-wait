@@ -768,7 +768,8 @@
   }
 
   function startFireworks(){
-    // With reduced motion, show only the initial celebration volley.
+    // Both motion modes keep celebrating for the entire release state.
+    // Reduced motion gets smaller/fewer bursts rather than a one-off volley.
     const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
     const canvas=$('#finaleFireworks');if(!canvas||fireworksRaf)return;
     if(canvas.parentElement!==document.body)document.body.appendChild(canvas);
@@ -787,13 +788,20 @@
       const r=canvas.getBoundingClientRect();
       ctx.globalCompositeOperation='source-over';ctx.clearRect(0,0,r.width,r.height);
       ctx.globalCompositeOperation='lighter';
-      if(!reducedMotion&&releaseShown&&t>=fireworkNext){
-        const firstRush=fireworks.length<40;const side=Math.random()<.5?.25:.75;makeBurst(r.width*(side+(Math.random()-.5)*.24),r.height*(.18+Math.random()*.42),firstRush?58:34,firstRush?1.18:.94);fireworkNext=t+(firstRush?260+Math.random()*360:650+Math.random()*1050);
+      // Never depend on particle count to schedule the next burst: sparse
+      // particles and reduced-motion must not cause the celebration to end.
+      if(!fireworkNext)fireworkNext=t+(reducedMotion?650:500);
+      if(releaseShown&&t>=fireworkNext){
+        const side=Math.random()<.5?.25:.75;
+        const x=r.width*(side+(Math.random()-.5)*.24);
+        const y=r.height*(.18+Math.random()*.42);
+        makeBurst(x,y,reducedMotion?18:40,reducedMotion?.72:1.02);
+        fireworkNext=t+(reducedMotion?520+Math.random()*110:490+Math.random()*190);
       }
       fireworks=fireworks.filter(p=>p.life>0.02);
       for(const p of fireworks){p.trail.push([p.x,p.y]);if(p.trail.length>6)p.trail.shift();p.x+=p.vx;p.y+=p.vy;p.vy+=.035;p.vx*=.992;p.life-=p.decay;ctx.globalAlpha=Math.max(0,p.life);ctx.strokeStyle=p.color;ctx.lineWidth=Math.max(.5,p.size*.5);ctx.beginPath();if(p.trail.length){ctx.moveTo(p.trail[0][0],p.trail[0][1]);for(const q of p.trail)ctx.lineTo(q[0],q[1]);ctx.lineTo(p.x,p.y);ctx.stroke()}ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()}
       ctx.globalAlpha=1;
-      if((releaseShown&&!reducedMotion)||fireworks.length)fireworksRaf=requestAnimationFrame(loop);else stopFireworks(false);
+      if(releaseShown||fireworks.length)fireworksRaf=requestAnimationFrame(loop);else stopFireworks(false);
     };
     fireworksRaf=requestAnimationFrame(loop);
   }

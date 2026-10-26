@@ -234,8 +234,8 @@ test('V27 audio bars are rendered from FFT and release layout uses real dimensio
   assert.match(css,/transform:none!important/);
   assert.match(css,/max-height 1200ms/);
   assert.match(html,/v27\.css\?v=27/);
-  assert.match(html,/clock\.js\?v=29/);
-  assert.match(html,/milestones\.js\?v=29/);
+  assert.match(html,/clock\.js\?v=30/);
+  assert.match(html,/milestones\.js\?v=30/);
 });
 
 test('V28 starts the release clock without waiting for the next polling cycle',()=>{
@@ -299,8 +299,8 @@ test('V28 release message and secondary-scale elapsed layout are present',()=>{
   assert.match(css,/width:min\(740px,77vw\)!important/);
   assert.match(css,/height:clamp\(72px,7\.8vw,105px\)!important/);
   assert.match(html,/v28\.css\?v=28/);
-  assert.match(html,/clock\.js\?v=29/);
-  assert.match(html,/milestones\.js\?v=29/);
+  assert.match(html,/clock\.js\?v=30/);
+  assert.match(html,/milestones\.js\?v=30/);
 });
 
 
@@ -378,39 +378,26 @@ test('V29 ambient fade is slow before -30m and reaches zero at cutoff',()=>{
   assert.match(js,/return remainingForAudio\(\)>BG_CUTOFF&&!previewFinalFive/);
 });
 
-test('V29 change scene waits for new image decode before touching either layer',async()=>{
-  const js=read('app.js');
-  const a=js.indexOf('function changeScene(forceChoice=null, allowFinale=false){');
-  const b=js.indexOf('function updateSceneCounter()',a);
-  assert.ok(a>=0&&b>a);
-  let releaseImage;
-  const readySceneImage=()=>new Promise(resolve=>{releaseImage=resolve});
-  const log=[],frames=[];
-  const makeLayer=name=>({name,classList:{add(c){log.push(name+'.add.'+c)},remove(c){log.push(name+'.remove.'+c)}}});
-  const sceneA=makeLayer('A'),sceneB=makeLayer('B');
-  const hero=makeLayer('hero');hero.offsetWidth=1;
-  const create=new Function('scenes','currentPhase','document','nextReleaseSceneChoice',
-    'pickNextScene','readySceneImage','els','applyScene','requestAnimationFrame',
-    'preloadChoice','updateSceneCounter','track',
-    'let activeLayer=0,currentIndex=0,sceneSwapToken=0,recentScenes=[];\n'+
-    js.slice(a,b)+'\nreturn {changeScene,getIndex:()=>currentIndex};');
-  const changer=create([{},{}],'normal',{body:{classList:{contains:()=>false}}},
-    ()=>null,()=>null,readySceneImage,{sceneA,sceneB,hero},
-    (layer,scene)=>log.push('apply.'+layer.name),fn=>frames.push(fn),()=>null,
-    ()=>log.push('counter'),()=>{});
-  const pending=changer.changeScene({scene:{id:'scene-two'},index:1},true);
-  assert.deepEqual(log,[],'the old image remains untouched during decode');
-  assert.equal(changer.getIndex(),0);
-  releaseImage();
-  await pending;
-  assert.equal(log[0],'apply.B');
-  assert.equal(changer.getIndex(),0,'the next image is not shown until the animation frame');
-  assert.equal(frames.length,1);
-  frames[0]();
-  assert.ok(log.includes('B.add.active'));
-  assert.ok(log.includes('A.remove.active'));
-  assert.equal(changer.getIndex(),1);
-  assert.match(js,/img\.decode\(\)\.then\(\(\)=>img\)/);
+test('V30 decoded scene reaches the viewport only in the animation frame',async()=>{
+ const js=read('app.js');const a=js.indexOf('function changeScene(forceChoice=null, allowFinale=false){');
+ const b=js.indexOf('function updateSceneCounter()',a);assert.ok(a>0&&b>a);
+ let decode;const frames=[],log=[];
+ const fakeLayer=name=>({classList:{add(k){log.push(name+'.'+k+'.on')},remove(k){log.push(name+'.'+k+'.off')}}});
+ const sceneA=fakeLayer('A'),sceneB=fakeLayer('B'),hero=fakeLayer('hero');hero.offsetWidth=1;
+ const factory=new Function('scenes','currentPhase','document','nextReleaseSceneChoice','pickNextScene',
+ 'readySceneImage','els','applyScene','requestAnimationFrame','preloadChoice','updateSceneCounter','track',
+ "let activeLayer=0,currentIndex=0,sceneSwapToken=0,recentScenes=[];\n"+js.slice(a,b)+"\nreturn {changeScene,index:()=>currentIndex};");
+ const scene=factory([{},{}],'normal',{body:{classList:{contains:()=>false}}},()=>null,()=>null,
+ ()=>new Promise(resolve=>decode=resolve),{sceneA,sceneB,hero},
+ ()=>log.push('apply'),fn=>frames.push(fn),()=>null,()=>{},()=>{});
+ const pending=scene.changeScene({scene:{id:'scene-2'},index:1},true);
+ assert.deepEqual(log,[]);assert.equal(scene.index(),0);
+ decode();await Promise.resolve();await Promise.resolve();
+ assert.equal(log[0],'apply');assert.equal(scene.index(),0);
+ assert.equal(frames.length,1);frames[0]();
+ assert.equal(await pending,true);assert.equal(scene.index(),1);
+ assert.ok(log.includes('B.active.on')&&log.includes('A.active.off'));
+ assert.match(js,/img\.decode\(\)\.then\(\(\)=>img\)/);
 });
 
 test('V29 phase pill first appears at 24h and tracks milestones',()=>{
@@ -451,14 +438,154 @@ test('V29 phase pill first appears at 24h and tracks milestones',()=>{
 
 test('V29 phase-two typography uses one fixed title footprint',()=>{
   const css=read('v29-phase2.css'),html=read('index.html'),js=read('milestones.js');
-  assert.match(css,/height:clamp\(126px,11vw,176px\)!important/);
-  assert.match(css,/font-size:clamp\(38px,5\.35vw,79px\)!important/);
+  assert.match(css,/height:clamp\(144px,13vw,190px\)!important/);
+  assert.match(css,/font-size:clamp\(44px,6\.30vw,91px\)!important/);
   assert.match(css,/#phasePill\.tfw-phase-pill-dormant/);
-  assert.match(css,/margin-top:clamp\(20px,2\.3svh,35px\)!important/);
-  assert.match(html,/v29-phase1\.css\?v=29/);
-  assert.match(html,/v29-phase2\.css\?v=29/);
-  assert.match(html,/app\.js\?v=29/);
-  assert.match(html,/clock\.js\?v=29/);
-  assert.match(html,/milestones\.js\?v=29/);
+  assert.match(css,/margin-top:clamp\(24px,3svh,40px\)!important/);
+  assert.match(html,/v29-phase1\.css\?v=30/);
+  assert.match(html,/v29-phase2\.css\?v=30/);
+  assert.match(html,/app\.js\?v=30/);
+  assert.match(html,/clock\.js\?v=30/);
+  assert.match(html,/milestones\.js\?v=30/);
   assert.match(js,/if\(pill&&remaining>0&&remaining<=FINAL_FIVE\)/);
+});
+
+
+test('V30 phase one: elapsed status shifts alone and gets persistent neon/white glow',()=>{
+  const css=read('v29-phase1.css');
+  const elapsed=css.slice(css.indexOf('body.finale-released .release-elapsed{'),css.indexOf('body.finale-released .release-elapsed-label{'));
+  assert.match(elapsed,/position:relative!important/);
+  assert.match(elapsed,/top:clamp\(13px,2svh,23px\)!important/);
+  assert.match(elapsed,/width:min\(455px,84vw\)!important/);
+  const card=css.slice(css.indexOf('body.finale-released .release-elapsed-clock .time-unit{'),css.indexOf('body.finale-released .release-elapsed-clock .time-value{'));
+  assert.match(card,/0 0 21px rgba\(242,63,178,\.28\)/);
+  assert.match(card,/0 0 43px rgba\(119,96,255,\.19\)/);
+  const value=css.slice(css.indexOf('body.finale-released .release-elapsed-clock .time-value{'),css.indexOf('body.finale-released .release-elapsed-clock .time-label{'));
+  assert.match(value,/0 0 23px rgba\(242,63,178,\.43\)/);
+  assert.match(css,/body.finale-released .release-elapsed-clock .digit-glow\{\s*opacity:\.52!important/);
+});
+
+test('V30 phase one: release FFT preserves pre-release dimensions and clears CTA',()=>{
+  const css=read('v29-phase1.css');
+  const rule=css.slice(css.indexOf('body.tfw-visualizer-ready.finale-released .finale-visualizer-wrap{'));
+  assert.match(rule,/bottom:clamp\(88px,11\.5svh,126px\)!important/);
+  assert.match(rule,/width:min\(720px,58vw\)!important/);
+  assert.match(rule,/height:44px!important/);
+  assert.match(rule,/width:min\(78vw,540px\)!important/);
+  assert.match(rule,/width:86vw!important/);
+  assert.match(rule,/bottom:clamp\(84px,11\.5svh,103px\)!important/);
+  assert.match(rule,/height:36px!important/);
+});
+
+test('V30 phase one: heading is compact and gradient animates directly on unclipped text',()=>{
+  const css=read('v29-phase1.css');
+  const h=css.slice(css.indexOf('body.finale-released .finale-release h2{'),css.indexOf('body.finale-released .finale-release h2::before{'));
+  assert.match(h,/gap:clamp\(8px,1\.15svh,13px\)!important/);
+  assert.match(h,/padding:clamp\(14px,2svh,23px\)/);
+  assert.match(h,/animation:none!important/);
+  assert.match(h,/background:none!important/);
+  const em=css.slice(css.indexOf('body.finale-released .finale-release h2 .finale-release-main{'),css.indexOf('@keyframes tfwV30ReleaseTextFlow'));
+  assert.match(em,/padding:0 \.11em \.07em!important/);
+  assert.match(em,/letter-spacing:-\.045em!important/);
+  assert.match(em,/background-clip:text!important/);
+  assert.match(em,/animation:tfwV30ReleaseTextFlow 4\.7s linear infinite!important/);
+  assert.match(css,/@keyframes tfwV30ReleaseTextFlow/);
+});
+
+test('V30 phase one: larger white glowing release instruction remains above the line',()=>{
+  const css=read('v29-phase1.css'),html=read('index.html');
+  const phrase=css.slice(css.indexOf('body.finale-released .finale-release-date{'),css.indexOf('body.finale-released .release-line{'));
+  assert.match(phrase,/font:900 clamp\(12px,1\.2vw,19px\)\/1\.4/);
+  assert.match(phrase,/0 0 17px rgba\(255,255,255,\.61\)/);
+  assert.match(phrase,/margin:clamp\(30px,4svh,44px\) auto 0!important/);
+  assert.match(css,/body.finale-released .release-line\{\s*margin-top:clamp\(13px,1\.7svh,19px\)!important/);
+  assert.match(html,/v29-phase1\.css\?v=30/);
+  assert.match(html,/v29-phase2\.css\?v=30/);
+});
+
+test('V30 fireworks continue beyond one minute with regular and reduced motion',()=>{
+ const js=read('milestones.js');
+ const a=js.indexOf('function makeBurst('),b=js.indexOf('function stopFireworks(',a);
+ assert.ok(a>0&&b>a);
+ for(const reduced of [false,true]){
+   let callback=null,dead=false,empty=0,maxEmpty=0;
+   const ctx={setTransform(){},clearRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},fill(){},arc(){}};
+   const body={},canvas={parentElement:body,getContext:()=>ctx,
+     getBoundingClientRect:()=>({width:1280,height:720})};
+   const factory=new Function('document','window','canvas','requestAnimationFrame',
+     'matchMedia','devicePixelRatio',
+     "const $=()=>canvas;let fireworks=[],fireworksRaf=0,fireworkNext=0,releaseShown=true;"+
+     js.slice(a,b)+"function stopFireworks(){fireworksRaf=0}\n"+
+     "return {startFireworks,particleCount:()=>fireworks.length};");
+   const unit=factory({body},{addEventListener(){}},canvas,
+     f=>(callback=f,1),()=>({matches:reduced}),1);
+   unit.startFireworks();
+   for(let frame=0;frame<3600;frame++){
+     const fn=callback;callback=null;
+     if(!fn){dead=true;break}
+     fn(frame*1000/60);
+     const count=unit.particleCount();
+     if(count===0){empty++;maxEmpty=Math.max(maxEmpty,empty)}
+     else empty=0;
+     if(frame%600===0)assert.ok(count>0,'zero fireworks at second '+frame/60);
+   }
+   assert.equal(dead,false,'fireworks loop stopped with reduced='+reduced);
+   assert.ok(maxEmpty<40,'fireworks disappeared for too long');
+ }
+ assert.match(js,/if\(releaseShown\|\|fireworks\.length\)fireworksRaf=requestAnimationFrame\(loop\)/);
+});
+
+test('V30 manual scene control prevents spam during decode and fade',async()=>{
+ const js=read('app.js'),a=js.indexOf('function sceneOpacityTransitionMs(layer){'),
+   b=js.indexOf('function scheduleSceneRotation(){',a);
+ assert.ok(a>0&&b>a);
+ let resolveImage,numberOfRequests=0,stops=0,restarts=0,finishFade=null;
+ const audio={};
+ const el={addEventListener(kind,fn){if(kind==='transitionend')finishFade=fn},removeEventListener(){}};
+ const button={disabled:false,setAttribute(k,v){this[k]=v}};
+ const factory=new Function('getComputedStyle','changeScene','els','$',
+ 'stopSceneRotation','scheduleSceneRotation','setTimeout','clearTimeout',
+ "let sceneUserBusy=false,activeLayer=0;"+
+ js.slice(a,b)+"\nreturn {changeSceneFromButton,busy:()=>sceneUserBusy};");
+ const ui=factory(()=>({transitionDuration:'2.4s',transitionDelay:'0s',transitionProperty:'opacity'}),
+   ()=>{numberOfRequests++;return new Promise(resolve=>resolveImage=resolve)},
+   {sceneA:el,sceneB:el},()=>button,()=>stops++,()=>restarts++,()=>1,()=>{});
+ const first=ui.changeSceneFromButton();
+ assert.equal(button.disabled,true);assert.equal(button['aria-busy'],'true');
+ assert.equal(await ui.changeSceneFromButton(),false,'second click ignored');
+ assert.equal(numberOfRequests,1);
+ resolveImage(true);
+ await Promise.resolve();await Promise.resolve();
+ assert.equal(button.disabled,true,'locked during crossfade');
+ assert.ok(finishFade,'fade completion handler attached');
+ finishFade({target:el,propertyName:'opacity'});
+ assert.equal(await first,true);
+ assert.equal(button.disabled,false);assert.equal(button['aria-busy'],'false');
+ assert.equal(stops,1);assert.equal(restarts,1);
+ assert.match(read('v29-phase2.css'),/#nextScene:disabled/);
+});
+
+test('V30 headline wraps at 24h and 6h and does not rewrite a stable stage',()=>{
+ const js=read('clock.js'),css=read('v29-phase2.css');
+ const a=js.indexOf('function renderMilestoneHeadline(title,m){'),
+   b=js.indexOf('function deactivatePreviewStage(){',a);
+ assert.ok(a>0&&b>a);
+ let writes=0;
+ const title={dataset:{},set innerHTML(s){this.html=s;writes++},
+   set textContent(s){this.text=s;writes++},
+   setAttribute(){},removeAttribute(){}};
+ const mk=new Function('byId','document',
+   "let previewStage=null;function deactivatePreviewStage(){}\n"+
+   js.slice(a,b)+"\nreturn activatePreviewStage;");
+ const activate=mk(()=>title,{body:{classList:{add(){}},dataset:{}}});
+ for(let n=0;n<120;n++)activate({id:'day',title:'TOMORROW, THE WAIT ENDS'});
+ assert.equal(writes,1,'same stage overwritten repeatedly');
+ assert.match(title.html,/TOMORROW,<\/span><span class="tfw-headline-line">THE WAIT ENDS/);
+ activate({id:'6h',title:'THE WAIT IS ALMOST OVER'});
+ assert.equal(writes,2);
+ assert.match(title.html,/THE WAIT IS<\/span><span class="tfw-headline-line">ALMOST OVER/);
+ assert.match(css,/font-size:clamp\(44px,6\.30vw,91px\)!important/);
+ assert.match(css,/margin:0 0 clamp\(2px,\.48svh,6px\)!important/);
+ assert.match(css,/height:152px!important/);
+ assert.match(js,/renderMilestoneHeadline\(byId\('heroTitle'\),null\)/);
 });
