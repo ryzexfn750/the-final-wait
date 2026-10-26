@@ -501,12 +501,20 @@
     const canvas=$('#finaleVisualizer');if(!canvas||visualizerRaf)return;
     const ctx=canvas.getContext('2d');if(!ctx)return;
     const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reducedMotion&&document.body.classList.contains('tfw-visualizer-ready'))return;
     document.body.classList.add('finale-music-live','tfw-visualizer-ready');
     const resize=()=>{const r=canvas.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d));ctx.setTransform(d,0,0,d,0,0)};
     visualizerResize=resize;resize();window.addEventListener('resize',resize,{passive:true});
+    let lastDraw=-Infinity;
     const loop=t=>{
-      const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);
       const hasSignal=Boolean(soundEnabled()&&musicAnalyser&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(ambientMusicSource||finalMusicSource));
+      // ~30 FPS when real music plays; ~3 FPS while silent. Idle bars
+      // remain visible without continuously creating gradients on phones.
+      if(!reducedMotion&&t-lastDraw<(hasSignal?33:300)){
+        visualizerRaf=requestAnimationFrame(loop);return;
+      }
+      lastDraw=t;
+      const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);
       let energy=.025;
       if(hasSignal){
         musicAnalyser.getByteFrequencyData(musicData);
@@ -823,7 +831,7 @@
     lastRemaining=remaining;
   }
 
-  sequenceSong.addEventListener('ended',()=>{if(document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released'))startVisualizer();else stopVisualizer()});
+  sequenceSong.addEventListener('ended',()=>startVisualizer());
   inject();
   startVisualizer();
   ['pointerdown','keydown','touchstart'].forEach(ev=>window.addEventListener(ev,unlockFinaleAudio,{capture:true,passive:true}));
