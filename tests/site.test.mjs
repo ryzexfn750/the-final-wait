@@ -159,7 +159,7 @@ test('V27 stage pill updates exactly at -5, -4, -3 and -2 minutes',()=>{
   }
 });
 
-test('V27 final glow is progressive and peaks only at -100ms',()=>{
+test('V28 glow is monotonic from -6 seconds to full at -200ms',()=>{
   const js=read('milestones.js');
   const a=js.indexOf('function setFinaleScale(remaining){');
   const b=js.indexOf('function startTitleColorFlow()',a);
@@ -169,17 +169,29 @@ test('V27 final glow is progressive and peaks only at -100ms',()=>{
   const create=new Function('clamp','document','window','FINAL_FIVE','MIN','LAST_FIFTEEN',
     js.slice(a,b)+'\nreturn setFinaleScale;');
   const setScale=create((v,low,high)=>Math.max(low,Math.min(high,v)),document,{innerWidth:1440},300000,60000,6500);
-  const at=ms=>{setScale(ms);return Number(vars.get('--tfw-approach-glow'))};
-  assert.equal(at(6500),0);
-  const early=at(5000),mid=at(3200),near=at(600);
-  assert.ok(early>0&&early<.2,'early glow too bright '+early);
-  assert.ok(mid>early&&mid<.55,'mid glow too bright '+mid);
-  assert.ok(near>mid&&near<1);
-  assert.equal(at(100),1);
-  assert.equal(at(0),1);
-  const css=read('v27.css');
-  assert.match(css,/var\(--tfw-approach-glow,0\)/);
-  assert.match(css,/body\.final-five-active\.finale-last-15 #countdown/);
+  const at=ms=>{
+    setScale(ms);
+    return {strength:Number(vars.get('--tfw-glow-strength')),
+      radius:parseFloat(vars.get('--tfw-glow-radius')),
+      pink:Number(vars.get('--tfw-glow-pink'))};
+  };
+  const times=[6500,6000,5000,4000,3000,1000,500,201,200,0];
+  const levels=times.map(ms=>at(ms));
+  assert.equal(levels[0].strength,0);
+  assert.equal(levels[1].strength,0);
+  assert.ok(levels[2].strength<.10);
+  for(let i=2;i<levels.length;i++){
+    assert.ok(levels[i].strength>=levels[i-1].strength,'non-monotonic at '+times[i]);
+    assert.ok(levels[i].radius>=levels[i-1].radius);
+    assert.ok(levels[i].pink>=levels[i-1].pink);
+  }
+  assert.ok(levels[7].strength<1,'-201ms should not be max');
+  assert.equal(levels[8].strength,1);
+  assert.equal(levels[9].strength,1);
+  const css=read('v28.css');
+  assert.match(css,/var\(--tfw-glow-radius,0px\)/);
+  assert.match(css,/body\.final-five-active\.finale-last-second #countdown/);
+  assert.match(css,/body\.final-five-active #hero\.finale-rapid-pulse #countdown/);
 });
 
 test('V27 simulated release elapsed clock advances independently of wall clock',()=>{
@@ -224,4 +236,69 @@ test('V27 audio bars are rendered from FFT and release layout uses real dimensio
   assert.match(html,/v27\.css\?v=27/);
   assert.match(html,/clock\.js\?v=27/);
   assert.match(html,/milestones\.js\?v=27/);
+});
+
+test('V28 starts the release clock without waiting for the next polling cycle',()=>{
+  const js=read('clock.js');
+  assert.match(js,/addEventListener\('tfw:finale-release',\(\)=>\{/);
+  assert.match(js,/if\(releaseUiTimer\)clearTimeout\(releaseUiTimer\);\s*releaseLoop\(\);/);
+});
+
+test('V28 restores fireworks at release with an immediate opening volley',()=>{
+  const js=read('milestones.js'),css=read('v28.css');
+  assert.match(js,/startFireworks\(\)/);
+  assert.match(js,/makeBurst\(opening\.width\*\.23,opening\.height\*\.34,66,1\.25\)/);
+  assert.match(js,/makeBurst\(opening\.width\*\.78,opening\.height\*\.31,66,1\.25\)/);
+  assert.match(css,/body\.finale-released \.finale-fireworks/);
+  assert.match(css,/z-index:17!important/);
+  assert.match(js,/tfw-release-entering/);
+  assert.match(css,/body\.finale-released\.tfw-release-entering #countdown/);
+});
+
+test('V28 keeps the milestone title footprint stable without moving the timer',()=>{
+  const css=read('v28.css');
+  assert.match(css,/body\.tfw-milestone-live \.countdown-shell/);
+  assert.match(css,/body\.tfw-preview-stage-title \.countdown-shell/);
+  assert.match(css,/translate:0 0!important/);
+  assert.match(css,/hero-title-wrap\{\s*height:clamp\(92px,8\.1vw,132px\)/);
+});
+
+test('V28 audio graph retries suspended playback on a real user gesture',async()=>{
+  const js=read('milestones.js');
+  const a=js.indexOf('function ensureMusicGraph({userGesture=false}={})');
+  const b=js.indexOf('function startVisualizer()',a);
+  assert.ok(a>0&&b>a);
+  let resumeCalls=0,sourceCount=0;
+  const context={
+    state:'suspended',destination:{},
+    createAnalyser(){return {fftSize:256,frequencyBinCount:128,connect(){}};},
+    createMediaElementSource(){sourceCount++;return {connect(){}};},
+    resume(){resumeCalls++;this.state='running';return Promise.resolve();}
+  };
+  const window={AudioContext:function AudioContext(){return context},__tfwAmbientAudio:{}};
+  const tracks=[{},{},{}];
+  const factory=new Function('soundEnabled','window','finalSong','voiceSong','sequenceSong',
+    "let musicCtx=null,musicAnalyser=null,musicData=null,finalMusicSource=null,"+
+    "voiceMusicSource=null,sequenceMusicSource=null,ambientMusicSource=null,musicResumePending=false;\n"+
+    js.slice(a,b)+'\nreturn ensureMusicGraph;');
+  const graph=factory(()=>true,window,...tracks);
+  graph();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(context.state,'running');
+  assert.ok(resumeCalls>=1);
+  assert.equal(sourceCount,4);
+  assert.match(js,/ensureMusicGraph\(\{userGesture:true\}\)/);
+  assert.match(js,/getByteFrequencyData\(musicData\)/);
+  assert.match(js,/Math\.pow\(sample\/255,\.70\)\*1\.32/);
+});
+
+test('V28 release message and secondary-scale elapsed layout are present',()=>{
+  const js=read('milestones.js'),css=read('v28.css'),html=read('index.html');
+  assert.match(js,/GO LAUNCH THAT FUCKING GTA VI RIGHT NOW!/);
+  assert.doesNotMatch(js,/AFTER MORE THAN A DECADE, HERE WE ARE/);
+  assert.match(css,/width:min\(740px,77vw\)!important/);
+  assert.match(css,/height:clamp\(72px,7\.8vw,105px\)!important/);
+  assert.match(html,/v28\.css\?v=28/);
+  assert.match(html,/clock\.js\?v=28/);
+  assert.match(html,/milestones\.js\?v=28/);
 });
