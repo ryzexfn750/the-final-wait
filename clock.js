@@ -515,6 +515,12 @@
       releaseUiTimer=setTimeout(releaseLoop,released?33:1500);
     };
     releaseLoop();
+    // Do not wait for the old 1.5s poll when 00:00 is reached.
+    // This also starts the simulated elapsed clock on the release frame.
+    addEventListener('tfw:finale-release',()=>{
+      if(releaseUiTimer)clearTimeout(releaseUiTimer);
+      releaseLoop();
+    });
     // Try autoplay once. If the browser blocks it, the next user gesture resumes at
     // the globally synchronized position instead of starting from 0.
     if(bgWanted&&backgroundAllowed())playBackground({hardSync:true});

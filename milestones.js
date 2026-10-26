@@ -49,6 +49,7 @@
   let voiceMusicSource=null;
   let ambientMusicSource=null;
   let musicResumePending=false;
+  let releaseEntranceTimer=0;
   let musicData=null;
   let visualizerRaf=0;
   let visualizerResize=null;
@@ -137,7 +138,7 @@
           <span class="release-radiance" aria-hidden="true"></span>
           <span class="finale-release-kicker">THE WAIT IS OVER.</span>
           <h2>WELCOME TO<br>LEONIDA.</h2>
-          <span class="finale-release-date">AFTER MORE THAN A DECADE, HERE WE ARE.</span>
+          <span class="finale-release-date">GO LAUNCH THAT FUCKING GTA VI RIGHT NOW!</span>
           <span class="release-line" aria-hidden="true"></span>
           <i class="release-spark spark-a"></i><i class="release-spark spark-b"></i><i class="release-spark spark-c"></i><i class="release-spark spark-d"></i>
         </div>`);
@@ -334,8 +335,17 @@
   }
 
   function setFinaleScale(remaining){
-    const glowLinear=clamp((LAST_FIFTEEN-remaining)/(LAST_FIFTEEN-100),0,1);
-    document.documentElement.style.setProperty('--tfw-approach-glow',Math.pow(glowLinear,1.65).toFixed(5));
+    // One authoritative intensity curve: zero at -6s, fully lit at -200ms.
+    // Avoid CSS calc() for shadow alpha, which can be inconsistent across engines.
+    const glowLinear=clamp((6000-remaining)/5800,0,1);
+    const glow=Math.pow(glowLinear,1.85);
+    const style=document.documentElement.style;
+    style.setProperty('--tfw-glow-strength',glow.toFixed(5));
+    style.setProperty('--tfw-glow-radius',`${(42*glow).toFixed(2)}px`);
+    style.setProperty('--tfw-glow-wide',`${(72*glow).toFixed(2)}px`);
+    style.setProperty('--tfw-glow-pink',(.42*glow).toFixed(5));
+    style.setProperty('--tfw-glow-violet',(.25*glow).toFixed(5));
+    style.setProperty('--tfw-glow-white',(.50*glow).toFixed(5));
     let scale=1;
     if(remaining<=FINAL_FIVE){
       if(remaining>MIN){
@@ -448,7 +458,7 @@
       Boolean(ambient&&!ambient.paused);
   }
 
-  function ensureMusicGraph(){
+  function ensureMusicGraph({userGesture=false}={}){
     if(!soundEnabled())return null;
     const AC=window.AudioContext||window.webkitAudioContext;
     if(!AC)return null;
@@ -456,8 +466,10 @@
       if(!musicCtx||musicCtx.state==='closed')musicCtx=new AC();
       if(!musicAnalyser){
         musicAnalyser=musicCtx.createAnalyser();
-        musicAnalyser.fftSize=256;
-        musicAnalyser.smoothingTimeConstant=.78;
+        musicAnalyser.fftSize=512;
+        musicAnalyser.smoothingTimeConstant=.64;
+        musicAnalyser.minDecibels=-100;
+        musicAnalyser.maxDecibels=-25;
         musicData=new Uint8Array(musicAnalyser.frequencyBinCount);
         musicAnalyser.connect(musicCtx.destination);
       }
@@ -483,14 +495,15 @@
         }
       };
       attachSources();
-      if(musicCtx.state==='suspended'&&!musicResumePending){
+      if(musicCtx.state==='suspended'&&(!musicResumePending||userGesture)){
         musicResumePending=true;
-        musicCtx.resume().then(()=>{
+        Promise.resolve(musicCtx.resume()).then(()=>{
           musicResumePending=false;attachSources();
-        }).catch(error=>{
+        },error=>{
           musicResumePending=false;console.warn('Audio analyser not unlocked',error);
         });
       }
+      if(musicCtx.state==='running')attachSources();
       return musicCtx;
     }catch(error){console.warn('Music analyser unavailable',error);return null}
   }
@@ -529,8 +542,11 @@
       for(let i=0;i<bars;i++){
         let amp=.04;
         if(hasSignal){
-          const idx=Math.min(musicData.length-1,Math.floor(i/bars*musicData.length*.74));
-          amp=musicData[idx]/255;
+          const iNorm=i/(bars-1);
+          const maxBin=Math.min(62,musicData.length-1);
+          const idx=Math.min(maxBin,Math.max(1,Math.round(1+Math.pow(iNorm,1.35)*(maxBin-1))));
+          const sample=(musicData[idx]+musicData[Math.max(0,idx-1)]+musicData[Math.min(maxBin,idx+1)])/3;
+          amp=clamp(Math.pow(sample/255,.70)*1.32,0,1);
         }
         const curve=Math.sin((i+1)/(bars+1)*Math.PI);const h=2+amp*maxH*(.28+.72*curve);const x=startX+i*((r.width*.92)/bars);
         const g=ctx.createLinearGradient(0,centerY-h,0,centerY+h);g.addColorStop(0,'rgba(119,96,255,.18)');g.addColorStop(.42,`rgba(119,96,255,${.32+amp*.5})`);g.addColorStop(.58,`rgba(242,63,178,${.36+amp*.56})`);g.addColorStop(1,'rgba(255,156,67,.16)');ctx.fillStyle=g;ctx.fillRect(x,centerY-h,barW,h*2);
@@ -624,7 +640,7 @@
     finaleActive=false;
     document.body.classList.remove('final-five-active','finale-last-45','finale-last-40','finale-last-15','finale-last-10','finale-last-second','finale-scene-rush','finale-song-ended','finale-dynamic-copy');
     const title=$('#heroTitle');if(title)title.textContent='ROAD TO LEONIDA';
-    ['--finale-scale','--finale-progress-scale','--finale-intensity','--finale-glow','--finale-gap','--finale-title-opacity','--tfw-approach-glow'].forEach(v=>document.documentElement.style.removeProperty(v));
+    ['--finale-scale','--finale-progress-scale','--finale-intensity','--finale-glow','--finale-gap','--finale-title-opacity','--tfw-approach-glow','--tfw-glow-strength','--tfw-glow-radius','--tfw-glow-wide','--tfw-glow-pink','--tfw-glow-violet','--tfw-glow-white'].forEach(v=>document.documentElement.style.removeProperty(v));
     pauseFinaleAudio(true);lastSecondTick=null;lastRapidBucket=null;lastSceneStepAt=0;sceneRushPrimed=false;document.documentElement.style.removeProperty('--finale-scene-transition');
   }
 
@@ -664,6 +680,12 @@
     if(!releaseShown){
       if(finalePreview)window.__tfwPreviewReleasedAt=performance.now();
       releaseShown=true;finaleActive=false;
+      document.body.classList.add('tfw-release-entering');
+      clearTimeout(releaseEntranceTimer);
+      releaseEntranceTimer=setTimeout(()=>{
+        document.body.classList.remove('tfw-release-entering');
+        releaseEntranceTimer=0;
+      },700);
       document.body.classList.remove('final-five-active','finale-last-45','finale-last-40','finale-last-15','finale-last-10','finale-last-second','finale-scene-rush','finale-song-ended','finale-dynamic-copy');
       document.body.classList.add('finale-released');
       try{finalSong.pause()}catch{}
@@ -677,7 +699,9 @@
 
   function resetRelease({pauseAudio=true}={}){
     if(!releaseShown&&!document.body.classList.contains('finale-released'))return;
-    releaseShown=false;delete window.__tfwPreviewReleasedAt;document.body.classList.remove('finale-released');
+    releaseShown=false;delete window.__tfwPreviewReleasedAt;
+    clearTimeout(releaseEntranceTimer);releaseEntranceTimer=0;
+    document.body.classList.remove('finale-released','tfw-release-entering');
     const release=$('#finaleRelease');if(release){release.classList.remove('active');release.setAttribute('aria-hidden','true')}
     $('#countdown')?.setAttribute('aria-hidden','false');$('#finaleFlash')?.classList.remove('fire');stopFireworks();
     if(pauseAudio)pauseFinaleAudio(false);
@@ -731,6 +755,12 @@
     fireworks=[];fireworkNext=0;
     const resize=()=>{const r=canvas.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d));ctx.setTransform(d,0,0,d,0,0)};
     resize();window.addEventListener('resize',resize,{passive:true});canvas._tfwResize=resize;
+    // Fire an immediate opening volley, without waiting for the first RAF.
+    const opening=canvas.getBoundingClientRect();
+    if(opening.width>0&&opening.height>0){
+      makeBurst(opening.width*.23,opening.height*.34,66,1.25);
+      makeBurst(opening.width*.78,opening.height*.31,66,1.25);
+    }
     const loop=t=>{
       const r=canvas.getBoundingClientRect();ctx.globalCompositeOperation='source-over';ctx.fillStyle='rgba(4,3,8,.15)';ctx.fillRect(0,0,r.width,r.height);ctx.globalCompositeOperation='lighter';
       if(releaseShown&&t>=fireworkNext){
@@ -838,8 +868,9 @@
   // Attempt to resume the analyser on genuine user gestures; browser audio
   // playback remains independent of Web Audio until the context is running.
   ['pointerdown','keydown','touchstart'].forEach(ev=>window.addEventListener(ev,()=>{
-    if(soundEnabled()&&window.__tfwAmbientAudio&&!window.__tfwAmbientAudio.paused)
-      ensureMusicGraph();
+    // A trusted gesture may be the only opportunity to unlock Web Audio.
+    // Retry regardless of the current HTMLMediaElement.paused flag.
+    if(soundEnabled())ensureMusicGraph({userGesture:true});
   },{capture:true,passive:true}));
   for(const track of [finalSong,voiceSong,sequenceSong]){
     track.addEventListener('play',()=>{if(soundEnabled()){ensureMusicGraph();startVisualizer()}});
@@ -857,6 +888,8 @@
       pauseFinaleAudio(false);
       return;
     }
+    ensureMusicGraph();
+    startVisualizer();
     const remaining=finalePreview?Number(window.__tfwPreviewRemainingMs):lastRemaining;
     if(Number.isFinite(remaining)&&remaining<=FINAL_FIVE){startVisualizer();syncFinalSong(remaining);syncVoiceSong(remaining);syncSequenceSong(remaining)}
   });
