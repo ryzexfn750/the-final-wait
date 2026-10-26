@@ -129,3 +129,99 @@ test('finale soundtrack is lazy and voice cue is enabled',()=>{
   assert.doesNotMatch(html,/<link rel="preload" href="assets\/audio/);
   assert.match(finale,/if\(!soundEnabled\(\)\)\{\s*pauseFinaleAudio\(false\);/);
 });
+
+
+test('V27 stage pill updates exactly at -5, -4, -3 and -2 minutes',()=>{
+  const js=read('milestones.js');
+  const a=js.indexOf('function updateFinaleCopy(remaining){');
+  const b=js.indexOf('function musicIsPlaying()',a);
+  assert.ok(a>=0&&b>a);
+  const pill={
+    html:'<span class="phase-dot"></span> THE FINAL WAIT',
+    get textContent(){return this.html.replace(/<[^>]*>/g,'').trim()},
+    set innerHTML(v){this.html=v}
+  };
+  const document={body:{classList:{toggle(){}}}};
+  const make=new Function('$','document','MIN','FINAL_FIVE','HOUR','TICK_START','startTitleColorFlow','stopTitleColorFlow',
+    js.slice(a,b)+'\nreturn updateFinaleCopy;');
+  const update=make(sel=>sel==='#phasePill'?pill:null,document,60000,300000,3600000,43000,()=>{},()=>{});
+  for(const [remaining,label] of [
+    [300000,'5 MINUTES LEFT. STAY HERE.'],
+    [240001,'5 MINUTES LEFT. STAY HERE.'],
+    [240000,'4 MINUTES LEFT. STAY HERE.'],
+    [180000,'3 MINUTES LEFT. STAY HERE.'],
+    [120000,'2 MINUTES LEFT. STAY HERE.'],
+    [60001,'2 MINUTES LEFT. STAY HERE.'],
+    [60000,'THE FINAL MINUTE']
+  ]){
+    update(remaining);
+    assert.equal(pill.textContent,label,'remaining='+remaining);
+  }
+});
+
+test('V27 final glow is progressive and peaks only at -100ms',()=>{
+  const js=read('milestones.js');
+  const a=js.indexOf('function setFinaleScale(remaining){');
+  const b=js.indexOf('function startTitleColorFlow()',a);
+  assert.ok(a>=0&&b>a);
+  const vars=new Map();
+  const document={documentElement:{style:{setProperty(k,v){vars.set(k,v)}}}};
+  const create=new Function('clamp','document','window','FINAL_FIVE','MIN','LAST_FIFTEEN',
+    js.slice(a,b)+'\nreturn setFinaleScale;');
+  const setScale=create((v,low,high)=>Math.max(low,Math.min(high,v)),document,{innerWidth:1440},300000,60000,6500);
+  const at=ms=>{setScale(ms);return Number(vars.get('--tfw-approach-glow'))};
+  assert.equal(at(6500),0);
+  const early=at(5000),mid=at(3200),near=at(600);
+  assert.ok(early>0&&early<.2,'early glow too bright '+early);
+  assert.ok(mid>early&&mid<.55,'mid glow too bright '+mid);
+  assert.ok(near>mid&&near<1);
+  assert.equal(at(100),1);
+  assert.equal(at(0),1);
+  const css=read('v27.css');
+  assert.match(css,/var\(--tfw-approach-glow,0\)/);
+  assert.match(css,/body\.final-five-active\.finale-last-15 #countdown/);
+});
+
+test('V27 simulated release elapsed clock advances independently of wall clock',()=>{
+  const js=read('clock.js');
+  const a=js.indexOf('function updateReleaseElapsed(){');
+  const b=js.indexOf('function bootRuntime()',a);
+  assert.ok(a>=0&&b>a);
+  const parts={};
+  const classes={contains:c=>c==='finale-previewing'||c==='finale-released',toggle(){}};
+  const doc={body:{classList:classes},querySelector(sel){
+    const k=sel.match(/data-release-unit="([^"]+)"/)?.[1];
+    if(!k)return null;
+    return parts[k]??(parts[k]={textContent:''});
+  }};
+  const now={value:1000};
+  const create=new Function('ensureReleaseUi','document','Date','performance','window',
+    'releaseEpoch','DAY','HOUR','MINUTE','SECOND','pad','previewFinalFive','pauseBackground',
+    js.slice(a,b)+'\nreturn updateReleaseElapsed;');
+  const run=create(()=>true,doc,{now:()=>0},{now:()=>now.value},{__tfwPreviewReleasedAt:1000},
+    ()=>10000000,86400000,3600000,60000,1000,
+    (n,len=2)=>String(Math.floor(n)).padStart(len,'0'),false,()=>{});
+  run();
+  assert.equal(parts.seconds.textContent,'00');
+  now.value=3250;
+  run();
+  assert.equal(parts.seconds.textContent,'02');
+  assert.equal(parts.milliseconds.textContent,'250');
+});
+
+test('V27 audio bars are rendered from FFT and release layout uses real dimensions',()=>{
+  const js=read('milestones.js'),css=read('v27.css'),html=read('index.html');
+  assert.match(js,/musicAnalyser\.getByteFrequencyData\(musicData\)/);
+  assert.match(js,/const hasSignal=Boolean\(soundEnabled\(\)/);
+  assert.match(js,/startVisualizer\(\);\s*\['pointerdown','keydown','touchstart'\]/);
+  assert.doesNotMatch(js,/const waveA=\(Math\.sin/);
+  assert.match(css,/body\.tfw-visualizer-ready \.finale-visualizer-wrap/);
+  assert.match(css,/body\.finale-released \.finale-release,\s*body\.finale-released \.finale-release\.active/);
+  assert.match(css,/translate:0 0!important/);
+  assert.match(css,/body\.finale-released \.release-elapsed-clock\.countdown/);
+  assert.match(css,/transform:none!important/);
+  assert.match(css,/max-height 1200ms/);
+  assert.match(html,/v27\.css\?v=27/);
+  assert.match(html,/clock\.js\?v=27/);
+  assert.match(html,/milestones\.js\?v=27/);
+});
