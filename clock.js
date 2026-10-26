@@ -351,11 +351,28 @@
     if(remaining<=12*HOUR)return milestones.find(m=>m.id==='12h')||null;
     return milestones.find(m=>m.id==='day')||null;
   }
+  function renderMilestoneHeadline(title,m){
+    if(!title)return;
+    const id=m?.id||'default';
+    if(title.dataset.tfwHeadlineStage===id)return;
+    title.dataset.tfwHeadlineStage=id;
+    // Explicit two-line layout without reflowing the countdown.
+    if(id==='day'){
+      title.innerHTML='<span class="tfw-headline-line">TOMORROW,</span><span class="tfw-headline-line">THE WAIT ENDS</span>';
+    }else if(id==='6h'){
+      title.innerHTML='<span class="tfw-headline-line">THE WAIT IS</span><span class="tfw-headline-line">ALMOST OVER</span>';
+    }else{
+      title.textContent=m?m.title:'ROAD TO LEONIDA';
+    }
+    if(m)title.setAttribute('aria-label',m.title);
+    else title.removeAttribute('aria-label');
+  }
   function activatePreviewStage(m){
     if(!m)return deactivatePreviewStage();
+    // Do not rewrite the same title on every countdown animation frame.
+    if(previewStage?.id===m.id&&byId('heroTitle')?.dataset.tfwHeadlineStage===m.id)return;
     previewStage=m;
-    const title=byId('heroTitle');
-    if(title)title.textContent=m.title;
+    renderMilestoneHeadline(byId('heroTitle'),m);
     document.body.classList.add('tfw-preview-stage-title');
     document.body.dataset.tfwPreviewStage=m.id;
   }
@@ -365,7 +382,7 @@
     document.body.classList.remove('tfw-preview-stage-title');
     delete document.body.dataset.tfwPreviewStage;
     const title=byId('heroTitle');
-    if(title&&!document.body.classList.contains('tfw-milestone-live')&&!document.body.classList.contains('final-five-active')&&!document.body.classList.contains('finale-released'))title.textContent='ROAD TO LEONIDA';
+    if(title&&!document.body.classList.contains('tfw-milestone-live')&&!document.body.classList.contains('final-five-active')&&!document.body.classList.contains('finale-released'))renderMilestoneHeadline(title,null);
   }
 
   function activateMilestone(m,remaining){
@@ -373,7 +390,7 @@
     deactivateMilestone(false);
     currentMilestone=m;
     const title=byId('heroTitle');
-    if(title){liveTitleBase=title.textContent||'ROAD TO LEONIDA';title.textContent=m.title}
+    if(title){liveTitleBase=title.textContent||'ROAD TO LEONIDA';renderMilestoneHeadline(title,m)}
     document.body.classList.add('tfw-milestone-live');
     document.body.dataset.tfwMilestone=m.id;
     setBgVolume(desiredBgVolume(),280);
@@ -387,7 +404,7 @@
     delete document.body.dataset.tfwMilestone;
     if(restoreTitle){
       const title=byId('heroTitle');
-      if(title&&!document.body.classList.contains('final-five-active')&&!document.body.classList.contains('finale-released')) title.textContent='ROAD TO LEONIDA';
+      if(title&&!document.body.classList.contains('final-five-active')&&!document.body.classList.contains('finale-released'))renderMilestoneHeadline(title,null);
     }
     setBgVolume(desiredBgVolume(),360);
   }
@@ -410,7 +427,14 @@
     deactivateMilestone(false);
     const stage=previewStageFor(remaining);
     if(stage){activatePreviewStage(stage);if(stage.id==='6h')normalizeLegacyCopy()}
-    else deactivatePreviewStage();
+    else{
+      deactivatePreviewStage();
+      // No persistent milestone before -24h: restore the normal headline
+      // after transient milestone sound/title cues have finished.
+      if(!document.body.classList.contains('final-five-active')&&
+         !document.body.classList.contains('finale-released'))
+        renderMilestoneHeadline(byId('heroTitle'),null);
+    }
   }
   addEventListener('tfw:countdown',event=>{
     const now=performance.now();
