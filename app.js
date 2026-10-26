@@ -25,6 +25,8 @@ let scenes = [];
 let allScenes = [];
 let currentIndex = 0;
 let activeLayer = 0;
+let sceneSwapToken = 0;
+const sceneDecodeCache = new Map();
 let recentScenes = [];
 let sceneTimer = null;
 let finaleSceneDeck = [];
@@ -36,6 +38,7 @@ let releaseSequenceActive = false;
 let releaseSequencePrimed = false;
 let releaseTriggered = false;
 let currentPhase = '';
+let lastPhaseLabel = '';
 let lastSlowUpdate = 0;
 let lastSrSecond = -1;
 let lastShareUpdate = 0;
@@ -110,23 +113,36 @@ function splitTime(now = Date.now()) {
 }
 
 function phaseFor(ms) {
-  if (ms <= 0) return { key:'released', label:'THE WAIT IS OVER' };
-  if (ms <= 60_000) return { key:'final-minute', label:'THE FINAL MINUTE' };
-  if (ms <= 3_600_000) return { key:'final-hour', label:'THE FINAL HOUR' };
-  if (ms <= DAY) return { key:'final-day', label:'FINAL 24 HOURS' };
-  if (ms <= 7 * DAY) return { key:'final-week', label:'THE FINAL WEEK' };
-  if (ms <= 30 * DAY) return { key:'final-month', label:'THE FINAL MONTH' };
-  return { key:'normal', label:'THE FINAL WAIT' };
+  // Capsule is intentionally absent from view until the first -24h milestone.
+  if(ms<=0)return {key:'released',label:'THE WAIT IS OVER',showPill:false};
+  if(ms<=60_000)return {key:'final-minute',label:'THE FINAL MINUTE',showPill:true};
+  if(ms<=5*60_000)return {key:'final-hour',label:`${Math.ceil(ms/60_000)} MINUTES LEFT. STAY HERE.`,showPill:true};
+  if(ms<=15*60_000)return {key:'final-hour',label:'THE LAST QUARTER HOUR',showPill:true};
+  if(ms<=30*60_000)return {key:'final-hour',label:'FINAL 30 MINUTES',showPill:true};
+  if(ms<=3_600_000)return {key:'final-hour',label:'THE FINAL HOUR',showPill:true};
+  if(ms<=6*3_600_000)return {key:'final-day',label:'THE FINAL SIX HOURS',showPill:true};
+  if(ms<=12*3_600_000)return {key:'final-day',label:'FINAL 12 HOURS',showPill:true};
+  if(ms<=DAY)return {key:'final-day',label:'THE LAST 24 HOURS',showPill:true};
+  if(ms<=7*DAY)return {key:'final-week',label:'THE FINAL WEEK',showPill:false};
+  if(ms<=30*DAY)return {key:'final-month',label:'THE FINAL MONTH',showPill:false};
+  return {key:'normal',label:'THE FINAL WAIT',showPill:false};
 }
 
 function applyPhase(phase) {
-  if (phase.key === currentPhase) return;
-  phaseClasses.forEach(c => document.body.classList.remove(c));
-  if (phase.key !== 'normal') document.body.classList.add(`phase-${phase.key}`);
-  currentPhase = phase.key;
-  els.phasePill.innerHTML = `<span class="phase-dot"></span> ${phase.label}`;
-  if (phase.key === 'final-minute') { window.scrollTo({top:0,behavior:'smooth'}); stopSceneRotation(); }
-  else if (phase.key !== 'released') scheduleSceneRotation();
+  const phaseChanged=phase.key!==currentPhase;
+  if(phaseChanged){
+    phaseClasses.forEach(c=>document.body.classList.remove(c));
+    if(phase.key!=='normal')document.body.classList.add(`phase-${phase.key}`);
+    currentPhase=phase.key;
+  }
+  els.phasePill.classList.toggle('tfw-phase-pill-dormant',!phase.showPill);
+  if(lastPhaseLabel!==phase.label){
+    lastPhaseLabel=phase.label;
+    els.phasePill.innerHTML=`<span class="phase-dot"></span> ${phase.label}`;
+  }
+  if(!phaseChanged)return;
+  if(phase.key==='final-minute'){window.scrollTo({top:0,behavior:'smooth'});stopSceneRotation()}
+  else if(phase.key!=='released')scheduleSceneRotation();
 }
 
 function setUnit(el, value, animate = true) {
@@ -281,7 +297,29 @@ function pickNextScene(){
   if (!pool.length) pool = scenes.map((scene,index)=>({scene,index})).filter(({index})=>index!==currentIndex);
   return pool[Math.floor(Math.random()*pool.length)];
 }
-function preloadChoice(choice){ if (!choice) return; const img = new Image(); img.decoding='async'; img.src=srcFor(choice.scene); }
+// Decode the exact image before touching either visible CSS layer. Keeping
+// a small LRU of decoded Image objects avoids the old one-frame stale image.
+function readySceneImage(scene){
+  const src=srcFor(scene);
+  if(sceneDecodeCache.has(src))return sceneDecodeCache.get(src);
+  const img=new Image();
+  img.decoding='async';
+  img.src=src;
+  const job=(typeof img.decode==='function'
+    ?img.decode().then(()=>img)
+    :new Promise((resolve,reject)=>{
+      if(img.complete){img.naturalWidth?resolve(img):reject(new Error('Scene not loaded'))}
+      else{img.addEventListener('load',()=>resolve(img),{once:true});img.addEventListener('error',()=>reject(new Error('Scene load failed')),{once:true})}
+    })
+  ).catch(error=>{sceneDecodeCache.delete(src);throw error});
+  sceneDecodeCache.set(src,job);
+  if(sceneDecodeCache.size>16)sceneDecodeCache.delete(sceneDecodeCache.keys().next().value);
+  return job;
+}
+function preloadChoice(choice){
+  if(!choice)return Promise.resolve(null);
+  return readySceneImage(choice.scene).catch(()=>null);
+}
 function releaseChoiceForCursor(cursor){
   const id=releaseSceneIds[cursor];
   if(!id)return null;
@@ -307,18 +345,37 @@ function nextReleaseSceneChoice(){
   return releaseChoiceForCursor(releaseSceneCursor);
 }
 function changeScene(forceChoice=null, allowFinale=false){
-  if (!scenes.length || (currentPhase==='final-minute' && !allowFinale)) return;
+  if(!scenes.length||(currentPhase==='final-minute'&&!allowFinale))return;
   let choice=forceChoice;
-  if(!choice && (currentPhase==='released'||document.body.classList.contains('finale-released')))choice=nextReleaseSceneChoice();
+  if(!choice&&(currentPhase==='released'||document.body.classList.contains('finale-released')))
+    choice=nextReleaseSceneChoice();
   if(!choice)choice=pickNextScene();
-  if (!choice) return;
-  const incoming = activeLayer === 0 ? els.sceneB : els.sceneA;
-  const outgoing = activeLayer === 0 ? els.sceneA : els.sceneB;
-  applyScene(incoming, choice.scene);
-  els.hero.classList.remove('scene-changing'); void els.hero.offsetWidth; els.hero.classList.add('scene-changing');
-  requestAnimationFrame(()=>{ incoming.classList.add('active'); outgoing.classList.remove('active'); });
-  activeLayer = 1-activeLayer; currentIndex=choice.index; recentScenes.push(currentIndex); if (recentScenes.length>8) recentScenes.shift();
-  updateSceneCounter(); preloadChoice(pickNextScene()); track('scene_change',{scene:choice.scene.id});
+  if(!choice)return;
+  const ticket=++sceneSwapToken;
+  // If a visitor clicks again during decoding, only the last request wins.
+  // Neither visible layer is touched until the new image is fully decoded.
+  return readySceneImage(choice.scene).then(()=>{
+    if(ticket!==sceneSwapToken)return;
+    const incoming=activeLayer===0?els.sceneB:els.sceneA;
+    const outgoing=activeLayer===0?els.sceneA:els.sceneB;
+    applyScene(incoming,choice.scene);
+    // Prime the decoded background in the hidden layer before crossfading.
+    requestAnimationFrame(()=>{
+      if(ticket!==sceneSwapToken)return;
+      els.hero.classList.remove('scene-changing');
+      void els.hero.offsetWidth;
+      els.hero.classList.add('scene-changing');
+      incoming.classList.add('active');
+      outgoing.classList.remove('active');
+      activeLayer=1-activeLayer;
+      currentIndex=choice.index;
+      recentScenes.push(currentIndex);
+      if(recentScenes.length>8)recentScenes.shift();
+      updateSceneCounter();
+      preloadChoice(pickNextScene());
+      track('scene_change',{scene:choice.scene.id});
+    });
+  }).catch(error=>console.warn('Scene kept until next image is ready:',error));
 }
 function updateSceneCounter(){ if (scenes.length) els.sceneCounter.textContent=`SCENE: ${currentIndex+1} / ${scenes.length}`; }
 function scheduleSceneRotation(){

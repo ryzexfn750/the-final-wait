@@ -125,6 +125,7 @@
   const BG_SRC='assets/audio/background-v26.mp3';
   const BG_FALLBACK_SRC='assets/audio/background-live.mp3';
   const BG_CUTOFF=30*MINUTE;
+  const BG_FADE_WINDOW=20000; // fade out smoothly during the final 20s before -30:00
   const BG_VOLUME=.22;
   const BG_DUCK_VOLUME=.095;
   let bgAudio=null;
@@ -194,8 +195,13 @@
       if(label)label.textContent=bgWanted?'SOUND':'MUTED';
     });
   }
+  function bgFadeFactor(remaining=remainingForAudio()){
+    // From -30:20 to -30:00: cubic ease-in decrease to exactly zero.
+    const p=Math.max(0,Math.min(1,(remaining-BG_CUTOFF)/BG_FADE_WINDOW));
+    return p*p*(3-2*p);
+  }
   function desiredBgVolume(){
-    return currentMilestone?BG_DUCK_VOLUME:BG_VOLUME;
+    return (currentMilestone?BG_DUCK_VOLUME:BG_VOLUME)*bgFadeFactor();
   }
   function setBgVolume(value,duration=240){
     const a=ensureBackgroundAudio();
@@ -370,7 +376,7 @@
     if(title){liveTitleBase=title.textContent||'ROAD TO LEONIDA';title.textContent=m.title}
     document.body.classList.add('tfw-milestone-live');
     document.body.dataset.tfwMilestone=m.id;
-    setBgVolume(BG_DUCK_VOLUME,280);
+    setBgVolume(desiredBgVolume(),280);
     playMilestoneSfx(m,m.at-remaining);
   }
   function deactivateMilestone(restoreTitle=true){
@@ -431,7 +437,12 @@
     }
     updateLiveMilestone(remaining,preview);
     if(!backgroundAllowed())pauseBackground();
-    else if(!currentMilestone)setBgVolume(BG_VOLUME,350);
+    else if(!currentMilestone){
+      const fadeActive=remaining<=BG_CUTOFF+BG_FADE_WINDOW;
+      // A deterministic cutoff-tied envelope, without restarting the
+      // short volume ramp every 55ms while approaching -30:00.
+      setBgVolume(desiredBgVolume(),fadeActive?0:350);
+    }
   });
 
 
