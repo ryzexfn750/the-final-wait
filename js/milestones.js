@@ -70,9 +70,9 @@
     finaleTracksPrimed=true;
     for(const audio of [finalSong,voiceSong,sequenceSong]){audio.preload='auto';audio.load()}
   }
-  finalSong.volume=.72;
-  voiceSong.volume=1;
-  sequenceSong.volume=.68;
+  finalSong.volume=.72*masterVolume();
+  voiceSong.volume=masterVolume();
+  sequenceSong.volume=.68*masterVolume();
   finalSong.addEventListener('loadedmetadata',()=>{
     if(Number.isFinite(finalSong.duration)&&finalSong.duration>1){
       FINAL_SONG_END=Math.max(0,FINAL_FIVE-finalSong.duration*1000);
@@ -80,6 +80,7 @@
   });
 
   function soundEnabled(){return storage.get('tfw_sound')!=='off'}
+  function masterVolume(){return window.__tfwMasterVolume?.()??1}
   function clamp(v,min,max){return Math.min(max,Math.max(min,v))}
   function pad(n,len=2){return String(Math.max(0,Math.floor(n))).padStart(len,'0')}
   function formatRemaining(ms,withMs=true){
@@ -288,7 +289,7 @@
   function cardAudioHit(level=1){
     if(!soundEnabled())return;
     const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
-    try{const ctx=new AC(),now=ctx.currentTime,master=ctx.createGain();master.gain.setValueAtTime(.0001,now);master.gain.exponentialRampToValueAtTime(.1*level,now+.05);master.gain.exponentialRampToValueAtTime(.0001,now+2.2);master.connect(ctx.destination);[55,82.41,110].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=i===0?'sine':'triangle';o.frequency.setValueAtTime(f,now);o.frequency.exponentialRampToValueAtTime(f*1.12,now+1.8);g.gain.value=i===0?.72:.34;o.connect(g);g.connect(master);o.start(now+i*.03);o.stop(now+2.4)});setTimeout(()=>ctx.close().catch(()=>{}),3000)}catch{}
+    try{const ctx=new AC(),now=ctx.currentTime,master=ctx.createGain();master.gain.setValueAtTime(.0001,now);master.gain.exponentialRampToValueAtTime(.1*level*masterVolume(),now+.05);master.gain.exponentialRampToValueAtTime(.0001,now+2.2);master.connect(ctx.destination);[55,82.41,110].forEach((f,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=i===0?'sine':'triangle';o.frequency.setValueAtTime(f,now);o.frequency.exponentialRampToValueAtTime(f*1.12,now+1.8);g.gain.value=i===0?.72:.34;o.connect(g);g.connect(master);o.start(now+i*.03);o.stop(now+2.4)});setTimeout(()=>ctx.close().catch(()=>{}),3000)}catch{}
   }
 
   function hideCard(){
@@ -327,11 +328,11 @@
     const base=rapid?1040+progress*980:920;
     const length=rapid?.032:.09;
     master.gain.setValueAtTime(.0001,now);
-    master.gain.exponentialRampToValueAtTime(rapid?.48:.9,now+.002);
+    master.gain.exponentialRampToValueAtTime((rapid?.48:.9)*masterVolume(),now+.002);
     master.gain.exponentialRampToValueAtTime(.0001,now+length);
     master.connect(compressor);compressor.connect(ctx.destination);
     [1,2.02].forEach((mul,i)=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type=i?'triangle':'square';o.frequency.setValueAtTime(base*mul,now);o.frequency.exponentialRampToValueAtTime(base*mul*(rapid?1.11:.91),now+length);g.gain.value=i?.20:.68;o.connect(g);g.connect(master);o.start(now);o.stop(now+length+.01)});
-    const noise=ctx.createBufferSource(),buffer=ctx.createBuffer(1,Math.max(1,Math.floor(ctx.sampleRate*.018)),ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);noise.buffer=buffer;const ng=ctx.createGain();ng.gain.setValueAtTime(rapid?.28:.44,now);ng.gain.exponentialRampToValueAtTime(.0001,now+.018);noise.connect(ng);ng.connect(compressor);noise.start(now);
+    const noise=ctx.createBufferSource(),buffer=ctx.createBuffer(1,Math.max(1,Math.floor(ctx.sampleRate*.018)),ctx.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=(Math.random()*2-1)*(1-i/data.length);noise.buffer=buffer;const ng=ctx.createGain();ng.gain.setValueAtTime((rapid?.28:.44)*masterVolume(),now);ng.gain.exponentialRampToValueAtTime(.0001,now+.018);noise.connect(ng);ng.connect(compressor);noise.start(now);
   }
 
   function visualPulse(rapid=false){
@@ -629,7 +630,7 @@
     if(remaining<=FINAL_SONG_END){return}
     const voiceDuration=Number.isFinite(voiceSong.duration)&&voiceSong.duration>0?voiceSong.duration:3.114667;
     const voiceActive=remaining<=VOICE_TRACK_START&&remaining>VOICE_TRACK_START-voiceDuration*1000;
-    finalSong.volume=voiceActive?.44:.72;
+    finalSong.volume=(voiceActive?.44:.72)*masterVolume();
     try{
       if(finalSong.paused){
         finalSong.currentTime=target;
@@ -640,6 +641,7 @@
   }
 
   async function syncVoiceSong(remaining){
+    voiceSong.volume=masterVolume();
     const duration=Number.isFinite(voiceSong.duration)&&voiceSong.duration>0?voiceSong.duration:3.114667;
     const active=soundEnabled()&&remaining<=VOICE_TRACK_START&&remaining>VOICE_TRACK_START-duration*1000;
     if(!active){if(!voiceSong.paused)voiceSong.pause();return}
@@ -652,6 +654,7 @@
   }
 
   async function syncSequenceSong(remaining){
+    sequenceSong.volume=.68*masterVolume();
     if(!soundEnabled()){if(!sequenceSong.paused)sequenceSong.pause();return}
     if(remaining>SEQUENCE_TRACK_START){if(!sequenceSong.paused)sequenceSong.pause();try{sequenceSong.currentTime=0}catch{};return}
     ensureMusicGraph();startVisualizer();
@@ -663,7 +666,7 @@
   }
 
   function pauseFinaleAudio(reset=false,keepVisualizer=false){
-    try{finalSong.pause();if(reset)finalSong.currentTime=0;finalSong.volume=.72}catch{}
+    try{finalSong.pause();if(reset)finalSong.currentTime=0;finalSong.volume=.72*masterVolume()}catch{}
     try{voiceSong.pause();if(reset)voiceSong.currentTime=0}catch{}
     try{sequenceSong.pause();if(reset)sequenceSong.currentTime=0}catch{}
     if(!keepVisualizer)startVisualizer();
@@ -961,6 +964,14 @@
     if(soundEnabled()){ensureMusicGraph();startVisualizer()}
   });
   window.addEventListener('tfw:countdown',e=>{const ms=Number(e.detail?.remaining);if(Number.isFinite(ms))maybeTrigger(ms,Boolean(e.detail?.preview))});
+  window.addEventListener('tfw:volume-change',()=>{
+    const r=finalePreview?Number(window.__tfwPreviewRemainingMs):lastRemaining;
+    const duration=Number.isFinite(voiceSong.duration)&&voiceSong.duration>0?voiceSong.duration:3.114667;
+    const duck=Number.isFinite(r)&&r<=VOICE_TRACK_START&&r>VOICE_TRACK_START-duration*1000;
+    finalSong.volume=(duck?.44:.72)*masterVolume();
+    voiceSong.volume=masterVolume();
+    sequenceSong.volume=.68*masterVolume();
+  });
   window.addEventListener('tfw:sound-change',()=>{
     if(!soundEnabled()){
       pauseFinaleAudio(false);
