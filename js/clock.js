@@ -161,7 +161,7 @@
     bgAudio.preload='metadata';
     bgAudio.loop=true;
     bgAudio.playsInline=true;
-    bgAudio.volume=BG_VOLUME;
+    bgAudio.volume=BG_VOLUME*(window.__tfwMasterVolume?.()??1);
     window.__tfwAmbientAudio=bgAudio;
     bgAudio.addEventListener('loadedmetadata',()=>{if(bgWanted&&backgroundAllowed())resyncBackground()});
     bgAudio.addEventListener('play',()=>{
@@ -205,7 +205,7 @@
   }
   function setBgVolume(value,duration=240){
     const a=ensureBackgroundAudio();
-    const to=Math.max(0,Math.min(1,value));
+    const to=Math.max(0,Math.min(1,value*(window.__tfwMasterVolume?.()??1)));
     if(Math.abs(bgVolumeTarget-to)<.001&&Math.abs(a.volume-to)<.008)return;
     bgVolumeTarget=to;
     if(bgVolumeRaf)cancelAnimationFrame(bgVolumeRaf);
@@ -272,6 +272,11 @@
     if(document.body.classList.contains('finale-released')||Date.now()>=releaseEpoch()) event.stopImmediatePropagation();
   },true);
 
+  addEventListener('tfw:volume-change',()=>{
+    // Rebalance the existing stream in place, without restarting or seeking.
+    if(bgAudio)setBgVolume(desiredBgVolume(),130);
+    if(milestoneAudio)milestoneAudio.volume=.98*(window.__tfwMasterVolume?.()??1);
+  });
   addEventListener('tfw:sound-change',event=>{
     const enabled=Boolean(event.detail&&event.detail.enabled);
     bgWanted=enabled;
@@ -330,7 +335,7 @@
     if(milestoneAudio){try{milestoneAudio.pause()}catch{}}
     const audio=new Audio(`assets/audio/milestones/${m.sfx}`);
     milestoneAudio=audio;
-    audio.preload='auto';audio.playsInline=true;audio.volume=.98;
+    audio.preload='auto';audio.playsInline=true;audio.volume=.98*(window.__tfwMasterVolume?.()??1);
     const seekAndPlay=()=>{
       if(milestoneAudio!==audio||!bgWanted)return;
       const duration=Number(audio.duration||0);
