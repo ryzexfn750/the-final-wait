@@ -1,51 +1,40 @@
-/* THE FINAL WAIT — Final Call cinematic, synchronized to JS countdown thresholds.
-   The special layers intentionally inherit every visual treatment of .scene,
-   including parallax, animation, color grading, atmospheric vignette and shade. */
-#hero .final-call-scene{
-  z-index:1!important;
+/* Final Call v35: countdown-synchronised envelope and two photo crossfades.
+   Parent opacity is updated from the countdown, not CSS wall-clock time. */
+#hero .final-call-layer-stack{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  opacity:var(--tfw-final-call-visible,0);
+  pointer-events:none!important;
+  transition:none!important;
+  isolation:isolate;
+}
+#hero .final-call-layer-stack .final-call-scene{
+  background-size:cover!important;
+  background-repeat:no-repeat!important;
   opacity:0!important;
   pointer-events:none!important;
   transition:opacity 1250ms cubic-bezier(.22,.61,.36,1)!important;
   backface-visibility:hidden;
 }
-body.tfw-final-call-active:not(.tfw-final-call-restoring) #hero .final-call-scene.active{
+#hero .final-call-layer-stack .final-call-scene.active{
   opacity:1!important;
 }
-body.tfw-final-call-active.tfw-final-call-restoring #hero .final-call-scene.active{
-  /* Countdown-derived progress, rather than wall-clock animations: both live and
-     preview scrubbing land on the exact frame. */
-  opacity:calc(1 - var(--tfw-final-call-restore,0))!important;
+/* #hero specificity overrides preview and milestone rules which previously
+   forced the title/pill/progress back to opacity:1!important.
+   Leave element dimensions intact so no layout changes occur while fading. */
+body.tfw-final-call-active #hero .hero-title-wrap,
+body.tfw-final-call-active #hero #phasePill,
+body.tfw-final-call-active #hero .countdown-shell,
+body.tfw-final-call-active #hero .release-hud,
+body.tfw-final-call-active #hero .progress-block,
+body.tfw-final-call-active #hero .hero-status,
+body.tfw-final-call-active #hero #nextScene,
+body.tfw-final-call-active #hero .tfw-live-milestone-tag,
+body.tfw-final-call-active .topbar .brand-copy{
+  opacity:calc(1 - var(--tfw-final-call-visible,0))!important;
   transition:none!important;
-}
-/* Keep layout dimensions in place during both dissolves; do not display:none. */
-body.tfw-final-call-active .hero-title-wrap,
-body.tfw-final-call-active #phasePill,
-body.tfw-final-call-active .countdown-shell,
-body.tfw-final-call-active .release-hud,
-body.tfw-final-call-active .progress-block,
-body.tfw-final-call-active .hero-status,
-body.tfw-final-call-active #nextScene,
-body.tfw-final-call-active .tfw-live-milestone-tag{
-  opacity:0!important;
   pointer-events:none!important;
-  transition:opacity 1250ms cubic-bezier(.22,.61,.36,1)!important;
 }
-body.tfw-final-call-active.tfw-final-call-restoring .hero-title-wrap,
-body.tfw-final-call-active.tfw-final-call-restoring #phasePill,
-body.tfw-final-call-active.tfw-final-call-restoring .countdown-shell,
-body.tfw-final-call-active.tfw-final-call-restoring .release-hud,
-body.tfw-final-call-active.tfw-final-call-restoring .progress-block,
-body.tfw-final-call-active.tfw-final-call-restoring .hero-status,
-body.tfw-final-call-active.tfw-final-call-restoring #nextScene,
-body.tfw-final-call-active.tfw-final-call-restoring .tfw-live-milestone-tag{
-  opacity:var(--tfw-final-call-restore,0)!important;
-  transition:none!important;
-}
-/* Continue to use all existing shadows and haze on both photographic layers.
-   The audio analyser, orbit rings, branding, menu and bottom cue are retained. */
-@media(prefers-reduced-motion:reduce){
-  /* Accessibility preference also applies to the legacy scene transitions. */
-  #hero .final-call-scene{transition-duration:250ms!important}
-  body.tfw-final-call-active .hero-title-wrap,
-  body.tfw-final-call-active .countdown-shell{transition-duration:250ms!important}
-}
+/* The whole composition now fades in and out with the same smoothstep
+   envelope as the temporary images. Crossfades between photos stay smooth. */
