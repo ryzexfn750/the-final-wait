@@ -245,8 +245,8 @@ test('V27 audio bars are rendered from FFT and release layout uses real dimensio
   assert.match(css,/transform:none!important/);
   assert.match(css,/max-height 1200ms/);
   assert.match(html,/css\/experience\.css\?v=33/);
-  assert.match(html,/js\/clock\.js\?v=32/);
-  assert.match(html,/js\/milestones\.js\?v=33/);
+  assert.match(html,/js\/clock\.js\?v=39/);
+  assert.match(html,/js\/milestones\.js\?v=39/);
 });
 
 test('V28 starts the release clock without waiting for the next polling cycle',()=>{
@@ -310,8 +310,8 @@ test('V28 release message and secondary-scale elapsed layout are present',()=>{
   assert.match(css,/width:min\(740px,77vw\)!important/);
   assert.match(css,/height:clamp\(72px,7\.8vw,105px\)!important/);
   assert.match(html,/css\/experience\.css\?v=33/);
-  assert.match(html,/js\/clock\.js\?v=32/);
-  assert.match(html,/js\/milestones\.js\?v=33/);
+  assert.match(html,/js\/clock\.js\?v=39/);
+  assert.match(html,/js\/milestones\.js\?v=39/);
 });
 
 
@@ -362,7 +362,7 @@ test('V29 release heading, fireworks and visualizer are brought forward',()=>{
   const js=read('js/milestones.js'),css=section('v29-phase1.css');
   assert.match(js,/<h2><span class="finale-release-kicker">THE WAIT IS OVER!<\/span>/);
   assert.match(js,/WELCOME TO<br>LEONIDA!/);
-  assert.match(js,/if\(canvas\.parentElement!==document\.body\)document\.body\.appendChild\(canvas\)/);
+  assert.match(js,/if\(hero&&canvas\.parentElement!==hero\)hero\.appendChild\(canvas\)/);
   assert.match(js,/const wave=\$\('#finaleVisualizerWrap'\)/);
   assert.match(css,/body\.finale-released canvas#finaleFireworks/);
   assert.match(css,/body\.tfw-visualizer-ready\.finale-released \.finale-visualizer-wrap/);
@@ -455,9 +455,9 @@ test('V29 phase-two typography uses one fixed title footprint',()=>{
   assert.match(css,/margin-top:clamp\(24px,3svh,40px\)!important/);
   assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/css\/experience\.css\?v=33/);
-  assert.match(html,/js\/app\.js\?v=33/);
-  assert.match(html,/js\/clock\.js\?v=32/);
-  assert.match(html,/js\/milestones\.js\?v=33/);
+  assert.match(html,/js\/app\.js\?v=39/);
+  assert.match(html,/js\/clock\.js\?v=39/);
+  assert.match(html,/js\/milestones\.js\?v=39/);
   assert.match(js,/if\(pill&&remaining>0&&remaining<=FINAL_FIVE\)/);
 });
 
@@ -521,7 +521,7 @@ test('V30 fireworks continue beyond one minute with regular and reduced motion',
  for(const reduced of [false,true]){
    let callback=null,dead=false,empty=0,maxEmpty=0;
    const ctx={setTransform(){},clearRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},fill(){},arc(){}};
-   const body={},canvas={parentElement:body,getContext:()=>ctx,
+   const body={},canvas={parentElement:body,appendChild(){},getContext:()=>ctx,
      getBoundingClientRect:()=>({width:1280,height:720})};
    const factory=new Function('document','window','canvas','requestAnimationFrame',
      'matchMedia','devicePixelRatio',
