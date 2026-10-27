@@ -1,0 +1,135 @@
+/* Site polish v39: post-release layout, timeline, pointer effects and footer. */
+
+/* The existing round release title remains the frame. Add the CTA as its
+   final line, growing its vertical area only enough to hold the small copy. */
+body.finale-released #hero .finale-release h2{
+  gap:clamp(5px,.7svh,9px)!important;
+  padding:clamp(17px,2.35svh,26px) clamp(10px,3vw,40px)!important;
+}
+body.finale-released #hero .finale-release h2 .finale-release-date{
+  display:block!important;
+  position:relative!important;
+  z-index:2!important;
+  align-self:center;
+  width:auto!important;
+  max-width:100%!important;
+  margin:clamp(3px,.55svh,6px) auto 0!important;
+  padding:0 3px!important;
+  color:#fff!important;
+  -webkit-text-fill-color:#fff!important;
+  font:900 clamp(11px,1.13vw,17px)/1.3 Arial,Helvetica,sans-serif!important;
+  letter-spacing:.095em!important;
+  text-wrap:balance;
+  text-align:center!important;
+  text-shadow:0 0 13px rgba(255,255,255,.3),0 4px 16px rgba(0,0,0,.75)!important;
+  opacity:1!important;filter:none!important;animation:none!important;
+}
+
+/* Secondary elapsed clock: retain the cards and colors but tone down all
+   emissive layers. These overrides beat the old high-intensity V30 rules. */
+body.finale-released #hero .release-elapsed-clock .time-unit{
+  border-color:rgba(255,180,225,.24)!important;
+  background:linear-gradient(145deg,rgba(14,11,22,.84),rgba(22,13,29,.75))!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),
+    0 6px 17px rgba(0,0,0,.25),
+    0 0 13px rgba(242,63,178,.09),
+    0 0 25px rgba(119,96,255,.055)!important;
+}
+body.finale-released #hero .release-elapsed-clock .time-value{
+  text-shadow:0 0 2px rgba(255,255,255,.60),
+    0 0 11px rgba(255,255,255,.11),
+    0 0 21px rgba(242,63,178,.17),
+    0 5px 12px rgba(0,0,0,.62)!important;
+}
+body.finale-released #hero .release-elapsed-clock .digit-glow{
+  opacity:.16!important;
+  background:radial-gradient(ellipse,rgba(242,63,178,.09),rgba(119,96,255,.03) 48%,transparent 74%)!important;
+}
+
+/* Release fireworks and audio spectrum are scoped to the countdown hero.
+   Position absolute, not fixed; nothing should follow the scrollwheel into
+   other sections. JS also retains these nodes inside #hero. */
+body.finale-released #hero canvas#finaleFireworks{
+  position:absolute!important;
+  inset:0!important;
+  left:0!important;top:0!important;right:0!important;bottom:0!important;
+  width:100%!important;height:100%!important;
+  z-index:17!important;
+  pointer-events:none!important;
+}
+body.tfw-visualizer-ready.finale-released #hero .finale-visualizer-wrap{
+  position:absolute!important;
+  left:50%!important;
+  top:auto!important;
+  bottom:clamp(23px,4svh,52px)!important;
+  translate:-50% 0!important;
+  transform:none!important;
+  margin:0!important;
+  width:min(720px,58vw)!important;
+  height:44px!important;
+  z-index:16!important;
+}
+@media(max-width:900px){
+ body.tfw-visualizer-ready.finale-released #hero .finale-visualizer-wrap{
+   width:min(78vw,540px)!important;height:36px!important;
+ }
+}
+@media(max-width:700px){
+ body.tfw-visualizer-ready.finale-released #hero .finale-visualizer-wrap{
+   width:86vw!important;height:36px!important;bottom:clamp(17px,3svh,30px)!important;
+ }
+ body.finale-released #hero .finale-release h2 .finale-release-date{
+   font-size:clamp(10px,2.55vw,13px)!important;
+   letter-spacing:.06em!important;
+ }
+}
+
+/* Restore comfortable left/right timeline breathing room at full widths.
+   The JS dynamic --timeline-edge padding centers first and last cards. */
+.timeline-viewport{scroll-padding-inline:12px}
+.timeline-viewport .timeline{
+  box-sizing:border-box;
+  padding-left:var(--timeline-edge,24px)!important;
+  padding-right:var(--timeline-edge,24px)!important;
+}
+.timeline-viewport .timeline-item{scroll-snap-align:center!important}
+.timeline-viewport .timeline-visual,.timeline-viewport .timeline-copy{
+  min-width:0;
+}
+
+/* Visually center the GTA VI mark relative to DON'T WAIT ALONE. */
+.share-inner .share-logo{position:relative;left:-10px}
+
+/* Same cinematic pointer light in articles and throughout the homepage. */
+html:not(.tfw-no-pointer) .cursor-glow{
+  width:450px;height:450px;
+  background:radial-gradient(circle,rgba(242,63,178,.105),rgba(255,156,67,.05) 20%,rgba(119,96,255,.06) 40%,transparent 73%);
+  mix-blend-mode:screen;
+}
+.tfw-pointer-dot{
+  position:fixed;z-index:980;
+  width:12px;height:12px;
+  top:0;left:0;
+  transform:translate3d(-100px,-100px,0) translate(-50%,-50%);
+  border-radius:50%;
+  pointer-events:none;
+  opacity:0;
+  background:radial-gradient(circle at 35% 30%,#fff 0 15%,#ff91ce 42%,#8f75ff 85%);
+  box-shadow:0 0 0 1px rgba(255,255,255,.76),0 0 13px rgba(242,63,178,.6),0 0 21px rgba(119,96,255,.35);
+  transition:width .23s ease,height .23s ease,opacity .2s ease,box-shadow .23s ease;
+}
+body.tfw-custom-cursor .tfw-pointer-dot{opacity:1}
+body.tfw-custom-cursor .tfw-pointer-dot.interactive{
+  width:20px;height:20px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.84),0 0 0 6px rgba(242,63,178,.10),0 0 25px rgba(242,63,178,.6);
+}
+@media(pointer:fine){
+ body.tfw-custom-cursor,body.tfw-custom-cursor a,
+ body.tfw-custom-cursor button,body.tfw-custom-cursor summary,
+ body.tfw-custom-cursor [role="button"]{cursor:none!important}
+ body.tfw-custom-cursor input,body.tfw-custom-cursor textarea,
+ body.tfw-custom-cursor select,body.tfw-custom-cursor [contenteditable="true"]{cursor:text!important}
+}
+@media(pointer:coarse),(prefers-reduced-motion:reduce){
+ .tfw-pointer-dot{display:none!important}
+}
