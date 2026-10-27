@@ -264,13 +264,16 @@
     input.classList.remove('invalid');void input.offsetWidth;input.classList.add('invalid');
   }
 
+  let previousStageClass='';
   function stageFor(ms){
-    const ids=['month','two-weeks','week','day','12h','6h','hour','30m','15m','5m','minute','30s','release'];
-    document.body.classList.remove(...ids.map(x=>'countdown-stage-'+x));
     let id='month';
     if(ms<=0)id='release'; else if(ms<=30*SECOND)id='30s'; else if(ms<=MIN)id='minute'; else if(ms<=5*MIN)id='5m';
     else if(ms<=15*MIN)id='15m'; else if(ms<=30*MIN)id='30m'; else if(ms<=HOUR)id='hour'; else if(ms<=6*HOUR)id='6h'; else if(ms<=12*HOUR)id='12h'; else if(ms<=DAY)id='day'; else if(ms<=7*DAY)id='week'; else if(ms<=14*DAY)id='two-weeks';
-    if(ms<=31*DAY)document.body.classList.add('countdown-stage-'+id);
+    const nextStage=ms<=31*DAY?'countdown-stage-'+id:'';
+    if(nextStage===previousStageClass)return;
+    if(previousStageClass)document.body.classList.remove(previousStageClass);
+    if(nextStage)document.body.classList.add(nextStage);
+    previousStageClass=nextStage;
   }
 
   function particles(count=32){
