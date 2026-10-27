@@ -1,0 +1,51 @@
+/* THE FINAL WAIT — Final Call cinematic, synchronized to JS countdown thresholds.
+   The special layers intentionally inherit every visual treatment of .scene,
+   including parallax, animation, color grading, atmospheric vignette and shade. */
+#hero .final-call-scene{
+  z-index:1!important;
+  opacity:0!important;
+  pointer-events:none!important;
+  transition:opacity 1250ms cubic-bezier(.22,.61,.36,1)!important;
+  backface-visibility:hidden;
+}
+body.tfw-final-call-active:not(.tfw-final-call-restoring) #hero .final-call-scene.active{
+  opacity:1!important;
+}
+body.tfw-final-call-active.tfw-final-call-restoring #hero .final-call-scene.active{
+  /* Countdown-derived progress, rather than wall-clock animations: both live and
+     preview scrubbing land on the exact frame. */
+  opacity:calc(1 - var(--tfw-final-call-restore,0))!important;
+  transition:none!important;
+}
+/* Keep layout dimensions in place during both dissolves; do not display:none. */
+body.tfw-final-call-active .hero-title-wrap,
+body.tfw-final-call-active #phasePill,
+body.tfw-final-call-active .countdown-shell,
+body.tfw-final-call-active .release-hud,
+body.tfw-final-call-active .progress-block,
+body.tfw-final-call-active .hero-status,
+body.tfw-final-call-active #nextScene,
+body.tfw-final-call-active .tfw-live-milestone-tag{
+  opacity:0!important;
+  pointer-events:none!important;
+  transition:opacity 1250ms cubic-bezier(.22,.61,.36,1)!important;
+}
+body.tfw-final-call-active.tfw-final-call-restoring .hero-title-wrap,
+body.tfw-final-call-active.tfw-final-call-restoring #phasePill,
+body.tfw-final-call-active.tfw-final-call-restoring .countdown-shell,
+body.tfw-final-call-active.tfw-final-call-restoring .release-hud,
+body.tfw-final-call-active.tfw-final-call-restoring .progress-block,
+body.tfw-final-call-active.tfw-final-call-restoring .hero-status,
+body.tfw-final-call-active.tfw-final-call-restoring #nextScene,
+body.tfw-final-call-active.tfw-final-call-restoring .tfw-live-milestone-tag{
+  opacity:var(--tfw-final-call-restore,0)!important;
+  transition:none!important;
+}
+/* Continue to use all existing shadows and haze on both photographic layers.
+   The audio analyser, orbit rings, branding, menu and bottom cue are retained. */
+@media(prefers-reduced-motion:reduce){
+  /* Accessibility preference also applies to the legacy scene transitions. */
+  #hero .final-call-scene{transition-duration:250ms!important}
+  body.tfw-final-call-active .hero-title-wrap,
+  body.tfw-final-call-active .countdown-shell{transition-duration:250ms!important}
+}

@@ -48,6 +48,7 @@
   let sequenceMusicSource=null;
   let voiceMusicSource=null;
   let ambientMusicSource=null;
+  let finalCallMusicSource=null;
   let musicResumePending=false;
   let releaseEntranceTimer=0;
   let musicData=null;
@@ -465,7 +466,7 @@
   function musicIsPlaying(){
     const ambient=window.__tfwAmbientAudio;
     return !finalSong.paused||!sequenceSong.paused||!voiceSong.paused||
-      Boolean(ambient&&!ambient.paused);
+      Boolean(ambient&&!ambient.paused)||Boolean(window.__tfwFinalCallAudio&&!window.__tfwFinalCallAudio.paused);
   }
 
   function ensureMusicGraph({userGesture=false}={}){
@@ -503,6 +504,11 @@
           ambientMusicSource=musicCtx.createMediaElementSource(ambient);
           ambientMusicSource.connect(musicAnalyser);
         }
+        const finalCallAudio=window.__tfwFinalCallAudio;
+        if(finalCallAudio&&!finalCallMusicSource){
+          finalCallMusicSource=musicCtx.createMediaElementSource(finalCallAudio);
+          finalCallMusicSource.connect(musicAnalyser);
+        }
       };
       attachSources();
       if(musicCtx.state==='suspended'&&(!musicResumePending||userGesture)){
@@ -539,7 +545,7 @@
     let cachedGradient=null;
     let gradientHeight=-1;
     const loop=t=>{
-      const hasSignal=Boolean(soundEnabled()&&musicAnalyser&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(ambientMusicSource||finalMusicSource));
+      const hasSignal=Boolean(soundEnabled()&&musicAnalyser&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(ambientMusicSource||finalMusicSource||finalCallMusicSource));
       // ~30 FPS when real music plays; ~3 FPS while silent. Idle bars
       // remain visible without continuously creating gradients on phones.
       if(t-lastDraw<(hasSignal?(reducedMotion?85:33):(reducedMotion?600:300))){
@@ -874,7 +880,7 @@
     window.dispatchEvent(new CustomEvent('tfw:finale-start',{detail:{remaining,preview:true}}));
   }
 
-  function clearPreviewRaf(){if(previewRaf)cancelAnimationFrame(previewRaf);previewRaf=0;previewPlaying=false}
+  function clearPreviewRaf(){if(previewRaf)cancelAnimationFrame(previewRaf);previewRaf=0;previewPlaying=false;window.__tfwPreviewPlaying=false}
 
   function setStaticPreview(remaining,{syncSlider=true}={}){
     inject();hideCard();clearPreviewRaf();pauseFinaleAudio(false);enterPreviewMode(remaining);lastSecondTick=null;lastRapidBucket=null;
@@ -887,7 +893,7 @@
   function startFinalePreview(startRemaining,{keepPanel=false}={}){
     inject();hideCard();clearPreviewRaf();
     if(!keepPanel)$('#milestonePreviewPanel').hidden=true;
-    const start=Math.max(0,startRemaining);enterPreviewMode(start);previewPlaying=true;previewStartRemaining=start;previewStartedAt=performance.now();lastSecondTick=null;lastRapidBucket=null;
+    const start=Math.max(0,startRemaining);enterPreviewMode(start);previewPlaying=true;window.__tfwPreviewPlaying=true;previewStartRemaining=start;previewStartedAt=performance.now();lastSecondTick=null;lastRapidBucket=null;
     resetRelease({pauseAudio:true});pauseFinaleAudio(true);setPreviewClock(start);updateFinale(start,{playAudio:true,playTicks:true});refreshPreviewCountdown();
     const step=now=>{
       if(!finalePreview||!previewPlaying)return;
@@ -949,6 +955,9 @@
   window.addEventListener('tfw:ambient-pause',()=>{
     if(!musicIsPlaying())startVisualizer();
   });
+  window.addEventListener('tfw:final-call-audio-play',()=>{
+    if(soundEnabled()){ensureMusicGraph();startVisualizer()}
+  });
   window.addEventListener('tfw:countdown',e=>{const ms=Number(e.detail?.remaining);if(Number.isFinite(ms))maybeTrigger(ms,Boolean(e.detail?.preview))});
   window.addEventListener('tfw:sound-change',()=>{
     if(!soundEnabled()){
@@ -968,3 +977,5 @@
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(finalePreview)stopFinalePreview();else if(previewCard)hideCard()}});
   if(Number.isFinite(window.__tfwLastRemaining))maybeTrigger(window.__tfwLastRemaining,false);
 })();
+
+/* tfw-final-call-install-v1 */
