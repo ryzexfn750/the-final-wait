@@ -50,7 +50,7 @@ test('Ten allowed non-repeating slots cover the complete takeover interval',()=>
 test('Audio file, scene filter integration and preview state are present',()=>{
  assert.ok(existsSync(new URL('../assets/audio/final-call-29m55s.mp3',import.meta.url)));
  assert.match(read('index.html'),/css\/final-call\.css\?v=38/);
- assert.match(read('index.html'),/js\/final-call\.js\?v=36/);
+ assert.match(read('index.html'),/js\/final-call\.js\?v=39/);
  assert.match(read('js/milestones.js'),/__tfwFinalCallAudio/);
  assert.match(read('js/milestones.js'),/__tfwPreviewPlaying=true/);
  assert.match(read('js/milestones.js'),/tfw:final-call-audio-play/);
