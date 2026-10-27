@@ -565,14 +565,20 @@ function updateTimelineProgress(){
 function syncTimelineEdge(){
   const viewport=$('#timelineViewport'),list=$('#timelineList'),first=$('.timeline-item');
   if(!viewport||!list||!first)return;
-  list.style.setProperty('--timeline-edge',`${Math.max(0,(viewport.clientWidth-first.offsetWidth)/2)}px`);
+  // Equal track padding lets the first and last cards reach the true center.
+  const edge=Math.max(16,(viewport.clientWidth-first.offsetWidth)/2);
+  list.style.setProperty('--timeline-edge',`${edge}px`);
 }
 function scrollTimelineTo(index,instant=false){
   const viewport=$('#timelineViewport'),items=$$('.timeline-item');if(!viewport||!items.length)return;
   timelineTarget=Math.max(0,Math.min(items.length-1,index));
   const target=items[timelineTarget];
   const left=target.getBoundingClientRect().left-viewport.getBoundingClientRect().left+viewport.scrollLeft+(target.offsetWidth-viewport.clientWidth)/2;
-  viewport.scrollTo({left:Math.max(0,Math.min(viewport.scrollWidth-viewport.clientWidth,left)),behavior:instant||matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
+  const offset=Math.max(0,Math.min(viewport.scrollWidth-viewport.clientWidth,left));
+  // Keep button state responsive even when smooth scrolling has not settled.
+  $('#timelinePrev').disabled=timelineTarget===0;
+  $('#timelineNext').disabled=timelineTarget===items.length-1;
+  viewport.scrollTo({left:offset,behavior:instant||matchMedia('(prefers-reduced-motion:reduce)').matches?'instant':'smooth'});
 }
 function bindTimeline(){
   const viewport=$('#timelineViewport');if(!viewport)return;
@@ -589,7 +595,9 @@ function bindTimeline(){
     const end=()=>{if(!drag)return;drag=null;viewport.classList.remove('dragging');updateTimelineProgress();scrollTimelineTo(timelineTarget)};
     viewport.addEventListener('pointerup',end);viewport.addEventListener('pointercancel',end);
   }
-  new ResizeObserver(()=>{syncTimelineEdge();scrollTimelineTo(timelineTarget,true)}).observe(viewport);
+  if('ResizeObserver' in window){
+    new ResizeObserver(()=>{syncTimelineEdge();scrollTimelineTo(timelineTarget,true)}).observe(viewport);
+  }else window.addEventListener('resize',syncTimelineEdge,{passive:true});
   viewport.scrollLeft=0;updateTimelineProgress();
 }
 
@@ -730,8 +738,22 @@ function routeLabelFor(href){
   return 'LOADING THE FINAL WAIT';
 }
 
+function syncSectionHash(){
+  // Reflect the section being read, not merely the last clicked shortcut.
+  // replaceState keeps a wheel-scroll session out of the Back button stack.
+  const sections=['hero','today','timeline','intel','share']
+    .map(id=>document.getElementById(id)).filter(Boolean);
+  if(!sections.length)return;
+  const threshold=window.scrollY+(els.topbar?.offsetHeight||0)+Math.min(170,innerHeight*.32);
+  let active=sections[0];
+  for(const section of sections){
+    if(section.getBoundingClientRect().top+window.scrollY<=threshold)active=section;
+  }
+  const hash=active.id==='hero'?'':'#'+active.id;
+  if(location.hash!==hash)history.replaceState(null,'',location.pathname+location.search+hash);
+}
 function bindNavigationTransitions(){
-  $$('a[href]').forEach(a=>{
+  $('a[href]').forEach(a=>{
     if(a.dataset.transitionBound) return;
     const href=a.getAttribute('href')||'';
     if(href.startsWith('#')){
@@ -753,10 +775,20 @@ function bindNavigationTransitions(){
     }
   });
   window.addEventListener('pageshow',hideRouteLoader);
+  let scrollHashFrame=0;
+  window.addEventListener('scroll',()=>{
+    if(!scrollHashFrame)scrollHashFrame=requestAnimationFrame(()=>{
+      scrollHashFrame=0;syncSectionHash();
+    });
+  },{passive:true});
 }
 
 // Ambient audio belongs to clock.js; finale audio belongs to milestones.js.
 let soundWanted=storage.get('tfw_sound')!=='off';
+window.addEventListener('tfw:sound-change',event=>{
+  soundWanted=Boolean(event.detail?.enabled);
+  updateSoundUI();
+});
 function updateSoundUI(){
   [$('#soundButton'),$('#mobileSoundButton')].forEach(button=>{
     if(!button)return;
@@ -791,7 +823,8 @@ function bindUi(){
   $('#mobileZoneButton')?.addEventListener('click',openTimezonePicker);
   els.timezoneSearch.addEventListener('input',()=>renderTimeZones(els.timezoneSearch.value));
   $('#fullscreenButton').addEventListener('click',toggleFullscreen); $('#mobileFullscreenButton').addEventListener('click',toggleFullscreen); if(!document.documentElement.requestFullscreen){$('#fullscreenButton').hidden=true;$('#mobileFullscreenButton').hidden=true}
-  $('#soundButton').addEventListener('click',e=>{e.stopPropagation();toggleSound()}); $('#mobileSoundButton').addEventListener('click',e=>{e.stopPropagation();toggleSound()}); els.menuButton.addEventListener('click',toggleMobileMenu); document.addEventListener('pointerdown',e=>{if(!els.mobileMenu.hidden&&!els.mobileMenu.contains(e.target)&&!els.menuButton.contains(e.target))closeMobileMenu()}); $$('#mobileMenu a').forEach(a=>a.addEventListener('click',closeMobileMenu));
+  // SOUND buttons open the shared mute/volume popover (js/audio-controls.js).
+  els.menuButton.addEventListener('click',toggleMobileMenu); document.addEventListener('pointerdown',e=>{if(!els.mobileMenu.hidden&&!els.mobileMenu.contains(e.target)&&!els.menuButton.contains(e.target))closeMobileMenu()}); $$('#mobileMenu a').forEach(a=>a.addEventListener('click',closeMobileMenu));
   $$('#intelFilter button').forEach(b=>b.addEventListener('click',()=>{$$('#intelFilter button').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderIntel(b.dataset.filter);track('intel_filter',{filter:b.dataset.filter})}));
   $('#analyticsAccept').addEventListener('click',()=>{storage.set('tfw_analytics','yes');els.analyticsConsent.hidden=true;loadAnalytics(SITE_CONFIG.gaMeasurementId.trim())}); $('#analyticsDecline').addEventListener('click',()=>{storage.set('tfw_analytics','no');els.analyticsConsent.hidden=true}); $('#privacyButton').addEventListener('click',()=>{storage.remove('tfw_analytics');els.analyticsConsent.hidden=false});
   document.addEventListener('keydown',e=>{keepModalFocus(e);if(e.key==='Escape'){closeModals();closeMobileMenu()}}); document.addEventListener('visibilitychange',()=>{if(document.hidden)stopSceneRotation();else scheduleSceneRotation()});
@@ -802,7 +835,18 @@ function bindUi(){
 
 async function init(){
   updateSoundUI(); bindUi(); bindParallax(); initAnalytics(); updateZoneUI();
-  try{await loadScenes();await loadToday();renderTimeline();renderIntel();observeReveals();bindMagnetic();bindTilts();bindTimeline();bindNavigationTransitions();updateTimelineProgress()}catch(error){console.error(error);showToast('SOME VISUAL ASSETS COULD NOT LOAD')}
+  try{
+    await loadScenes();
+    try{await loadToday()}catch(error){console.error('Today content unavailable:',error)}
+    renderTimeline();
+    renderIntel();
+  }catch(error){
+    console.error('Could not initialize site content:',error);
+    showToast('SOME VISUAL ASSETS COULD NOT LOAD');
+  }
+  // Interaction initialization is independent from content fetch failures.
+  observeReveals();bindMagnetic();bindTilts();bindTimeline();
+  bindNavigationTransitions();updateTimelineProgress();
   startCountdownClock();
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden) safeCountdownTick(); });
   const initialHash=window.__tfwInitialHash;
@@ -818,6 +862,7 @@ async function init(){
   }else{
     document.documentElement.classList.remove('anchor-loading');
   }
+  syncSectionHash();
   document.dispatchEvent(new Event('tfw:content-ready'));
 
 }
