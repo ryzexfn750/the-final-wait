@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 const JS=readFileSync(new URL('../js/final-call.js',import.meta.url),'utf8');
 
-test('Final Call advances across all 14 unique images and restores at exact thresholds', async()=>{
+test('Final Call uses ten allowed images with exact bidirectional dissolves', async()=>{
  class Classes{
    constructor(){this.values=new Set()}
    add(...keys){keys.forEach(k=>this.values.add(k))}
@@ -13,7 +13,7 @@ test('Final Call advances across all 14 unique images and restores at exact thre
  }
  class Element{
    constructor(){this.classList=new Classes();this.data={};this.dataset={};this.style={setProperty:(k,v)=>this.data[k]=v,removeProperty:k=>delete this.data[k]}}
-   setAttribute(){}removeAttribute(){}
+   setAttribute(){}removeAttribute(){}appendChild(child){(this.children??=[]).push(child)}
  }
  const handlers=new Map();
  const on=(name,fn)=>handlers.set(name,[...(handlers.get(name)||[]),fn]);
@@ -37,19 +37,22 @@ test('Final Call advances across all 14 unique images and restores at exact thre
    CustomEvent:class{constructor(type,opts){this.type=type;this.detail=opts?.detail}}});
  const debug=window.__tfwFinalCallDebug;
  async function frame(remaining,preview=true){tickTime+=310;send('tfw:countdown',{remaining,preview});await Promise.resolve();await Promise.resolve();await Promise.resolve();}
- await frame(384051);assert.equal(body.classList.contains('tfw-final-call-active'),false);
- await frame(384050);assert.equal(body.classList.contains('tfw-final-call-active'),true);
+ await frame(387001);assert.equal(body.classList.contains('tfw-final-call-active'),false);
+ await frame(387000);assert.equal(body.classList.contains('tfw-final-call-active'),true);
+ assert.equal(body.data['--tfw-final-call-visible'],'0.00000');
+ await frame(385350);assert.equal(body.data['--tfw-final-call-visible'],'0.50000');
+ await frame(383700);assert.equal(body.data['--tfw-final-call-visible'],'1.00000');
  const permutation=debug.getOrder();
- assert.equal(permutation.length,14);assert.equal(new Set(permutation).size,14);
+ assert.deepEqual(Array.from(permutation).sort((a,b)=>a-b),[1,2,3,4,5,8,9,11,12,14]);
  const presented=new Set();
- for(let i=0;i<14;i++){
-   await frame(384050-(i+.05)*debug.IMAGE_DURATION);
+ for(let i=0;i<10;i++){
+   await frame(387000-(i+.05)*debug.IMAGE_DURATION);
    await new Promise(resolve=>setImmediate(resolve));
    presented.add(body.dataset.tfwFinalCallImage);
  }
- assert.equal(presented.size,14);
+ assert.equal(presented.size,10);
  await frame(306500);assert.equal(body.classList.contains('tfw-final-call-restoring'),true);
- await frame(305250);assert.equal(body.data['--tfw-final-call-restore'],'0.50000');
+ await frame(305250);assert.equal(body.data['--tfw-final-call-visible'],'0.50000');
  await frame(304000);assert.equal(body.classList.contains('tfw-final-call-active'),false);
  await frame(1795500);assert.equal(debug.getAudio().paused,false);
  window.__tfwPreviewPlaying=false;
