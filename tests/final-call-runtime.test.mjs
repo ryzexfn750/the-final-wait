@@ -29,8 +29,14 @@ test('Final Call uses ten allowed images with exact bidirectional dissolves', as
    pause(){this.paused=true}
  }
  class ImageMock{set src(v){this.location=v;this.naturalWidth=960}decode(){return Promise.resolve()}}
+ const beeps=[];
+ class BeepContextMock{
+   constructor(){this.state='running';this.currentTime=0;this.destination={}}
+   createOscillator(){return {frequency:{setValueAtTime(){}},connect(){},start(){beeps.push(1)},stop(){}}}
+   createGain(){return {gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}}}
+ }
  let tickTime=0,seed=60;
- const window={__tfwPreviewPlaying:true,crypto:{getRandomValues(a){a[0]=(seed++*1664525+1013904223)>>>0}},addEventListener:on,
+ const window={__tfwPreviewPlaying:true,AudioContext:BeepContextMock,crypto:{getRandomValues(a){a[0]=(seed++*1664525+1013904223)>>>0}},addEventListener:on,
    dispatchEvent:e=>send(e.type,e.detail)};
  runInNewContext(JS,{window,document,Image:ImageMock,Audio:AudioMock,matchMedia:()=>({matches:true}),localStorage:{getItem:()=> 'on'},
    performance:{now:()=>tickTime},console,Math,Uint32Array,Promise,Number,String,
@@ -54,6 +60,14 @@ test('Final Call uses ten allowed images with exact bidirectional dissolves', as
  await frame(306500);assert.equal(body.classList.contains('tfw-final-call-restoring'),true);
  await frame(305250);assert.equal(body.data['--tfw-final-call-visible'],'0.50000');
  await frame(304000);assert.equal(body.classList.contains('tfw-final-call-active'),false);
+ // Beep on -05:06, -05:05, -05:04, -05:03, -05:02, -05:01.
+ // Never sound at -05:00. No catch-up sounds on seek jumps.
+ for(let sec=306;sec>=300;sec--){
+   await frame(sec*1000+30);
+   await frame(sec*1000);
+   await frame(sec*1000-30);
+ }
+ assert.equal(beeps.length,6,'beeps only on six requested second boundaries');
  await frame(1795500);assert.equal(debug.getAudio().paused,false);
  window.__tfwPreviewPlaying=false;
  await frame(1795450);assert.equal(debug.getAudio().paused,true,'a stopped preview should not play audio');
