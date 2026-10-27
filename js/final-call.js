@@ -26,7 +26,7 @@
   const mobile=()=>matchMedia('(max-width:700px)').matches;
   const pathFor=n=>`assets/final-call/${mobile()?'mobile':'desktop'}/final-call-${String(n).padStart(2,'0')}.webp`;
   const audio=new Audio();
-  audio.preload='none'; audio.playsInline=true; audio.loop=false; audio.volume=.72;
+  audio.preload='none'; audio.playsInline=true; audio.loop=false; audio.volume=.72*(window.__tfwMasterVolume?.()??1);
   window.__tfwFinalCallAudio=audio;
   let audioPrimed=false,audioStartPending=false,playPromise=null;
   let soundRetryAt=0,lastAudioCheck=-Infinity;
@@ -247,6 +247,9 @@
   window.addEventListener('tfw:countdown',e=>{
     const v=Number(e.detail?.remaining);
     if(Number.isFinite(v))synchronize(v,Boolean(e.detail?.preview));
+  });
+  window.addEventListener('tfw:volume-change',()=>{
+    audio.volume=.72*(window.__tfwMasterVolume?.()??1);
   });
   window.addEventListener('tfw:sound-change',e=>{
     if(e.detail?.enabled===false){pauseAudio();return}
