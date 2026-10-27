@@ -314,7 +314,7 @@ function readySceneImage(scene){
     })
   ).catch(error=>{sceneDecodeCache.delete(src);throw error});
   sceneDecodeCache.set(src,job);
-  if(sceneDecodeCache.size>16)sceneDecodeCache.delete(sceneDecodeCache.keys().next().value);
+  if(sceneDecodeCache.size>(isMobile()?10:16))sceneDecodeCache.delete(sceneDecodeCache.keys().next().value);
   return job;
 }
 function preloadChoice(choice){
@@ -330,7 +330,7 @@ function releaseChoiceForCursor(cursor){
 function primeReleaseSceneSequence(){
   if(releaseSequencePrimed||!scenes.length)return;
   releaseSequencePrimed=true;
-  releaseSceneIds.forEach((_,i)=>{const choice=releaseChoiceForCursor(i);if(choice)setTimeout(()=>preloadChoice(choice),i*85)});
+  releaseSceneIds.slice(0,isMobile()?4:releaseSceneIds.length).forEach((_,i)=>{const choice=releaseChoiceForCursor(i);if(choice)setTimeout(()=>preloadChoice(choice),i*(isMobile()?240:85))});
 }
 function startReleaseSceneSequence(){
   primeReleaseSceneSequence();
@@ -373,7 +373,7 @@ function changeScene(forceChoice=null, allowFinale=false){
       recentScenes.push(currentIndex);
       if(recentScenes.length>8)recentScenes.shift();
       updateSceneCounter();
-      preloadChoice(pickNextScene());
+      if(!document.body.classList.contains('finale-scene-rush'))preloadChoice(pickNextScene());
       track('scene_change',{scene:choice.scene.id});
       resolve(true);
     }));
@@ -454,17 +454,25 @@ function primeFinaleSceneDeck(){
   finaleSceneDeck=candidates.slice(0,Math.min(20,candidates.length));
   finaleSceneCursor=0;
   // Prime a smaller deck during the five-minute lead-in so the final-second rush stays smooth without overloading decoding.
-  finaleSceneDeck.forEach((choice,i)=>setTimeout(()=>preloadChoice(choice),i*120));
+  finaleSceneDeck.slice(0,isMobile()?9:finaleSceneDeck.length).forEach((choice,i)=>setTimeout(()=>preloadChoice(choice),i*(isMobile()?240:120)));
 }
 
 window.addEventListener('tfw:finale-start',()=>{primeFinaleSceneDeck();primeReleaseSceneSequence()});
 // The finale controller can request scene changes faster than the normal 10s rotation.
 // This path intentionally bypasses the final-minute lock while preserving the normal lock elsewhere.
+let finaleScenePending=false;
 window.addEventListener('tfw:finale-scene-step',()=>{
   if(document.hidden || !scenes.length || currentPhase==='released')return;
+  // On phones, only one decoded-image swap may be outstanding at a time.
+  // Keep the full deck and every crossfade, but do not queue stale decodes.
+  if(isMobile()&&finaleScenePending)return;
   primeFinaleSceneDeck();
   const choice=finaleSceneDeck.length?finaleSceneDeck[finaleSceneCursor++%finaleSceneDeck.length]:null;
-  changeScene(choice,true);
+  const swap=changeScene(choice,true);
+  if(isMobile()){
+    finaleScenePending=true;
+    swap.finally(()=>{finaleScenePending=false});
+  }
 });
 window.addEventListener('tfw:finale-release',()=>{
   if(!scenes.length)return;
@@ -530,7 +538,7 @@ function updateTimelineProgress(){
   els.timelineProgress.style.width=`${(index+1)/items.length*100}%`;
   $('#timelinePrev').disabled=index===0;
   $('#timelineNext').disabled=index===items.length-1;
-  const label=$('#timelinePosition');if(label)label.textContent=`${String(index+1).padStart(2,'0')} / ${items.length} · ${TIMELINE[index].date}`;
+  const label=$('#timelinePosition');if(label)label.textContent=matchMedia('(max-width:700px)').matches?`${String(index+1).padStart(2,'0')} / ${items.length}`:`${String(index+1).padStart(2,'0')} / ${items.length} · ${TIMELINE[index].date}`;
   timelineTarget=index;
 }
 function syncTimelineEdge(){
@@ -762,12 +770,12 @@ function bindUi(){
   $('#mobileZoneButton')?.addEventListener('click',openTimezonePicker);
   els.timezoneSearch.addEventListener('input',()=>renderTimeZones(els.timezoneSearch.value));
   $('#fullscreenButton').addEventListener('click',toggleFullscreen); $('#mobileFullscreenButton').addEventListener('click',toggleFullscreen); if(!document.documentElement.requestFullscreen){$('#fullscreenButton').hidden=true;$('#mobileFullscreenButton').hidden=true}
-  $('#soundButton').addEventListener('click',e=>{e.stopPropagation();toggleSound()}); $('#mobileSoundButton').addEventListener('click',e=>{e.stopPropagation();toggleSound()}); els.menuButton.addEventListener('click',toggleMobileMenu); $$('#mobileMenu a').forEach(a=>a.addEventListener('click',closeMobileMenu));
+  $('#soundButton').addEventListener('click',e=>{e.stopPropagation();toggleSound()}); $('#mobileSoundButton').addEventListener('click',e=>{e.stopPropagation();toggleSound()}); els.menuButton.addEventListener('click',toggleMobileMenu); document.addEventListener('pointerdown',e=>{if(!els.mobileMenu.hidden&&!els.mobileMenu.contains(e.target)&&!els.menuButton.contains(e.target))closeMobileMenu()}); $$('#mobileMenu a').forEach(a=>a.addEventListener('click',closeMobileMenu));
   $$('#intelFilter button').forEach(b=>b.addEventListener('click',()=>{$$('#intelFilter button').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderIntel(b.dataset.filter);track('intel_filter',{filter:b.dataset.filter})}));
   $('#analyticsAccept').addEventListener('click',()=>{storage.set('tfw_analytics','yes');els.analyticsConsent.hidden=true;loadAnalytics(SITE_CONFIG.gaMeasurementId.trim())}); $('#analyticsDecline').addEventListener('click',()=>{storage.set('tfw_analytics','no');els.analyticsConsent.hidden=true}); $('#privacyButton').addEventListener('click',()=>{storage.remove('tfw_analytics');els.analyticsConsent.hidden=false});
   document.addEventListener('keydown',e=>{keepModalFocus(e);if(e.key==='Escape'){closeModals();closeMobileMenu()}}); document.addEventListener('visibilitychange',()=>{if(document.hidden)stopSceneRotation();else scheduleSceneRotation()});
   let idleTimer; const wake=()=>{els.topbar.classList.remove('idle');clearTimeout(idleTimer);if(scrollY<innerHeight*.7&&matchMedia('(pointer:fine)').matches)idleTimer=setTimeout(()=>els.topbar.classList.add('idle'),4800)};
-  window.addEventListener('scroll',()=>{els.topbar.classList.toggle('scrolled',scrollY>30);$('#returnCountdown')?.classList.toggle('visible',scrollY>innerHeight*.72);updateTimelineProgress();wake()},{passive:true}); ['pointermove','keydown'].forEach(e=>window.addEventListener(e,wake,{passive:true})); wake();
+  window.addEventListener('scroll',()=>{els.topbar.classList.toggle('scrolled',scrollY>30);$('#returnCountdown')?.classList.toggle('visible',scrollY>innerHeight*.72);const tl=$('#timelineViewport');if(tl){const box=tl.getBoundingClientRect();if(box.bottom>0&&box.top<innerHeight)updateTimelineProgress()}wake()},{passive:true}); ['pointermove','keydown'].forEach(e=>window.addEventListener(e,wake,{passive:true})); wake();
   window.addEventListener('resize',()=>{syncTimelineEdge();const next=isMobile();if(next!==mobileState&&scenes.length){mobileState=next;const current=scenes[currentIndex],active=activeLayer===0?els.sceneA:els.sceneB;active.style.backgroundImage=`url("${srcFor(current)}")`;active.style.backgroundPosition=positionFor(current);loadToday();renderIntel($('#intelFilter .active')?.dataset.filter||'ALL')}updateTimelineProgress()},{passive:true});
 }
 
