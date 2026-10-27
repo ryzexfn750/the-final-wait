@@ -25,7 +25,7 @@ test('all four public pages link to existing local CSS, scripts, icons and pages
    const expected=page==='index.html'?2:1;
    assert.equal(styles.length,expected,page+': unexpected stylesheet count');
    assert.match(html,/css\/base\.css\?v=31/);
-   if(page==='index.html')assert.match(html,/css\/experience\.css\?v=31/);
+   if(page==='index.html')assert.match(html,/css\/experience\.css\?v=32/);
  }
 });
 

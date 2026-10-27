@@ -5,8 +5,9 @@ const root=new URL('../',import.meta.url);
 const read=name=>readFileSync(new URL(name,root),'utf8');
 test('V32 mobile layout is loaded after legacy styles',()=>{
   const html=read('index.html');
-  assert.ok(html.indexOf('css/mobile-layout.css')>html.indexOf('css/experience.css'));
-  const css=read('css/mobile-layout.css');
+  assert.ok(html.includes('css/experience.css?v=32'));
+  assert.ok(!html.includes('css/mobile-layout.css'));
+  const css=read('css/experience.css').split('/* === EXPERIENCE: mobile-v32-phase1.css === */')[1].split('/* === EXPERIENCE: mobile-v32-phase2.css === */')[0];
   for(const required of ['.mobile-menu[hidden]','body:not(.final-five-active):not(.finale-released) #heroTitle','.timeline-controls','.timeline:before','tfw-visualizer-ready'])assert.ok(css.includes(required),required);
 });
 test('V32 timeline toolbar uses an untruncated mobile counter',()=>{
@@ -29,5 +30,5 @@ test('V32 phase two uses a reusable FFT gradient and bounded full-duration firew
   assert.match(finale,/maxParticles=matchMedia/);
   assert.match(finale,/lastFireworkPhysics/);
   assert.match(finale,/if\(releaseShown\|\|fireworks\.length\)fireworksRaf=requestAnimationFrame\(loop\)/);
-  assert.ok(read('css/mobile-performance.css').includes('canvas#finaleFireworks'));
+  assert.ok(read('css/experience.css').split('/* === EXPERIENCE: mobile-v32-phase2.css === */')[1].includes('canvas#finaleFireworks'));
 });
