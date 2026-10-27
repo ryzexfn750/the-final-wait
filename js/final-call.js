@@ -6,12 +6,18 @@
   'use strict';
   const SECOND=1000,MINUTE=60*SECOND;
   const AUDIO_START=29*MINUTE+55_500;      // -29:55.500
-  const IMAGE_START=6*MINUTE+24_050;       // -06:24.050
-  const RETURN_START=5*MINUTE+6_500;      // -05:06.500
-  const RETURN_END=5*MINUTE+4_000;        // -05:04.000
-  const PRELOAD_IMAGES=7*MINUTE;           // prime 35.95s early
-  const PRELOAD_AUDIO=30*MINUTE+15_000;    // prime 19.5s early
-  const COUNT=14, IMAGE_DURATION=(IMAGE_START-RETURN_START)/COUNT;
+  const IMAGE_START=6*MINUTE+24_050;       // -06:24.050 nominal takeover marker
+  const ENTER_START=6*MINUTE+27_000;       // -06:27.000: begin both dissolves
+  const ENTER_END=6*MINUTE+23_700;         // -06:23.700: enter dissolve complete
+  const RETURN_START=5*MINUTE+6_500;       // -05:06.500
+  const RETURN_END=5*MINUTE+4_000;         // -05:04.000
+  const BEEP_FIRST=5*MINUTE+6_000;         // -05:06.000, first whole-second beep
+  const BEEP_LAST=5*MINUTE+1_000;          // -05:01.000, last beep (-05:00 excluded)
+  const PRELOAD_IMAGES=7*MINUTE;
+  const PRELOAD_AUDIO=30*MINUTE+15_000;
+  // BG_06, BG_07, BG_10 and BG_13 stay in assets but are never selected.
+  const IMAGE_IDS=Object.freeze([1,2,3,4,5,8,9,11,12,14]);
+  const COUNT=IMAGE_IDS.length, IMAGE_DURATION=(ENTER_START-RETURN_START)/COUNT;
   const AUDIO_PATH='assets/audio/final-call-29m55s.mp3';
   const root=document.documentElement, body=document.body;
   const hero=document.getElementById('hero');
@@ -24,6 +30,7 @@
   window.__tfwFinalCallAudio=audio;
   let audioPrimed=false,audioStartPending=false,playPromise=null;
   let soundRetryAt=0,lastAudioCheck=-Infinity;
+  let beepContext=null,lastBeepSecond=null;
   let lastRemaining=Infinity,preview=false;
   let imagesPrimed=false,shuffle=null,imageJobs=[];
   const slotResolvers=[];
@@ -32,13 +39,18 @@
   let inWindow=false,restoring=false;
   let front=0;
   const layers=[];
-
+  // One common opacity envelope preserves exact countdown-driven fades
+  // while the two children retain independent smooth photo crossfades.
+  const sceneStack=document.createElement('div');
+  sceneStack.className='final-call-layer-stack';
+  sceneStack.setAttribute('aria-hidden','true');
+  hero.insertBefore(sceneStack,document.querySelector('#hero .hero-shade'));
   for(let i=0;i<2;i++){
     const layer=document.createElement('div');
     layer.className='scene final-call-scene';
     layer.setAttribute('aria-hidden','true');
     layer.id='finalCallScene'+(i?'B':'A');
-    hero.insertBefore(layer,document.querySelector('#hero .hero-shade'));
+    sceneStack.appendChild(layer);
     layers.push(layer);
   }
 
@@ -49,7 +61,7 @@
     return soundEnabled()&&(!preview||window.__tfwPreviewPlaying===true);
   }
   function randomOrder(){
-    const order=Array.from({length:COUNT},(_,i)=>i+1);
+    const order=IMAGE_IDS.slice();
     for(let i=order.length-1;i>0;i--){
       let r;
       if(window.crypto?.getRandomValues){const a=new Uint32Array(1);window.crypto.getRandomValues(a);r=a[0]/4294967296}
@@ -97,7 +109,9 @@
     job.then(img=>{
       if(token!==pendingImageToken||!inWindow||!img)return;
       incoming.style.backgroundImage=`url("${src}")`;
-      incoming.style.backgroundPosition='center center';
+      // Move the photograph downward to retain faces near the top edge.
+      // background-size:cover guarantees there can be no uncovered bands.
+      incoming.style.backgroundPosition=mobile()?'center 10%':'center 18%';
       incoming.classList.add('active');
       outgoing.classList.remove('active');
       front=1-front;
@@ -110,12 +124,16 @@
     layers.forEach(layer=>layer.classList.remove('active'));
     body.removeAttribute('data-tfw-final-call-image');
   }
+  function smoothstep(value){
+    const p=progress(value);
+    return p*p*(3-2*p);
+  }
   function updateImages(remaining){
-    if(remaining>IMAGE_START||remaining<=RETURN_END){
+    if(remaining>ENTER_START||remaining<=RETURN_END){
       if(inWindow){
         inWindow=false;restoring=false;
         body.classList.remove('tfw-final-call-active','tfw-final-call-restoring');
-        body.style.removeProperty('--tfw-final-call-restore');
+        body.style.removeProperty('--tfw-final-call-visible');
         resetImages();
       }
       return;
@@ -123,21 +141,58 @@
     if(!imagesPrimed)preloadImages();
     if(!inWindow){
       inWindow=true;
-      // Restore progress must be set before the class is toggled.
-      body.style.setProperty('--tfw-final-call-restore','0');
+      body.style.setProperty('--tfw-final-call-visible','0');
       body.classList.add('tfw-final-call-active');
     }
+    // Exact entry envelope (-06:27.000 through -06:23.700) for every UI
+    // element and the entire photo stack, including while preview scrubbing.
+    const enter=smoothstep((ENTER_START-remaining)/(ENTER_START-ENTER_END));
+    const restore=remaining<=RETURN_START
+      ?smoothstep((RETURN_START-remaining)/(RETURN_START-RETURN_END)):0;
+    const visibility=enter*(1-restore);
+    body.style.setProperty('--tfw-final-call-visible',visibility.toFixed(5));
     if(remaining<=RETURN_START){
       if(!restoring){restoring=true;body.classList.add('tfw-final-call-restoring')}
-      const raw=progress((RETURN_START-remaining)/(RETURN_START-RETURN_END));
-      const eased=raw*raw*(3-2*raw); // smoothstep, exact 0 and exact 1
-      body.style.setProperty('--tfw-final-call-restore',eased.toFixed(5));
-      // Keep final photo displayed and dissolve back to current ordinary scene.
+      // Keep the last temporary image while it dissolves into normal scenery.
     }else{
       if(restoring){restoring=false;body.classList.remove('tfw-final-call-restoring')}
-      const elapsed=IMAGE_START-remaining;
-      const slot=Math.min(COUNT-1,Math.floor(elapsed/IMAGE_DURATION));
+      const slot=Math.min(COUNT-1,Math.floor((ENTER_START-remaining)/IMAGE_DURATION));
       selectImage(Math.max(0,slot));
+    }
+  }
+
+  function unlockBeepContext(){
+    if(!soundEnabled())return null;
+    const Context=window.AudioContext||window.webkitAudioContext;
+    if(!Context)return null;
+    try{
+      if(!beepContext||beepContext.state==='closed')beepContext=new Context();
+      if(beepContext.state==='suspended')beepContext.resume().catch(()=>{});
+      return beepContext.state==='running'?beepContext:null;
+    }catch{return null}
+  }
+  function playBeep(){
+    const ctx=unlockBeepContext();
+    if(!ctx)return;
+    const now=ctx.currentTime,osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.type='sine';
+    osc.frequency.setValueAtTime(960,now);
+    gain.gain.setValueAtTime(.0001,now);
+    gain.gain.exponentialRampToValueAtTime(.21,now+.008);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+.12);
+    osc.connect(gain);gain.connect(ctx.destination);
+    osc.start(now);osc.stop(now+.13);
+  }
+  function updateBeep(remaining,previous){
+    if(remaining>previous+1000)lastBeepSecond=null; // backward preview seek
+    if(!canPlayAudio()||!Number.isFinite(previous))return;
+    // Never emit catch-up bursts during seeks, tab stalls or long frame gaps.
+    if(remaining>=previous||previous-remaining>250)return;
+    const boundary=Math.ceil(remaining/SECOND)*SECOND;
+    if(boundary<BEEP_LAST||boundary>BEEP_FIRST)return;
+    if(previous>=boundary&&remaining<=boundary&&lastBeepSecond!==boundary){
+      lastBeepSecond=boundary;
+      playBeep();
     }
   }
 
@@ -201,9 +256,11 @@
   }
   function synchronize(remaining,previewClock=false,force=false){
     if(!Number.isFinite(remaining))return;
+    const previous=lastRemaining;
     lastRemaining=remaining;preview=previewClock;
     if(remaining<=PRELOAD_IMAGES && remaining>RETURN_END)preloadImages();
     updateImages(remaining);
+    updateBeep(remaining,previous);
     updateAudio(remaining,force);
   }
   window.addEventListener('tfw:countdown',e=>{
@@ -220,6 +277,7 @@
   audio.addEventListener('ended',()=>pauseAudio());
   ['pointerdown','keydown','touchstart'].forEach(name=>{
     window.addEventListener(name,()=>{
+      unlockBeepContext();
       if(audioWindow(lastRemaining)&&canPlayAudio()&&audio.paused){
         soundRetryAt=0;tryStartAudio(lastRemaining,true);
       }
@@ -235,7 +293,8 @@
   const initial=Number(window.__tfwPreviewRemainingMs??window.__tfwLastRemaining);
   if(Number.isFinite(initial))synchronize(initial,Number.isFinite(Number(window.__tfwPreviewRemainingMs)));
   window.__tfwFinalCallDebug={
-    AUDIO_START,IMAGE_START,RETURN_START,RETURN_END,IMAGE_DURATION,COUNT,
+    AUDIO_START,IMAGE_START,ENTER_START,ENTER_END,RETURN_START,RETURN_END,
+    BEEP_FIRST,BEEP_LAST,IMAGE_DURATION,COUNT,
     getOrder:()=>shuffle?.slice()||[],getSlot:()=>currentSlot,getAudio:()=>audio,
     sync:synchronize
   };
