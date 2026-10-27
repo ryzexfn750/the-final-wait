@@ -22,10 +22,14 @@ test('all four public pages link to existing local CSS, scripts, icons and pages
      assert.ok(existing(file),page+': broken local link: '+ref);
    }
    const styles=[...html.matchAll(/<link\b[^>]*rel=["']stylesheet["'][^>]*>/g)].map(x=>x[0]);
-   const expected=page==='index.html'?2:1;
+   const expected=page==='index.html'?4:1;
    assert.equal(styles.length,expected,page+': unexpected stylesheet count');
    assert.match(html,/css\/base\.css\?v=31/);
-   if(page==='index.html')assert.match(html,/css\/experience\.css\?v=31/);
+   if(page==='index.html'){
+      assert.match(html,/css\/experience\.css\?v=31/);
+      assert.match(html,/css\/mobile-layout\.css\?v=32/);
+      assert.match(html,/css\/mobile-performance\.css\?v=32/);
+    }
  }
 });
 
@@ -51,7 +55,7 @@ test('all entrypoint scripts and module imports resolve after JS relocation',()=
 });
 
 test('all CSS image URLs resolve relative to the new css directory',()=>{
- for(const file of ['base.css','experience.css']){
+ for(const file of ['base.css','experience.css','mobile-layout.css','mobile-performance.css']){
    const css=read('css/'+file);
    for(const match of css.matchAll(/url\(\s*(["']?)(\.\.\/assets\/[^"'()]+)\1\s*\)/g)){
      const path=resolve(root,'css',match[2]);
