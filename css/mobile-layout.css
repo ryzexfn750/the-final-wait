@@ -1,0 +1,57 @@
+/* V32 / Phase 1: phone layout, no effects removed. */
+@media(max-width:900px){
+ #mobileMenu[hidden]{display:none!important}
+ #mobileMenu:not([hidden]){position:fixed!important;inset:76px 12px auto auto!important;width:min(310px,calc(100vw - 24px))!important;max-height:calc(100dvh - 98px);overflow-y:auto;box-sizing:border-box;display:grid!important;padding:12px!important;border:1px solid rgba(255,255,255,.17)!important;border-radius:17px!important;background:linear-gradient(140deg,rgba(23,13,33,.98),rgba(9,7,15,.98))!important;box-shadow:0 22px 72px rgba(0,0,0,.5)!important;transform-origin:top right;animation:tfwMobileMenuIn .24s ease-out both;z-index:210!important}
+ #mobileMenu a,#mobileMenu button{display:block;min-height:44px;line-height:1.2;padding:14px 15px;font-size:10px}
+ body.home-page .section{padding-top:clamp(46px,6svh,70px);padding-bottom:clamp(46px,6svh,70px)}
+ body.home-page .today-section{padding-top:clamp(60px,8svh,82px)}
+ body.home-page .section-head{padding-bottom:clamp(20px,3svh,30px)}
+ body.home-page .intel-head.section{padding-bottom:12px}
+ body.home-page .intel-grid.section{padding-top:16px;padding-bottom:52px}
+ body.home-page .timeline-section{overflow:visible!important}
+ body.home-page .timeline-stage{width:100vw;max-width:100vw}
+ body.home-page .timeline-controls{width:calc(100vw - 32px);max-width:760px;margin:0 auto 15px;box-sizing:border-box;display:flex;gap:12px;flex-wrap:nowrap;align-items:center;justify-content:space-between}
+ body.home-page .timeline-controls>span{flex:1 1 auto;min-width:0;max-width:calc(100% - 108px);white-space:normal;overflow-wrap:break-word;line-height:1.45}
+ body.home-page .timeline-buttons{display:flex;flex:0 0 auto;gap:8px}
+ body.home-page .timeline-arrow{flex:0 0 42px;display:grid;place-items:center;min-width:42px;width:42px;height:42px;font-size:19px}
+ body.home-page .timeline-progressbar{width:calc(100vw - 32px);max-width:760px}
+ body.home-page .timeline-viewport{box-sizing:border-box;width:100%;padding:26px 0 36px!important}
+ body.home-page .timeline-item{height:694px;grid-template-rows:310px 74px 310px;gap:0;overflow:visible!important}
+ body.home-page .timeline::before{top:346px}
+ body.home-page .timeline-visual{height:clamp(175px,24vw,210px)}
+ body.home-page .timeline-copy{box-sizing:border-box;width:100%;min-height:0;max-height:none!important;overflow:visible!important;padding-top:12px}
+ body.home-page .timeline-item:nth-child(even) .timeline-copy{padding:0 0 12px!important}
+ body.home-page .timeline-copy h3{height:auto!important;min-height:0!important;font-size:clamp(20px,3.1vw,25px)!important;line-height:1.08!important;overflow-wrap:anywhere;hyphens:auto;max-width:100%}
+ body.home-page .timeline-copy p{max-width:100%;font-size:12px!important;line-height:1.5!important}
+ body.home-page .timeline-actions{gap:9px;row-gap:12px;margin-top:14px}
+ body.home-page .timeline-node{gap:8px}
+ body.home-page .timeline-node time{max-width:100%;text-align:center}
+}
+@keyframes tfwMobileMenuIn{from{opacity:0;transform:translateY(-8px) scale(.98)}to{opacity:1;transform:none}}
+@media(max-width:560px){
+ body.home-page:not(.final-five-active):not(.finale-released) .hero-title-wrap{height:168px!important;margin-top:clamp(31px,4.5svh,44px)!important;translate:0 10px!important}
+ body.home-page:not(.final-five-active):not(.finale-released) .hero-title-wrap .eyebrow{font-size:clamp(13px,3.7vw,17px)!important;margin-bottom:6px!important}
+ body.home-page:not(.final-five-active):not(.finale-released) #heroTitle,body.home-page.tfw-milestone-live:not(.final-five-active):not(.finale-released) #heroTitle,body.home-page.tfw-preview-stage-title:not(.final-five-active):not(.finale-released) #heroTitle{font-size:clamp(35px,9.5vw,53px)!important;line-height:1.02!important;letter-spacing:-.063em!important}
+ body.home-page .timeline-item{width:min(328px,88vw)!important;flex-basis:min(328px,88vw)!important;padding-inline:clamp(12px,3.3vw,18px)!important}
+ body.home-page .timeline-copy h3{font-size:clamp(20px,6vw,24px)!important}
+ body.home-page .timeline-controls>span{font-size:10px!important;letter-spacing:.08em}
+ body.home-page .timeline-visual{height:194px}
+}
+@media(prefers-reduced-motion:reduce){#mobileMenu:not([hidden]){animation:none!important}}
+
+/* Put the musical analyser above CHANGE SCENE, including the normal
+   soundtrack state. The release view retains its separate centering. */
+@media(max-width:900px){
+ body.home-page.tfw-visualizer-ready:not(.finale-released) .finale-visualizer-wrap,
+ body.home-page.final-five-active:not(.finale-released) .finale-visualizer-wrap{
+   bottom:clamp(105px,13svh,150px)!important;
+   z-index:20!important;
+ }
+}
+@media(max-width:560px){
+ body.home-page.tfw-visualizer-ready:not(.finale-released) .finale-visualizer-wrap,
+ body.home-page.final-five-active:not(.finale-released) .finale-visualizer-wrap{
+   bottom:clamp(110px,14svh,146px)!important;
+   height:36px!important;
+ }
+}
