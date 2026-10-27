@@ -1,0 +1,65 @@
+/* V32 / Phase 2: preserve every mobile effect, reduce the render cost.
+   Canvas frame pacing and native-size image loading are in JS. */
+@media(max-width:900px){
+ /* V20 previously hid these layers entirely on phones; retain them. */
+ html.tfw-perf-mobile .page-noise,
+ html.tfw-perf-mobile .page-grid,
+ html.tfw-perf-mobile .hero-orbit,
+ html.tfw-perf-mobile .scene-sweep{display:block!important}
+ html.tfw-perf-mobile .page-noise{opacity:.025!important}
+ html.tfw-perf-mobile .hero-orbit{opacity:.3!important;will-change:transform}
+ html.tfw-perf-mobile .digit-glow{display:block!important;filter:none!important;opacity:.7!important;background:radial-gradient(ellipse,rgba(242,63,178,.12),transparent 70%)!important}
+ /* Restore actual drift, done with compositor-friendly transforms; outside
+    the viewport the pre-existing IntersectionObserver pauses animations. */
+ html.tfw-perf-mobile .section-backdrop{
+   animation:v6-section-drift 28s ease-in-out infinite alternate!important;
+   filter:none!important;
+   will-change:transform!important;
+ }
+ html.tfw-perf-mobile .today-backdrop{
+   background-image:linear-gradient(180deg,rgba(7,5,10,.48),rgba(7,5,10,.92)),url('../assets/screenshots/mobile/scene-149.webp')!important;
+   opacity:.12!important;
+ }
+ html.tfw-perf-mobile .timeline-backdrop{
+   background-image:linear-gradient(180deg,rgba(7,5,10,.56),rgba(7,5,10,.94)),url('../assets/screenshots/mobile/scene-161.webp')!important;
+   opacity:.11!important;
+ }
+ html.tfw-perf-mobile .intel-backdrop{
+   background-image:linear-gradient(180deg,rgba(7,5,10,.5),rgba(7,5,10,.94)),url('../assets/screenshots/mobile/scene-163.webp')!important;
+   opacity:.1!important;
+ }
+ html.tfw-perf-mobile .intel-image,
+ html.tfw-perf-mobile .newspaper-image,
+ html.tfw-perf-mobile .timeline-visual img,
+ html.tfw-perf-mobile .banner-art img{
+   animation:v7-media-drift 25s ease-in-out infinite alternate!important;
+ }
+ html.tfw-perf-mobile .scene-section:not(.tfw-in-view) .section-backdrop,
+ html.tfw-perf-mobile .scene-section:not(.tfw-in-view) .intel-image,
+ html.tfw-perf-mobile .scene-section:not(.tfw-in-view) .newspaper-image,
+ html.tfw-perf-mobile .scene-section:not(.tfw-in-view) .timeline-visual img,
+ html.tfw-perf-mobile .cinematic-media:not(.motion-visible){
+   animation-play-state:paused!important;
+   will-change:auto!important;
+ }
+ html.tfw-perf-mobile .scene-section.tfw-in-view .section-backdrop,
+ html.tfw-perf-mobile .scene-section.tfw-in-view .intel-image,
+ html.tfw-perf-mobile .scene-section.tfw-in-view .newspaper-image,
+ html.tfw-perf-mobile .scene-section.tfw-in-view .timeline-visual img,
+ html.tfw-perf-mobile .cinematic-media.motion-visible{
+   animation-play-state:running!important;
+ }
+ /* Preserve the original 3D/light atmosphere and fireworks permanently,
+    including after the first 30 seconds of the released state. */
+ html.tfw-perf-mobile body.final-five-active .finale-beat-halo{opacity:.28!important}
+ html.tfw-perf-mobile body.tfw-release-settled canvas#finaleFireworks{display:block!important}
+ html.tfw-perf-mobile body.tfw-release-settled .finale-release:before,
+ html.tfw-perf-mobile body.tfw-release-settled .finale-release:after,
+ html.tfw-perf-mobile body.tfw-release-settled .release-radiance{
+   animation-play-state:running!important;
+ }
+ /* Mobile-specific screenshot instead of a downscaled desktop bitmap. */
+ html.tfw-perf-mobile .share-backdrop{
+   background-image:linear-gradient(90deg,rgba(7,5,10,.94),rgba(7,5,10,.46)),url('../assets/screenshots/mobile/scene-147.webp')!important;
+ }
+}

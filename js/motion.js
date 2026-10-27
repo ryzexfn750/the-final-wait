@@ -31,12 +31,13 @@
     host.innerHTML='<div class="banner-wash"></div><div class="banner-art"><img alt="" decoding="async"><img alt="" decoding="async"></div>';
     const imgs=[...host.querySelectorAll('img')],wash=host.querySelector('.banner-wash');
     let index=0,layer=0,visible=false,busy=false;
-    imgs[0].src=art[0].desktop;imgs[0].classList.add('active');wash.style.backgroundImage=`url("${art[0].desktop}")`;
+    const artSource=scene=>matchMedia('(max-width:700px)').matches?(scene.mobile||scene.desktop):scene.desktop;
+    imgs[0].src=artSource(art[0]);imgs[0].classList.add('active');wash.style.backgroundImage=`url("${artSource(art[0])}")`;
     new IntersectionObserver(([e])=>{visible=e.isIntersecting},{threshold:.05}).observe(host);
     setInterval(async()=>{
       if(!visible||document.hidden||reduce.matches||busy)return;busy=true;
-      const next=(index+1)%art.length,incoming=imgs[1-layer];incoming.src=art[next].desktop;
-      try{await incoming.decode();imgs[layer].classList.remove('active');incoming.classList.add('active');wash.style.backgroundImage=`url("${art[next].desktop}")`;index=next;layer=1-layer}catch{}finally{busy=false}
+      const next=(index+1)%art.length,incoming=imgs[1-layer];incoming.src=artSource(art[next]);
+      try{await incoming.decode();imgs[layer].classList.remove('active');incoming.classList.add('active');wash.style.backgroundImage=`url("${artSource(art[next])}")`;index=next;layer=1-layer}catch{}finally{busy=false}
     },12000);
     const section=host.parentElement;
     section.addEventListener('pointermove',e=>{if(reduce.matches||!fine.matches)return;const r=section.getBoundingClientRect();const nx=(e.clientX-r.left)/r.width-.5,ny=(e.clientY-r.top)/r.height-.5;host.style.setProperty('--banner-x',nx*-14+'px');host.style.setProperty('--banner-y',ny*-10+'px');const artEl=host.querySelector('.banner-art');if(artEl){artEl.style.setProperty('--banner-rx',ny*-2.2+'deg');artEl.style.setProperty('--banner-ry',nx*2.8+'deg')}} ,{passive:true});

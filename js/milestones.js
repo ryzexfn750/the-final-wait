@@ -264,13 +264,17 @@
     input.classList.remove('invalid');void input.offsetWidth;input.classList.add('invalid');
   }
 
+  let lastStageClass='';
   function stageFor(ms){
-    const ids=['month','two-weeks','week','day','12h','6h','hour','30m','15m','5m','minute','30s','release'];
-    document.body.classList.remove(...ids.map(x=>'countdown-stage-'+x));
+
     let id='month';
     if(ms<=0)id='release'; else if(ms<=30*SECOND)id='30s'; else if(ms<=MIN)id='minute'; else if(ms<=5*MIN)id='5m';
     else if(ms<=15*MIN)id='15m'; else if(ms<=30*MIN)id='30m'; else if(ms<=HOUR)id='hour'; else if(ms<=6*HOUR)id='6h'; else if(ms<=12*HOUR)id='12h'; else if(ms<=DAY)id='day'; else if(ms<=7*DAY)id='week'; else if(ms<=14*DAY)id='two-weeks';
-    if(ms<=31*DAY)document.body.classList.add('countdown-stage-'+id);
+    const next=ms<=31*DAY?'countdown-stage-'+id:'';
+    if(next===lastStageClass)return;
+    if(lastStageClass)document.body.classList.remove(lastStageClass);
+    if(next)document.body.classList.add(next);
+    lastStageClass=next;
   }
 
   function particles(count=32){
@@ -515,27 +519,30 @@
     const canvas=$('#finaleVisualizer');if(!canvas||visualizerRaf)return;
     const ctx=canvas.getContext('2d');if(!ctx)return;
     const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const compactCanvas=matchMedia('(max-width:900px)').matches;
     // Reduced-motion users get a calmer lower-FPS analyser, not a frozen one.
     document.body.classList.add('finale-music-live','tfw-visualizer-ready');
     // The widget initially has zero CSS height. Reallocate its pixel
     // buffer whenever it becomes visible or moves into the release view.
+    let drawWidth=0,drawHeight=0;
     const resize=()=>{
-      const r=canvas.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);
+      const r=canvas.getBoundingClientRect(),d=Math.min(compactCanvas?1.3:2,devicePixelRatio||1);
+      drawWidth=r.width;drawHeight=r.height;
       const w=Math.max(1,Math.round(r.width*d)),h=Math.max(1,Math.round(r.height*d));
       if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;ctx.setTransform(d,0,0,d,0,0);}
     };
     visualizerResize=resize;resize();window.addEventListener('resize',resize,{passive:true});
-    let lastDraw=-Infinity;
+    let lastDraw=-Infinity,lastMeasure=-Infinity,lastEnergy='';
     const loop=t=>{
       const hasSignal=Boolean(soundEnabled()&&musicAnalyser&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(ambientMusicSource||finalMusicSource));
       // ~30 FPS when real music plays; ~3 FPS while silent. Idle bars
       // remain visible without continuously creating gradients on phones.
-      if(t-lastDraw<(hasSignal?(reducedMotion?85:33):(reducedMotion?600:300))){
+      if(t-lastDraw<(hasSignal?(reducedMotion?85:(compactCanvas?42:33)):(reducedMotion?600:300))){
         visualizerRaf=requestAnimationFrame(loop);return;
       }
       lastDraw=t;
-      resize();
-      const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);
+      if(drawHeight<=1||t-lastMeasure>=600){resize();lastMeasure=t;}
+      const r={width:drawWidth,height:drawHeight};ctx.clearRect(0,0,r.width,r.height);
       let energy=.025;
       if(hasSignal){
         musicAnalyser.getByteFrequencyData(musicData);
@@ -543,10 +550,20 @@
         for(let i=0;i<take;i++)sum+=musicData[i];
         energy=clamp(sum/(take*255),.025,1);
       }
-      document.documentElement.style.setProperty('--music-energy',energy.toFixed(3));
-      document.documentElement.style.setProperty('--music-scale',(1+energy*.06).toFixed(3));
+      const quantized=(Math.round(energy*100)/100).toFixed(2);
+      if(quantized!==lastEnergy){
+        document.documentElement.style.setProperty('--music-energy',quantized);
+        document.documentElement.style.setProperty('--music-scale',(1+Number(quantized)*.06).toFixed(3));
+        lastEnergy=quantized;
+      }
       const bars=58,centerY=r.height*.52,maxH=Math.max(9,r.height*.43),gap=2,barW=Math.max(1.5,(r.width*.92/bars)-gap),startX=r.width*.04;
       ctx.save();ctx.globalCompositeOperation='lighter';
+      const barGradient=ctx.createLinearGradient(0,centerY-maxH,0,centerY+maxH);
+      barGradient.addColorStop(0,'rgba(119,96,255,.22)');
+      barGradient.addColorStop(.42,'rgba(119,96,255,.76)');
+      barGradient.addColorStop(.58,'rgba(242,63,178,.91)');
+      barGradient.addColorStop(1,'rgba(255,156,67,.22)');
+      ctx.fillStyle=barGradient;
       for(let i=0;i<bars;i++){
         let amp=.04;
         if(hasSignal){
@@ -557,9 +574,9 @@
           amp=clamp(Math.pow(sample/255,.70)*1.32,0,1);
         }
         const curve=Math.sin((i+1)/(bars+1)*Math.PI);const h=2+amp*maxH*(.28+.72*curve);const x=startX+i*((r.width*.92)/bars);
-        const g=ctx.createLinearGradient(0,centerY-h,0,centerY+h);g.addColorStop(0,'rgba(119,96,255,.18)');g.addColorStop(.42,`rgba(119,96,255,${.32+amp*.5})`);g.addColorStop(.58,`rgba(242,63,178,${.36+amp*.56})`);g.addColorStop(1,'rgba(255,156,67,.16)');ctx.fillStyle=g;ctx.fillRect(x,centerY-h,barW,h*2);
+        ctx.globalAlpha=.60+amp*.40;ctx.fillRect(x,centerY-h,barW,h*2);
       }
-      ctx.restore();
+      ctx.globalAlpha=1;ctx.restore();
       if(document.body.classList.contains('finale-music-live'))visualizerRaf=requestAnimationFrame(loop);
       else visualizerRaf=0;
     };
@@ -771,21 +788,26 @@
     // Both motion modes keep celebrating for the entire release state.
     // Reduced motion gets smaller/fewer bursts rather than a one-off volley.
     const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const compactCanvas=matchMedia('(max-width:900px)').matches;
+    let viewWidth=0,viewHeight=0,lastPaint=-Infinity;
     const canvas=$('#finaleFireworks');if(!canvas||fireworksRaf)return;
     if(canvas.parentElement!==document.body)document.body.appendChild(canvas);
     const ctx=canvas.getContext('2d');if(!ctx)return;
     fireworks=[];fireworkNext=0;
-    const resize=()=>{const r=canvas.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d));ctx.setTransform(d,0,0,d,0,0)};
+    const resize=()=>{const r=canvas.getBoundingClientRect(),d=Math.min(compactCanvas?1.35:2,devicePixelRatio||1);viewWidth=r.width;viewHeight=r.height;canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d));ctx.setTransform(d,0,0,d,0,0)};
     resize();window.addEventListener('resize',resize,{passive:true});canvas._tfwResize=resize;
     // Fire an immediate opening volley, without waiting for the first RAF.
-    const opening=canvas.getBoundingClientRect();
+    const opening={width:viewWidth,height:viewHeight};
     if(opening.width>0&&opening.height>0){
       makeBurst(opening.width*.24,opening.height*.37,76,1.22);
       makeBurst(opening.width*.76,opening.height*.32,76,1.22);
       makeBurst(opening.width*.50,opening.height*.23,58,1.03);
     }
     const loop=t=>{
-      const r=canvas.getBoundingClientRect();
+      if(compactCanvas&&t-lastPaint<33){fireworksRaf=requestAnimationFrame(loop);return;}
+      const dt=lastPaint>=0?Math.min(2.3,Math.max(.65,(t-lastPaint)/16.667)):1;
+      lastPaint=t;
+      const r={width:viewWidth,height:viewHeight};
       ctx.globalCompositeOperation='source-over';ctx.clearRect(0,0,r.width,r.height);
       ctx.globalCompositeOperation='lighter';
       // Never depend on particle count to schedule the next burst: sparse
@@ -799,7 +821,7 @@
         fireworkNext=t+(reducedMotion?520+Math.random()*110:490+Math.random()*190);
       }
       fireworks=fireworks.filter(p=>p.life>0.02);
-      for(const p of fireworks){p.trail.push([p.x,p.y]);if(p.trail.length>6)p.trail.shift();p.x+=p.vx;p.y+=p.vy;p.vy+=.035;p.vx*=.992;p.life-=p.decay;ctx.globalAlpha=Math.max(0,p.life);ctx.strokeStyle=p.color;ctx.lineWidth=Math.max(.5,p.size*.5);ctx.beginPath();if(p.trail.length){ctx.moveTo(p.trail[0][0],p.trail[0][1]);for(const q of p.trail)ctx.lineTo(q[0],q[1]);ctx.lineTo(p.x,p.y);ctx.stroke()}ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()}
+      for(const p of fireworks){p.trail.push([p.x,p.y]);if(p.trail.length>6)p.trail.shift();p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=.035*dt;p.vx*=Math.pow(.992,dt);p.life-=p.decay*dt;ctx.globalAlpha=Math.max(0,p.life);ctx.strokeStyle=p.color;ctx.lineWidth=Math.max(.5,p.size*.5);ctx.beginPath();if(p.trail.length){ctx.moveTo(p.trail[0][0],p.trail[0][1]);for(const q of p.trail)ctx.lineTo(q[0],q[1]);ctx.lineTo(p.x,p.y);ctx.stroke()}ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()}
       ctx.globalAlpha=1;
       if(releaseShown||fireworks.length)fireworksRaf=requestAnimationFrame(loop);else stopFireworks(false);
     };

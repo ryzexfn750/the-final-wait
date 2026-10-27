@@ -600,3 +600,48 @@ test('V30 headline wraps at 24h and 6h and does not rewrite a stable stage',()=>
  assert.match(css,/height:152px!important/);
  assert.match(js,/renderMilestoneHeadline\(byId\('heroTitle'\),null\)/);
 });
+
+test('V32 mobile layout keeps scene button separate from FFT, menu and timeline fully visible',()=>{
+ const html=read('index.html'),css=read('css/mobile-layout.css');
+ assert.match(html,/css\/mobile-layout\.css\?v=32/);
+ assert.match(css,/#mobileMenu\[hidden\]\{display:none!important\}/);
+ assert.match(css,/inset:76px 12px auto auto!important/);
+ assert.match(css,/\.timeline-controls>span\{/);
+ assert.match(css,/grid-template-rows:310px 74px 310px/);
+ assert.match(css,/\.timeline::before\{top:346px\}/);
+ assert.match(css,/\.finale-visualizer-wrap\{\s*bottom:clamp\(105px,13svh,150px\)!important/);
+ assert.match(css,/\.hero-title-wrap \.eyebrow\{font-size:clamp\(13px,3\.7vw,17px\)!important/);
+});
+test('V32 stage governor only changes DOM classes when a milestone boundary changes',()=>{
+ const js=read('js/milestones.js');
+ const a=js.indexOf("  let lastStageClass='';");
+ const b=js.indexOf('  function particles(',a);
+ assert.ok(a>=0&&b>a);
+ const operations=[],applied=new Set();
+ const document={body:{classList:{
+   add(c){operations.push('+'+c);applied.add(c)},
+   remove(c){operations.push('-'+c);applied.delete(c)}
+ }}};
+ const stage=new Function('document','DAY','HOUR','MIN','SECOND',
+   js.slice(a,b)+'\nreturn stageFor;')(document,86400000,3600000,60000,1000);
+ for(let i=0;i<150;i++)stage(900000);
+ assert.deepEqual(operations,['+countdown-stage-15m']);
+ stage(300000);
+ assert.deepEqual(operations.slice(1),['-countdown-stage-15m','+countdown-stage-5m']);
+ assert.equal(applied.size,1);
+});
+test('V32 rendering keeps mobile effects while cutting canvas and image workload',()=>{
+ const html=read('index.html'),css=read('css/mobile-performance.css');
+ const app=read('js/app.js'),finale=read('js/milestones.js'),motion=read('js/motion.js');
+ assert.match(html,/css\/mobile-performance\.css\?v=32/);
+ assert.match(css,/html\.tfw-perf-mobile body\.tfw-release-settled canvas#finaleFireworks\{display:block!important\}/);
+ assert.match(css,/animation:v6-section-drift 28s/);
+ assert.match(css,/screenshots\/mobile\/scene-149\.webp/);
+ assert.match(css,/screenshots\/mobile\/scene-147\.webp/);
+ assert.match(app,/rootMargin:'480px 0px'/);
+ assert.match(app,/if\(!document\.body\.classList\.contains\('finale-scene-rush'\)\)preloadChoice/);
+ assert.match(motion,/const artSource=scene=>matchMedia/);
+ assert.match(finale,/const barGradient=ctx\.createLinearGradient/);
+ assert.match(finale,/compactCanvas&&t-lastPaint<33/);
+ assert.match(finale,/p\.life-=p\.decay\*dt/);
+});

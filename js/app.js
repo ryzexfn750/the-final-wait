@@ -373,7 +373,8 @@ function changeScene(forceChoice=null, allowFinale=false){
       recentScenes.push(currentIndex);
       if(recentScenes.length>8)recentScenes.shift();
       updateSceneCounter();
-      preloadChoice(pickNextScene());
+      // Rapid finale swaps must not launch a second wave of random image decodes.
+      if(!document.body.classList.contains('finale-scene-rush'))preloadChoice(pickNextScene());
       track('scene_change',{scene:choice.scene.id});
       resolve(true);
     }));
@@ -497,16 +498,33 @@ function renderTimeline(){
   }).join('');
 }
 
+let intelImageObserver=null;
 function renderIntel(filter='ALL'){
   const visible = filter==='ALL' ? INTEL : INTEL.filter(x=>x.category===filter);
   $('#intelGrid').innerHTML = visible.map(item=>{
     const scene=sceneById(item.sceneId);
     const href=`intel.html?article=${encodeURIComponent(item.articleId || '')}`;
     return `<a class="intel-card reveal tilt-card" data-category="${item.category}" href="${href}" aria-label="Read ${escapeHtml(item.kicker)} dossier">
-      <div class="intel-image" style="background-image:url('${srcFor(scene)}');background-position:${positionFor(scene)}"></div>
+      <div class="intel-image" data-bg="${escapeHtml(srcFor(scene))}" style="background-position:${escapeHtml(positionFor(scene))}"></div>
       <div class="intel-copy"><span class="intel-badge">${escapeHtml(item.category)}</span><br><span>${escapeHtml(item.kicker)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.text)}</p><span class="intel-read">READ THE FULL DOSSIER <b>↗</b></span></div>
     </a>`;
   }).join('');
+  if(intelImageObserver)intelImageObserver.disconnect();
+  const pending=$$('#intelGrid .intel-image[data-bg]');
+  const loadImage=el=>{
+    const url=el.dataset.bg;
+    if(!url)return;
+    el.style.backgroundImage=`url("${url.replaceAll('"','%22')}")`;
+    delete el.dataset.bg;
+  };
+  if('IntersectionObserver' in window){
+    intelImageObserver=new IntersectionObserver(entries=>{
+      for(const entry of entries){
+        if(entry.isIntersecting){loadImage(entry.target);intelImageObserver.unobserve(entry.target);}
+      }
+    },{rootMargin:'480px 0px',threshold:.01});
+    pending.forEach(el=>intelImageObserver.observe(el));
+  }else pending.forEach(loadImage);
   observeReveals(); bindTilts(); bindNavigationTransitions();
 }
 
@@ -768,7 +786,7 @@ function bindUi(){
   $('#analyticsAccept').addEventListener('click',()=>{storage.set('tfw_analytics','yes');els.analyticsConsent.hidden=true;loadAnalytics(SITE_CONFIG.gaMeasurementId.trim())}); $('#analyticsDecline').addEventListener('click',()=>{storage.set('tfw_analytics','no');els.analyticsConsent.hidden=true}); $('#privacyButton').addEventListener('click',()=>{storage.remove('tfw_analytics');els.analyticsConsent.hidden=false});
   document.addEventListener('keydown',e=>{keepModalFocus(e);if(e.key==='Escape'){closeModals();closeMobileMenu()}}); document.addEventListener('visibilitychange',()=>{if(document.hidden)stopSceneRotation();else scheduleSceneRotation()});
   let idleTimer; const wake=()=>{els.topbar.classList.remove('idle');clearTimeout(idleTimer);if(scrollY<innerHeight*.7&&matchMedia('(pointer:fine)').matches)idleTimer=setTimeout(()=>els.topbar.classList.add('idle'),4800)};
-  window.addEventListener('scroll',()=>{els.topbar.classList.toggle('scrolled',scrollY>30);$('#returnCountdown')?.classList.toggle('visible',scrollY>innerHeight*.72);updateTimelineProgress();wake()},{passive:true}); ['pointermove','keydown'].forEach(e=>window.addEventListener(e,wake,{passive:true})); wake();
+  window.addEventListener('scroll',()=>{els.topbar.classList.toggle('scrolled',scrollY>30);$('#returnCountdown')?.classList.toggle('visible',scrollY>innerHeight*.72);wake()},{passive:true}); ['pointermove','keydown'].forEach(e=>window.addEventListener(e,wake,{passive:true})); wake();
   window.addEventListener('resize',()=>{syncTimelineEdge();const next=isMobile();if(next!==mobileState&&scenes.length){mobileState=next;const current=scenes[currentIndex],active=activeLayer===0?els.sceneA:els.sceneB;active.style.backgroundImage=`url("${srcFor(current)}")`;active.style.backgroundPosition=positionFor(current);loadToday();renderIntel($('#intelFilter .active')?.dataset.filter||'ALL')}updateTimelineProgress()},{passive:true});
 }
 
