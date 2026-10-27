@@ -78,8 +78,11 @@ test('Final Call keeps its enlarged subtitle frame across cues, silent gaps and 
    assert.equal(Object.keys(pack).length,17,locale+' must include all lines');
    for(const cue of debug.cues){
      assert.ok(pack[cue.id],locale+' missing '+cue.id);
-     assert.ok(debug.plan(pack[cue.id]).chunks.every(x=>x.to-x.from+1<=9),
+     const plan=debug.plan(pack[cue.id]);
+   assert.ok(plan.chunks.every(x=>x.to-x.from+1<=11),
        locale+' overly long subtitle chunk for '+cue.id);
+   assert.ok(plan.chunks.length===1||plan.chunks.every(x=>x.to-x.from+1>=3),
+       locale+' orphaned caption words for '+cue.id);
    }
    languageSelect.value='en|'+locale;
    debug.sync(384049);
@@ -87,6 +90,18 @@ test('Final Call keeps its enlarged subtitle frame across cues, silent gaps and 
    debug.sync(376000);
    assert.equal(debug.currentText(),pack['michael-1']);
    assert.equal(debug.currentLanguage(),locale);
+ }
+ // Keep a complete short sentence instead of splitting off its last word.
+ const sample=debug.plan('CIAO A TUTTI IO SONO MICHAEL.');
+ assert.equal(sample.chunks.length,1);
+ assert.equal(sample.chunks[0].from,0);
+ assert.equal(sample.chunks[0].to,sample.words.length-1);
+
+ // For longer English dialogues, avoid two-word trailing subtitles.
+ for(const cue of debug.cues){
+   const plan=debug.plan(cue.en);
+   assert.ok(plan.chunks.every(x=>x.to-x.from+1<=11),cue.id);
+   assert.ok(plan.chunks.length===1||plan.chunks.every(x=>x.to-x.from+1>=3),cue.id);
  }
  languageSelect.value='en';
  debug.sync(384049);
