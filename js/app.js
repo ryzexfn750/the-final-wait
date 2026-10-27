@@ -518,7 +518,7 @@ function renderIntel(filter='ALL'){
   }).join('');
   // Preload only nearby dossier covers. All offscreen panels keep their layout.
   intelImageObserver?.disconnect();
-  const images=$('#intelGrid .intel-image[data-bg]');
+  const images=$$('#intelGrid .intel-image[data-bg]');
   const loadImage=node=>{
     const src=node.dataset.bg;
     if(!src)return;
