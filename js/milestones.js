@@ -316,6 +316,8 @@
     }catch{return null}
   }
 
+  // Shared identical tick with the cinematic Final Call.
+  window.__tfwPlayCountdownTick=()=>tickSound(0,false);
   async function tickSound(progress=0,rapid=false){
     const ctx=await ensureTickContext();if(!ctx)return;
     const now=ctx.currentTime;
