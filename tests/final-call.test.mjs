@@ -49,17 +49,25 @@ test('Ten allowed non-repeating slots cover the complete takeover interval',()=>
 });
 test('Audio file, scene filter integration and preview state are present',()=>{
  assert.ok(existsSync(new URL('../assets/audio/final-call-29m55s.mp3',import.meta.url)));
- assert.match(read('index.html'),/css\/final-call\.css\?v=37/);
+ assert.match(read('index.html'),/css\/final-call\.css\?v=38/);
  assert.match(read('index.html'),/js\/final-call\.js\?v=36/);
  assert.match(read('js/milestones.js'),/__tfwFinalCallAudio/);
  assert.match(read('js/milestones.js'),/__tfwPreviewPlaying=true/);
  assert.match(read('js/milestones.js'),/tfw:final-call-audio-play/);
  assert.match(read('js/milestones.js'),/__tfwPlayCountdownTick/);
  assert.match(read('js/final-call.js'),/__tfwPlayCountdownTick/);
- assert.ok(read('index.html').includes('js/final-call-captions.js?v=37'));
+ assert.ok(read('index.html').includes('js/final-call-captions.js?v=38'));
+ assert.ok(read('index.html').includes('THE END OF AN ERA.'));
+ assert.ok(read('index.html').includes('Every story has an ending.'));
  assert.ok(read('index.html').includes('js/final-call-locales.js?v=37'));
  assert.ok(read('js/language.js').includes("'de'"));
- assert.match(read('css/final-call.css'),/tfw-caption-speaker/);
+ const callCss=read('css/final-call.css');
+ assert.match(callCss,/tfw-caption-speaker/);
+ assert.match(callCss,/tfw-final-call-headline/);
+ assert.match(callCss,/tfwV21PreviewTitleFlow 3\.8s/);
+ // The panel position must remain unchanged even though its size shrinks.
+ assert.ok(callCss.includes('bottom:clamp(185px,27vh,310px)'));
+ assert.ok(callCss.includes('bottom:clamp(155px,24svh,230px)'));
  assert.match(read('css/final-call.css'),/final-call-layer-stack/);
  assert.match(read('css/final-call.css'),/--tfw-final-call-visible/);
  assert.match(read('js/final-call.js'),/if\(slot===currentSlot\)return/);
