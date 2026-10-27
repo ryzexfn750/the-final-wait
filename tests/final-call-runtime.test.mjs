@@ -30,13 +30,8 @@ test('Final Call uses ten allowed images with exact bidirectional dissolves', as
  }
  class ImageMock{set src(v){this.location=v;this.naturalWidth=960}decode(){return Promise.resolve()}}
  const beeps=[];
- class BeepContextMock{
-   constructor(){this.state='running';this.currentTime=0;this.destination={}}
-   createOscillator(){return {frequency:{setValueAtTime(){}},connect(){},start(){beeps.push(1)},stop(){}}}
-   createGain(){return {gain:{setValueAtTime(){},exponentialRampToValueAtTime(){}},connect(){}}}
- }
  let tickTime=0,seed=60;
- const window={__tfwPreviewPlaying:true,AudioContext:BeepContextMock,crypto:{getRandomValues(a){a[0]=(seed++*1664525+1013904223)>>>0}},addEventListener:on,
+ const window={__tfwPreviewPlaying:true,__tfwPlayCountdownTick:()=>beeps.push(1),crypto:{getRandomValues(a){a[0]=(seed++*1664525+1013904223)>>>0}},addEventListener:on,
    dispatchEvent:e=>send(e.type,e.detail)};
  runInNewContext(JS,{window,document,Image:ImageMock,Audio:AudioMock,matchMedia:()=>({matches:true}),localStorage:{getItem:()=> 'on'},
    performance:{now:()=>tickTime},console,Math,Uint32Array,Promise,Number,String,
