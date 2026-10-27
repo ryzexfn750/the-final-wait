@@ -138,8 +138,7 @@
       shell.insertAdjacentHTML('beforeend',`
         <div class="finale-release" id="finaleRelease" aria-hidden="true">
           <span class="release-radiance" aria-hidden="true"></span>
-          <h2><span class="finale-release-kicker">THE WAIT IS OVER!</span><em class="finale-release-main">WELCOME TO<br>LEONIDA!</em></h2>
-          <span class="finale-release-date">GO LAUNCH THAT FUCKING GTA VI RIGHT NOW!</span>
+          <h2><span class="finale-release-kicker">THE WAIT IS OVER!</span><em class="finale-release-main">WELCOME TO<br>LEONIDA!</em><span class="finale-release-date">GO LAUNCH THAT FUCKING GTA VI RIGHT NOW!</span></h2>
           <span class="release-line" aria-hidden="true"></span>
           <i class="release-spark spark-a"></i><i class="release-spark spark-b"></i><i class="release-spark spark-c"></i><i class="release-spark spark-d"></i>
         </div>`);
@@ -737,10 +736,11 @@
       $('#countdown')?.setAttribute('aria-hidden','true');$('#finaleFlash')?.classList.add('fire');startFireworks();
       window.dispatchEvent(new CustomEvent('tfw:finale-release'));
     }
-    // Keep the bars fixed in the viewport during the tall post-release view.
-    const wave=$('#finaleVisualizerWrap');
-    if(wave&&wave.parentElement!==document.body){
-      document.body.appendChild(wave);
+    // Both FFT bars and fireworks belong to the hero, not the page viewport:
+    // scrolling down must never carry them over the articles and timeline.
+    const wave=$('#finaleVisualizerWrap'),hero=$('#hero');
+    if(wave&&hero&&wave.parentElement!==hero){
+      hero.appendChild(wave);
       visualizerResize?.();
     }
     startVisualizer();
@@ -755,7 +755,7 @@
     const release=$('#finaleRelease');if(release){release.classList.remove('active');release.setAttribute('aria-hidden','true')}
     $('#countdown')?.setAttribute('aria-hidden','false');$('#finaleFlash')?.classList.remove('fire');stopFireworks();
     const wave=$('#finaleVisualizerWrap'),cue=$('.scroll-cue');
-    if(wave&&cue&&wave.parentElement===document.body){
+    if(wave&&cue&&wave.parentElement===$('#hero')){
       cue.insertAdjacentElement('beforebegin',wave);visualizerResize?.();
     }
     if(pauseAudio)pauseFinaleAudio(false);
@@ -810,7 +810,8 @@
     const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
     const mobile=matchMedia('(max-width:700px)').matches;
     const canvas=$('#finaleFireworks');if(!canvas||fireworksRaf)return;
-    if(canvas.parentElement!==document.body)document.body.appendChild(canvas);
+    const hero=$('#hero');
+    if(hero&&canvas.parentElement!==hero)hero.appendChild(canvas);
     const ctx=canvas.getContext('2d');if(!ctx)return;
     fireworks=[];fireworkNext=0;
     const resize=()=>{const r=canvas.getBoundingClientRect(),d=Math.min(mobile?1.25:2,devicePixelRatio||1);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d));ctx.setTransform(d,0,0,d,0,0)};
