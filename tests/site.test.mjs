@@ -87,7 +87,7 @@ test('visualizer includes ambient stream without suppressing normal playback',()
   assert.match(finale,/tfw:ambient-pause/);
   assert.match(finale,/ambientMusicSource=musicCtx\.createMediaElementSource\(ambient\)/);
   assert.match(finale,/if\(finaleActive\)leaveFinalFive\(\);/);
-  assert.match(read('index.html'),/css\/experience\.css\?v=32/);
+  assert.match(read('index.html'),/css\/experience\.css\?v=33/);
   assert.match(section('v26.css'),/body\.tfw-ambient-playing/);
 });
 
@@ -244,9 +244,9 @@ test('V27 audio bars are rendered from FFT and release layout uses real dimensio
   assert.match(css,/body\.finale-released \.release-elapsed-clock\.countdown/);
   assert.match(css,/transform:none!important/);
   assert.match(css,/max-height 1200ms/);
-  assert.match(html,/css\/experience\.css\?v=32/);
+  assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/js\/clock\.js\?v=32/);
-  assert.match(html,/js\/milestones\.js\?v=32/);
+  assert.match(html,/js\/milestones\.js\?v=33/);
 });
 
 test('V28 starts the release clock without waiting for the next polling cycle',()=>{
@@ -309,9 +309,9 @@ test('V28 release message and secondary-scale elapsed layout are present',()=>{
   assert.doesNotMatch(js,/AFTER MORE THAN A DECADE, HERE WE ARE/);
   assert.match(css,/width:min\(740px,77vw\)!important/);
   assert.match(css,/height:clamp\(72px,7\.8vw,105px\)!important/);
-  assert.match(html,/css\/experience\.css\?v=32/);
+  assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/js\/clock\.js\?v=32/);
-  assert.match(html,/js\/milestones\.js\?v=32/);
+  assert.match(html,/js\/milestones\.js\?v=33/);
 });
 
 
@@ -453,11 +453,11 @@ test('V29 phase-two typography uses one fixed title footprint',()=>{
   assert.match(css,/font-size:clamp\(44px,6\.30vw,91px\)!important/);
   assert.match(css,/#phasePill\.tfw-phase-pill-dormant/);
   assert.match(css,/margin-top:clamp\(24px,3svh,40px\)!important/);
-  assert.match(html,/css\/experience\.css\?v=32/);
-  assert.match(html,/css\/experience\.css\?v=32/);
-  assert.match(html,/js\/app\.js\?v=32/);
+  assert.match(html,/css\/experience\.css\?v=33/);
+  assert.match(html,/css\/experience\.css\?v=33/);
+  assert.match(html,/js\/app\.js\?v=33/);
   assert.match(html,/js\/clock\.js\?v=32/);
-  assert.match(html,/js\/milestones\.js\?v=32/);
+  assert.match(html,/js\/milestones\.js\?v=33/);
   assert.match(js,/if\(pill&&remaining>0&&remaining<=FINAL_FIVE\)/);
 });
 
@@ -510,8 +510,8 @@ test('V30 phase one: larger white glowing release instruction remains above the 
   assert.match(phrase,/0 0 17px rgba\(255,255,255,\.61\)/);
   assert.match(phrase,/margin:clamp\(30px,4svh,44px\) auto 0!important/);
   assert.match(css,/body.finale-released .release-line\{\s*margin-top:clamp\(13px,1\.7svh,19px\)!important/);
-  assert.match(html,/css\/experience\.css\?v=32/);
-  assert.match(html,/css\/experience\.css\?v=32/);
+  assert.match(html,/css\/experience\.css\?v=33/);
+  assert.match(html,/css\/experience\.css\?v=33/);
 });
 
 test('V30 fireworks continue beyond one minute with regular and reduced motion',()=>{

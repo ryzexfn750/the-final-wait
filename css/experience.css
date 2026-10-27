@@ -2759,3 +2759,12 @@ body.tfw-preview-stage-title .countdown-shell{
      They continue indefinitely with bounded particles in the JS canvas. */
   html.tfw-perf-mobile body.finale-released canvas#finaleFireworks{display:block!important}
 }
+
+/* === EXPERIENCE: mobile-v32-followup-media.css === */
+/* Native-size mobile bitmaps, same animations and color treatments. */
+@media(max-width:700px){
+ .today-backdrop{background-image:linear-gradient(180deg,rgba(7,5,10,.48),rgba(7,5,10,.92)),url('../assets/screenshots/mobile/scene-149.webp')!important}
+ .timeline-backdrop{background-image:linear-gradient(180deg,rgba(7,5,10,.56),rgba(7,5,10,.94)),url('../assets/screenshots/mobile/scene-161.webp')!important}
+ .intel-backdrop{background-image:linear-gradient(180deg,rgba(7,5,10,.5),rgba(7,5,10,.94)),url('../assets/screenshots/mobile/scene-163.webp')!important}
+ .share-backdrop{background-image:linear-gradient(90deg,rgba(7,5,10,.94),rgba(7,5,10,.46)),url('../assets/screenshots/mobile/scene-147.webp')!important}
+}

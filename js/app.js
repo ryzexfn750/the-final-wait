@@ -505,16 +505,37 @@ function renderTimeline(){
   }).join('');
 }
 
+let intelImageObserver=null;
 function renderIntel(filter='ALL'){
   const visible = filter==='ALL' ? INTEL : INTEL.filter(x=>x.category===filter);
   $('#intelGrid').innerHTML = visible.map(item=>{
     const scene=sceneById(item.sceneId);
     const href=`intel.html?article=${encodeURIComponent(item.articleId || '')}`;
     return `<a class="intel-card reveal tilt-card" data-category="${item.category}" href="${href}" aria-label="Read ${escapeHtml(item.kicker)} dossier">
-      <div class="intel-image" style="background-image:url('${srcFor(scene)}');background-position:${positionFor(scene)}"></div>
+      <div class="intel-image" data-bg="${escapeHtml(srcFor(scene))}" style="background-position:${escapeHtml(positionFor(scene))}"></div>
       <div class="intel-copy"><span class="intel-badge">${escapeHtml(item.category)}</span><br><span>${escapeHtml(item.kicker)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.text)}</p><span class="intel-read">READ THE FULL DOSSIER <b>↗</b></span></div>
     </a>`;
   }).join('');
+  // Preload only nearby dossier covers. All offscreen panels keep their layout.
+  intelImageObserver?.disconnect();
+  const images=$('#intelGrid .intel-image[data-bg]');
+  const loadImage=node=>{
+    const src=node.dataset.bg;
+    if(!src)return;
+    node.style.backgroundImage=`url("${src.replaceAll('"','%22')}")`;
+    delete node.dataset.bg;
+  };
+  if('IntersectionObserver' in window){
+    intelImageObserver=new IntersectionObserver(entries=>{
+      for(const entry of entries){
+        if(entry.isIntersecting){
+          loadImage(entry.target);
+          intelImageObserver.unobserve(entry.target);
+        }
+      }
+    },{rootMargin:'460px 0px',threshold:.01});
+    images.forEach(node=>intelImageObserver.observe(node));
+  }else images.forEach(loadImage);
   observeReveals(); bindTilts(); bindNavigationTransitions();
 }
 
