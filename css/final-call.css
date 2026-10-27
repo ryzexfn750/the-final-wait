@@ -23,7 +23,6 @@
 /* #hero specificity overrides preview and milestone rules which previously
    forced the title/pill/progress back to opacity:1!important.
    Leave element dimensions intact so no layout changes occur while fading. */
-body.tfw-final-call-active #hero .hero-title-wrap,
 body.tfw-final-call-active #hero #phasePill,
 body.tfw-final-call-active #hero .countdown-shell,
 body.tfw-final-call-active #hero .release-hud,
@@ -48,8 +47,8 @@ body.tfw-final-call-active .topbar .brand-copy{
   z-index:12;
   left:50%;
   bottom:clamp(185px,27vh,310px);
-  width:min(1060px,94vw);
-  height:clamp(185px,24vh,245px);
+  width:min(850px,90vw);
+  height:clamp(148px,18vh,188px);
   box-sizing:border-box;
   border:1px solid rgba(255,255,255,.19);
   border-radius:23px;
@@ -86,9 +85,9 @@ body.tfw-final-call-active .topbar .brand-copy{
 }
 #hero .tfw-caption-speaker{
   position:absolute;
-  top:23px;
-  left:20px;
-  right:20px;
+  top:17px;
+  left:18px;
+  right:18px;
   display:flex;
   justify-content:center;
   align-items:center;
@@ -111,7 +110,7 @@ body.tfw-final-call-active .topbar .brand-copy{
 }
 #hero .tfw-caption-card{
   position:absolute;
-  inset:65px 25px 19px;
+  inset:49px 17px 12px;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -141,7 +140,7 @@ body.tfw-final-call-active .topbar .brand-copy{
   text-wrap:balance;
   overflow-wrap:break-word;
   color:#fff;
-  font:800 clamp(22px,2.15vw,32px)/1.36 Arial,Helvetica,sans-serif;
+  font:800 clamp(25px,2.55vw,36px)/1.30 Arial,Helvetica,sans-serif;
   letter-spacing:-.016em;
   text-shadow:0 4px 17px rgba(0,0,0,.95),0 0 31px rgba(0,0,0,.58);
 }
@@ -174,29 +173,109 @@ body.tfw-final-call-active .topbar .brand-copy{
 }
 @media(max-width:700px){
   #hero .tfw-call-subtitles{
-    width:95vw;
-    height:clamp(195px,27svh,245px);
+    width:91vw;
+    height:clamp(148px,20svh,186px);
     bottom:clamp(155px,24svh,230px);
     border-radius:18px;
   }
   #hero .tfw-caption-speaker{
-    top:19px;
+    top:14px;
     left:12px;
     right:12px;
     font-size:11px;
     letter-spacing:.16em;
     gap:8px;
   }
-  #hero .tfw-caption-card{inset:55px 14px 17px}
+  #hero .tfw-caption-card{inset:43px 12px 10px}
   #hero .tfw-caption-line{
-    font-size:clamp(17px,4.4vw,24px);
-    line-height:1.35;
+    font-size:clamp(19px,5vw,26px);
+    line-height:1.31;
   }
 }
 @media(max-width:390px){
-  #hero .tfw-caption-line{font-size:16px}
+  #hero .tfw-caption-line{font-size:17px}
 }
 @media(prefers-reduced-motion:reduce){
   #hero .tfw-caption-card{transition:none!important}
   #hero .tfw-caption-word.spoken{animation:none!important}
+}
+
+
+/* Final Call v38 — cinematic headline occupying the existing milestone title
+   slot, without changing the countdown layout or other milestone copy. */
+#hero .hero-title-wrap{position:relative}
+#hero .tfw-final-call-headline{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:clamp(4px,.55svh,8px);
+  box-sizing:border-box;
+  padding:0 8px;
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:none!important;
+  text-align:center;
+}
+body.tfw-final-call-active #hero .hero-title-wrap{
+  /* The original texts are individually faded below. Keep their shared
+     positioning slot visible so the replacement headline can crossfade in. */
+  opacity:1!important;
+}
+body.tfw-final-call-active #hero .hero-title-wrap > .eyebrow,
+body.tfw-final-call-active #hero .hero-title-wrap > #heroTitle{
+  opacity:calc(1 - var(--tfw-final-call-visible,0))!important;
+  transition:none!important;
+}
+body.tfw-final-call-active #hero .tfw-final-call-headline{
+  opacity:var(--tfw-final-call-visible,0)!important;
+  visibility:visible!important;
+}
+#hero .tfw-final-call-kicker{
+  margin:0;
+  color:rgba(255,255,255,.94);
+  font:900 clamp(12px,1.25vw,18px)/1.2 Arial,Helvetica,sans-serif;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  text-shadow:0 0 17px rgba(255,255,255,.15);
+}
+#hero .tfw-final-call-title-text{
+  display:block;
+  width:100%;
+  max-width:100%;
+  margin:0;
+  font:900 clamp(44px,6.3vw,91px)/.98 "Arial Black",Impact,Arial,sans-serif;
+  letter-spacing:-.057em;
+  text-wrap:balance;
+  background-image:linear-gradient(90deg,#fff 0%,#ffb05f 20%,#ff52bd 48%,#8e78ff 72%,#fff 100%);
+  background-size:220% 100%;
+  background-repeat:repeat-x;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.65)) drop-shadow(0 0 30px rgba(242,63,178,.32));
+  animation:tfwV21PreviewTitleFlow 3.8s linear infinite,tfwV21PreviewTitleBreath 2.25s ease-in-out infinite;
+}
+@media(max-width:900px){
+  #hero .tfw-final-call-title-text{
+    font-size:clamp(35px,6.8vw,58px);
+  }
+}
+@media(max-width:700px){
+  #hero .tfw-final-call-kicker{
+    font-size:clamp(12px,3.5vw,16px);
+    letter-spacing:.13em;
+  }
+  #hero .tfw-final-call-title-text{
+    font-size:clamp(34px,9.1vw,53px);
+    line-height:1.04;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #hero .tfw-final-call-title-text{animation:none!important}
 }
