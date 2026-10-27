@@ -28,7 +28,7 @@
     booted=true;
     window.gtranslateSettings={
       default_language:'en',
-      languages:['en','fr','es','ru','it'],
+      languages:['en','fr','es','ru','de','it'],
       wrapper_selector:'.gtranslate_wrapper',
       flag_style:'2d',
       native_language_names:true
