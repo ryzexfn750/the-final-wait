@@ -29,24 +29,28 @@
   window.__tfwFinalCallTranslations=translations;
   const hero=document.getElementById('hero');
   if(!hero)return;
+  const SEQUENCE_START=384050;  // -06:24.050
+  const FADE_IN_END=383250;     // -06:23.250: settle caption frame
+  const RESTORE_START=306500;   // -05:06.500: match returning scenery
+  const SEQUENCE_END=304000;   // -05:04.000: remove frame only after fade
 
   const root=document.createElement('div');
   root.className='tfw-call-subtitles notranslate';
-  root.setAttribute('translate','no'); // never let GTranslate alter timed spans
+  root.setAttribute('translate','no'); // keep verbatim curated translations
   root.setAttribute('aria-label','Final Call cinematic subtitles');
   root.setAttribute('aria-live','off');
+  const heading=document.createElement('div');
+  heading.className='tfw-caption-speaker';
+  root.appendChild(heading);
   const cards=Array.from({length:2},()=>{
     const card=document.createElement('div');
     card.className='tfw-caption-card';
     card.setAttribute('aria-hidden','true');
-    const speaker=document.createElement('div');
-    speaker.className='tfw-caption-speaker';
     const line=document.createElement('div');
     line.className='tfw-caption-line';
-    card.appendChild(speaker);
     card.appendChild(line);
     root.appendChild(card);
-    return {card,speaker,line,wordNodes:[]};
+    return {card,line,wordNodes:[]};
   });
   hero.appendChild(root);
 
@@ -55,10 +59,22 @@
     const value=String(selector?.value||document.documentElement.lang||'en').toLowerCase();
     return value.split('|').pop().split(/[-_]/)[0]||'en';
   }
+  function smoothstep(value){
+    const x=Math.max(0,Math.min(1,value));
+    return x*x*(3-2*x);
+  }
+  function panelOpacity(ms){
+    if(ms>SEQUENCE_START||ms<=SEQUENCE_END)return 0;
+    const intro=smoothstep((SEQUENCE_START-ms)/(SEQUENCE_START-FADE_IN_END));
+    const exit=smoothstep((RESTORE_START-ms)/(RESTORE_START-SEQUENCE_END));
+    return intro*(1-exit);
+  }
   function cueFor(ms){
+    // The latest-started cue wins any overlap. In brief silent gaps, keep
+    // the prior caption displayed at its last word: the panel never blinks.
+    if(ms>SEQUENCE_START||ms<=SEQUENCE_END)return null;
     for(let i=CUES.length-1;i>=0;i--){
-      const c=CUES[i];
-      if(ms<=c.start&&ms>c.end)return c;
+      if(ms<=CUES[i].start)return CUES[i];
     }
     return null;
   }
@@ -73,9 +89,8 @@
     const words=text.trim().split(/\s+/).filter(Boolean);
     const weights=words.map(weight);
     const total=weights.reduce((sum,n)=>sum+n,0)||1;
-    let accumulated=0;
-    const begins=weights.map(w=>{const start=accumulated/total;accumulated+=w;return start});
-    // Phrase-based, balanced around punctuation, no giant single-line speech.
+    let elapsed=0;
+    const begins=weights.map(w=>{const start=elapsed/total;elapsed+=w;return start});
     const chunks=[];
     let from=0;
     for(let i=0;i<words.length;i++){
@@ -100,21 +115,22 @@
 
   const planCache=new Map();
   let current=null,chunkNumber=-1,locale='en',text='',visibleSide=0,spoken=-1;
+  let panelOpen=false;
   function hide(){
-    if(!current)return;
-    current=null;chunkNumber=-1;text='';spoken=-1;
+    if(!panelOpen&&!current)return;
+    panelOpen=false;current=null;chunkNumber=-1;text='';spoken=-1;
     root.classList.remove('visible');
+    root.style.removeProperty('--tfw-caption-opacity');
     cards.forEach(c=>{
       c.card.classList.remove('active');
       c.card.setAttribute('aria-hidden','true');
     });
+    heading.textContent='';
     hero.removeAttribute('data-tfw-caption');
   }
   function swap(cue,plan,chunk){
     const incoming=cards[1-visibleSide],outgoing=cards[visibleSide];
     const range=plan.chunks[chunk];
-    incoming.card.className='tfw-caption-card '+(cue.effect?'effect':cue.speaker.toLowerCase());
-    incoming.speaker.textContent=cue.effect?'ON THE LINE':cue.speaker.toUpperCase();
     incoming.line.replaceChildren();
     incoming.wordNodes=[];
     for(let i=range.from;i<=range.to;i++){
@@ -124,8 +140,9 @@
       incoming.line.appendChild(span);
       incoming.wordNodes.push({index:i,el:span});
     }
-    incoming.card.setAttribute('aria-label',incoming.speaker.textContent+': '+plan.words.slice(range.from,range.to+1).join(' '));
+    incoming.card.setAttribute('aria-label',heading.textContent+': '+plan.words.slice(range.from,range.to+1).join(' '));
     incoming.card.setAttribute('aria-hidden','false');
+    // Populate the incoming layer before crossfading out the previous one.
     incoming.card.classList.add('active');
     outgoing.card.classList.remove('active');
     outgoing.card.setAttribute('aria-hidden','true');
@@ -133,20 +150,35 @@
   }
   function update(ms){
     if(!Number.isFinite(ms))return;
+    if(ms>SEQUENCE_START||ms<=SEQUENCE_END){hide();return}
+    if(!panelOpen){
+      panelOpen=true;
+      root.classList.add('visible');
+    }
+    // This never drops to zero between lines/chunks, and follows precisely
+    // the returning-background fade rather than a separate CSS timer.
+    root.style.setProperty('--tfw-caption-opacity',panelOpacity(ms).toFixed(5));
+
     const cue=cueFor(ms);
-    if(!cue){hide();return}
+    if(!cue)return;
     const lang=language();
     const localized=translations[lang]?.[cue.id]||cue.en;
     const cacheKey=cue.id+':'+lang+':'+localized;
     if(!planCache.has(cacheKey))planCache.set(cacheKey,buildPlan(localized));
     const plan=planCache.get(cacheKey);
-    const p=Math.max(0,Math.min(1,(cue.start-ms)/(cue.start-cue.end)));
-    const index=cue.effect?plan.words.length-1:spokenIndex(plan,p);
+    // Hold the last spoken word in each micro-pause until the next cue starts.
+    const effectiveMs=Math.max(ms,cue.end);
+    const fraction=Math.max(0,Math.min(1,(cue.start-effectiveMs)/(cue.start-cue.end)));
+    const index=cue.effect?plan.words.length-1:spokenIndex(plan,fraction);
     const chunk=plan.chunks.findIndex(group=>index>=group.from&&index<=group.to);
     if(cue!==current||chunk!==chunkNumber||lang!==locale||text!==localized){
+      if(cue!==current||lang!==locale){
+        root.classList.remove('voice-michael','voice-franklin','voice-trevor','voice-effect');
+        root.classList.add('voice-'+(cue.effect?'effect':cue.speaker.toLowerCase()));
+        heading.textContent=cue.effect?'ON THE LINE':cue.speaker.toUpperCase();
+      }
       current=cue;chunkNumber=chunk;locale=lang;text=localized;
       swap(cue,plan,chunk);
-      root.classList.add('visible');
       hero.setAttribute('data-tfw-caption',cue.id);
     }
     if(index!==spoken){
@@ -163,6 +195,6 @@
   window.__tfwCallCaptionDebug={
     cues:CUES,sync:update,activeId:()=>current?.id||null,
     currentText:()=>text,currentLanguage:()=>locale,currentChunk:()=>chunkNumber,
-    plan:buildPlan
+    isPanelVisible:()=>panelOpen,opacity:panelOpacity,plan:buildPlan
   };
 })();
