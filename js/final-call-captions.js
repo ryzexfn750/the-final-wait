@@ -109,8 +109,13 @@
         const ellipsis=/(?:\.\.\.|…)['"»]?$/.test(last);
         const sentence=/[.!?]['"»]?$/.test(last)&&!ellipsis;
         const clause=/[,;:]$/.test(last)||ellipsis;
+        // Never leave an article, pronoun, preposition or conjunction
+        // dangling on screen just before a subtitle change.
+        const tail=last.replace(/^[«"'¿¡(]+|[.,!?;:'"»)]+$/g,'').toLowerCase();
+        const dangling=/^(?:a|al|alla|allo|ai|agli|alle|da|de|del|della|di|do|en|el|la|las|los|le|les|un|une|una|uno|e|et|and|und|or|o|ou|que|che|qui|perché|porque|that|the|to|of|is|was|i|we|you|my|your|with|para|por|на|и|что|не|ни|в|к|за|по|это|как|mit|das|der|die|den|dem|des|ein|eine|einer|einem|einen|zu|für|aber|wenn|dass)$/.test(tail);
         const score=10+Math.pow((length-8)/4,2)+
-          (end===n?0:sentence?-7:clause?-3:3)+costs[end];
+          (end===n?0:sentence?-7:clause?-3:3)+
+          (end<n&&dangling?14:0)+costs[end];
         if(score<costs[first]){
           costs[first]=score;next[first]=end;
         }
