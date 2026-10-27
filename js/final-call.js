@@ -30,7 +30,7 @@
   window.__tfwFinalCallAudio=audio;
   let audioPrimed=false,audioStartPending=false,playPromise=null;
   let soundRetryAt=0,lastAudioCheck=-Infinity;
-  let beepContext=null,lastBeepSecond=null;
+  let lastBeepSecond=null;
   let lastRemaining=Infinity,preview=false;
   let imagesPrimed=false,shuffle=null,imageJobs=[];
   const slotResolvers=[];
@@ -161,27 +161,8 @@
     }
   }
 
-  function unlockBeepContext(){
-    if(!soundEnabled())return null;
-    const Context=window.AudioContext||window.webkitAudioContext;
-    if(!Context)return null;
-    try{
-      if(!beepContext||beepContext.state==='closed')beepContext=new Context();
-      if(beepContext.state==='suspended')beepContext.resume().catch(()=>{});
-      return beepContext.state==='running'?beepContext:null;
-    }catch{return null}
-  }
   function playBeep(){
-    const ctx=unlockBeepContext();
-    if(!ctx)return;
-    const now=ctx.currentTime,osc=ctx.createOscillator(),gain=ctx.createGain();
-    osc.type='sine';
-    osc.frequency.setValueAtTime(960,now);
-    gain.gain.setValueAtTime(.0001,now);
-    gain.gain.exponentialRampToValueAtTime(.21,now+.008);
-    gain.gain.exponentialRampToValueAtTime(.0001,now+.12);
-    osc.connect(gain);gain.connect(ctx.destination);
-    osc.start(now);osc.stop(now+.13);
+    window.__tfwPlayCountdownTick?.();
   }
   function updateBeep(remaining,previous){
     if(remaining>previous+1000)lastBeepSecond=null; // backward preview seek
@@ -269,9 +250,6 @@
   });
   window.addEventListener('tfw:sound-change',e=>{
     if(e.detail?.enabled===false){pauseAudio();return}
-    // The SOUND button click is a user activation, so unlock Web Audio
-    // here as well when the visitor enables sound mid-sequence.
-    unlockBeepContext();
     synchronize(lastRemaining,preview,true);
   });
   audio.addEventListener('loadedmetadata',()=>{
@@ -280,7 +258,6 @@
   audio.addEventListener('ended',()=>pauseAudio());
   ['pointerdown','keydown','touchstart'].forEach(name=>{
     window.addEventListener(name,()=>{
-      unlockBeepContext();
       if(audioWindow(lastRemaining)&&canPlayAudio()&&audio.paused){
         soundRetryAt=0;tryStartAudio(lastRemaining,true);
       }
