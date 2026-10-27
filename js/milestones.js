@@ -388,6 +388,7 @@
   function startTitleColorFlow(){
     if(titleFlowRaf)return;
     titleFlowStartedAt=performance.now();
+    let lastTitlePaint=-Infinity;
     const step=now=>{
       const title=$('#heroTitle');
       const active=Boolean(title&&document.body.classList.contains('final-five-active')&&document.body.classList.contains('finale-dynamic-copy')&&!document.body.classList.contains('finale-released'));
@@ -396,6 +397,11 @@
         if(title)title.style.removeProperty('background-position');
         return;
       }
+      // 30 paint updates/s on a phone; CSS interpolation stays cinematic.
+      if(matchMedia('(max-width:700px)').matches&&now-lastTitlePaint<33){
+        titleFlowRaf=requestAnimationFrame(step);return;
+      }
+      lastTitlePaint=now;
       const cycle=3800;
       const phase=((now-titleFlowStartedAt)%cycle)/cycle;
       // Match the release-title motion exactly, but drive it inline so later CSS cannot freeze it.
@@ -520,12 +526,15 @@
     // The widget initially has zero CSS height. Reallocate its pixel
     // buffer whenever it becomes visible or moves into the release view.
     const resize=()=>{
-      const r=canvas.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);
+      const r=canvas.getBoundingClientRect(),d=Math.min(matchMedia('(max-width:700px)').matches?1.25:2,devicePixelRatio||1);
       const w=Math.max(1,Math.round(r.width*d)),h=Math.max(1,Math.round(r.height*d));
       if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;ctx.setTransform(d,0,0,d,0,0);}
     };
     visualizerResize=resize;resize();window.addEventListener('resize',resize,{passive:true});
     let lastDraw=-Infinity;
+    let lastEnergy=-1;
+    let cachedGradient=null;
+    let gradientHeight=-1;
     const loop=t=>{
       const hasSignal=Boolean(soundEnabled()&&musicAnalyser&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(ambientMusicSource||finalMusicSource));
       // ~30 FPS when real music plays; ~3 FPS while silent. Idle bars
@@ -543,10 +552,23 @@
         for(let i=0;i<take;i++)sum+=musicData[i];
         energy=clamp(sum/(take*255),.025,1);
       }
-      document.documentElement.style.setProperty('--music-energy',energy.toFixed(3));
-      document.documentElement.style.setProperty('--music-scale',(1+energy*.06).toFixed(3));
+      // Avoid invalidating every descendant style at 30Hz for tiny FFT changes.
+      if(Math.abs(energy-lastEnergy)>=.02){
+        document.documentElement.style.setProperty('--music-energy',energy.toFixed(3));
+        document.documentElement.style.setProperty('--music-scale',(1+energy*.06).toFixed(3));
+        lastEnergy=energy;
+      }
       const bars=58,centerY=r.height*.52,maxH=Math.max(9,r.height*.43),gap=2,barW=Math.max(1.5,(r.width*.92/bars)-gap),startX=r.width*.04;
-      ctx.save();ctx.globalCompositeOperation='lighter';
+      // A single shared gradient replaces 58 per-frame GPU gradient objects.
+      if(!cachedGradient||gradientHeight!==r.height){
+        cachedGradient=ctx.createLinearGradient(0,centerY-maxH,0,centerY+maxH);
+        cachedGradient.addColorStop(0,'rgba(119,96,255,.18)');
+        cachedGradient.addColorStop(.42,'rgba(119,96,255,.84)');
+        cachedGradient.addColorStop(.58,'rgba(242,63,178,.92)');
+        cachedGradient.addColorStop(1,'rgba(255,156,67,.16)');
+        gradientHeight=r.height;
+      }
+      ctx.save();ctx.globalCompositeOperation='lighter';ctx.fillStyle=cachedGradient;
       for(let i=0;i<bars;i++){
         let amp=.04;
         if(hasSignal){
@@ -557,7 +579,7 @@
           amp=clamp(Math.pow(sample/255,.70)*1.32,0,1);
         }
         const curve=Math.sin((i+1)/(bars+1)*Math.PI);const h=2+amp*maxH*(.28+.72*curve);const x=startX+i*((r.width*.92)/bars);
-        const g=ctx.createLinearGradient(0,centerY-h,0,centerY+h);g.addColorStop(0,'rgba(119,96,255,.18)');g.addColorStop(.42,`rgba(119,96,255,${.32+amp*.5})`);g.addColorStop(.58,`rgba(242,63,178,${.36+amp*.56})`);g.addColorStop(1,'rgba(255,156,67,.16)');ctx.fillStyle=g;ctx.fillRect(x,centerY-h,barW,h*2);
+        ctx.globalAlpha=.34+amp*.66;ctx.fillRect(x,centerY-h,barW,h*2);
       }
       ctx.restore();
       if(document.body.classList.contains('finale-music-live'))visualizerRaf=requestAnimationFrame(loop);
@@ -672,7 +694,7 @@
     const active=enabled&&remaining<=6500&&remaining>0;
     document.body.classList.toggle('finale-scene-rush',active);
     if(!active){lastSceneStepAt=0;sceneRushPrimed=false;document.documentElement.style.removeProperty('--finale-scene-transition');return}
-    const interval=Math.max(38,sceneIntervalFor(remaining));
+    const interval=Math.max(matchMedia('(max-width:700px)').matches?110:38,sceneIntervalFor(remaining));
     const transition=Math.max(32,Math.min(620,interval*.72));
     document.documentElement.style.setProperty('--finale-scene-transition',`${Math.round(transition)}ms`);
     const now=performance.now();
@@ -764,18 +786,20 @@
       const a=Math.random()*Math.PI*2,s=(1.5+Math.random()*4.5)*power;
       fireworks.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,decay:.010+Math.random()*.014,size:.8+Math.random()*2.4,color:palette[(Math.random()*palette.length)|0],trail:[]});
     }
-    if(fireworks.length>850)fireworks.splice(0,fireworks.length-850);
+    const maxParticles=matchMedia('(max-width:700px)').matches?390:850;
+    if(fireworks.length>maxParticles)fireworks.splice(0,fireworks.length-maxParticles);
   }
 
   function startFireworks(){
     // Both motion modes keep celebrating for the entire release state.
     // Reduced motion gets smaller/fewer bursts rather than a one-off volley.
     const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const mobile=matchMedia('(max-width:700px)').matches;
     const canvas=$('#finaleFireworks');if(!canvas||fireworksRaf)return;
     if(canvas.parentElement!==document.body)document.body.appendChild(canvas);
     const ctx=canvas.getContext('2d');if(!ctx)return;
     fireworks=[];fireworkNext=0;
-    const resize=()=>{const r=canvas.getBoundingClientRect(),d=Math.min(2,devicePixelRatio||1);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d));ctx.setTransform(d,0,0,d,0,0)};
+    const resize=()=>{const r=canvas.getBoundingClientRect(),d=Math.min(mobile?1.25:2,devicePixelRatio||1);canvas.width=Math.max(1,Math.round(r.width*d));canvas.height=Math.max(1,Math.round(r.height*d));ctx.setTransform(d,0,0,d,0,0)};
     resize();window.addEventListener('resize',resize,{passive:true});canvas._tfwResize=resize;
     // Fire an immediate opening volley, without waiting for the first RAF.
     const opening=canvas.getBoundingClientRect();
@@ -784,7 +808,15 @@
       makeBurst(opening.width*.76,opening.height*.32,76,1.22);
       makeBurst(opening.width*.50,opening.height*.23,58,1.03);
     }
+    let lastFireworkPaint=-Infinity;
+    let lastFireworkPhysics=0;
     const loop=t=>{
+      // Full celebration on phones at half the bitmap/physics frame cost.
+      if(mobile&&t-lastFireworkPaint<32){
+        fireworksRaf=requestAnimationFrame(loop);return;
+      }
+      const dt=mobile&&lastFireworkPhysics?Math.min(2.5,Math.max(.5,(t-lastFireworkPhysics)/16.667)):1;
+      lastFireworkPaint=t;lastFireworkPhysics=t;
       const r=canvas.getBoundingClientRect();
       ctx.globalCompositeOperation='source-over';ctx.clearRect(0,0,r.width,r.height);
       ctx.globalCompositeOperation='lighter';
@@ -799,7 +831,7 @@
         fireworkNext=t+(reducedMotion?520+Math.random()*110:490+Math.random()*190);
       }
       fireworks=fireworks.filter(p=>p.life>0.02);
-      for(const p of fireworks){p.trail.push([p.x,p.y]);if(p.trail.length>6)p.trail.shift();p.x+=p.vx;p.y+=p.vy;p.vy+=.035;p.vx*=.992;p.life-=p.decay;ctx.globalAlpha=Math.max(0,p.life);ctx.strokeStyle=p.color;ctx.lineWidth=Math.max(.5,p.size*.5);ctx.beginPath();if(p.trail.length){ctx.moveTo(p.trail[0][0],p.trail[0][1]);for(const q of p.trail)ctx.lineTo(q[0],q[1]);ctx.lineTo(p.x,p.y);ctx.stroke()}ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()}
+      for(const p of fireworks){p.trail.push([p.x,p.y]);if(p.trail.length>6)p.trail.shift();p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=.035*dt;p.vx*=Math.pow(.992,dt);p.life-=p.decay*dt;ctx.globalAlpha=Math.max(0,p.life);ctx.strokeStyle=p.color;ctx.lineWidth=Math.max(.5,p.size*.5);ctx.beginPath();if(p.trail.length){ctx.moveTo(p.trail[0][0],p.trail[0][1]);for(const q of p.trail)ctx.lineTo(q[0],q[1]);ctx.lineTo(p.x,p.y);ctx.stroke()}ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()}
       ctx.globalAlpha=1;
       if(releaseShown||fireworks.length)fireworksRaf=requestAnimationFrame(loop);else stopFireworks(false);
     };

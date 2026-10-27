@@ -1,0 +1,20 @@
+/* V32 phase 2 — mobile paint/raster strategy.
+   All visual features still run; reduce redundant compositing and
+   keep offscreen media out of the paint pipeline. */
+@media(max-width:700px){
+  /* Offscreen cards keep layout dimensions but defer raster work until near view. */
+  .intel-card{content-visibility:auto;contain-intrinsic-size:auto 540px}
+  .newspaper-card{content-visibility:auto;contain-intrinsic-size:auto 720px}
+  /* Pointer parallax is unavailable on touch, so retaining its layer
+     permanently spends texture memory without any interaction. */
+  .hero-content{will-change:auto!important}
+  /* Timeline images cannot intersect the hero: isolate their paint operations. */
+  .timeline-visual{contain:paint!important}
+  /* Keep the music spectrum intact and crisp without a full-width blur pass. */
+  .finale-visualizer{filter:none!important}
+  /* On mobile the scene sweep only requires compositing during a crossfade. */
+  .hero.scene-changing .scene-sweep{display:block!important}
+  /* Restore mobile fireworks even after the elapsed counter settles.
+     They continue indefinitely with bounded particles in the JS canvas. */
+  html.tfw-perf-mobile body.finale-released canvas#finaleFireworks{display:block!important}
+}

@@ -14,3 +14,20 @@ test('V32 timeline toolbar uses an untruncated mobile counter',()=>{
   assert.match(js,/matchMedia\('\(max-width:700px\)'\)\.matches\?\x60/);
   assert.match(js,/document\.addEventListener\('pointerdown',e=>\{/);
 });
+
+test('V32 phase two keeps finale crossfades but limits phone decode pressure',()=>{
+  const js=read('js/app.js'),finale=read('js/milestones.js');
+  assert.match(js,/finaleScenePending/);
+  assert.match(js,/sceneDecodeCache\.size>\(isMobile\(\)\?10:16\)/);
+  assert.match(js,/finaleSceneDeck\.slice\(0,isMobile\(\)\?9/);
+  assert.match(finale,/Math\.max\(matchMedia\('\(max-width:700px\)'\)\.matches\?110:38,sceneIntervalFor\(remaining\)\)/);
+});
+test('V32 phase two uses a reusable FFT gradient and bounded full-duration fireworks',()=>{
+  const finale=read('js/milestones.js');
+  assert.match(finale,/cachedGradient=ctx\.createLinearGradient/);
+  assert.match(finale,/ctx\.fillStyle=cachedGradient/);
+  assert.match(finale,/maxParticles=matchMedia/);
+  assert.match(finale,/lastFireworkPhysics/);
+  assert.match(finale,/if\(releaseShown\|\|fireworks\.length\)fireworksRaf=requestAnimationFrame\(loop\)/);
+  assert.ok(read('css/mobile-performance.css').includes('canvas#finaleFireworks'));
+});

@@ -547,7 +547,7 @@
     const releaseLoop=()=>{
       updateReleaseElapsed();
       const released=Date.now()>=releaseEpoch()||document.body.classList.contains('finale-released');
-      releaseUiTimer=setTimeout(releaseLoop,released?33:1500);
+      releaseUiTimer=setTimeout(releaseLoop,released?(document.hidden?500:(root.classList.contains('tfw-perf-mobile')?50:33)):1500);
     };
     releaseLoop();
     // Do not wait for the old 1.5s poll when 00:00 is reached.
