@@ -91,15 +91,36 @@
     const total=weights.reduce((sum,n)=>sum+n,0)||1;
     let elapsed=0;
     const begins=weights.map(w=>{const start=elapsed/total;elapsed+=w;return start});
-    const chunks=[];
-    let from=0;
-    for(let i=0;i<words.length;i++){
-      const count=i-from+1;
-      const punctuation=/[,;:!?]$|(?:\.\.\.|…)$|\.$/.test(words[i]);
-      if(count>=9||(count>=4&&punctuation)||i===words.length-1){
-        chunks.push({from,to:i});
-        from=i+1;
+
+    // Choose complete spoken phrases rather than blindly cutting every 9
+    // words. Dynamic programming favours sentence/clause punctuation while
+    // penalising tiny trailing fragments ("... IO SONO" / "MICHAEL.").
+    const n=words.length,MAX_WORDS=11;
+    const costs=new Array(n+1).fill(Infinity);
+    const next=new Array(n).fill(n);
+    costs[n]=0;
+    for(let first=n-1;first>=0;first--){
+      for(let end=first+1;end<=Math.min(n,first+MAX_WORDS);end++){
+        const length=end-first,remaining=n-end;
+        if(n>4 && length<3)continue;
+        if(remaining>0&&remaining<3)continue;
+        if(!Number.isFinite(costs[end]))continue;
+        const last=words[end-1];
+        const ellipsis=/(?:\.\.\.|…)['"»]?$/.test(last);
+        const sentence=/[.!?]['"»]?$/.test(last)&&!ellipsis;
+        const clause=/[,;:]$/.test(last)||ellipsis;
+        const score=10+Math.pow((length-8)/4,2)+
+          (end===n?0:sentence?-7:clause?-3:3)+costs[end];
+        if(score<costs[first]){
+          costs[first]=score;next[first]=end;
+        }
       }
+    }
+    const chunks=[];
+    for(let from=0;from<n;){
+      const end=next[from]>from?next[from]:Math.min(n,from+MAX_WORDS);
+      chunks.push({from,to:end-1});
+      from=end;
     }
     return {words,begins,chunks};
   }
