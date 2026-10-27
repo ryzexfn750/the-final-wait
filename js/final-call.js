@@ -269,6 +269,9 @@
   });
   window.addEventListener('tfw:sound-change',e=>{
     if(e.detail?.enabled===false){pauseAudio();return}
+    // The SOUND button click is a user activation, so unlock Web Audio
+    // here as well when the visitor enables sound mid-sequence.
+    unlockBeepContext();
     synchronize(lastRemaining,preview,true);
   });
   audio.addEventListener('loadedmetadata',()=>{
