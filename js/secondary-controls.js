@@ -36,6 +36,20 @@
  const isEnabled=()=>get('tfw_sound')!=='off';
  const gain=()=>window.__tfwMasterVolume?.()??(isEnabled()?1:0);
  let audio=null,activeTrack=null,playPending=null,autoplayBlocked=false,lastSyncAt=0;
+ const BG_RESUME_KEY='tfw_ambient_resume_v48';
+ const persistAmbient=()=>{
+   if(activeTrack!=='ambient'||!audio||!Number.isFinite(audio.currentTime))return;
+   try{sessionStorage.setItem(BG_RESUME_KEY,JSON.stringify({position:audio.currentTime,at:Date.now()}))}catch{}
+ };
+ function ambientStartPosition(current){
+   try{
+     const stored=JSON.parse(sessionStorage.getItem(BG_RESUME_KEY)||'null');
+     if(stored&&Number.isFinite(stored.position)&&stored.position>=0&&
+        Number.isFinite(stored.at)&&Date.now()-stored.at<6*60*60*1000)return stored.position;
+   }catch{}
+   return current.at;
+ }
+ window.addEventListener('pagehide',persistAmbient);
  function selection(){
    const remaining=releaseEpoch()-Date.now();
    if(remaining<=0)return null;
@@ -80,13 +94,16 @@
    if(!next){audio=null;return}
    const track=TRACKS[next];
    audio=new Audio(track.src);
-   audio.preload='metadata';
+   audio.preload='auto';
    audio.loop=track.loop;
    audio.playsInline=true;
+   const instance=audio,trackId=next;
    audio.addEventListener('loadedmetadata',()=>{
      const current=selection();
-     if(audio&&current?.id===activeTrack)seek(current.at);
+     if(audio!==instance||current?.id!==trackId)return;
+     seek(trackId==='ambient'?ambientStartPosition(current):current.at);
    });
+   if(trackId==='ambient')audio.addEventListener('timeupdate',persistAmbient);
    audio.addEventListener('error',()=>{
      if(activeTrack!=='ambient'||audio?.dataset.fallback==='1')return;
      audio.dataset.fallback='1';
@@ -104,9 +121,14 @@
    }
    if(activeTrack!==current.id||!audio)changeTrack(current.id);
    setVolume();
-   seek(current.at);
+   // Only timed finale tracks follow the wall clock.
+   // Ambient music must NOT jump every three seconds or on route changes.
+   if(current.id!=='ambient')seek(current.at);
    if(forceGesture||!autoplayBlocked)play();
  }
+ // Expose the active player to same-origin embedded countdown visualizers.
+ window.__tfwSecondaryAudio=()=>activeTrack==='ambient'&&audio&&!audio.paused?audio:null;
+ window.addEventListener('tfw:embedded-audio-wake',()=>syncSound(true));
  // Shared on-page Share dialog is initialized by secondary-share.js.
  $('#tfwPageFullscreen')?.addEventListener('click',async()=>{
    try{
