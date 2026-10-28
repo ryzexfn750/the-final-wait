@@ -245,8 +245,8 @@ test('V27 audio bars are rendered from FFT and release layout uses real dimensio
   assert.match(css,/transform:none!important/);
   assert.match(css,/max-height 1200ms/);
   assert.match(html,/css\/experience\.css\?v=33/);
-  assert.match(html,/js\/clock\.js\?v=39/);
-  assert.match(html,/js\/milestones\.js\?v=39/);
+  assert.match(html,/js\/clock\.js\?v=48/);
+  assert.match(html,/js\/milestones\.js\?v=48/);
 });
 
 test('V28 starts the release clock without waiting for the next polling cycle',()=>{
@@ -310,8 +310,8 @@ test('V28 release message and secondary-scale elapsed layout are present',()=>{
   assert.match(css,/width:min\(740px,77vw\)!important/);
   assert.match(css,/height:clamp\(72px,7\.8vw,105px\)!important/);
   assert.match(html,/css\/experience\.css\?v=33/);
-  assert.match(html,/js\/clock\.js\?v=39/);
-  assert.match(html,/js\/milestones\.js\?v=39/);
+  assert.match(html,/js\/clock\.js\?v=48/);
+  assert.match(html,/js\/milestones\.js\?v=48/);
 });
 
 
@@ -455,9 +455,9 @@ test('V29 phase-two typography uses one fixed title footprint',()=>{
   assert.match(css,/margin-top:clamp\(24px,3svh,40px\)!important/);
   assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/css\/experience\.css\?v=33/);
-  assert.match(html,/js\/app\.js\?v=44/);
-  assert.match(html,/js\/clock\.js\?v=39/);
-  assert.match(html,/js\/milestones\.js\?v=39/);
+  assert.match(html,/js\/app\.js\?v=46/);
+  assert.match(html,/js\/clock\.js\?v=48/);
+  assert.match(html,/js\/milestones\.js\?v=48/);
   assert.match(js,/if\(pill&&remaining>0&&remaining<=FINAL_FIVE\)/);
 });
 
