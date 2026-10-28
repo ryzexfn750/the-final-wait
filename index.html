@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <script src="js/timezone-init.js?v=1"></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#09070e" />
@@ -26,7 +27,7 @@
   <link rel="preload" as="image" href="assets/gta-vi-logo.webp" />
   <link rel="preload" as="image" href="assets/screenshots/desktop/scene-02.webp" media="(min-width: 701px)" />
   <link rel="preload" as="image" href="assets/screenshots/mobile/scene-02.webp" media="(max-width: 700px)" />
-  <link rel="stylesheet" href="css/base.css?v=31">
+  <link rel="stylesheet" href="css/base.css?v=32">
   <link rel="stylesheet" href="css/analytics-consent.css?v=1">
   <link rel="stylesheet" href="css/experience.css?v=33">
   <link rel="stylesheet" href="css/final-call.css?v=38">
@@ -241,7 +242,8 @@
     <button class="modal-close" id="closeTimezone" type="button" aria-label="Close">×</button>
     <p class="eyebrow bright">COUNTDOWN TARGET</p>
     <h2 id="timezoneTitle">CHOOSE A TIME ZONE.</h2>
-    <p>The default is Central European Time. Selecting another region recalculates the countdown to midnight on November 19 in that time zone.</p>
+    <p>Your device time zone is detected automatically unless you select another one. The countdown reaches zero at midnight on November 19 in the selected time zone.</p>
+    <button class="timezone-option timezone-auto-button" id="timezoneAuto" type="button"><strong>USE MY DEVICE TIME ZONE</strong><span id="timezoneAutoStatus">DETECT AUTOMATICALLY</span></button>
     <div class="timezone-search-wrap"><input id="timezoneSearch" type="search" placeholder="Search Europe, America, Tokyo..." autocomplete="off" /></div>
     <div class="timezone-list" id="timezoneList"></div>
   </div>
@@ -272,7 +274,7 @@
   </div>
   <script defer src="js/audio-controls.js?v=46"></script>
   <script defer src="js/clock.js?v=48"></script>
-  <script type="module" src="js/app.js?v=47"></script>
+  <script type="module" src="js/app.js?v=48"></script>
   <script defer src="js/milestones.js?v=51"></script>
   <script defer src="js/final-call.js?v=46"></script>
   <script defer src="js/final-call-locales.js?v=48"></script>
