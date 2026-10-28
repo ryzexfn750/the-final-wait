@@ -502,7 +502,7 @@
           sequenceMusicSource.connect(musicAnalyser);
         }
         // Capture the ambient music WITHOUT rerouting it through Web Audio.
-        // createMediaElementSource(ambient) used to make normal playback fall
+        // Routing ambient through a MediaElementSource used to make playback fall
         // silent when browsers suspended the AudioContext in background tabs.
         const ambient=window.__tfwAmbientAudio;
         if(ambient&&!ambientMusicSource){
