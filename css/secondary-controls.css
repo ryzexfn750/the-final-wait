@@ -1,0 +1,72 @@
+/* Consistent navigation and controls on all secondary pages. */
+.tfw-secondary-topbar{
+  gap:clamp(12px,1.7vw,25px);
+  background:linear-gradient(180deg,rgba(8,6,16,.93),rgba(8,6,16,.68));
+  backdrop-filter:blur(17px);
+  -webkit-backdrop-filter:blur(17px);
+}
+.tfw-secondary-topbar .brand{flex-shrink:0}
+.tfw-secondary-topbar .brand-ryze-logo{width:clamp(76px,7.5vw,102px);height:auto;object-fit:contain}
+.tfw-secondary-topbar .tfw-secondary-nav{display:flex!important;align-items:center;gap:clamp(9px,1.35vw,20px);min-width:0;flex:1;justify-content:flex-end}
+.tfw-secondary-topbar .tfw-secondary-nav>a{white-space:nowrap}
+.tfw-secondary-topbar .language-widget{
+  display:flex!important;flex:0 0 auto;
+  min-width:88px;
+  max-width:124px;
+  margin:0;
+  border-radius:999px;
+  background:rgba(14,10,24,.87);
+}
+.tfw-secondary-topbar .language-widget select,
+.tfw-secondary-topbar .language-widget .gt_selector,
+.tfw-secondary-topbar .gtranslate_wrapper select{
+  appearance:none!important;
+  background-color:#171020!important;
+  color:#fff!important;
+  color-scheme:dark;
+  border:1px solid rgba(255,255,255,.24)!important;
+  border-radius:999px!important;
+  min-height:34px;
+}
+.tfw-secondary-topbar .language-widget select option,
+.tfw-secondary-topbar .gtranslate_wrapper select option{
+  background:#171020!important;
+  color:#fff!important;
+}
+.tfw-secondary-topbar .nav-button,.tfw-secondary-topbar .sound-button{white-space:nowrap;flex:0 0 auto}
+.tfw-secondary-topbar .tfw-secondary-mobile{display:none;align-items:center;gap:10px}
+.tfw-secondary-drawer{
+  position:absolute;top:calc(100% + 7px);right:14px;
+  width:min(270px,calc(100vw - 28px));z-index:1200;
+  padding:10px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:15px;
+  background:rgba(13,10,22,.97);
+  box-shadow:0 20px 60px rgba(0,0,0,.55);
+  backdrop-filter:blur(20px);
+}
+.tfw-secondary-drawer[hidden]{display:none!important}
+.tfw-secondary-drawer>a,.tfw-secondary-drawer button{
+  display:block;width:100%;box-sizing:border-box;
+  padding:13px 14px;border:0;border-radius:8px;
+  background:transparent;color:#fff;
+  text-align:left;font:800 10px/1.2 Arial,sans-serif;letter-spacing:.1em;
+  cursor:pointer;
+}
+.tfw-secondary-drawer>a:hover,.tfw-secondary-drawer button:hover{background:rgba(242,63,178,.14)}
+@media(max-width:1250px){
+  .tfw-secondary-topbar .brand-copy{display:none}
+  .tfw-secondary-topbar .tfw-secondary-nav{gap:12px}
+}
+@media(max-width:890px){
+  .tfw-secondary-topbar{gap:12px}
+  .tfw-secondary-topbar .tfw-secondary-nav{display:none!important}
+  .tfw-secondary-topbar .tfw-secondary-mobile{display:flex}
+  .tfw-secondary-topbar .language-widget{margin-left:auto;min-width:85px}
+}
+@media(max-width:480px){
+  .tfw-secondary-topbar .brand-ryze-logo{width:68px}
+  .tfw-secondary-topbar .language-widget{min-width:74px;max-width:86px}
+  .tfw-secondary-topbar .tfw-secondary-mobile{gap:6px}
+  .tfw-secondary-topbar{padding-inline:12px}
+}
