@@ -14,13 +14,13 @@ test('Secondary pages share centered navigation, volume, Share modal and dark la
    }
    for(const asset of [
     'css/audio-controls.css?v=39',
-    'css/secondary-controls.css?v=47',
-    'js/audio-controls.js?v=46',
-    'js/secondary-controls.js?v=46',
+    'css/secondary-controls.css?v=48',
+    'js/audio-controls.js?v=48',
+    'js/secondary-controls.js?v=48',
     'js/secondary-share.js?v=46',
     'js/page-ready.js?v=47',
-    'js/seamless-navigation.js?v=47',
-    'css/site-polish.css?v=46'
+    'js/seamless-navigation.js?v=48',
+    'css/site-polish.css?v=48'
    ])assert.ok(html.includes(asset),name+' '+asset);
    assert.ok(html.includes('gtranslate_wrapper language-widget'));
    assert.doesNotMatch(html,/id="(?:topbarZoneButton|zoneButton)"/);
