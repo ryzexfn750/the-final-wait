@@ -51,7 +51,7 @@ test('Global GTA pointer is independent of hero/article detection and works on m
   assert.equal(layer.classList.contains('active'),true);
   frames.shift()();
   assert.match(layer.children[0].style.transform,/125px,280px/);
-  assert.match(layer.children[1].style.transform,/123px,278\.5px/); // click hotspot at arrow tip
+  assert.match(layer.children[1].style.transform,/123\.7px,279px/); // click hotspot at arrow tip
 
   // The entire site, rather than article-only containers, emits events.
   emit('mousemove',{clientX:455,clientY:76,target:{closest:selector=>selector.startsWith('a,button')}});
@@ -89,6 +89,10 @@ test('Global mouse halo is fixed above all sections and installed on every site 
   assert.match(css,/z-index:2147483000!important/);
   assert.match(css,/pointer-events:none!important/);
   assert.match(css,/width:210px!important/);
+  const pointer=css.slice(css.indexOf('#tfwGlobalCursor .tfw-global-cursor-reticle{'),css.indexOf('#tfwGlobalCursor .tfw-global-cursor-reticle:before'));
+  assert.match(pointer,/width:18px!important/);
+  assert.match(pointer,/height:24px!important/);
+  assert.match(css,/#tfwGlobalCursor.interactive .tfw-global-cursor-reticle\{\s*width:18px!important;\s*height:24px!important/);
   assert.match(css,/rgba\(242,63,178,\.065\)/);
   assert.match(js,/linearGradient id="tfwArrowGradient"/);
   assert.match(js,/M2 1\.5 L2 27/);
@@ -99,7 +103,7 @@ test('Global mouse halo is fixed above all sections and installed on every site 
   assert.doesNotMatch(js,/if\(!fine\|\|reduced\|\|!glow\)return/);
   for(const page of ['index.html','today.html','intel.html','timeline.html','intel-archive.html']){
     const html=read(page);
-    assert.ok(html.includes('css/site-polish.css?v=42'),page+' updated stylesheet');
-    assert.ok(html.includes('js/site-polish.js?v=42'),page+' updated script');
+    assert.ok(html.includes('css/site-polish.css?v=43'),page+' updated stylesheet');
+    assert.ok(html.includes('js/site-polish.js?v=43'),page+' updated script');
   }
 });
