@@ -230,3 +230,84 @@ body.tfw-route-overlay-open > #tfwGlobalCursor,
 body.tfw-route-overlay-open > .cursor-glow{
   display:none!important;
 }
+
+
+/* V47 — restore the original route-loader design on BOTH loading paths:
+   full page load and seamless in-site navigation.  A real progress value,
+   not the replacement indeterminate travelling glow, fills the old track. */
+#tfwPageLoader,
+#tfwSeamlessShell .tfw-seamless-progress{
+  background:
+    radial-gradient(circle at 28% 40%,rgba(242,63,178,.13),transparent 24%),
+    radial-gradient(circle at 44% 58%,rgba(119,96,255,.11),transparent 28%),
+    rgba(7,6,10,.96)!important;
+}
+#tfwPageLoader .route-loader-inner,
+#tfwSeamlessShell .tfw-seamless-progress .route-loader-inner{
+  position:relative;
+  width:min(430px,82vw);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+#tfwPageLoader .route-loader-inner img,
+#tfwSeamlessShell .tfw-seamless-progress .route-loader-inner img{
+  width:clamp(82px,10vw,126px)!important;
+  height:auto!important;
+  max-height:120px!important;
+  object-fit:contain!important;
+  opacity:1!important;
+  transform:none!important;
+  filter:drop-shadow(0 0 28px rgba(242,63,178,.24));
+  transition:none!important;
+}
+#tfwPageLoader .route-loader-kicker,
+#tfwSeamlessShell .tfw-seamless-progress .route-loader-kicker{
+  display:block;
+  margin-top:18px!important;
+  color:var(--accent,#f23fb2)!important;
+  font:900 7px/1 Arial,sans-serif!important;
+  letter-spacing:.24em!important;
+}
+#tfwPageLoader .tfw-page-loader-caption,
+#tfwSeamlessShell .tfw-seamless-progress .tfw-seamless-caption{
+  display:block;
+  margin:10px 0 0!important;
+  padding:0!important;
+  color:#fff!important;
+  font:900 clamp(16px,2.2vw,24px)/1 "Arial Black",Impact,sans-serif!important;
+  letter-spacing:.08em!important;
+}
+#tfwPageLoader .route-loader-track,
+#tfwSeamlessShell .tfw-seamless-progress .route-loader-track{
+  display:block!important;
+  position:relative!important;
+  width:min(290px,72vw)!important;
+  height:2px!important;
+  margin-top:24px!important;
+  overflow:hidden!important;
+  border-radius:0!important;
+  background:rgba(255,255,255,.09)!important;
+  opacity:1!important;
+}
+#tfwPageLoader .route-loader-track i,
+#tfwSeamlessShell .tfw-seamless-progress .route-loader-track i{
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  transform:scaleX(0);
+  transform-origin:left center!important;
+  animation:none!important;
+  transition:transform .32s cubic-bezier(.2,.78,.24,1)!important;
+  background:linear-gradient(90deg,var(--accent-3,#8f75ff),var(--accent,#f23fb2),var(--accent-2,#ff9c43))!important;
+  box-shadow:0 0 18px var(--accent,#f23fb2)!important;
+}
+#tfwPageLoader .tfw-page-loader-retry{margin-top:24px}
+#tfwSeamlessShell .tfw-seamless-progress .tfw-seamless-direct{margin-top:24px}
+@media(prefers-reduced-motion:reduce){
+  #tfwPageLoader .route-loader-track i,
+  #tfwSeamlessShell .route-loader-track i{transition:none!important}
+}
