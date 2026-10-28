@@ -139,19 +139,24 @@
   let audioGestureArmed=false;
   const BG_RESUME_KEY='tfw_ambient_resume_v48';
   let bgPositionInitialized=false;
+  let lastSavedPersistentAt=0;
   function persistBgPosition(){
     if(!bgAudio||!Number.isFinite(bgAudio.currentTime)||bgAudio.currentTime<0)return;
     try{
-      sessionStorage.setItem(BG_RESUME_KEY,JSON.stringify({
-        position:bgAudio.currentTime,at:Date.now()
-      }));
+      const snapshot=JSON.stringify({position:bgAudio.currentTime,at:Date.now()});
+      sessionStorage.setItem(BG_RESUME_KEY,snapshot);
+      // Also survive reopening the site later in a fresh tab.
+      if(Date.now()-lastSavedPersistentAt>1800){
+        localStorage.setItem(BG_RESUME_KEY,snapshot);
+        lastSavedPersistentAt=Date.now();
+      }
     }catch{}
   }
   function restoreBgPosition(){
     if(bgPositionInitialized||!bgAudio||!Number.isFinite(bgAudio.duration)||bgAudio.duration<=0)return;
     let position=liveAudioPosition();
     try{
-      const stored=JSON.parse(sessionStorage.getItem(BG_RESUME_KEY)||'null');
+      const stored=JSON.parse(sessionStorage.getItem(BG_RESUME_KEY)||localStorage.getItem(BG_RESUME_KEY)||'null');
       if(stored&&Number.isFinite(stored.position)&&stored.position>=0&&
          Number.isFinite(stored.at)&&Date.now()-stored.at<6*60*60*1000){
         position=normalizeTime(stored.position,bgAudio.duration);
