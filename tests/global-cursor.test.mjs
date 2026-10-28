@@ -54,7 +54,7 @@ test('Global GTA pointer is independent of hero/article detection and works on m
   assert.match(layer.children[1].style.transform,/125px,280px/);
 
   // The entire site, rather than article-only containers, emits events.
-  emit('mousemove',{clientX:455,clientY:76,target:{closest:()=>true}});
+  emit('mousemove',{clientX:455,clientY:76,target:{closest:selector=>selector.startsWith('a,button')}});
   frames.shift()();
   assert.match(layer.children[0].style.transform,/455px,76px/);
   assert.equal(layer.classList.contains('interactive'),true);
