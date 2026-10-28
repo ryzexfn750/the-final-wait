@@ -185,6 +185,7 @@
   }
   function soundButtons(){return [byId('soundButton'),byId('mobileSoundButton')].filter(Boolean)}
   function backgroundAllowed(){
+    if(new URLSearchParams(location.search).has('tfw_embed'))return false;
     if(document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released'))return false;
     return remainingForAudio()>BG_CUTOFF&&!previewFinalFive;
   }
@@ -331,7 +332,7 @@
     return milestones.find(m=>remaining<=m.at&&remaining>m.at-MILESTONE_WINDOW)||null;
   }
   async function playMilestoneSfx(m,elapsedMs){
-    if(!bgWanted||!m)return;
+    if(new URLSearchParams(location.search).has('tfw_embed')||!bgWanted||!m)return;
     if(milestoneAudio){try{milestoneAudio.pause()}catch{}}
     const audio=new Audio(`assets/audio/milestones/${m.sfx}`);
     milestoneAudio=audio;
