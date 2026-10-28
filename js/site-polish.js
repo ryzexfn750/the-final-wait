@@ -37,7 +37,7 @@
       const translate='translate3d('+x+'px,'+y+'px,0) translate(-50%,-50%)';
       halo.style.transform=translate;
       // Classic pointer hotspot: top-left tip, not center of the image.
-      reticle.style.transform='translate3d('+(x-2)+'px,'+(y-1.5)+'px,0)';
+      reticle.style.transform='translate3d('+(x-1.3)+'px,'+(y-1)+'px,0)';
     }
     function reveal(){
       if(!mouseSeen){
