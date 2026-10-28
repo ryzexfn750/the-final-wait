@@ -352,3 +352,32 @@ html.tfw-global-cursor-ready .cursor-glow{
     height:180px!important;
   }
 }
+
+/* V44 — featured dossiers: compact editorial hand-off to the archive. */
+#intel .intel-grid{
+  padding-bottom:0!important;
+}
+#intel .intel-archive-cta{
+  margin:2px auto 0!important;
+  padding:12px 20px 40px!important;
+}
+#intel .intel-archive-cta>span{
+  display:block;
+  margin:0 0 7px!important;
+}
+#intel .intel-archive-cta p{
+  margin:6px auto 12px!important;
+  line-height:1.45!important;
+}
+#intel .intel-archive-cta .fx-button{
+  min-height:48px!important;
+  padding:12px 25px!important;
+  box-shadow:0 0 24px rgba(242,63,178,.19),0 8px 26px rgba(0,0,0,.22);
+}
+@media(max-width:700px){
+  #intel .intel-archive-cta{
+    margin:0 auto!important;
+    padding:8px 10px 32px!important;
+  }
+  #intel .intel-archive-cta p{margin:5px auto 10px!important}
+}
