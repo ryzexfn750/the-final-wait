@@ -72,3 +72,44 @@ test('V40 global cursor has guaranteed viewport alignment; small logo appears in
     assert.ok(read(path).includes('js/site-polish.js?v=40'),path);
   }
 });
+
+
+test('V40 section hash follows actual viewport transitions on repeated wheel scrolling',()=>{
+  const app=read('js/app.js');
+  const begin=app.indexOf('function syncSectionHash(){');
+  const end=app.indexOf('let navigationGlobalHandlersBound',begin);
+  assert.ok(begin>=0&&end>begin);
+  const spans={hero:[0,1020],today:[1020,2100],timeline:[2100,3120],intel:[3120,4200],share:[4200,5100]};
+  let wheelY=0,current='#timeline';
+  const document={
+    getElementById(id){
+      const p=spans[id];
+      return p?{id,getBoundingClientRect(){return {top:p[0]-wheelY,bottom:p[1]-wheelY}}}:null;
+    }
+  };
+  const location={pathname:'/the-final-wait/',search:'',get hash(){return current}};
+  const history={replaceState(_state,_title,url){current=url.includes('#')?url.slice(url.indexOf('#')):''}};
+  const sync=new Function('document','window','location','history',
+    app.slice(begin,end)+'return syncSectionHash')(document,{innerHeight:900},location,history);
+  for(const [offset,expected] of [
+    [0,''],[800,'#today'],[1750,'#timeline'],
+    [2650,'#intel'],[3850,'#share'],[0,'']
+  ]){
+    wheelY=offset;
+    sync();
+    assert.equal(current,expected,'URL should follow section at scrollY '+offset);
+  }
+});
+
+test('V40 release playlist loops deterministically instead of stopping or randomizing',()=>{
+  const app=read('js/app.js');
+  const begin=app.indexOf('function nextReleaseSceneChoice(){');
+  const end=app.indexOf('function changeScene(',begin);
+  assert.ok(begin>=0&&end>begin);
+  const ids=['scene-64','scene-69','scene-68','scene-25','scene-134','scene-43','scene-104','scene-123'];
+  const select=new Function('releaseSceneIds','releaseChoiceForCursor',
+    'releaseSequenceActive','releaseSceneCursor',
+    app.slice(begin,end)+'return nextReleaseSceneChoice;')(
+      ids,index=>ids[index],true,0);
+  for(let i=1;i<=24;i++)assert.equal(select(),ids[i%ids.length]);
+});
