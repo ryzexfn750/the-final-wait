@@ -7,6 +7,7 @@
  const get=key=>{try{return localStorage.getItem(key)}catch{return null}};
  const root=$('#topbar');
  if(!root)return;
+ const embedded=new URLSearchParams(location.search).has('tfw_embed');
  const MINUTE=60000, RELEASE_FALLBACK=Date.parse('2026-11-19T00:00:00+01:00');
  function releaseEpoch(){
    const zone=get('tfw_timezone')||'Europe/Rome';
@@ -61,7 +62,7 @@
    }
  }
  function play(){
-   if(!audio||!activeTrack||!isEnabled()||document.hidden||!audio.paused||playPending)return;
+   if(embedded||!audio||!activeTrack||!isEnabled()||!audio.paused||playPending)return;
    const instance=audio;
    let request;
    try{request=instance.play()}catch(error){request=Promise.reject(error)}
@@ -94,6 +95,7 @@
    });
  }
  function syncSound(forceGesture=false){
+   if(embedded)return;
    const current=selection();
    if(!isEnabled()||!current){
      if(audio&&!audio.paused)audio.pause();
@@ -151,13 +153,14 @@
    else if(audio)audio.pause();
  });
  document.addEventListener('visibilitychange',()=>{
-   if(document.hidden){if(audio)audio.pause()}
-   else syncSound();
+   // Background audio must continue in minimized or background tabs.
+   // Only visual rendering is throttled by document.hidden.
+   if(!embedded&&isEnabled())syncSound();
  });
  for(const eventName of ['pointerdown','keydown','touchstart']){
    document.addEventListener(eventName,()=>{if(isEnabled())syncSound(true)},{passive:true,capture:true});
  }
  window.addEventListener('pageshow',()=>syncSound());
  if(isEnabled())syncSound();
- setInterval(()=>{if(!document.hidden)syncSound()},3000);
+ setInterval(()=>syncSound(),3000);
 })();
