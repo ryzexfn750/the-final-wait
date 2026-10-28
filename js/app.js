@@ -1,4 +1,4 @@
-import { SITE_CONFIG, TIMELINE, INTEL } from './config.js?v=10';
+import { SITE_CONFIG, TIMELINE, INTEL } from './config.js?v=44';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
