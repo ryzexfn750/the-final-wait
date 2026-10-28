@@ -455,7 +455,7 @@ test('V29 phase-two typography uses one fixed title footprint',()=>{
   assert.match(css,/margin-top:clamp\(24px,3svh,40px\)!important/);
   assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/css\/experience\.css\?v=33/);
-  assert.match(html,/js\/app\.js\?v=40/);
+  assert.match(html,/js\/app\.js\?v=44/);
   assert.match(html,/js\/clock\.js\?v=39/);
   assert.match(html,/js\/milestones\.js\?v=39/);
   assert.match(js,/if\(pill&&remaining>0&&remaining<=FINAL_FIVE\)/);
