@@ -7,7 +7,7 @@ test('All site routes use v48 assets and the Russian translator is removed',()=>
  const home=read('index.html');
  for(const asset of ['js/clock.js?v=48','js/milestones.js?v=48',
    'js/language.js?v=48','js/final-call-locales.js?v=48',
-   'js/seamless-navigation.js?v=48','js/inpage-scroll.js?v=48',
+   'js/seamless-navigation.js?v=49','js/inpage-scroll.js?v=48',
    'css/site-polish.css?v=48']){
     assert.ok(home.includes(asset),asset);
  }
@@ -68,4 +68,6 @@ test('Soundtrack is persistent, does not periodically jump, and the home visuali
  assert.match(finale,/tfw:seamless-return/);
  assert.match(navigation,/tfw:seamless-return/);
  assert.match(navigation,/tfw:seamless-gesture/);
+ assert.match(navigation,/path\.endsWith\('\/index\.html'\)/);
+ assert.match(navigation,/normalize\(url\.pathname\)===normalize\(initial\.pathname\)/);
 });
