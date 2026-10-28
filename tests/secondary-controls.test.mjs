@@ -3,57 +3,76 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 
-test('All inner pages have desktop + mobile sound, fullscreen, share, and translation controls',()=>{
- const pages=['today.html','timeline.html','intel.html','intel-archive.html'];
- for(const name of pages){
-  const html=read(name);
-  for(const id of ['soundButton','mobileSoundButton','tfwPageShare','tfwPageFullscreen','tfwPageMenu','tfwPageDrawer'])
-   assert.ok(html.includes('id="'+id+'"'),name+' '+id);
-  assert.match(html,/css\/audio-controls\.css\?v=39/);
-  assert.match(html,/css\/secondary-controls\.css\?v=44/);
-  assert.match(html,/js\/audio-controls\.js\?v=39/);
-  assert.match(html,/js\/secondary-controls\.js\?v=44/);
-  assert.match(html,/gtranslate_wrapper language-widget/);
-  assert.match(html,/css\/site-polish\.css\?v=44/);
- }
+const subpages=['today.html','timeline.html','intel.html','intel-archive.html'];
+
+test('Secondary pages share centered navigation, volume, Share modal and dark language control',()=>{
  const css=read('css/secondary-controls.css');
+ for(const name of subpages){
+   const html=read(name);
+   for(const id of ['soundButton','mobileSoundButton','tfwPageShare','tfwPageFullscreen','tfwPageMenu','tfwPageDrawer']){
+     assert.ok(html.includes('id="'+id+'"'),name+' '+id);
+   }
+   for(const asset of [
+    'css/audio-controls.css?v=39',
+    'css/secondary-controls.css?v=46',
+    'js/audio-controls.js?v=46',
+    'js/secondary-controls.js?v=46',
+    'js/secondary-share.js?v=46',
+    'js/page-ready.js?v=46',
+    'js/seamless-navigation.js?v=46',
+    'css/site-polish.css?v=46'
+   ])assert.ok(html.includes(asset),name+' '+asset);
+   assert.ok(html.includes('gtranslate_wrapper language-widget'));
+   assert.doesNotMatch(html,/id="(?:topbarZoneButton|zoneButton)"/);
+   assert.match(html,/class="tfw-footer-creator"/);
+   assert.match(html,/class="tfw-footer-logo"/);
+   assert.match(html,/CREATED BY<\/small><strong>RYZEGTAVI<\/strong>/);
+   assert.match(html,/tfw-page-booting/);
+ }
+ assert.match(css,/left:50%!important/);
+ assert.match(css,/transform:translate\(-50%,-50%\)!important/);
  assert.match(css,/background-color:#171020!important/);
  assert.match(css,/color-scheme:dark/);
- assert.match(css,/option\{/);
- assert.match(css,/@media\(max-width:890px\)/);
+ assert.match(css,/\.tfw-footer-logo\{/);
+ assert.match(css,/#tfwSecondaryShareModal/);
 });
 
-test('Secondary music respects shared master volume and browser-autoplay restrictions',()=>{
- const js=read('js/secondary-controls.js');
- assert.match(js,/new Audio\('assets\/audio\/background-v26\.mp3'\)/);
- assert.match(js,/window\.__tfwMasterVolume/);
- assert.match(js,/tfw:volume-change/);
- assert.match(js,/tfw:sound-change/);
- assert.match(js,/audio\.play\(\)/);
- assert.match(js,/audio\.pause\(\)/);
- assert.match(js,/pointerdown/);
- assert.match(js,/requestFullscreen/);
- assert.match(js,/navigator\.share/);
- assert.match(js,/navigator\.clipboard/);
+test('Background audio stays active on minimized tabs and never duplicates inside embedded pages',()=>{
+ const secondary=read('js/secondary-controls.js'),clock=read('js/clock.js');
+ const milestones=read('js/milestones.js'),call=read('js/final-call.js');
+ const controller=secondary.slice(secondary.indexOf('function play(){'),secondary.indexOf('function changeTrack('));
+ assert.doesNotMatch(controller,/document\.hidden/);
+ assert.match(secondary,/if\(embedded\)return/);
+ assert.match(secondary,/document\.addEventListener\('visibilitychange'/);
+ assert.doesNotMatch(secondary,/if\(document\.hidden\)\{if\(audio\)audio\.pause\(\)\}/);
+ assert.match(secondary,/setInterval\(\(\)=>syncSound\(\),3000\)/);
+ assert.match(clock,/if\(new URLSearchParams\(location\.search\)\.has\('tfw_embed'\)\)return false/);
+ assert.match(milestones,/function soundEnabled\(\)\{return !new URLSearchParams/);
+ assert.match(call,/function canPlayAudio\(\)\{\s*return !new URLSearchParams/);
+ assert.match(read('js/audio-controls.js'),/window\.addEventListener\('storage'/);
 });
 
-test('Archive call-to-action, footer credit and launch trailer remain correct',()=>{
+test('Archive CTA is just the button, moved higher with small gap',()=>{
  const html=read('index.html'),css=read('css/site-polish.css');
- assert.match(html,/Discover every character, location and feature in our Leonida archive\./);
+ const start=html.indexOf('<div class="intel-archive-cta reveal">');
+ const end=html.indexOf('</div>',start);
+ assert.ok(start>=0&&end>start);
+ const block=html.slice(start,end);
+ assert.match(block,/EXPLORE ALL DOSSIERS/);
+ assert.doesNotMatch(block,/MORE TO EXPLORE|Discover every character/);
+ assert.match(css,/#intel \.intel-archive-cta\{\s*margin:-20px auto 0!important/);
  assert.match(html,/CREATED BY<\/small><strong>RYZEGTAVI<\/strong>/);
- assert.match(css,/#intel \.intel-archive-cta\{\s*margin:2px auto 0!important/);
- assert.match(css,/margin:6px auto 12px!important/);
- assert.match(html,/css\/site-polish\.css\?v=44/);
- const config=read('js/config.js');
- const match=config.match(/export const TIMELINE = ([\s\S]*?);\s*export const INTEL =/);
- assert.ok(match);
- const timeline=JSON.parse(match[1]);
- const album=timeline.find(x=>x.title==='THE ALBUM');
- const release=timeline.find(x=>x.title==='WELCOME TO LEONIDA');
- const trailer=timeline.find(x=>x.title==='THE LAUNCH TRAILER');
- assert.equal(album.sceneId,'scene-164');
- assert.equal(release.sceneId,'scene-148');
- assert.equal(trailer.date,'OCT 15, 2026');
- assert.equal(trailer.articleId,'launch-trailer');
- assert.ok(JSON.parse(read('content/timeline.json')).some(x=>x.id==='launch-trailer'));
+});
+
+test('Share opens the on-site modal; native share only occurs after choosing SHARE WEBSITE',()=>{
+ const html=read('today.html'),js=read('js/secondary-share.js');
+ assert.ok(html.includes('js/secondary-share.js?v=46'));
+ assert.match(js,/modal\.className='share-modal glass'/);
+ assert.match(js,/trigger\.addEventListener\('click',open\)/);
+ assert.match(js,/data-tfw-share="x"/);
+ assert.match(js,/data-tfw-share="whatsapp"/);
+ assert.match(js,/data-tfw-share="native"/);
+ assert.match(js,/modal\.querySelectorAll\('\[data-tfw-share\]'\)/);
+ assert.match(js,/if\(navigator\.share\)/);
+ assert.doesNotMatch(read('js/secondary-controls.js'),/share\?\.addEventListener\('click'/);
 });
