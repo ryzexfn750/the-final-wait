@@ -311,3 +311,14 @@ body.tfw-route-overlay-open > .cursor-glow{
   #tfwPageLoader .route-loader-track i,
   #tfwSeamlessShell .route-loader-track i{transition:none!important}
 }
+
+/* V48 — share modal badge slightly larger on secondary routes. */
+#tfwSecondaryShareModal .tfw-share-brand{
+ width:clamp(150px,17vw,192px)!important;
+ max-height:110px!important;
+ height:auto!important;
+ margin:0 0 24px!important;
+}
+@media(max-width:550px){
+ #tfwSecondaryShareModal .tfw-share-brand{width:140px!important;max-height:90px!important}
+}
