@@ -25,7 +25,19 @@
 
   async function banner(){
     const host=document.querySelector('.share-backdrop');if(!host)return;
-    const scenes=await fetch('./assets/scenes.json').then(r=>r.json());
+    // Don't request or decode footer artwork while the visitor remains on
+    // the countdown. Fetch the share carousel only when it gets close.
+    if('IntersectionObserver' in window){
+      await new Promise(resolve=>{
+        const preloadObserver=new IntersectionObserver(entries=>{
+          if(!entries.some(item=>item.isIntersecting))return;
+          preloadObserver.disconnect();
+          resolve();
+        },{rootMargin:'460px 0px',threshold:0});
+        preloadObserver.observe(host);
+      });
+    }
+    const scenes=await fetch('./assets/scenes.json',{cache:'force-cache'}).then(r=>r.json());
     const ids=['scene-147','scene-146','scene-149','scene-151','scene-153'];
     const art=ids.map(id=>scenes.find(s=>s.id===id)).filter(Boolean);if(!art.length)return;
     host.innerHTML='<div class="banner-wash"></div><div class="banner-art"><img alt="" decoding="async"><img alt="" decoding="async"></div>';
