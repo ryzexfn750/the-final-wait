@@ -133,3 +133,94 @@ body.tfw-custom-cursor .tfw-pointer-dot.interactive{
 @media(pointer:coarse),(prefers-reduced-motion:reduce){
  .tfw-pointer-dot{display:none!important}
 }
+
+
+/* v40 — full-page pointer lighting, featured-only intel and progressive sections. */
+@media(pointer:fine) and (prefers-reduced-motion:no-preference){
+  html body.tfw-custom-cursor .cursor-glow,
+  html.tfw-perf-lite:not(.tfw-perf-mobile) body.tfw-custom-cursor .cursor-glow{
+    opacity:.95!important;
+    background:radial-gradient(circle,rgba(242,63,178,.17),rgba(255,166,81,.075) 21%,rgba(124,96,255,.075) 41%,transparent 73%)!important;
+    filter:saturate(1.2);
+    z-index:490;
+  }
+  body.tfw-custom-cursor .tfw-pointer-dot{
+    position:fixed!important;
+    transform:translate(-50%,-50%)!important;
+    width:13px;height:13px;
+    z-index:9000!important;
+    opacity:0;
+  }
+  body.tfw-custom-cursor.tfw-pointer-active .tfw-pointer-dot{opacity:1}
+}
+@media(pointer:coarse),(prefers-reduced-motion:reduce){
+  .tfw-pointer-dot{display:none!important}
+}
+
+/* Section 03: just two readable cover stories on the homepage. */
+#intel .intel-archive-shortcuts{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;
+}
+#intel .intel-archive-shortcuts a{
+  display:inline-flex;justify-content:center;align-items:center;
+  padding:11px 17px;min-height:40px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;
+  background:rgba(255,255,255,.035);
+  color:rgba(255,255,255,.75);
+  font:900 9px/1 Arial,Helvetica,sans-serif;
+  letter-spacing:.14em;
+  transition:background .25s,border-color .25s,color .25s;
+}
+#intel .intel-archive-shortcuts a:hover,#intel .intel-archive-shortcuts a:focus-visible{
+  border-color:rgba(242,63,178,.55);
+  background:rgba(242,63,178,.12);color:#fff;
+}
+#intel .intel-grid{padding-bottom:12px!important}
+#intel .intel-grid .intel-card,#intel .intel-grid .intel-card:nth-child(3n){
+  grid-column:span 6;min-height:520px;
+}
+#intel .intel-archive-cta{
+  width:min(1150px,90vw);margin:20px auto 0;
+  padding:25px 24px 68px;
+  text-align:center;border-top:1px solid rgba(255,255,255,.13);
+}
+#intel .intel-archive-cta>span{
+  font:900 9px/1 Arial;letter-spacing:.22em;color:#f495cb;
+}
+#intel .intel-archive-cta p{
+  max-width:640px;margin:16px auto 25px;
+  color:rgba(255,255,255,.62);font-size:14px;line-height:1.65;
+}
+#intel .intel-archive-cta .fx-button{display:inline-flex;align-items:center;justify-content:center;min-height:45px}
+
+/* Avoid scrolling jumps while sections are still awaiting lazy hydration. */
+#timeline:not(.tfw-section-hydrated) #timelineViewport{min-height:610px}
+#intel:not(.tfw-section-hydrated) #intelGrid{min-height:540px}
+#today:not(.tfw-section-hydrated) .newspaper-image{background-image:none}
+#timeline:not(.tfw-section-hydrated) .timeline-backdrop,
+#intel:not(.tfw-section-hydrated) .intel-backdrop{background-image:none!important}
+
+/* Ryze insignia inside the Share dialog: modest and unobtrusive. */
+#shareModal .tfw-share-brand{
+  display:block!important;
+  width:clamp(86px,11vw,112px);
+  height:auto;
+  max-height:55px;
+  object-fit:contain;
+  object-position:left center;
+  margin:-8px 0 22px;
+  opacity:.84;
+  filter:drop-shadow(0 3px 12px rgba(242,63,178,.15));
+}
+@media(max-width:780px){
+  #intel .intel-grid .intel-card,#intel .intel-grid .intel-card:nth-child(3n){
+    grid-column:span 12;min-height:500px;
+  }
+  #intel .intel-archive-cta{padding:20px 0 58px}
+}
+@media(max-width:550px){
+  #intel .intel-grid .intel-card,#intel .intel-grid .intel-card:nth-child(3n){min-height:440px}
+  #intel .intel-archive-shortcuts a{font-size:8px;padding:10px 13px;min-height:36px}
+  #shareModal .tfw-share-brand{width:90px;margin:0 0 15px}
+}
