@@ -235,7 +235,7 @@ function updateZoneUI() {
   const meta = zoneMeta(currentTimeZone);
   els.zoneShort.textContent = `${meta.short} · ${meta.offset}`;
   if (els.timezoneNote) els.timezoneNote.textContent = `THIS COUNTDOWN REFERS TO ${meta.short}${meta.offset ? ` (${meta.offset})` : ''}.`;
-  $('.timezone-option[data-zone]').forEach(el => el.classList.toggle('active', el.dataset.zone === currentTimeZone));
+  $$('.timezone-option[data-zone]').forEach(el => el.classList.toggle('active', el.dataset.zone === currentTimeZone));
   const autoButton=$('#timezoneAuto');
   if(autoButton){
     autoButton.classList.toggle('active',window.__tfwTimeZoneSource==='auto');
