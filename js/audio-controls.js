@@ -101,6 +101,19 @@
    });
    syncUi();
  }
+ // A same-origin article iframe has its own volume slider. Reflect its
+ // persistent settings in the player that remains alive in the parent page.
+ window.addEventListener('storage',event=>{
+   if(event.key!=='tfw_sound'&&event.key!=='tfw_volume')return;
+   const value=Number(get('tfw_volume'));
+   volume=get('tfw_volume')===null||!Number.isFinite(value)?1:clamp(value);
+   const nextEnabled=get('tfw_sound')!=='off';
+   if(nextEnabled!==enabled){
+     enabled=nextEnabled;
+     window.dispatchEvent(new CustomEvent('tfw:sound-change',{detail:{enabled}}));
+   }
+   dispatchVolume();syncUi();
+ });
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
  else boot();
 })();
