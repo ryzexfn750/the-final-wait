@@ -783,7 +783,7 @@ function syncSectionHash(){
   const sections=['hero','today','timeline','intel','share']
     .map(id=>document.getElementById(id)).filter(Boolean);
   if(!sections.length)return;
-  const focusY=Math.min(window.innerHeight*.47,Math.max(155,window.innerHeight*.3));
+  const focusY=Math.max(165,window.innerHeight*.53);
   let active=sections[0],best=-Infinity;
   for(const section of sections){
     const r=section.getBoundingClientRect();
