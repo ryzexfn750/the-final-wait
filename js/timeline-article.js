@@ -29,7 +29,7 @@ async function init(){
     $('#articleDate').textContent=article.date; $('#articleCategory').textContent=article.category; $('#articleHeadline').textContent=article.headline; $('#articleDek').textContent=article.dek; $('#articleByline').textContent='BY '+article.byline; $('#articleReadTime').textContent=article.readingTime; $('#articleBody').innerHTML=article.blocks.map(renderBlock).join('');
     document.title=`${article.headline} — The Road to Leonida`; document.querySelector('meta[name="description"]').content=article.dek;
     $('#copyTimelineLink').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(location.href);showToast('ARTICLE LINK COPIED')}catch{showToast('COPY THE URL FROM YOUR BROWSER')}});
-    observeReveals(); bindFx(); bindNavigation(); document.dispatchEvent(new Event('tfw:content-ready'));
-  }catch(e){console.error(e);showToast('TIMELINE STORY COULD NOT LOAD');document.dispatchEvent(new Event('tfw:content-ready'))}
+    observeReveals(); bindFx(); bindNavigation(); window.__tfwContentReady=true;document.dispatchEvent(new Event('tfw:content-ready'));
+  }catch(e){console.error(e);showToast('TIMELINE STORY COULD NOT LOAD');window.__tfwContentError=e;document.dispatchEvent(new CustomEvent('tfw:page-content-failed',{detail:{error:e}}));document.dispatchEvent(new Event('tfw:content-ready'))}
 }
 init();
