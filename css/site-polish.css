@@ -381,3 +381,17 @@ html.tfw-global-cursor-ready .cursor-glow{
   }
   #intel .intel-archive-cta p{margin:5px auto 10px!important}
 }
+
+/* V46: one focused archive button, aligned tightly with featured covers. */
+#intel .intel-archive-cta{
+  margin:-20px auto 0!important;
+  padding:0 16px 34px!important;
+  border-top:0!important;
+}
+#intel .intel-archive-cta .fx-button{
+  padding:14px 30px!important;
+  min-height:48px!important;
+}
+@media(max-width:700px){
+  #intel .intel-archive-cta{margin:-12px auto 0!important;padding:0 12px 30px!important}
+}
