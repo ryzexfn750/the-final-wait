@@ -963,6 +963,7 @@ async function init(){
     document.documentElement.classList.remove('anchor-loading');
   }
   syncSectionHash();
+  window.__tfwContentReady=true;
   document.dispatchEvent(new Event('tfw:content-ready'));
 
 }
