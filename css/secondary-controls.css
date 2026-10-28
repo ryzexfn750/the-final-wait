@@ -222,3 +222,11 @@ body.tfw-route-overlay-open{overflow:hidden!important}
 @media(prefers-reduced-motion:reduce){
  #tfwSeamlessShell iframe,#tfwPageLoader .tfw-page-loader-meter:after{animation:none;transition:none}
 }
+
+
+/* The original document remains alive under an iframe. Hide its last
+   cursor position; the embedded page draws the pointer at the true location. */
+body.tfw-route-overlay-open > #tfwGlobalCursor,
+body.tfw-route-overlay-open > .cursor-glow{
+  display:none!important;
+}
