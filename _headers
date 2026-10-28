@@ -1,0 +1,8 @@
+# Security headers for the static Cloudflare Pages site.
+# Cloudflare Pages already sends nosniff and strict-origin-when-cross-origin.
+# No script-src/default-src rules here: the site loads audio from a separate R2 domain.
+/*
+  Strict-Transport-Security: max-age=15552000
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Content-Security-Policy: base-uri 'self'; object-src 'none'; frame-ancestors 'self'
