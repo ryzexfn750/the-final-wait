@@ -88,13 +88,21 @@
    if(isEnabled())syncSound(true);
  });
  const BG_RESUME_KEY='tfw_ambient_resume_v48';
+ let lastSavedPersistentAt=0;
  const persistAmbient=()=>{
    if(activeTrack!=='ambient'||!audio||!Number.isFinite(audio.currentTime))return;
-   try{sessionStorage.setItem(BG_RESUME_KEY,JSON.stringify({position:audio.currentTime,at:Date.now()}))}catch{}
+   try{
+     const snapshot=JSON.stringify({position:audio.currentTime,at:Date.now()});
+     sessionStorage.setItem(BG_RESUME_KEY,snapshot);
+     if(Date.now()-lastSavedPersistentAt>1800){
+       localStorage.setItem(BG_RESUME_KEY,snapshot);
+       lastSavedPersistentAt=Date.now();
+     }
+   }catch{}
  };
  function ambientStartPosition(current){
    try{
-     const stored=JSON.parse(sessionStorage.getItem(BG_RESUME_KEY)||'null');
+     const stored=JSON.parse(sessionStorage.getItem(BG_RESUME_KEY)||localStorage.getItem(BG_RESUME_KEY)||'null');
      if(stored&&Number.isFinite(stored.position)&&stored.position>=0&&
         Number.isFinite(stored.at)&&Date.now()-stored.at<6*60*60*1000)return stored.position;
    }catch{}
