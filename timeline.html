@@ -17,10 +17,13 @@
 </head>
 <body class="article-page timeline-article-page">
 <div id="tfwPageLoader" role="status" aria-live="polite">
-  <img src="assets/gta-vi-logo.webp" alt="" aria-hidden="true">
-  <p class="tfw-page-loader-caption">ENTERING LEONIDA</p>
-  <span class="tfw-page-loader-meter" aria-hidden="true"></span>
-  <button class="tfw-page-loader-retry" type="button" hidden>RETRY LOADING</button>
+  <div class="route-loader-inner">
+    <img src="assets/gta-vi-logo.webp" alt="" aria-hidden="true">
+    <span class="route-loader-kicker">THE FINAL WAIT</span>
+    <strong class="tfw-page-loader-caption">LOADING</strong>
+    <div class="route-loader-track" role="progressbar" aria-label="Page loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>
+    <button class="tfw-page-loader-retry" type="button" hidden>RETRY LOADING</button>
+  </div>
 </div>
   <div class="page-noise" aria-hidden="true"></div>
   <div class="page-grid" aria-hidden="true"></div>
@@ -97,7 +100,7 @@
 <script defer src="js/audio-controls.js?v=46"></script>
 <script defer src="js/secondary-controls.js?v=46"></script>
 <script defer src="js/secondary-share.js?v=46"></script>
-<script defer src="js/page-ready.js?v=46"></script>
+<script defer src="js/page-ready.js?v=47"></script>
 <script defer src="js/seamless-navigation.js?v=46"></script>
 </body>
 </html>
