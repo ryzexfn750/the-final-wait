@@ -40,11 +40,11 @@ test('Volume popup is persistent, local and controls all soundtrack owners',()=>
 
 test('GTA-style pointer illumination runs on home and every article page',()=>{
  const style=read('css/site-polish.css'),script=read('js/site-polish.js');
- assert.match(style,/\.tfw-pointer-dot/);
+ assert.match(style,/#tfwGlobalCursor/);
  assert.match(script,/pointermove/);
  for(const p of ['index.html','today.html','intel.html','timeline.html']){
    const html=read(p);
-   assert.ok(html.includes('css/site-polish.css?v=40'),p);
-   assert.ok(html.includes('js/site-polish.js?v=40'),p);
+   assert.ok(html.includes('css/site-polish.css?v=41'),p);
+   assert.ok(html.includes('js/site-polish.js?v=41'),p);
  }
 });
