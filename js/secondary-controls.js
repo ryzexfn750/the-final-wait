@@ -107,20 +107,7 @@
    seek(current.at);
    if(forceGesture||!autoplayBlocked)play();
  }
- const headerNav=$('.tfw-secondary-nav');
- if(headerNav){
-   const share=$('#tfwPageShare');
-   share?.addEventListener('click',()=>{
-     const url=location.href,title=document.title;
-     if(navigator.share){navigator.share({title,url}).catch(()=>{});return}
-     if(navigator.clipboard?.writeText){
-       navigator.clipboard.writeText(url).then(()=>{
-         const label=share.textContent;share.textContent='LINK COPIED';
-         setTimeout(()=>share.textContent=label,1600);
-       }).catch(()=>window.open('https://x.com/intent/post?url='+encodeURIComponent(url),'_blank','noopener'));
-     }else window.open('https://x.com/intent/post?url='+encodeURIComponent(url),'_blank','noopener');
-   });
- }
+ // Shared on-page Share dialog is initialized by secondary-share.js.
  $('#tfwPageFullscreen')?.addEventListener('click',async()=>{
    try{
      if(document.fullscreenElement)await document.exitFullscreen();
