@@ -739,15 +739,19 @@ function routeLabelFor(href){
 }
 
 function syncSectionHash(){
-  // Reflect the section being read, not merely the last clicked shortcut.
-  // replaceState keeps a wheel-scroll session out of the Back button stack.
+  // The viewport center (plus the sticky header) determines the active
+  // section, even after a user follows an anchor and then wheel-scrolls.
+  // This is history-neutral: a scroll doesn't add Back-button entries.
   const sections=['hero','today','timeline','intel','share']
     .map(id=>document.getElementById(id)).filter(Boolean);
   if(!sections.length)return;
-  const threshold=window.scrollY+(els.topbar?.offsetHeight||0)+Math.min(170,innerHeight*.32);
-  let active=sections[0];
+  const focusY=Math.min(window.innerHeight*.47,Math.max(155,window.innerHeight*.3));
+  let active=sections[0],best=-Infinity;
   for(const section of sections){
-    if(section.getBoundingClientRect().top+window.scrollY<=threshold)active=section;
+    const r=section.getBoundingClientRect();
+    if(r.top<=focusY&&r.bottom>focusY){active=section;best=Infinity;break}
+    const score=r.top<=focusY?r.top:-(r.top-focusY)-100000;
+    if(score>best){best=score;active=section}
   }
   const hash=active.id==='hero'?'':'#'+active.id;
   if(location.hash!==hash)history.replaceState(null,'',location.pathname+location.search+hash);
@@ -761,7 +765,7 @@ function bindNavigationTransitions(){
       a.addEventListener('click',e=>{
         const target=$(href); if(!target)return;
         e.preventDefault(); closeMobileMenu();
-        history.replaceState(null,'',href);
+        history.replaceState(null,'',location.pathname+location.search+(href==='#hero'?'':href));
         smoothScrollToTarget(target, href==='#hero' ? 760 : 920);
       });
     } else if(!a.target && !href.startsWith('http') && !href.startsWith('mailto:')){
@@ -774,13 +778,19 @@ function bindNavigationTransitions(){
       });
     }
   });
-  window.addEventListener('pageshow',hideRouteLoader);
+  window.addEventListener('pageshow',()=>{
+    hideRouteLoader();
+    requestAnimationFrame(syncSectionHash);
+  });
   let scrollHashFrame=0;
-  window.addEventListener('scroll',()=>{
+  const refreshHash=()=>{
     if(!scrollHashFrame)scrollHashFrame=requestAnimationFrame(()=>{
       scrollHashFrame=0;syncSectionHash();
     });
-  },{passive:true});
+  };
+  window.addEventListener('scroll',refreshHash,{passive:true});
+  window.addEventListener('resize',refreshHash,{passive:true});
+  window.addEventListener('wheel',refreshHash,{passive:true});
 }
 
 // Ambient audio belongs to clock.js; finale audio belongs to milestones.js.
