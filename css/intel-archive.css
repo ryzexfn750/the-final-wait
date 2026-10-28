@@ -28,3 +28,12 @@
 .archive-footer a{color:#fff}
 @media(max-width:850px){.archive-grid .intel-card,.archive-grid .intel-card:nth-child(3n){grid-column:span 12;min-height:450px}.archive-footer{flex-wrap:wrap}}
 @media(max-width:550px){.intel-archive-page .topbar .brand-copy,.intel-archive-page .desktop-nav{display:none}.archive-intro{padding-top:146px;min-height:440px}.archive-intro h1{font-size:clamp(46px,12.2vw,65px)}.archive-filter button{padding:11px 15px}.archive-list-section{padding-top:26px}.archive-grid .intel-card,.archive-grid .intel-card:nth-child(3n){min-height:430px}.archive-grid .intel-copy h3{font-size:clamp(29px,7.4vw,42px)}.archive-footer{font-size:8px}}
+
+/* V48 — Full legal disclaimer retains the same typography as the main footer. */
+.intel-archive-page .archive-footer .legal-copy{
+  flex:1 1 380px;
+  max-width:680px;
+  margin:0;
+  font:400 11px/1.65 Inter,ui-sans-serif,system-ui,sans-serif;
+  color:rgba(255,255,255,.46);
+}
