@@ -36,6 +36,57 @@
  const isEnabled=()=>get('tfw_sound')!=='off';
  const gain=()=>window.__tfwMasterVolume?.()??(isEnabled()?1:0);
  let audio=null,activeTrack=null,playPending=null,autoplayBlocked=false,lastSyncAt=0;
+ // A captureStream analyser monitors audio without rerouting the audible
+ // HTMLMediaElement through a suspendable AudioContext.
+ let spectrumCtx=null,spectrumAnalyser=null,spectrumSource=null,spectrumAudio=null,spectrumBins=null;
+ function ensureSpectrum(){
+   if(!audio||audio.paused||spectrumAudio===audio)return;
+   if(spectrumAudio!==audio){
+     spectrumAudio=null;spectrumAnalyser=null;spectrumSource=null;spectrumBins=null;
+     try{spectrumCtx?.close()}catch{}
+     spectrumCtx=null;
+   }
+   try{
+     const capture=audio.captureStream||audio.mozCaptureStream;
+     if(!capture)return;
+     const stream=capture.call(audio);
+     if(!stream?.getAudioTracks?.().length)return;
+     const AC=window.AudioContext||window.webkitAudioContext;
+     if(!AC)return;
+     spectrumCtx=new AC();
+     spectrumAnalyser=spectrumCtx.createAnalyser();
+     spectrumAnalyser.fftSize=512;
+     spectrumAnalyser.smoothingTimeConstant=.64;
+     spectrumSource=spectrumCtx.createMediaStreamSource(stream);
+     spectrumSource.connect(spectrumAnalyser);
+     spectrumBins=new Uint8Array(spectrumAnalyser.frequencyBinCount);
+     spectrumAudio=audio;
+     if(spectrumCtx.state==='suspended')spectrumCtx.resume().catch(()=>{});
+   }catch(error){
+     spectrumAnalyser=null;spectrumAudio=null;
+   }
+ }
+ window.__tfwExternalVisualizerSpectrum=()=>{
+   if(!audio||audio.paused||!isEnabled())return {playing:false};
+   ensureSpectrum();
+   if(spectrumAnalyser&&spectrumCtx?.state==='running'&&spectrumBins){
+     spectrumAnalyser.getByteFrequencyData(spectrumBins);
+     return {playing:true,bins:spectrumBins};
+   }
+   // Fallback only where browser captureStream is unavailable. A calm
+   // visible activity indicator is preferable to a permanently frozen bar.
+   const t=Number(audio.currentTime)||0;
+   const bins=new Uint8Array(256);
+   for(let i=0;i<bins.length;i++){
+     const tone=(Math.sin(t*7.8+i*.28)+Math.sin(t*4.6+i*.13)+2)*.25;
+     bins[i]=Math.round(20+tone*85*Math.max(.2,1-i/330));
+   }
+   return {playing:true,bins,fallback:true};
+ };
+ window.addEventListener('tfw:seamless-gesture',()=>{
+   if(spectrumCtx?.state==='suspended')spectrumCtx.resume().catch(()=>{});
+   if(isEnabled())syncSound(true);
+ });
  const BG_RESUME_KEY='tfw_ambient_resume_v48';
  const persistAmbient=()=>{
    if(activeTrack!=='ambient'||!audio||!Number.isFinite(audio.currentTime))return;
@@ -88,6 +139,8 @@
  }
  function changeTrack(next){
    if(audio){try{audio.pause()}catch{}}
+   // A new track needs a fresh captureStream for the visualizer.
+   spectrumAudio=null;
    activeTrack=next;
    autoplayBlocked=false;
    playPending=null;
