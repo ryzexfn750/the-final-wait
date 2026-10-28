@@ -226,9 +226,10 @@ body.tfw-custom-cursor .tfw-pointer-dot.interactive{
 }
 
 
-/* V41 — actual whole-site mouse lighting, independent of the old glow.
-   Fixed to the viewport with the maximum practical stacking order so that
-   all page sections (and their isolated stacking contexts) share one light. */
+/* V42 — discreet page-wide GTA VI accent + familiar arrow cursor.
+   One small diffuse halo, not a floodlight; SVG tip follows the click hotspot.
+   The layer is separate from legacy .cursor-glow so performance optimisations
+   and nested stacking contexts cannot hide it. */
 #tfwGlobalCursor.tfw-global-cursor-layer{
   position:fixed!important;
   inset:0!important;
@@ -250,77 +251,82 @@ body.tfw-custom-cursor .tfw-pointer-dot.interactive{
   visibility:visible!important;
   transition:opacity .18s ease,visibility 0s linear 0s;
 }
+/* Far smaller and about 85% less luminous than V41. */
 #tfwGlobalCursor .tfw-global-cursor-glow{
   position:absolute!important;
-  top:0!important;left:0!important;
-  width:440px!important;
-  height:440px!important;
+  top:0!important;
+  left:0!important;
+  width:210px!important;
+  height:210px!important;
   border-radius:50%!important;
   pointer-events:none!important;
-  opacity:.94!important;
+  opacity:.65!important;
   background:radial-gradient(circle,
-    rgba(255,197,226,.20) 0%,
-    rgba(242,63,178,.31) 9%,
-    rgba(255,154,81,.18) 25%,
-    rgba(119,96,255,.16) 44%,
-    rgba(119,96,255,.05) 60%,
-    transparent 74%)!important;
+    rgba(255,195,220,.075) 0%,
+    rgba(242,63,178,.065) 12%,
+    rgba(255,164,93,.035) 29%,
+    rgba(119,96,255,.025) 48%,
+    transparent 72%)!important;
   mix-blend-mode:screen;
-  filter:blur(8px);
+  filter:blur(10px);
   transform:translate3d(-200px,-200px,0) translate(-50%,-50%);
   will-change:transform;
-  transition:transform .065s linear;
+  transition:transform .055s linear;
 }
+/* The cursor is a true classic arrow: no ring, circle, or neon spotlight. */
 #tfwGlobalCursor .tfw-global-cursor-reticle{
   position:absolute!important;
-  top:0!important;left:0!important;
-  width:21px!important;
-  height:21px!important;
-  border-radius:50%!important;
+  top:0!important;
+  left:0!important;
+  width:26px!important;
+  height:34px!important;
+  border:0!important;
+  border-radius:0!important;
   box-sizing:border-box!important;
+  padding:0!important;
+  overflow:visible!important;
+  background:none!important;
   pointer-events:none!important;
-  border:1px solid rgba(255,255,255,.9)!important;
-  background:conic-gradient(from 35deg,
-    #ffa567 0deg,#ff58b9 92deg,#a078ff 186deg,
-    #ff83bc 264deg,#ffa567 360deg)!important;
-  box-shadow:
-    0 0 0 2px rgba(9,7,18,.69),
-    0 0 13px rgba(242,63,178,.83),
-    0 0 25px rgba(119,96,255,.46)!important;
-  transform:translate3d(-200px,-200px,0) translate(-50%,-50%);
+  box-shadow:none!important;
+  transform:translate3d(-200px,-200px,0);
   will-change:transform;
-  transition:width .2s ease,height .2s ease,box-shadow .2s ease;
+  transition:none!important;
 }
-#tfwGlobalCursor .tfw-global-cursor-reticle:before{
-  content:'';
-  position:absolute;inset:3px;
-  border-radius:50%;
-  background:#0b0912;
+#tfwGlobalCursor .tfw-global-cursor-reticle:before,
+#tfwGlobalCursor .tfw-global-cursor-reticle:after{
+  content:none!important;
+  display:none!important;
 }
-#tfwGlobalCursor .tfw-global-cursor-center{
-  position:absolute;z-index:1;
-  left:50%;top:50%;
-  transform:translate(-50%,-50%);
-  width:5px;height:5px;
-  border-radius:50%;
-  background:#fff;
-  box-shadow:0 0 8px rgba(255,255,255,.9);
+#tfwGlobalCursor .tfw-global-cursor-reticle svg{
+  display:block;
+  width:100%;
+  height:100%;
+  overflow:visible;
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.78))
+    drop-shadow(0 0 3px rgba(242,63,178,.16));
+  transform-origin:2px 1.5px;
+  transition:transform .18s ease,filter .18s ease;
 }
 #tfwGlobalCursor.interactive .tfw-global-cursor-reticle{
-  width:30px!important;
-  height:30px!important;
-  box-shadow:0 0 0 3px rgba(242,63,178,.20),
-    0 0 21px rgba(242,63,178,.9),
-    0 0 32px rgba(119,96,255,.64)!important;
+  width:26px!important;
+  height:34px!important;
+  box-shadow:none!important;
 }
-#tfwGlobalCursor.text-input .tfw-global-cursor-reticle{opacity:0!important}
-/* Avoid double lighting. The old .cursor-glow is still referenced by
-   legacy scripts, so only remove it visually once the new cursor is ready. */
+#tfwGlobalCursor.interactive .tfw-global-cursor-reticle svg{
+  transform:scale(1.08);
+  filter:drop-shadow(0 2px 2px rgba(0,0,0,.80))
+    drop-shadow(0 0 4px rgba(242,63,178,.28));
+}
+#tfwGlobalCursor.text-input .tfw-global-cursor-reticle{
+  opacity:0!important;
+}
+/* Legacy pointer effects still exist in app.js, but only this single
+   new layer should appear once a physical mouse has been detected. */
 html.tfw-global-cursor-ready .cursor-glow{
   opacity:0!important;
   display:none!important;
 }
-@media(hover:hover) and (pointer:fine){
+@media(any-hover:hover) and (any-pointer:fine){
   html.tfw-global-cursor-ready,
   html.tfw-global-cursor-ready body,
   html.tfw-global-cursor-ready body *{
@@ -336,12 +342,13 @@ html.tfw-global-cursor-ready .cursor-glow{
 @media(prefers-reduced-motion:reduce){
   #tfwGlobalCursor,
   #tfwGlobalCursor .tfw-global-cursor-glow,
-  #tfwGlobalCursor .tfw-global-cursor-reticle{
+  #tfwGlobalCursor .tfw-global-cursor-reticle svg{
     transition:none!important;
   }
 }
 @media(max-width:700px){
   #tfwGlobalCursor .tfw-global-cursor-glow{
-    width:330px!important;height:330px!important;
+    width:180px!important;
+    height:180px!important;
   }
 }
