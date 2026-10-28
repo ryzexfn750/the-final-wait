@@ -427,3 +427,55 @@ html.tfw-global-cursor-ready .cursor-glow{
     padding:42px 10px 58px!important;
   }
 }
+
+/* V48 — clearer Ryze branding in Share dialog and unobtrusive footer end. */
+#shareModal .tfw-share-brand{
+  width:clamp(150px,17vw,192px)!important;
+  max-height:110px!important;
+  height:auto!important;
+  opacity:1!important;
+  margin:0 0 24px!important;
+}
+@media(max-width:550px){
+  #shareModal .tfw-share-brand{
+    width:clamp(130px,38vw,155px)!important;
+    max-height:90px!important;
+  }
+}
+/* Remove the hairline that appears directly below the final banner. */
+body.home-page>footer{
+  border-top:0!important;
+}
+body.home-page #share .share-backdrop:after{
+  display:none!important;
+}
+/* No native scroll thumb for mouse-drag lists: the themed in-page
+   draggable thumb uses the global custom pointer. */
+html.tfw-global-cursor-ready .timezone-list,
+html.tfw-global-cursor-ready .timeline-viewport{
+  scrollbar-width:none!important;
+  -ms-overflow-style:none;
+}
+html.tfw-global-cursor-ready .timezone-list::-webkit-scrollbar,
+html.tfw-global-cursor-ready .timeline-viewport::-webkit-scrollbar{
+  display:none!important;
+  width:0!important;height:0!important;
+}
+.tfw-inpage-scrollbar{
+  position:fixed;
+  z-index:152;
+  width:10px;
+  border-radius:20px;
+  background:rgba(255,255,255,.075);
+  pointer-events:auto;
+  touch-action:none;
+}
+.tfw-inpage-scrollbar[hidden]{display:none!important}
+.tfw-inpage-scrollbar-thumb{
+  position:absolute;top:0;left:1px;right:1px;
+  border-radius:20px;
+  background:linear-gradient(180deg,#ffad75,#f35bad,#9879fa);
+  box-shadow:0 0 10px rgba(242,63,178,.19);
+  min-height:20px;
+  touch-action:none;
+}
