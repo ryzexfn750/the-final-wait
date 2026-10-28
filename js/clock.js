@@ -137,6 +137,29 @@
   let currentMilestone=null;
   let milestoneAudio=null;
   let audioGestureArmed=false;
+  const BG_RESUME_KEY='tfw_ambient_resume_v48';
+  let bgPositionInitialized=false;
+  function persistBgPosition(){
+    if(!bgAudio||!Number.isFinite(bgAudio.currentTime)||bgAudio.currentTime<0)return;
+    try{
+      sessionStorage.setItem(BG_RESUME_KEY,JSON.stringify({
+        position:bgAudio.currentTime,at:Date.now()
+      }));
+    }catch{}
+  }
+  function restoreBgPosition(){
+    if(bgPositionInitialized||!bgAudio||!Number.isFinite(bgAudio.duration)||bgAudio.duration<=0)return;
+    let position=liveAudioPosition();
+    try{
+      const stored=JSON.parse(sessionStorage.getItem(BG_RESUME_KEY)||'null');
+      if(stored&&Number.isFinite(stored.position)&&stored.position>=0&&
+         Number.isFinite(stored.at)&&Date.now()-stored.at<6*60*60*1000){
+        position=normalizeTime(stored.position,bgAudio.duration);
+      }
+    }catch{}
+    try{bgAudio.currentTime=position}catch{}
+    bgPositionInitialized=true;
+  }
   let previewStage=null;
   let previewFinalFive=false;
   let previewCardHoldUntil=0;
@@ -158,12 +181,20 @@
     if(bgAudio)return bgAudio;
     bgAudio=new Audio();
     bgAudio.src=BG_SRC;
-    bgAudio.preload='metadata';
+    bgAudio.preload='auto';
     bgAudio.loop=true;
     bgAudio.playsInline=true;
     bgAudio.volume=BG_VOLUME*(window.__tfwMasterVolume?.()??1);
     window.__tfwAmbientAudio=bgAudio;
-    bgAudio.addEventListener('loadedmetadata',()=>{if(bgWanted&&backgroundAllowed())resyncBackground()});
+    bgAudio.addEventListener('loadedmetadata',restoreBgPosition);
+    bgAudio.addEventListener('timeupdate',persistBgPosition);
+    window.addEventListener('pagehide',persistBgPosition);
+    window.addEventListener('tfw:seamless-return',()=>{
+      if(bgWanted&&backgroundAllowed()&&bgAudio?.paused){
+        audioGestureArmed=false;
+        playBackground({hardSync:false});
+      }
+    });
     bgAudio.addEventListener('play',()=>{
       document.body.classList.add('tfw-ambient-playing');
       dispatchEvent(new CustomEvent('tfw:ambient-play',{detail:{audio:bgAudio}}));
@@ -175,6 +206,8 @@
     bgAudio.addEventListener('error',()=>{
       if(bgAudio.dataset.fallback==='1')return;
       bgAudio.dataset.fallback='1';
+      persistBgPosition();
+      bgPositionInitialized=false;
       bgAudio.src=BG_FALLBACK_SRC;
       bgAudio.load();
       if(bgWanted&&backgroundAllowed())setTimeout(()=>{
@@ -225,10 +258,9 @@
     if(audioGestureArmed)return Promise.resolve(false);
     if(bgPlayPromise)return bgPlayPromise;
     const a=ensureBackgroundAudio();
-    if(hardSync&&a.readyState>=1&&Number.isFinite(a.duration)&&a.duration>0){
-      const target=liveAudioPosition();
-      try{if(Math.abs(a.currentTime-target)>.18)a.currentTime=target}catch{}
-    }
+    // The original sound keeps its playhead on navigation and visibility changes.
+    // Only the first metadata load chooses a start position.
+    if(a.readyState>=1)restoreBgPosition();
     setBgVolume(desiredBgVolume(),0);
     // Invoke play synchronously during the interaction; never await metadata first.
     let started;
@@ -246,12 +278,10 @@
     syncSoundUi();
   }
   function resyncBackground(){
-    if(!bgWanted||!backgroundAllowed()||!bgAudio||bgAudio.paused||!Number.isFinite(bgAudio.duration)||bgAudio.duration<=0)return;
-    const target=liveAudioPosition();
-    const duration=bgAudio.duration;
-    let drift=Math.abs(bgAudio.currentTime-target);
-    drift=Math.min(drift,Math.abs(duration-drift));
-    if(drift>.55){try{bgAudio.currentTime=target}catch{}}
+    // Do NOT seek during playback: this was causing audible jumps after
+    // leaving articles, minimizing the tab and returning to the countdown.
+    if(bgAudio&&!bgPositionInitialized&&bgAudio.readyState>=1)restoreBgPosition();
+    if(bgAudio&&!bgAudio.paused)persistBgPosition();
   }
   function armAudioGesture(){
     const retry=event=>{
