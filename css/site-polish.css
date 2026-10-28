@@ -395,3 +395,35 @@ html.tfw-global-cursor-ready .cursor-glow{
 @media(max-width:700px){
   #intel .intel-archive-cta{margin:-12px auto 0!important;padding:0 12px 30px!important}
 }
+
+
+/* V47 — the archive CTA sits in normal flow BELOW both featured stories.
+   The previous negative margin pulled the button over their bottom edges. */
+#intel #intelGrid{
+  padding-bottom:0!important;
+  margin-bottom:0!important;
+}
+#intel .intel-archive-cta{
+  position:relative!important;
+  z-index:2;
+  display:flex!important;
+  align-items:center;
+  justify-content:center;
+  width:min(1150px,90vw)!important;
+  box-sizing:border-box!important;
+  clear:both;
+  margin:0 auto!important;
+  padding:48px 18px 68px!important;
+  border:0!important;
+}
+#intel .intel-archive-cta .fx-button{
+  position:relative;
+  margin:0!important;
+}
+@media(max-width:700px){
+  #intel .intel-archive-cta{
+    width:92vw!important;
+    margin:0 auto!important;
+    padding:42px 10px 58px!important;
+  }
+}
