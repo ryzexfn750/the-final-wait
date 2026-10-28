@@ -566,12 +566,12 @@
         try{external=window.parent.__tfwExternalVisualizerSpectrum?.()||null}catch{}
       }
       const liveAmbient=Boolean(window.__tfwAmbientAudio&&!window.__tfwAmbientAudio.paused);
-      const localSignal=Boolean(soundEnabled()&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(ambientCaptureAnalyser||finalMusicSource||finalCallMusicSource));
+      const localSignal=Boolean(soundEnabled()&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(liveAmbient?ambientCaptureAnalyser:(finalMusicSource||finalCallMusicSource||sequenceMusicSource)));
       const externalBins=external?.playing&&external?.bins?.length?external.bins:null;
       const bins=externalBins||musicData||new Uint8Array(256);
       // Even when captureStream is not implemented, keep a subtle moving
       // activity indicator instead of a frozen line while audio plays.
-      const fallbackSignal=Boolean(soundEnabled()&&liveAmbient&&!ambientCaptureAnalyser&&!externalBins);
+      const fallbackSignal=Boolean(soundEnabled()&&liveAmbient&&(!ambientCaptureAnalyser||musicCtx?.state!=='running')&&!externalBins);
       const hasSignal=Boolean(localSignal||fallbackSignal||(external?.playing&&bins?.length));
       // ~30 FPS when real music plays; ~3 FPS while silent. Idle bars
       // remain visible without continuously creating gradients on phones.
