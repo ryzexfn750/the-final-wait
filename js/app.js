@@ -240,14 +240,15 @@ function updateZoneUI() {
   if(autoButton){
     autoButton.classList.toggle('active',window.__tfwTimeZoneSource==='auto');
     const detected=window.__tfwDetectTimeZone?.()||SITE_CONFIG.defaultTimeZone;
-    $('#timezoneAutoStatus').textContent=detected.replaceAll('_',' ');
+    $('#timezoneAutoStatus').textContent=detected.replaceAll('_',' ') + (window.__tfwAutoTimeZoneProvider?.()==='ip'?' · NETWORK LOCATION':' · DEVICE FALLBACK');
   }
 }
 
 function setTimeZone(zone,automatic=false) {
   if(automatic){
-    zone=window.__tfwUseDeviceTimeZone?.()||SITE_CONFIG.defaultTimeZone;
+    zone=window.__tfwUseAutomaticTimeZone?.()||SITE_CONFIG.defaultTimeZone;
   }else{
+    storage.set('tfw_timezone_mode_v2','manual');
     storage.set('tfw_timezone_source','manual');
     window.__tfwTimeZoneSource='manual';
     window.__tfwTimeZone=zone;
@@ -746,10 +747,36 @@ function allTimeZones(){
   try { if(Intl.supportedValuesOf){const zones=Intl.supportedValuesOf('timeZone');return zones.includes(currentTimeZone)?zones:[currentTimeZone,...zones]} } catch {}
   return ['Europe/Rome','Europe/London','Europe/Paris','Europe/Berlin','Europe/Madrid','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','America/Sao_Paulo','America/Mexico_City','Asia/Tokyo','Asia/Seoul','Asia/Shanghai','Asia/Hong_Kong','Asia/Singapore','Asia/Dubai','Asia/Kolkata','Australia/Sydney','Pacific/Auckland','Africa/Johannesburg'];
 }
+let timezoneRenderGeneration=0;
+const timezoneMetaCache=new Map();
 function renderTimeZones(query=''){
-  const q=query.trim().toLowerCase(); const zones=allTimeZones().filter(z=>!q||z.toLowerCase().replaceAll('_',' ').includes(q));
-  els.timezoneList.innerHTML=zones.map(z=>{ const oldRelease=release; const zoneRelease=zonedTargetToUtc(z); const d=new Date(zoneRelease); let meta; try{const shortName=new Intl.DateTimeFormat('en-US',{timeZone:z,timeZoneName:'short'}).formatToParts(d).find(p=>p.type==='timeZoneName')?.value||'';const p=partsInZone(d,z);const off=Math.round((Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute,p.second)-d.getTime())/60000);const sign=off>=0?'+':'−';const abs=Math.abs(off);meta={short:z==='Europe/Rome'?'CET':shortName.replace('GMT','UTC'),offset:`UTC${sign}${Math.floor(abs/60)}${abs%60?`:${String(abs%60).padStart(2,'0')}`:''}`};}catch{meta={short:'',offset:''}} release=oldRelease; return `<button class="timezone-option ${z===currentTimeZone?'active':''}" type="button" data-zone="${z}"><strong>${escapeHtml(z.replaceAll('_',' '))}</strong><span>${escapeHtml(`${meta.short} · ${meta.offset}`)}</span></button>`; }).join('');
-  $$('.timezone-option').forEach(b=>b.addEventListener('click',()=>setTimeZone(b.dataset.zone)));
+  const generation=++timezoneRenderGeneration;
+  const q=query.trim().toLowerCase();
+  const zones=allTimeZones().filter(z=>!q||z.toLowerCase().replaceAll('_',' ').includes(q));
+  els.timezoneList.replaceChildren();
+  const renderBatch=start=>{
+    if(generation!==timezoneRenderGeneration||els.timezoneModal.hidden)return;
+    const end=Math.min(start+28,zones.length);
+    const html=[];
+    for(const z of zones.slice(start,end)){
+      let meta=timezoneMetaCache.get(z);
+      if(!meta){
+        const zoneRelease=zonedTargetToUtc(z),d=new Date(zoneRelease);
+        try{
+          const shortName=new Intl.DateTimeFormat('en-US',{timeZone:z,timeZoneName:'short'}).formatToParts(d).find(p=>p.type==='timeZoneName')?.value||'';
+          const p=partsInZone(d,z);
+          const off=Math.round((Date.UTC(p.year,p.month-1,p.day,p.hour,p.minute,p.second)-d.getTime())/60000);
+          const sign=off>=0?'+':'−',abs=Math.abs(off);
+          meta={short:z==='Europe/Rome'?'CET':shortName.replace('GMT','UTC'),offset:`UTC${sign}${Math.floor(abs/60)}${abs%60?':'+String(abs%60).padStart(2,'0'):''}`};
+        }catch{meta={short:'',offset:''}}
+        timezoneMetaCache.set(z,meta);
+      }
+      html.push(`<button class="timezone-option ${z===currentTimeZone?'active':''}" type="button" data-zone="${escapeHtml(z)}"><strong>${escapeHtml(z.replaceAll('_',' '))}</strong><span>${escapeHtml(`${meta.short} · ${meta.offset}`)}</span></button>`);
+    }
+    els.timezoneList.insertAdjacentHTML('beforeend',html.join(''));
+    if(end<zones.length)setTimeout(()=>renderBatch(end),0);
+  };
+  renderBatch(0);
 }
 
 async function toggleFullscreen(){ try{ if(!document.fullscreenElement)await document.documentElement.requestFullscreen?.(); else await document.exitFullscreen?.(); closeMobileMenu(); track('fullscreen_toggle',{enabled:!!document.fullscreenElement}); }catch{showToast('FULLSCREEN IS NOT AVAILABLE HERE');} }
@@ -880,8 +907,16 @@ function bindUi(){
   $('#shareButton').addEventListener('click',()=>openShare('site')); $('#mobileShareButton').addEventListener('click',()=>openShare('site')); $('#dailyShare').addEventListener('click',()=>openShare('article'));
   $('#closeShare').addEventListener('click',()=>closeModals()); $('#closeTimezone').addEventListener('click',()=>closeModals()); els.modalBackdrop.addEventListener('click',()=>closeModals());
   $$('[data-share]').forEach(b=>b.addEventListener('click',()=>doShare(b.dataset.share)));
-  const openTimezonePicker=()=>{renderTimeZones();openModal(els.timezoneModal);setTimeout(()=>els.timezoneSearch.focus(),50)};
+  const openTimezonePicker=()=>{
+    openModal(els.timezoneModal);
+    renderTimeZones(els.timezoneSearch.value);
+    setTimeout(()=>{if(!els.timezoneModal.hidden)els.timezoneSearch.focus()},50);
+  };
   $('#timezoneAuto')?.addEventListener('click',()=>setTimeZone(null,true));
+  els.timezoneList.addEventListener('click',event=>{
+    const button=event.target.closest('.timezone-option[data-zone]');
+    if(button)setTimeZone(button.dataset.zone);
+  });
   $('#zoneButton').addEventListener('click',openTimezonePicker);
   $('#topbarZoneButton')?.addEventListener('click',openTimezonePicker);
   $('#mobileZoneButton')?.addEventListener('click',openTimezonePicker);
@@ -952,6 +987,20 @@ function deferSections(){
   const position=ids.indexOf(String(hash).slice(1));
   if(position>=0)ids.slice(0,position+1).forEach(hydrateSection);
 }
+// IP-based geolocation resolves asynchronously. Synchronize both clocks when
+// Cloudflare returns a different regional zone without changing manual choices.
+window.addEventListener('tfw:timezone-change',event=>{
+  const zone=event.detail?.zone;
+  if(typeof zone!=='string'||zone===currentTimeZone)return;
+  currentTimeZone=zone;
+  release=zonedTargetToUtc(zone);
+  releaseTriggered=false;
+  document.body.classList.remove('phase-released');
+  updateZoneUI();
+  safeCountdownTick();
+});
+window.addEventListener('tfw:timezone-detected',()=>updateZoneUI());
+
 async function init(){
   updateSoundUI();bindUi();bindParallax();initAnalytics();updateZoneUI();
   // Countdown is never blocked by article JSON, archive cards or timelines.
