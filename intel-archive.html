@@ -7,12 +7,19 @@
   <title>Inside Leonida — Intel Archive | The Final Wait</title>
   <meta name="description" content="Browse every GTA VI Leonida dossier, organized by people, places and systems.">
   <link rel="stylesheet" href="css/base.css?v=31">
-  <link rel="stylesheet" href="css/site-polish.css?v=44">
+  <link rel="stylesheet" href="css/site-polish.css?v=46">
   <link rel="stylesheet" href="css/intel-archive.css?v=40">
   <link rel="stylesheet" href="css/audio-controls.css?v=39">
-  <link rel="stylesheet" href="css/secondary-controls.css?v=44">
+  <link rel="stylesheet" href="css/secondary-controls.css?v=46">
+  <script>document.documentElement.classList.add('tfw-page-booting');</script>
 </head>
 <body class="intel-archive-page">
+<div id="tfwPageLoader" role="status" aria-live="polite">
+  <img src="assets/gta-vi-logo.webp" alt="" aria-hidden="true">
+  <p class="tfw-page-loader-caption">ENTERING LEONIDA</p>
+  <span class="tfw-page-loader-meter" aria-hidden="true"></span>
+  <button class="tfw-page-loader-retry" type="button" hidden>RETRY LOADING</button>
+</div>
 <div class="page-noise" aria-hidden="true"></div><div class="page-grid" aria-hidden="true"></div>
 <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
 <header class="topbar article-topbar tfw-secondary-topbar" id="topbar">
@@ -66,9 +73,12 @@
   <span>UNOFFICIAL FAN PROJECT · ROCKSTAR GAMES OWNS THE ORIGINAL MATERIAL</span>
   <div class="tfw-footer-creator"><img class="tfw-footer-logo" src="assets/ryze-gtavi-logo-lockup.png" loading="lazy" decoding="async" alt="Ryze GTA VI"><a class="creator-chip" href="https://x.com/RyzeGTAVI" target="_blank" rel="noreferrer"><span class="x-icon">𝕏</span><span><small>CREATED BY</small><strong>RYZEGTAVI</strong></span></a></div>
 </footer>
-<script type="module" src="js/intel-archive.js?v=44"></script>
+<script type="module" src="js/intel-archive.js?v=46"></script>
 <script defer src="js/site-polish.js?v=43"></script>
 <script defer src="js/language.js?v=37"></script>
-<script defer src="js/audio-controls.js?v=39"></script>
-<script defer src="js/secondary-controls.js?v=45"></script>
+<script defer src="js/audio-controls.js?v=46"></script>
+<script defer src="js/secondary-controls.js?v=46"></script>
+<script defer src="js/secondary-share.js?v=46"></script>
+<script defer src="js/page-ready.js?v=46"></script>
+<script defer src="js/seamless-navigation.js?v=46"></script>
 </body></html>
