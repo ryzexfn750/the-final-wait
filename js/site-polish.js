@@ -16,9 +16,16 @@
     halo.className='tfw-global-cursor-glow';
     const reticle=document.createElement('div');
     reticle.className='tfw-global-cursor-reticle';
-    const center=document.createElement('span');
-    center.className='tfw-global-cursor-center';
-    reticle.appendChild(center);
+    // Familiar OS-pointer silhouette with a GTA VI sunset gradient.
+    // The arrow tip is the click hotspot; no circular reticle remains.
+    reticle.innerHTML='<svg viewBox="0 0 28 36" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">'+
+      '<defs><linearGradient id="tfwArrowGradient" x1="0" y1="0" x2=".85" y2="1">'+
+      '<stop offset="0%" stop-color="#ffbb79"/>'+
+      '<stop offset="46%" stop-color="#fa63b7"/>'+
+      '<stop offset="100%" stop-color="#9578ff"/></linearGradient></defs>'+
+      '<path d="M2 1.5 L2 27 L8.5 21 L14.2 33 L19.7 30.4 L14.1 19 L25.2 18.3 Z" fill="none" stroke="#130d1e" stroke-width="3.2" stroke-linejoin="round"/>'+
+      '<path d="M2 1.5 L2 27 L8.5 21 L14.2 33 L19.7 30.4 L14.1 19 L25.2 18.3 Z" fill="url(#tfwArrowGradient)" stroke="rgba(255,255,255,.92)" stroke-width="1.15" stroke-linejoin="round"/>'+
+      '</svg>';
     layer.appendChild(halo);
     layer.appendChild(reticle);
     document.body.appendChild(layer);
@@ -29,7 +36,8 @@
       frame=0;
       const translate='translate3d('+x+'px,'+y+'px,0) translate(-50%,-50%)';
       halo.style.transform=translate;
-      reticle.style.transform=translate;
+      // Classic pointer hotspot: top-left tip, not center of the image.
+      reticle.style.transform='translate3d('+(x-2)+'px,'+(y-1.5)+'px,0)';
     }
     function reveal(){
       if(!mouseSeen){
