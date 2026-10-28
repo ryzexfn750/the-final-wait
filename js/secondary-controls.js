@@ -1,45 +1,110 @@
-/* Shared header controls for all secondary pages of The Final Wait.
-   Uses the same sound state, audio asset and persistent master volume as home.
-   Browser autoplay restrictions are respected: a user gesture resumes playback. */
+/* The Final Wait — functional secondary-page controls and synchronized
+   soundtrack. Browser autoplay policies still require a user gesture when
+   navigating to a new document; never claim guaranteed seamless playback. */
 (()=>{
  'use strict';
- const $=s=>document.querySelector(s);
- const get=k=>{try{return localStorage.getItem(k)}catch{return null}};
- const target=$('#topbar');
- if(!target)return;
- const audio=new Audio('assets/audio/background-v26.mp3');
- audio.preload='none';audio.loop=true;audio.playsInline=true;
- const FADE_MS=160;
- let playing=false;
- const isEnabled=()=>get('tfw_sound')!=='off';
- function syncSound(){
-   const factor=window.__tfwMasterVolume?.()??(isEnabled()?1:0);
-   audio.volume=Math.max(0,Math.min(1,.22*factor));
-   if(!isEnabled()){audio.pause();return}
-   if(!document.hidden)play();
- }
- async function play(){
-   if(!isEnabled()||document.hidden||playing)return;
-   // The homepage soundtrack follows wall time; resume from that same
-   // timeline when navigating between full-page routes.
-   const release=Date.parse('2026-11-19T00:00:00+01:00');
-   if(Date.now()>=release-30*60*1000){audio.pause();return}
+ const $=selector=>document.querySelector(selector);
+ const get=key=>{try{return localStorage.getItem(key)}catch{return null}};
+ const root=$('#topbar');
+ if(!root)return;
+ const MINUTE=60000, RELEASE_FALLBACK=Date.parse('2026-11-19T00:00:00+01:00');
+ function releaseEpoch(){
+   const zone=get('tfw_timezone')||'Europe/Rome';
+   if(zone==='Europe/Rome')return RELEASE_FALLBACK;
    try{
-     if(audio.readyState>=1&&Number.isFinite(audio.duration)&&audio.duration>0){
-       const seconds=(Date.now()-(release-30*60*1000))/1000;
-       const offset=((seconds%audio.duration)+audio.duration)%audio.duration;
-       if(Math.abs(audio.currentTime-offset)>2)audio.currentTime=offset;
+     const wall=Date.UTC(2026,10,19,0,0,0);
+     const formatter=new Intl.DateTimeFormat('en-US',{
+       timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit',
+       hour:'2-digit',minute:'2-digit',second:'2-digit',hourCycle:'h23'
+     });
+     let guess=wall;
+     for(let i=0;i<4;i++){
+       const components=Object.fromEntries(formatter.formatToParts(new Date(guess))
+         .filter(p=>p.type!=='literal').map(p=>[p.type,Number(p.value)]));
+       guess-=Date.UTC(components.year,components.month-1,components.day,
+         components.hour,components.minute,components.second)-wall;
      }
-     playing=true;await audio.play();
-   }catch{playing=false}
+     return guess;
+   }catch{return RELEASE_FALLBACK}
  }
- audio.addEventListener('pause',()=>{playing=false});
- audio.addEventListener('loadedmetadata',()=>{if(isEnabled())play()});
- audio.addEventListener('error',()=>{
-   if(audio.dataset.fallback)return;
-   audio.dataset.fallback='1';audio.src='assets/audio/background-live.mp3';
-   audio.load();play();
- });
+ const TRACKS={
+   ambient:{src:'assets/audio/background-v26.mp3',base:.22,loop:true},
+   call:{src:'assets/audio/final-call-29m55s.mp3',base:.72,loop:false},
+   finale:{src:'assets/audio/final-5-minutes.mp3',base:.72,loop:false}
+ };
+ const isEnabled=()=>get('tfw_sound')!=='off';
+ const gain=()=>window.__tfwMasterVolume?.()??(isEnabled()?1:0);
+ let audio=null,activeTrack=null,playPending=null,autoplayBlocked=false,lastSyncAt=0;
+ function selection(){
+   const remaining=releaseEpoch()-Date.now();
+   if(remaining<=0)return null;
+   if(remaining<=5*MINUTE)return {
+     id:'finale',at:(5*MINUTE-remaining)/1000
+   };
+   const callStart=29*MINUTE+55500;
+   if(remaining<=callStart)return {id:'call',at:(callStart-remaining)/1000};
+   return {id:'ambient',at:(Date.now()-(releaseEpoch()-30*MINUTE))/1000};
+ }
+ function seek(where){
+   if(!audio||!Number.isFinite(audio.duration)||audio.duration<=0)return;
+   const d=audio.duration;
+   const position=audio.loop?((where%d)+d)%d:
+     Math.max(0,Math.min(Math.max(0,d-.09),where));
+   if(!Number.isFinite(position))return;
+   let distance=Math.abs(audio.currentTime-position);
+   if(audio.loop)distance=Math.min(distance,Math.abs(d-distance));
+   if(distance>.65){try{audio.currentTime=position}catch{}}
+ }
+ function setVolume(){
+   if(audio&&activeTrack){
+     audio.volume=Math.max(0,Math.min(1,TRACKS[activeTrack].base*gain()));
+   }
+ }
+ function play(){
+   if(!audio||!activeTrack||!isEnabled()||document.hidden||!audio.paused||playPending)return;
+   const instance=audio;
+   let request;
+   try{request=instance.play()}catch(error){request=Promise.reject(error)}
+   playPending=Promise.resolve(request).then(()=>{
+     if(audio===instance)autoplayBlocked=false;
+   }).catch(()=>{
+     if(audio===instance)autoplayBlocked=true;
+   }).finally(()=>{if(audio===instance)playPending=null});
+ }
+ function changeTrack(next){
+   if(audio){try{audio.pause()}catch{}}
+   activeTrack=next;
+   autoplayBlocked=false;
+   playPending=null;
+   if(!next){audio=null;return}
+   const track=TRACKS[next];
+   audio=new Audio(track.src);
+   audio.preload='metadata';
+   audio.loop=track.loop;
+   audio.playsInline=true;
+   audio.addEventListener('loadedmetadata',()=>{
+     const current=selection();
+     if(audio&&current?.id===activeTrack)seek(current.at);
+   });
+   audio.addEventListener('error',()=>{
+     if(activeTrack!=='ambient'||audio?.dataset.fallback==='1')return;
+     audio.dataset.fallback='1';
+     audio.src='assets/audio/background-live.mp3';
+     audio.load();
+   });
+ }
+ function syncSound(forceGesture=false){
+   const current=selection();
+   if(!isEnabled()||!current){
+     if(audio&&!audio.paused)audio.pause();
+     if(!current&&activeTrack)changeTrack(null);
+     return;
+   }
+   if(activeTrack!==current.id||!audio)changeTrack(current.id);
+   setVolume();
+   seek(current.at);
+   if(forceGesture||!autoplayBlocked)play();
+ }
  const headerNav=$('.tfw-secondary-nav');
  if(headerNav){
    const share=$('#tfwPageShare');
@@ -76,14 +141,23 @@
      drawer.hidden=true;menu?.setAttribute('aria-expanded','false');
    }
  });
- window.addEventListener('tfw:volume-change',syncSound);
- window.addEventListener('tfw:sound-change',syncSound);
- document.addEventListener('visibilitychange',()=>document.hidden?audio.pause():syncSound());
- for(const type of ['pointerdown','keydown','touchstart']){
-   document.addEventListener(type,()=>{if(isEnabled())syncSound()},{passive:true});
+ window.addEventListener('tfw:volume-change',event=>{
+   setVolume();
+   if(event.detail?.enabled)syncSound(true);
+   else if(audio)audio.pause();
+ });
+ window.addEventListener('tfw:sound-change',event=>{
+   if(event.detail?.enabled)syncSound(true);
+   else if(audio)audio.pause();
+ });
+ document.addEventListener('visibilitychange',()=>{
+   if(document.hidden){if(audio)audio.pause()}
+   else syncSound();
+ });
+ for(const eventName of ['pointerdown','keydown','touchstart']){
+   document.addEventListener(eventName,()=>{if(isEnabled())syncSound(true)},{passive:true,capture:true});
  }
- audio.volume=.22*(window.__tfwMasterVolume?.()??1);
- // Defer playback until metadata is available or the first gesture;
- // autoplay may be rejected by the browser, and that is expected.
- if(isEnabled()){audio.load();play()}
+ window.addEventListener('pageshow',()=>syncSound());
+ if(isEnabled())syncSound();
+ setInterval(()=>{if(!document.hidden)syncSound()},3000);
 })();
