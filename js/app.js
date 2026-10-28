@@ -37,6 +37,8 @@ const releaseSceneIds = ['scene-64','scene-69','scene-68','scene-25','scene-134'
 let releaseSceneCursor = -1;
 let releaseSequenceActive = false;
 let releaseSequencePrimed = false;
+let releaseRotationTimer = null;
+const RELEASE_ROTATION_MS = Math.max(6500, Math.min(13000, SITE_CONFIG.backgroundIntervalMs || 8500));
 let releaseTriggered = false;
 let currentPhase = '';
 let lastPhaseLabel = '';
@@ -330,19 +332,47 @@ function releaseChoiceForCursor(cursor){
 function primeReleaseSceneSequence(){
   if(releaseSequencePrimed||!scenes.length)return;
   releaseSequencePrimed=true;
-  releaseSceneIds.slice(0,isMobile()?4:releaseSceneIds.length).forEach((_,i)=>{const choice=releaseChoiceForCursor(i);if(choice)setTimeout(()=>preloadChoice(choice),i*(isMobile()?240:85))});
+  // Only the next image is decoded ahead of time; the others remain lazy.
+  const next=releaseChoiceForCursor(1);
+  if(next)preloadChoice(next);
+}
+function scheduleReleaseRotation(){
+  clearTimeout(releaseRotationTimer);
+  releaseRotationTimer=null;
+  if(!releaseSequenceActive)return;
+  releaseRotationTimer=setTimeout(async()=>{
+    releaseRotationTimer=null;
+    if(!releaseSequenceActive||!document.body.classList.contains('finale-released'))return;
+    // Stop work while the tab is hidden; resume on visibilitychange.
+    if(!document.hidden){
+      const choice=nextReleaseSceneChoice();
+      if(choice){
+        await changeScene(choice,true);
+        const following=releaseChoiceForCursor((releaseSceneCursor+1)%releaseSceneIds.length);
+        if(following)preloadChoice(following);
+      }
+    }
+    scheduleReleaseRotation();
+  },RELEASE_ROTATION_MS);
 }
 function startReleaseSceneSequence(){
-  primeReleaseSceneSequence();
+  clearTimeout(releaseRotationTimer);
+  releaseRotationTimer=null;
   releaseSceneCursor=0;
   releaseSequenceActive=true;
   const choice=releaseChoiceForCursor(releaseSceneCursor);
   if(choice)changeScene(choice,true);
+  primeReleaseSceneSequence();
+  scheduleReleaseRotation();
+}
+function stopReleaseSceneSequence(){
+  releaseSequenceActive=false;
+  clearTimeout(releaseRotationTimer);
+  releaseRotationTimer=null;
 }
 function nextReleaseSceneChoice(){
   if(!releaseSequenceActive)return null;
-  releaseSceneCursor++;
-  if(releaseSceneCursor>=releaseSceneIds.length){releaseSequenceActive=false;return null}
+  releaseSceneCursor=(releaseSceneCursor+1)%releaseSceneIds.length;
   return releaseChoiceForCursor(releaseSceneCursor);
 }
 function changeScene(forceChoice=null, allowFinale=false){
@@ -477,6 +507,12 @@ window.addEventListener('tfw:finale-scene-step',()=>{
 window.addEventListener('tfw:finale-release',()=>{
   if(!scenes.length)return;
   startReleaseSceneSequence();
+});
+window.addEventListener('tfw:countdown',event=>{
+  if(releaseSequenceActive&&Number(event.detail?.remaining)>0&&
+     !document.body.classList.contains('finale-released')){
+    stopReleaseSceneSequence();
+  }
 });
 
 async function loadToday(){
@@ -837,7 +873,15 @@ function bindUi(){
   els.menuButton.addEventListener('click',toggleMobileMenu); document.addEventListener('pointerdown',e=>{if(!els.mobileMenu.hidden&&!els.mobileMenu.contains(e.target)&&!els.menuButton.contains(e.target))closeMobileMenu()}); $$('#mobileMenu a').forEach(a=>a.addEventListener('click',closeMobileMenu));
   $$('#intelFilter button').forEach(b=>b.addEventListener('click',()=>{$$('#intelFilter button').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderIntel(b.dataset.filter);track('intel_filter',{filter:b.dataset.filter})}));
   $('#analyticsAccept').addEventListener('click',()=>{storage.set('tfw_analytics','yes');els.analyticsConsent.hidden=true;loadAnalytics(SITE_CONFIG.gaMeasurementId.trim())}); $('#analyticsDecline').addEventListener('click',()=>{storage.set('tfw_analytics','no');els.analyticsConsent.hidden=true}); $('#privacyButton').addEventListener('click',()=>{storage.remove('tfw_analytics');els.analyticsConsent.hidden=false});
-  document.addEventListener('keydown',e=>{keepModalFocus(e);if(e.key==='Escape'){closeModals();closeMobileMenu()}}); document.addEventListener('visibilitychange',()=>{if(document.hidden)stopSceneRotation();else scheduleSceneRotation()});
+  document.addEventListener('keydown',e=>{keepModalFocus(e);if(e.key==='Escape'){closeModals();closeMobileMenu()}}); document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){
+      stopSceneRotation();
+      clearTimeout(releaseRotationTimer);releaseRotationTimer=null;
+    }else{
+      scheduleSceneRotation();
+      if(releaseSequenceActive)scheduleReleaseRotation();
+    }
+  });
   let idleTimer; const wake=()=>{els.topbar.classList.remove('idle');clearTimeout(idleTimer);if(scrollY<innerHeight*.7&&matchMedia('(pointer:fine)').matches)idleTimer=setTimeout(()=>els.topbar.classList.add('idle'),4800)};
   window.addEventListener('scroll',()=>{els.topbar.classList.toggle('scrolled',scrollY>30);$('#returnCountdown')?.classList.toggle('visible',scrollY>innerHeight*.72);const tl=$('#timelineViewport');if(tl){const box=tl.getBoundingClientRect();if(box.bottom>0&&box.top<innerHeight)updateTimelineProgress()}wake()},{passive:true}); ['pointermove','keydown'].forEach(e=>window.addEventListener(e,wake,{passive:true})); wake();
   window.addEventListener('resize',()=>{syncTimelineEdge();const next=isMobile();if(next!==mobileState&&scenes.length){mobileState=next;const current=scenes[currentIndex],active=activeLayer===0?els.sceneA:els.sceneB;active.style.backgroundImage=`url("${srcFor(current)}")`;active.style.backgroundPosition=positionFor(current);loadToday();renderIntel($('#intelFilter .active')?.dataset.filter||'ALL')}updateTimelineProgress()},{passive:true});
