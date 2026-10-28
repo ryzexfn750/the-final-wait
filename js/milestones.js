@@ -48,6 +48,7 @@
   let sequenceMusicSource=null;
   let voiceMusicSource=null;
   let ambientMusicSource=null;
+  let ambientCaptureAnalyser=null;
   let finalCallMusicSource=null;
   let musicResumePending=false;
   let releaseEntranceTimer=0;
@@ -500,11 +501,24 @@
           sequenceMusicSource=musicCtx.createMediaElementSource(sequenceSong);
           sequenceMusicSource.connect(musicAnalyser);
         }
-        // Never reroute an auto-playing HTMLAudioElement to a suspended context.
+        // Capture the ambient music WITHOUT rerouting it through Web Audio.
+        // createMediaElementSource(ambient) used to make normal playback fall
+        // silent when browsers suspended the AudioContext in background tabs.
         const ambient=window.__tfwAmbientAudio;
         if(ambient&&!ambientMusicSource){
-          ambientMusicSource=musicCtx.createMediaElementSource(ambient);
-          ambientMusicSource.connect(musicAnalyser);
+          try{
+            const capture=ambient.captureStream||ambient.mozCaptureStream;
+            const stream=capture?.call(ambient);
+            if(stream?.getAudioTracks?.().length){
+              ambientMusicSource=musicCtx.createMediaStreamSource(stream);
+              ambientCaptureAnalyser=musicCtx.createAnalyser();
+              ambientCaptureAnalyser.fftSize=512;
+              ambientCaptureAnalyser.smoothingTimeConstant=.64;
+              // This analyser deliberately does NOT connect to destination:
+              // native HTMLAudioElement remains the only audible output.
+              ambientMusicSource.connect(ambientCaptureAnalyser);
+            }
+          }catch(error){console.warn('Audio visualizer capture unavailable',error)}
         }
         const finalCallAudio=window.__tfwFinalCallAudio;
         if(finalCallAudio&&!finalCallMusicSource){
@@ -551,9 +565,14 @@
       if(window.parent!==window){
         try{external=window.parent.__tfwExternalVisualizerSpectrum?.()||null}catch{}
       }
-      const localSignal=Boolean(soundEnabled()&&musicAnalyser&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(ambientMusicSource||finalMusicSource||finalCallMusicSource));
-      const bins=external?.playing&&external?.bins?.length?external.bins:musicData;
-      const hasSignal=Boolean(localSignal||(external?.playing&&bins?.length));
+      const liveAmbient=Boolean(window.__tfwAmbientAudio&&!window.__tfwAmbientAudio.paused);
+      const localSignal=Boolean(soundEnabled()&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(ambientCaptureAnalyser||finalMusicSource||finalCallMusicSource));
+      const externalBins=external?.playing&&external?.bins?.length?external.bins:null;
+      const bins=externalBins||musicData||new Uint8Array(256);
+      // Even when captureStream is not implemented, keep a subtle moving
+      // activity indicator instead of a frozen line while audio plays.
+      const fallbackSignal=Boolean(soundEnabled()&&liveAmbient&&!ambientCaptureAnalyser&&!externalBins);
+      const hasSignal=Boolean(localSignal||fallbackSignal||(external?.playing&&bins?.length));
       // ~30 FPS when real music plays; ~3 FPS while silent. Idle bars
       // remain visible without continuously creating gradients on phones.
       if(t-lastDraw<(hasSignal?(reducedMotion?85:33):(reducedMotion?600:300))){
@@ -564,10 +583,18 @@
       const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);
       let energy=.025;
       if(hasSignal){
-        if(!external?.playing&&localSignal)musicAnalyser.getByteFrequencyData(musicData);
-        let sum=0;const take=Math.min(52,bins.length);
+        if(!externalBins&&localSignal){
+          const analyzer=liveAmbient&&ambientCaptureAnalyser?ambientCaptureAnalyser:musicAnalyser;
+          analyzer.getByteFrequencyData(musicData);
+        }else if(fallbackSignal&&bins){
+          const at=Number(window.__tfwAmbientAudio?.currentTime)||t/1000;
+          for(let i=0;i<bins.length;i++){
+            bins[i]=Math.round(22+44*(2+Math.sin(at*7.8+i*.3)+Math.sin(at*4.4+i*.15))*.25);
+          }
+        }
+        let sum=0;const take=Math.min(52,bins?.length||0);
         for(let i=0;i<take;i++)sum+=bins[i];
-        energy=clamp(sum/(take*255),.025,1);
+        if(take)energy=clamp(sum/(take*255),.025,1);
       }
       // Avoid invalidating every descendant style at 30Hz for tiny FFT changes.
       if(Math.abs(energy-lastEnergy)>=.02){
