@@ -15,14 +15,25 @@
  shell.setAttribute('aria-label','Page navigation');
  shell.innerHTML=[
   '<div class="tfw-seamless-progress" aria-live="polite">',
+  '<div class="route-loader-inner">',
   '<img src="assets/gta-vi-logo.webp" alt="" aria-hidden="true">',
-  '<p>ENTERING LEONIDA</p><span>Preparing the page and images…</span>',
+  '<span class="route-loader-kicker">THE FINAL WAIT</span>',
+  '<strong class="tfw-seamless-caption">LOADING</strong>',
+  '<div class="route-loader-track" role="progressbar" aria-label="Page loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>',
   '<a class="tfw-seamless-direct" hidden>OPEN PAGE DIRECTLY</a>',
-  '</div>'
+  '</div></div>'
  ].join('');
  document.body.appendChild(shell);
  const status=shell.querySelector('.tfw-seamless-progress');
- const label=status.querySelector('span'),direct=status.querySelector('.tfw-seamless-direct');
+ const label=status.querySelector('.tfw-seamless-caption'),
+       direct=status.querySelector('.tfw-seamless-direct'),
+       progressTrack=status.querySelector('.route-loader-track'),
+       progressFill=progressTrack?.querySelector('i');
+ function setLoadingProgress(value){
+   const n=Math.max(0,Math.min(100,Math.round(value)));
+   if(progressTrack)progressTrack.setAttribute('aria-valuenow',String(n));
+   if(progressFill)progressFill.style.transform='scaleX('+(n/100)+')';
+ }
  function isOurs(url){
    if(url.origin!==origin.origin||!url.pathname.startsWith(rootPrefix))return false;
    const part=url.pathname.slice(rootPrefix.length);
@@ -114,7 +125,8 @@
    loading=true;shell.hidden=false;
    document.body.classList.add('tfw-route-overlay-open');
    status.hidden=false;
-   direct.hidden=true;label.textContent='Preparing the page and images…';
+   direct.hidden=true;label.textContent='LOADING';
+   setLoadingProgress(5);
    const frame=document.createElement('iframe');
    frame.className='tfw-seamless-frame tfw-frame-preloading';
    frame.title='The Final Wait — '+url.pathname.split('/').pop();
@@ -127,8 +139,18 @@
    shell.appendChild(frame);
    frame.addEventListener('load',async()=>{
      if(ticket!==seq){frame.remove();return}
+     const progressTimer=setInterval(()=>{
+       if(ticket!==seq){clearInterval(progressTimer);return}
+       try{
+         const childProgress=Number(frame.contentWindow.__tfwPageLoadProgress)||0;
+         setLoadingProgress(Math.max(12,Math.min(98,childProgress)));
+       }catch{}
+     },85);
      try{
        await waitForPage(frame);
+       clearInterval(progressTimer);
+       setLoadingProgress(100);
+       await new Promise(resolve=>setTimeout(resolve,180));
        if(ticket!==seq){frame.remove();return}
        const old=activeFrame;
        activeFrame=frame;
@@ -139,10 +161,11 @@
        loading=false;
        if(old&&old!==frame)old.remove();
      }catch(error){
+       clearInterval(progressTimer);
        if(ticket!==seq)return;
        console.warn('Seamless page failed:',error);
        loading=false;
-       label.textContent='This page could not finish loading.';
+       label.textContent='LOAD FAILED';
        direct.href=url.href;direct.hidden=false;
        // Retain the previously readable document below the error card.
        frame.remove();
