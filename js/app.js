@@ -1,4 +1,5 @@
-import { SITE_CONFIG, TIMELINE, INTEL } from './config.js?v=44';
+import { SITE_CONFIG, TIMELINE, INTEL } from './config.js?v=45';
+import { initAnalytics, track } from './analytics-consent.js?v=1';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -859,9 +860,7 @@ function toggleSound(){
   track('sound_toggle',{enabled:soundWanted});
 }
 
-function initAnalytics(){const id=SITE_CONFIG.gaMeasurementId?.trim();if(!id)return;$('#privacyButton').hidden=false;const saved=storage.get('tfw_analytics');if(!SITE_CONFIG.analyticsConsentRequired)return loadAnalytics(id);if(saved==='yes')return loadAnalytics(id);if(saved==='no')return;els.analyticsConsent.hidden=false}
-function loadAnalytics(id){if(window.gtag)return;const s=document.createElement('script');s.async=true;s.src=`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;document.head.appendChild(s);window.dataLayer=window.dataLayer||[];window.gtag=function(){window.dataLayer.push(arguments)};window.gtag('js',new Date());window.gtag('config',id,{anonymize_ip:true})}
-function track(name,params={}){if(window.gtag)window.gtag('event',name,params)}
+// Consent-gated analytics is shared by the homepage and article pages.
 
 function bindUi(){
   $('#nextScene').addEventListener('click',changeSceneFromButton);
@@ -878,7 +877,6 @@ function bindUi(){
   els.menuButton.addEventListener('click',toggleMobileMenu); document.addEventListener('pointerdown',e=>{if(!els.mobileMenu.hidden&&!els.mobileMenu.contains(e.target)&&!els.menuButton.contains(e.target))closeMobileMenu()}); $$('#mobileMenu a').forEach(a=>a.addEventListener('click',closeMobileMenu));
   // Category shortcuts now link to intel-archive.html, where filters apply
   // to the full collection rather than rendering every cover on the homepage.
-  $('#analyticsAccept').addEventListener('click',()=>{storage.set('tfw_analytics','yes');els.analyticsConsent.hidden=true;loadAnalytics(SITE_CONFIG.gaMeasurementId.trim())}); $('#analyticsDecline').addEventListener('click',()=>{storage.set('tfw_analytics','no');els.analyticsConsent.hidden=true}); $('#privacyButton').addEventListener('click',()=>{storage.remove('tfw_analytics');els.analyticsConsent.hidden=false});
   document.addEventListener('keydown',e=>{keepModalFocus(e);if(e.key==='Escape'){closeModals();closeMobileMenu()}}); document.addEventListener('visibilitychange',()=>{
     if(document.hidden){
       stopSceneRotation();
