@@ -186,14 +186,19 @@
           <span class="section-index">03</span>
           <div><p class="eyebrow bright">OFFICIAL INTEL</p><h2>INSIDE LEONIDA</h2><p class="section-lede">People, places and systems confirmed by Rockstar Games, official trailers, the extended look, and Rockstar developer interviews.</p></div>
         </div>
-        <div class="intel-filter reveal" id="intelFilter">
-          <button class="active" data-filter="ALL">ALL</button>
-          <button data-filter="PEOPLE">PEOPLE</button>
-          <button data-filter="PLACES">PLACES</button>
-          <button data-filter="SYSTEMS">SYSTEMS</button>
-        </div>
+        <nav class="intel-filter intel-archive-shortcuts reveal" aria-label="Browse Leonida intel categories">
+          <a href="intel-archive.html">ALL</a>
+          <a href="intel-archive.html?category=PEOPLE">PEOPLE</a>
+          <a href="intel-archive.html?category=PLACES">PLACES</a>
+          <a href="intel-archive.html?category=SYSTEMS">SYSTEMS</a>
+        </nav>
       </div>
-      <div class="intel-grid section" id="intelGrid"></div>
+      <div class="intel-grid section" id="intelGrid" aria-label="Featured Leonida dossiers"></div>
+      <div class="intel-archive-cta reveal">
+        <span>MORE TO EXPLORE</span>
+        <p>Discover every character, location and feature in the complete Leonida archive.</p>
+        <a class="fx-button primary" href="intel-archive.html">EXPLORE ALL DOSSIERS ↗</a>
+      </div>
     </section>
 
     <section class="share-section" id="share">
@@ -220,6 +225,7 @@
   </footer>
 
   <div class="share-modal glass" id="shareModal" hidden role="dialog" aria-modal="true" aria-labelledby="modalShareTitle" tabindex="-1">
+    <img class="tfw-share-brand" src="assets/ryze-gtavi-logo-lockup.png" alt="Ryze GTA VI" width="104" height="40" loading="lazy" decoding="async" />
     <button class="modal-close" id="closeShare" type="button" aria-label="Close">×</button>
     <p class="eyebrow bright">SHARE THE WAIT</p>
     <h2 id="modalShareTitle">THE WAIT IS GETTING SHORTER.</h2>
