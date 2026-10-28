@@ -67,5 +67,12 @@ async function checkSize(dir) {
   }
 }
 await checkSize(output);
+// Invoke the IP-timezone Function only for its endpoint. All static pages,
+// styles, images and audio remain served through the normal Pages CDN.
+await writeFile(join(output,'_routes.json'),JSON.stringify({
+  version:1,
+  include:['/api/timezone'],
+  exclude:[]
+}));
 console.log('Cloudflare Pages output prepared: dist/');
 console.log('R2 audio references:', replacements);
