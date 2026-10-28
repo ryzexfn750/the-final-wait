@@ -522,8 +522,14 @@
         }
         const finalCallAudio=window.__tfwFinalCallAudio;
         if(finalCallAudio&&!finalCallMusicSource){
-          finalCallMusicSource=musicCtx.createMediaElementSource(finalCallAudio);
-          finalCallMusicSource.connect(musicAnalyser);
+          // R2 media is cross-origin. Routing it through MediaElementAudioSourceNode
+          // can silence it under Web Audio CORS restrictions. Keep native playback.
+          const src=finalCallAudio.currentSrc||finalCallAudio.src;
+          const isSameOrigin=src&&new URL(src,location.href).origin===location.origin;
+          if(isSameOrigin){
+            finalCallMusicSource=musicCtx.createMediaElementSource(finalCallAudio);
+            finalCallMusicSource.connect(musicAnalyser);
+          }
         }
       };
       attachSources();
@@ -566,12 +572,16 @@
         try{external=window.parent.__tfwExternalVisualizerSpectrum?.()||null}catch{}
       }
       const liveAmbient=Boolean(window.__tfwAmbientAudio&&!window.__tfwAmbientAudio.paused);
-      const localSignal=Boolean(soundEnabled()&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(liveAmbient?ambientCaptureAnalyser:(finalMusicSource||finalCallMusicSource||sequenceMusicSource)));
+      const liveCall=Boolean(window.__tfwFinalCallAudio&&!window.__tfwFinalCallAudio.paused);
+      const localSignal=Boolean(soundEnabled()&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&
+        (liveAmbient?ambientCaptureAnalyser:liveCall?finalCallMusicSource:(finalMusicSource||voiceMusicSource||sequenceMusicSource)));
       const externalBins=external?.playing&&external?.bins?.length?external.bins:null;
       const bins=externalBins||musicData||new Uint8Array(256);
-      // Even when captureStream is not implemented, keep a subtle moving
-      // activity indicator instead of a frozen line while audio plays.
-      const fallbackSignal=Boolean(soundEnabled()&&liveAmbient&&(!ambientCaptureAnalyser||musicCtx?.state!=='running')&&!externalBins);
+      // External R2 audio must remain audible even without CORS-enabled FFT:
+      // keep the visualizer alive without routing the audio through Web Audio.
+      const fallbackSignal=Boolean(soundEnabled()&&!externalBins&&
+        ((liveAmbient&&(!ambientCaptureAnalyser||musicCtx?.state!=='running'))||
+         (liveCall&&!finalCallMusicSource)));
       const hasSignal=Boolean(localSignal||fallbackSignal||(external?.playing&&bins?.length));
       // ~30 FPS when real music plays; ~3 FPS while silent. Idle bars
       // remain visible without continuously creating gradients on phones.
@@ -587,7 +597,7 @@
           const analyzer=liveAmbient&&ambientCaptureAnalyser?ambientCaptureAnalyser:musicAnalyser;
           analyzer.getByteFrequencyData(musicData);
         }else if(fallbackSignal&&bins){
-          const at=Number(window.__tfwAmbientAudio?.currentTime)||t/1000;
+          const at=Number((liveCall?window.__tfwFinalCallAudio:window.__tfwAmbientAudio)?.currentTime)||t/1000;
           for(let i=0;i<bins.length;i++){
             bins[i]=Math.round(22+44*(2+Math.sin(at*7.8+i*.3)+Math.sin(at*4.4+i*.15))*.25);
           }
