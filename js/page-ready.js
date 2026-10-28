@@ -56,10 +56,16 @@
      const m=style.match(/url\(["']?(.+?)["']?\)/);
      if(m)candidates.push(m[1]);
    }
-   const images=[...document.querySelectorAll('.archive-grid .intel-image[data-bg]')].slice(0,2);
+   const images=[...document.querySelectorAll('.archive-grid .intel-image')].slice(0,2);
    for(const item of images){
-     const src=item.dataset.bg;
-     if(src){candidates.push(src);item.style.backgroundImage='url("'+src+'")';delete item.dataset.bg}
+     // Archive IntersectionObserver may already have consumed data-bg.
+     const style=item.style.backgroundImage||getComputedStyle(item).backgroundImage;
+     const match=style.match(/url\(["']?(.+?)["']?\)/);
+     const src=item.dataset.bg||match?.[1];
+     if(src){
+       candidates.push(src);
+       if(item.dataset.bg){item.style.backgroundImage='url("'+src+'")';delete item.dataset.bg}
+     }
    }
    // Above-the-fold article images are awaited; downstream images remain lazy.
    document.querySelectorAll('.article-body img').forEach(img=>{
