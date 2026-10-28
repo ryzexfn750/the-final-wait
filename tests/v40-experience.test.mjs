@@ -63,9 +63,9 @@ test('V40 below-the-fold media hydrates on approach without delaying countdown',
 test('V40 global cursor has guaranteed viewport alignment; small logo appears in share dialog',()=>{
   const cursor=read('js/site-polish.js'),css=read('css/site-polish.css'),html=read('index.html');
   assert.match(cursor,/document\.addEventListener\('pointermove'/);
-  assert.match(cursor,/halo\\.style\\.transform=translate/);
+  assert.match(cursor,/halo\.style\.transform=translate/);
   assert.match(css,/transform:translate\(-50%,-50%\)!important/);
-  assert.match(css,/body\.tfw-custom-cursor\.tfw-pointer-active/);
+  assert.match(css,/#tfwGlobalCursor\.tfw-global-cursor-layer/);
   assert.match(css,/#shareModal \.tfw-share-brand/);
   assert.ok(html.includes('class="tfw-share-brand"'));
   for(const path of ['index.html','today.html','intel.html','timeline.html','intel-archive.html']){
