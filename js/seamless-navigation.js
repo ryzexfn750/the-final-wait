@@ -56,6 +56,7 @@
    shell.hidden=true;
    document.body.classList.remove('tfw-route-overlay-open');
    document.title=rememberedTitle;
+   window.dispatchEvent(new Event('tfw:seamless-return'));
  }
  function scrollOriginal(target){
    if(!target.hash){scrollTo({top:0,behavior:'instant'});return}
@@ -83,6 +84,13 @@
    try{
      const child=frame.contentWindow,doc=child.document;
      doc.addEventListener('click',event=>onClick(event,doc),true);
+     // Pointer activation inside the iframe must wake the persistent
+     // top-level audio analyser. iframe gestures never bubble to the host.
+     for(const kind of ['pointerdown','keydown','touchstart']){
+       doc.addEventListener(kind,()=>{
+         window.dispatchEvent(new Event('tfw:seamless-gesture'));
+       },{capture:true,passive:true});
+     }
      // Prevent the duplicate embedded audio owners from resuming after
      // the iframe is focused. The host remains the sole active player.
    }catch(error){console.warn('Navigation could not attach:',error)}
