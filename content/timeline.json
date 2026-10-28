@@ -1705,7 +1705,7 @@
     "category": "MUSIC",
     "headline": "THE ALBUM",
     "dek": "In September 2026, Rockstar announced Grand Theft Auto VI: The Album, a 34-track collection of original music scheduled to arrive alongside the game. The announcement expanded the launch from a software release into a broader cultural package, fitting a series where radio and music have always shaped the identity of the world.",
-    "heroSceneId": "scene-45",
+    "heroSceneId": "scene-164",
     "readingTime": "4 MIN READ",
     "byline": "THE FINAL WAIT ARCHIVE",
     "blocks": [
@@ -2089,7 +2089,7 @@
       },
       {
         "type": "paragraph",
-        "text": "The next documented turn on this timeline came with PRE-LOAD (NOV 12, 2026). That matters because no milestone existed in isolation: each one changed the questions people carried into the next. What looked decisive on one day could be clarified, delayed, reframed or simply overtaken by new official material. Reading the sequence in order preserves that movement. It also keeps hindsight honest — instead of jumping straight from an early clue to the finished marketing campaign, you can see how the public picture accumulated one uneven step at a time."
+        "text": "The next documented turn on this timeline came with THE LAUNCH TRAILER (OCT 15, 2026). That matters because no milestone existed in isolation: each one changed the questions people carried into the next. What looked decisive on one day could be clarified, delayed, reframed or simply overtaken by new official material. Reading the sequence in order preserves that movement. It also keeps hindsight honest — instead of jumping straight from an early clue to the finished marketing campaign, you can see how the public picture accumulated one uneven step at a time."
       },
       {
         "type": "heading",
@@ -2126,6 +2126,80 @@
       }
     ],
     "wordCount": 841
+  },
+  {
+    "id": "launch-trailer",
+    "date": "OCT 15, 2026",
+    "category": "LAUNCH TRAILER",
+    "headline": "THE LAUNCH TRAILER",
+    "dek": "Rockstar released GTA VI's official Launch Trailer on October 15, bringing Jason and Lucia back into focus alongside new music from Justice.",
+    "heroSceneId": "scene-45",
+    "readingTime": "3 MIN READ",
+    "byline": "THE FINAL WAIT ARCHIVE",
+    "blocks": [
+      {
+        "type": "paragraph",
+        "text": "On October 15, 2026, Rockstar Games published the official Grand Theft Auto VI Launch Trailer. The new video brought the focus back to Jason and Lucia, whose attempt at an easy score sends them into a criminal conspiracy stretching across Leonida. With only five weeks remaining before the announced November 19 console launch, the trailer became one of the clearest final markers on the road to release."
+      },
+      {
+        "type": "heading",
+        "text": "A NEW LOOK AT VICE CITY"
+      },
+      {
+        "type": "paragraph",
+        "text": "The Launch Trailer arrived after the longer presentation in August and the September wave of coverage. Rather than reintroducing Leonida as a place, it drew the different strands together around the central couple: Jason and Lucia, a robbery gone wrong, and the growing pressure of a statewide criminal conspiracy. Rockstar's official description makes their dependence on each other the emotional axis of the story. This is a more specific narrative promise than a montage of locations or activities."
+      },
+      {
+        "type": "heading",
+        "text": "THE MUSIC BEHIND THE MOMENT"
+      },
+      {
+        "type": "paragraph",
+        "text": "Rockstar announced that the trailer features new music from electronic duo Justice, who are working on GTA VI's original score. The song, “Flower in a Hurricane,” features Tame Impala, SZA, and King Gizzard & The Lizard Wizard. Rockstar also identified it as part of Grand Theft Auto VI: The Album, connecting the final trailer to the official music release. Those are the confirmed credits; they do not imply anything about additional unannounced radio stations or licensed tracks."
+      },
+      {
+        "type": "heading",
+        "text": "WHY OCTOBER 15 MATTERED"
+      },
+      {
+        "type": "paragraph",
+        "text": "A launch trailer feels different from the first reveal. The December 2023 and May 2025 trailers established the setting, the cast and the tone, while August 2026 offered a sustained look at the game. By mid-October, players had an announced release day and concrete pre-order arrangements. A final major video could therefore function as the bridge between years of speculation and the practical last weeks of waiting."
+      },
+      {
+        "type": "paragraph",
+        "text": "Rockstar's announcement reiterated that Grand Theft Auto VI is scheduled for November 19, 2026 on PlayStation 5 and Xbox Series X|S. It did not announce a PC release date. The message was direct: the next step was no longer another distant reveal, but the approaching launch itself."
+      },
+      {
+        "type": "heading",
+        "text": "HOW IT FITS THE TIMELINE"
+      },
+      {
+        "type": "paragraph",
+        "text": "The preceding milestones capture the long build-up: the early leaks, Rockstar's official announcements, two delays, the extended look, and a burst of magazine coverage. October 15 belongs between those stories and the planned November 12 pre-load. The launch trailer was an official release, while the pre-load and game launch remained scheduled future events when this entry was published. Keeping that distinction makes this archive useful both before and after the countdown reaches zero."
+      },
+      {
+        "type": "heading",
+        "text": "WATCH THE OFFICIAL RELEASE"
+      },
+      {
+        "type": "paragraph",
+        "text": "The original trailer and its accompanying Rockstar Newswire announcement are linked below. They remain the primary sources for the release date, the story synopsis and the music credits used in this article."
+      },
+      {
+        "type": "sources",
+        "items": [
+          {
+            "label": "Rockstar Games — Grand Theft Auto VI Launch Trailer",
+            "url": "https://www.rockstargames.com/VI/launch-trailer"
+          },
+          {
+            "label": "Rockstar Newswire — Watch the Grand Theft Auto VI Launch Trailer (October 15, 2026)",
+            "url": "https://www.rockstargames.com/newswire/article/517572321a549a/watch-the-grand-theft-auto-vi-launch-trailer"
+          }
+        ]
+      }
+    ],
+    "wordCount": 465
   },
   {
     "id": "preload",
@@ -2239,7 +2313,7 @@
     "category": "SCHEDULED · LAUNCH",
     "headline": "WELCOME TO LEONIDA",
     "dek": "November 19, 2026 is the currently announced release date for Grand Theft Auto VI on PlayStation 5 and Xbox Series X|S. It is the endpoint of this countdown and the date every earlier milestone on this timeline has been moving toward.",
-    "heroSceneId": "scene-164",
+    "heroSceneId": "scene-148",
     "readingTime": "4 MIN READ",
     "byline": "THE FINAL WAIT ARCHIVE",
     "blocks": [
