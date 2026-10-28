@@ -9,7 +9,7 @@ export const SITE_CONFIG = {
   waitStartISO: '2025-11-06T00:00:00+01:00',
   backgroundIntervalMs: 10000,
   transitionMs: 2400,
-  gaMeasurementId: '',
+  gaMeasurementId: 'G-SQBF6TD86M',
   analyticsConsentRequired: true,
 };
 
