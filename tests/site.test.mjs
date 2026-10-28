@@ -85,7 +85,7 @@ test('visualizer includes ambient stream without suppressing normal playback',()
   assert.match(clock,/window\.__tfwAmbientAudio=bgAudio/);
   assert.match(finale,/tfw:ambient-play/);
   assert.match(finale,/tfw:ambient-pause/);
-  assert.match(finale,/ambientMusicSource=musicCtx\.createMediaElementSource\(ambient\)/);
+  assert.match(finale,/ambientMusicSource=musicCtx\.createMediaStreamSource\(stream\)/);
   assert.match(finale,/if\(finaleActive\)leaveFinalFive\(\);/);
   assert.match(read('index.html'),/css\/experience\.css\?v=33/);
   assert.match(section('v26.css'),/body\.tfw-ambient-playing/);
@@ -246,7 +246,7 @@ test('V27 audio bars are rendered from FFT and release layout uses real dimensio
   assert.match(css,/max-height 1200ms/);
   assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/js\/clock\.js\?v=48/);
-  assert.match(html,/js\/milestones\.js\?v=48/);
+  assert.match(html,/js\/milestones\.js\?v=50/);
 });
 
 test('V28 starts the release clock without waiting for the next polling cycle',()=>{
@@ -311,7 +311,7 @@ test('V28 release message and secondary-scale elapsed layout are present',()=>{
   assert.match(css,/height:clamp\(72px,7\.8vw,105px\)!important/);
   assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/js\/clock\.js\?v=48/);
-  assert.match(html,/js\/milestones\.js\?v=48/);
+  assert.match(html,/js\/milestones\.js\?v=50/);
 });
 
 
@@ -457,7 +457,7 @@ test('V29 phase-two typography uses one fixed title footprint',()=>{
   assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/js\/app\.js\?v=46/);
   assert.match(html,/js\/clock\.js\?v=48/);
-  assert.match(html,/js\/milestones\.js\?v=48/);
+  assert.match(html,/js\/milestones\.js\?v=50/);
   assert.match(js,/if\(pill&&remaining>0&&remaining<=FINAL_FIVE\)/);
 });
 
