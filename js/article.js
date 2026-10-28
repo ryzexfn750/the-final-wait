@@ -123,8 +123,12 @@ async function init(){
     document.title = `${article.headline} — Today in Leonida`;
     $$('[data-share]').forEach(b => b.addEventListener('click', () => share(b.dataset.share)));
     observeReveals(); bindPointerFx(); bindNavigationTransitions();
+    window.__tfwContentReady=true;
+    document.dispatchEvent(new Event('tfw:content-ready'));
   } catch (e) {
     console.error(e); showToast('ARTICLE COULD NOT LOAD');
+    window.__tfwContentError=e;
+    document.dispatchEvent(new CustomEvent('tfw:page-content-failed',{detail:{error:e}}));
   }
 }
 init();
