@@ -794,8 +794,9 @@ function syncSectionHash(){
   const hash=active.id==='hero'?'':'#'+active.id;
   if(location.hash!==hash)history.replaceState(null,'',location.pathname+location.search+hash);
 }
+let navigationGlobalHandlersBound=false;
 function bindNavigationTransitions(){
-  $('a[href]').forEach(a=>{
+  $$('a[href]').forEach(a=>{
     if(a.dataset.transitionBound) return;
     const href=a.getAttribute('href')||'';
     if(href.startsWith('#')){
@@ -816,6 +817,8 @@ function bindNavigationTransitions(){
       });
     }
   });
+  if(navigationGlobalHandlersBound)return;
+  navigationGlobalHandlersBound=true;
   window.addEventListener('pageshow',()=>{
     hideRouteLoader();
     requestAnimationFrame(syncSectionHash);
