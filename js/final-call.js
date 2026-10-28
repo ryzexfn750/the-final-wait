@@ -58,7 +58,7 @@
     try{return localStorage.getItem('tfw_sound')!=='off'}catch{return true}
   }
   function canPlayAudio(){
-    return soundEnabled()&&(!preview||window.__tfwPreviewPlaying===true);
+    return !new URLSearchParams(location.search).has('tfw_embed')&&soundEnabled()&&(!preview||window.__tfwPreviewPlaying===true);
   }
   function randomOrder(){
     const order=IMAGE_IDS.slice();
