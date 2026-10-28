@@ -67,8 +67,12 @@ async function boot(){
   }catch(error){
     console.error('Cannot load Leonida archive:',error);
     $('#archiveLoading').textContent='UNABLE TO LOAD THE ARCHIVE. RELOAD THE PAGE TO RETRY.';
+    window.__tfwContentError=error;
+    document.dispatchEvent(new CustomEvent('tfw:page-content-failed',{detail:{error}}));
     return;
   }
   $('#archiveLoading').hidden=true;
+  window.__tfwContentReady=true;
+  document.dispatchEvent(new Event('tfw:content-ready'));
 }
 boot();
