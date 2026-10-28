@@ -542,8 +542,10 @@ function renderTimeline(){
 }
 
 let intelImageObserver=null;
-function renderIntel(filter='ALL'){
-  const visible = filter==='ALL' ? INTEL : INTEL.filter(x=>x.category===filter);
+function renderIntel(){
+  // Home is intentionally editorial, not an archive. Only two hand-picked
+  // covers are instantiated; the other dossiers live on intel-archive.html.
+  const visible=[INTEL[0],INTEL[1]].filter(Boolean);
   $('#intelGrid').innerHTML = visible.map(item=>{
     const scene=sceneById(item.sceneId);
     const href=`intel.html?article=${encodeURIComponent(item.articleId || '')}`;
@@ -871,7 +873,8 @@ function bindUi(){
   $('#fullscreenButton').addEventListener('click',toggleFullscreen); $('#mobileFullscreenButton').addEventListener('click',toggleFullscreen); if(!document.documentElement.requestFullscreen){$('#fullscreenButton').hidden=true;$('#mobileFullscreenButton').hidden=true}
   // SOUND buttons open the shared mute/volume popover (js/audio-controls.js).
   els.menuButton.addEventListener('click',toggleMobileMenu); document.addEventListener('pointerdown',e=>{if(!els.mobileMenu.hidden&&!els.mobileMenu.contains(e.target)&&!els.menuButton.contains(e.target))closeMobileMenu()}); $$('#mobileMenu a').forEach(a=>a.addEventListener('click',closeMobileMenu));
-  $$('#intelFilter button').forEach(b=>b.addEventListener('click',()=>{$$('#intelFilter button').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderIntel(b.dataset.filter);track('intel_filter',{filter:b.dataset.filter})}));
+  // Category shortcuts now link to intel-archive.html, where filters apply
+  // to the full collection rather than rendering every cover on the homepage.
   $('#analyticsAccept').addEventListener('click',()=>{storage.set('tfw_analytics','yes');els.analyticsConsent.hidden=true;loadAnalytics(SITE_CONFIG.gaMeasurementId.trim())}); $('#analyticsDecline').addEventListener('click',()=>{storage.set('tfw_analytics','no');els.analyticsConsent.hidden=true}); $('#privacyButton').addEventListener('click',()=>{storage.remove('tfw_analytics');els.analyticsConsent.hidden=false});
   document.addEventListener('keydown',e=>{keepModalFocus(e);if(e.key==='Escape'){closeModals();closeMobileMenu()}}); document.addEventListener('visibilitychange',()=>{
     if(document.hidden){
@@ -884,23 +887,63 @@ function bindUi(){
   });
   let idleTimer; const wake=()=>{els.topbar.classList.remove('idle');clearTimeout(idleTimer);if(scrollY<innerHeight*.7&&matchMedia('(pointer:fine)').matches)idleTimer=setTimeout(()=>els.topbar.classList.add('idle'),4800)};
   window.addEventListener('scroll',()=>{els.topbar.classList.toggle('scrolled',scrollY>30);$('#returnCountdown')?.classList.toggle('visible',scrollY>innerHeight*.72);const tl=$('#timelineViewport');if(tl){const box=tl.getBoundingClientRect();if(box.bottom>0&&box.top<innerHeight)updateTimelineProgress()}wake()},{passive:true}); ['pointermove','keydown'].forEach(e=>window.addEventListener(e,wake,{passive:true})); wake();
-  window.addEventListener('resize',()=>{syncTimelineEdge();const next=isMobile();if(next!==mobileState&&scenes.length){mobileState=next;const current=scenes[currentIndex],active=activeLayer===0?els.sceneA:els.sceneB;active.style.backgroundImage=`url("${srcFor(current)}")`;active.style.backgroundPosition=positionFor(current);loadToday();renderIntel($('#intelFilter .active')?.dataset.filter||'ALL')}updateTimelineProgress()},{passive:true});
+  window.addEventListener('resize',()=>{syncTimelineEdge();const next=isMobile();if(next!==mobileState&&scenes.length){mobileState=next;const current=scenes[currentIndex],active=activeLayer===0?els.sceneA:els.sceneB;active.style.backgroundImage=`url("${srcFor(current)}")`;active.style.backgroundPosition=positionFor(current);if(todayLoaded)loadToday();if(intelLoaded)renderIntel()}updateTimelineProgress()},{passive:true});
 }
 
-async function init(){
-  updateSoundUI(); bindUi(); bindParallax(); initAnalytics(); updateZoneUI();
-  try{
-    await loadScenes();
-    try{await loadToday()}catch(error){console.error('Today content unavailable:',error)}
-    renderTimeline();
-    renderIntel();
-  }catch(error){
-    console.error('Could not initialize site content:',error);
-    showToast('SOME VISUAL ASSETS COULD NOT LOAD');
+let todayLoaded=false,timelineLoaded=false,intelLoaded=false;
+const sectionJobs=new Map();
+function hydrateSection(id){
+  if(sectionJobs.has(id))return sectionJobs.get(id);
+  const job=(async()=>{
+    if(id==='today'){
+      await loadToday();todayLoaded=true;
+    }else if(id==='timeline'){
+      renderTimeline();timelineLoaded=true;bindTimeline();updateTimelineProgress();
+    }else if(id==='intel'){
+      renderIntel();intelLoaded=true;
+    }
+    const section=document.getElementById(id);
+    section?.classList.add('tfw-section-hydrated');
+    observeReveals();bindMagnetic();bindTilts();bindNavigationTransitions();
+  })().catch(error=>{
+    sectionJobs.delete(id);
+    console.warn('Deferred section could not load:',id,error);
+    // Only content-specific errors are reported, never a generic visual
+    // failure caused by an unrelated below-the-fold section.
+  });
+  sectionJobs.set(id,job);
+  return job;
+}
+function deferSections(){
+  const ids=['today','timeline','intel'];
+  if(!('IntersectionObserver' in window)){
+    ids.forEach(hydrateSection);
+    return;
   }
-  // Interaction initialization is independent from content fetch failures.
-  observeReveals();bindMagnetic();bindTilts();bindTimeline();
-  bindNavigationTransitions();updateTimelineProgress();
+  const observer=new IntersectionObserver(entries=>{
+    for(const entry of entries){
+      if(!entry.isIntersecting)continue;
+      observer.unobserve(entry.target);
+      hydrateSection(entry.target.id);
+    }
+  },{rootMargin:'420px 0px',threshold:0});
+  ids.forEach(id=>{
+    const target=document.getElementById(id);
+    if(target)observer.observe(target);
+  });
+  // Deep links must hydrate their target before restoring the scroll
+  // position. Earlier sections are rendered to keep offsets stable.
+  const hash=window.__tfwInitialHash||location.hash;
+  const position=ids.indexOf(String(hash).slice(1));
+  if(position>=0)ids.slice(0,position+1).forEach(hydrateSection);
+}
+async function init(){
+  updateSoundUI();bindUi();bindParallax();initAnalytics();updateZoneUI();
+  // Countdown is never blocked by article JSON, archive cards or timelines.
+  try{await loadScenes()}
+  catch(error){console.error('Countdown backgrounds unavailable:',error);showToast('SOME VISUAL ASSETS COULD NOT LOAD')}
+  bindNavigationTransitions();deferSections();
+  observeReveals();bindMagnetic();bindTilts();updateTimelineProgress();
   startCountdownClock();
   document.addEventListener('visibilitychange',()=>{ if(!document.hidden) safeCountdownTick(); });
   const initialHash=window.__tfwInitialHash;
