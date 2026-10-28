@@ -14,12 +14,12 @@ test('Secondary pages share centered navigation, volume, Share modal and dark la
    }
    for(const asset of [
     'css/audio-controls.css?v=39',
-    'css/secondary-controls.css?v=46',
+    'css/secondary-controls.css?v=47',
     'js/audio-controls.js?v=46',
     'js/secondary-controls.js?v=46',
     'js/secondary-share.js?v=46',
-    'js/page-ready.js?v=46',
-    'js/seamless-navigation.js?v=46',
+    'js/page-ready.js?v=47',
+    'js/seamless-navigation.js?v=47',
     'css/site-polish.css?v=46'
    ])assert.ok(html.includes(asset),name+' '+asset);
    assert.ok(html.includes('gtranslate_wrapper language-widget'));
@@ -28,11 +28,17 @@ test('Secondary pages share centered navigation, volume, Share modal and dark la
    assert.match(html,/class="tfw-footer-logo"/);
    assert.match(html,/CREATED BY<\/small><strong>RYZEGTAVI<\/strong>/);
    assert.match(html,/tfw-page-booting/);
+   assert.doesNotMatch(html,/>TIME ZONE<\/a>/);
+   assert.match(html,/class="route-loader-track" role="progressbar"/);
+   assert.match(html,/class="tfw-page-loader-caption">LOADING<\/strong>/);
  }
  assert.match(css,/left:50%!important/);
  assert.match(css,/transform:translate\(-50%,-50%\)!important/);
  assert.match(css,/background-color:#171020!important/);
  assert.match(css,/color-scheme:dark/);
+ const archive=read('intel-archive.html');
+ const topbar=archive.slice(archive.indexOf('<header '),archive.indexOf('</header>')+9);
+ assert.doesNotMatch(topbar,/LEONIDA INTEL|TIME ZONE|BACK TO SECTION/);
  assert.match(css,/\.tfw-footer-logo\{/);
  assert.match(css,/#tfwSecondaryShareModal/);
 });
@@ -60,7 +66,8 @@ test('Archive CTA is just the button, moved higher with small gap',()=>{
  const block=html.slice(start,end);
  assert.match(block,/EXPLORE ALL DOSSIERS/);
  assert.doesNotMatch(block,/MORE TO EXPLORE|Discover every character/);
- assert.match(css,/#intel \.intel-archive-cta\{\s*margin:-20px auto 0!important/);
+ assert.match(css,/\/\* V47 — the archive CTA sits in normal flow/);
+ assert.match(css,/#intel \.intel-archive-cta\{[\s\S]*?margin:0 auto!important/);
  assert.match(html,/CREATED BY<\/small><strong>RYZEGTAVI<\/strong>/);
 });
 
