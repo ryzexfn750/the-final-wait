@@ -46,7 +46,13 @@
    return a.pathname===b.pathname&&a.search===b.search;
  }
  function isOriginal(url){
-   return url.pathname+url.search===originalBase;
+   // GitHub Pages serves /the-final-wait/ and /the-final-wait/index.html
+   // as the SAME document. Without this normalization, returning from a
+   // dossier would open a second embedded homepage instead of restoring
+   // the real, already-playing countdown and its music visualizer.
+   const normalize=path=>path.endsWith('/index.html')?path.slice(0,-10):path;
+   const initial=new URL(originalBase,origin.origin);
+   return normalize(url.pathname)===normalize(initial.pathname)&&url.search===initial.search;
  }
  function closeFrames(){
    seq++;loading=false;
