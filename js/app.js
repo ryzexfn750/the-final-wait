@@ -47,7 +47,7 @@ let lastSlowUpdate = 0;
 let lastSrSecond = -1;
 let lastShareUpdate = 0;
 let mobileState = matchMedia('(max-width:700px)').matches;
-let currentTimeZone = storage.get('tfw_timezone') || SITE_CONFIG.defaultTimeZone;
+let currentTimeZone = storage.get('tfw_timezone') || window.__tfwTimeZone || SITE_CONFIG.defaultTimeZone;
 let release = zonedTargetToUtc(currentTimeZone);
 let shareContext = 'site';
 let todayData = null;
@@ -235,10 +235,23 @@ function updateZoneUI() {
   const meta = zoneMeta(currentTimeZone);
   els.zoneShort.textContent = `${meta.short} · ${meta.offset}`;
   if (els.timezoneNote) els.timezoneNote.textContent = `THIS COUNTDOWN REFERS TO ${meta.short}${meta.offset ? ` (${meta.offset})` : ''}.`;
-  $$('.timezone-option').forEach(el => el.classList.toggle('active', el.dataset.zone === currentTimeZone));
+  $('.timezone-option[data-zone]').forEach(el => el.classList.toggle('active', el.dataset.zone === currentTimeZone));
+  const autoButton=$('#timezoneAuto');
+  if(autoButton){
+    autoButton.classList.toggle('active',window.__tfwTimeZoneSource==='auto');
+    const detected=window.__tfwDetectTimeZone?.()||SITE_CONFIG.defaultTimeZone;
+    $('#timezoneAutoStatus').textContent=detected.replaceAll('_',' ');
+  }
 }
 
-function setTimeZone(zone) {
+function setTimeZone(zone,automatic=false) {
+  if(automatic){
+    zone=window.__tfwUseDeviceTimeZone?.()||SITE_CONFIG.defaultTimeZone;
+  }else{
+    storage.set('tfw_timezone_source','manual');
+    window.__tfwTimeZoneSource='manual';
+    window.__tfwTimeZone=zone;
+  }
   currentTimeZone = zone;
   storage.set('tfw_timezone', zone);
   release = zonedTargetToUtc(zone);
@@ -249,7 +262,7 @@ function setTimeZone(zone) {
   showToast(`COUNTDOWN SET TO ${zone.replaceAll('_',' ')}`);
   window.dispatchEvent(new CustomEvent('tfw:timezone-change',{detail:{zone}}));
   safeCountdownTick();
-  track('timezone_change', { zone });
+  track('timezone_change', { zone, automatic });
 }
 
 function triggerRelease() {
@@ -730,7 +743,7 @@ function keepModalFocus(event){
 function showToast(message){ els.toast.textContent=message; els.toast.classList.add('show'); clearTimeout(showToast.timer); showToast.timer=setTimeout(()=>els.toast.classList.remove('show'),1900); }
 
 function allTimeZones(){
-  try { if(Intl.supportedValuesOf) return Intl.supportedValuesOf('timeZone'); } catch {}
+  try { if(Intl.supportedValuesOf){const zones=Intl.supportedValuesOf('timeZone');return zones.includes(currentTimeZone)?zones:[currentTimeZone,...zones]} } catch {}
   return ['Europe/Rome','Europe/London','Europe/Paris','Europe/Berlin','Europe/Madrid','America/New_York','America/Chicago','America/Denver','America/Los_Angeles','America/Sao_Paulo','America/Mexico_City','Asia/Tokyo','Asia/Seoul','Asia/Shanghai','Asia/Hong_Kong','Asia/Singapore','Asia/Dubai','Asia/Kolkata','Australia/Sydney','Pacific/Auckland','Africa/Johannesburg'];
 }
 function renderTimeZones(query=''){
@@ -868,6 +881,7 @@ function bindUi(){
   $('#closeShare').addEventListener('click',()=>closeModals()); $('#closeTimezone').addEventListener('click',()=>closeModals()); els.modalBackdrop.addEventListener('click',()=>closeModals());
   $$('[data-share]').forEach(b=>b.addEventListener('click',()=>doShare(b.dataset.share)));
   const openTimezonePicker=()=>{renderTimeZones();openModal(els.timezoneModal);setTimeout(()=>els.timezoneSearch.focus(),50)};
+  $('#timezoneAuto')?.addEventListener('click',()=>setTimeZone(null,true));
   $('#zoneButton').addEventListener('click',openTimezonePicker);
   $('#topbarZoneButton')?.addEventListener('click',openTimezonePicker);
   $('#mobileZoneButton')?.addEventListener('click',openTimezonePicker);
