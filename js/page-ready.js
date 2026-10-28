@@ -5,6 +5,15 @@
  const page=document.body;
  const overlay=document.getElementById('tfwPageLoader');
  const title=overlay?.querySelector('.tfw-page-loader-caption');
+ const meter=overlay?.querySelector('.route-loader-track');
+ const fill=meter?.querySelector('i');
+ const updateProgress=value=>{
+   const n=Math.max(0,Math.min(100,Math.round(value)));
+   window.__tfwPageLoadProgress=n;
+   if(meter)meter.setAttribute('aria-valuenow',String(n));
+   if(fill)fill.style.transform='scaleX('+(n/100)+')';
+ };
+ updateProgress(5);
  const finish=(error)=>{
    if(error){
      if(title)title.textContent='COULD NOT LOAD THIS PAGE';
@@ -42,7 +51,9 @@
    if(image.complete&&image.naturalWidth)resolve();
  });
  const firstViewportReady=async()=>{
+   updateProgress(62);
    if(document.fonts?.ready)await document.fonts.ready;
+   updateProgress(73);
    const candidates=[];
    const bg=document.querySelector('#articleHeroBg');
    if(bg){
@@ -76,9 +87,19 @@
    });
    const logo=document.querySelector('.tfw-secondary-topbar .brand img');
    if(logo?.src)candidates.push(logo.src);
-   await Promise.all([...new Set(candidates)].map(src=>preloadImage(src)));
+   const sources=[...new Set(candidates)];
+   if(!sources.length){updateProgress(98);return}
+   let loaded=0;
+   await Promise.all(sources.map(async src=>{
+     await preloadImage(src);
+     loaded++;
+     updateProgress(73+25*loaded/sources.length);
+   }));
  };
- const promise=waitForContent().then(firstViewportReady).then(()=>{
+ const promise=waitForContent().then(firstViewportReady).then(async()=>{
+   updateProgress(100);
+   // The original filling bar reaches its end before the scene appears.
+   await new Promise(resolve=>setTimeout(resolve,200));
    finish();return true;
  }).catch(error=>{
    console.warn('Article content not ready:',error);
