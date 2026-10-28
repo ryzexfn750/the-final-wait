@@ -547,7 +547,13 @@
     let cachedGradient=null;
     let gradientHeight=-1;
     const loop=t=>{
-      const hasSignal=Boolean(soundEnabled()&&musicAnalyser&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(ambientMusicSource||finalMusicSource||finalCallMusicSource));
+      let external=null;
+      if(window.parent!==window){
+        try{external=window.parent.__tfwExternalVisualizerSpectrum?.()||null}catch{}
+      }
+      const localSignal=Boolean(soundEnabled()&&musicAnalyser&&musicData&&musicCtx?.state==='running'&&musicIsPlaying()&&(ambientMusicSource||finalMusicSource||finalCallMusicSource));
+      const bins=external?.playing&&external?.bins?.length?external.bins:musicData;
+      const hasSignal=Boolean(localSignal||(external?.playing&&bins?.length));
       // ~30 FPS when real music plays; ~3 FPS while silent. Idle bars
       // remain visible without continuously creating gradients on phones.
       if(t-lastDraw<(hasSignal?(reducedMotion?85:33):(reducedMotion?600:300))){
@@ -558,9 +564,9 @@
       const r=canvas.getBoundingClientRect();ctx.clearRect(0,0,r.width,r.height);
       let energy=.025;
       if(hasSignal){
-        musicAnalyser.getByteFrequencyData(musicData);
-        let sum=0;const take=Math.min(52,musicData.length);
-        for(let i=0;i<take;i++)sum+=musicData[i];
+        if(!external?.playing&&localSignal)musicAnalyser.getByteFrequencyData(musicData);
+        let sum=0;const take=Math.min(52,bins.length);
+        for(let i=0;i<take;i++)sum+=bins[i];
         energy=clamp(sum/(take*255),.025,1);
       }
       // Avoid invalidating every descendant style at 30Hz for tiny FFT changes.
@@ -584,9 +590,9 @@
         let amp=.04;
         if(hasSignal){
           const iNorm=i/(bars-1);
-          const maxBin=Math.min(62,musicData.length-1);
+          const maxBin=Math.min(62,bins.length-1);
           const idx=Math.min(maxBin,Math.max(1,Math.round(1+Math.pow(iNorm,1.35)*(maxBin-1))));
-          const sample=(musicData[idx]+musicData[Math.max(0,idx-1)]+musicData[Math.min(maxBin,idx+1)])/3;
+          const sample=(bins[idx]+bins[Math.max(0,idx-1)]+bins[Math.min(maxBin,idx+1)])/3;
           amp=clamp(Math.pow(sample/255,.70)*1.32,0,1);
         }
         const curve=Math.sin((i+1)/(bars+1)*Math.PI);const h=2+amp*maxH*(.28+.72*curve);const x=startX+i*((r.width*.92)/bars);
@@ -987,7 +993,23 @@
     const remaining=finalePreview?Number(window.__tfwPreviewRemainingMs):lastRemaining;
     if(Number.isFinite(remaining)&&remaining<=FINAL_FIVE){syncFinalSong(remaining);syncVoiceSong(remaining);syncSequenceSong(remaining)}
   });
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!finalePreview&&Number.isFinite(lastRemaining)&&lastRemaining<=FINAL_FIVE){syncFinalSong(lastRemaining);syncVoiceSong(lastRemaining);syncSequenceSong(lastRemaining)}});
+  document.addEventListener('visibilitychange',()=>{
+    if(!document.hidden){
+      if(soundEnabled())ensureMusicGraph();
+      if(musicCtx?.state==='suspended')musicCtx.resume().catch(()=>{});
+      stopVisualizer(false);startVisualizer();
+    }
+    if(!document.hidden&&!finalePreview&&Number.isFinite(lastRemaining)&&lastRemaining<=FINAL_FIVE){syncFinalSong(lastRemaining);syncVoiceSong(lastRemaining);syncSequenceSong(lastRemaining)}
+  });
+  // The host clock never unmounts in seamless navigation, but the canvas
+  // can hold stale frames after visiting an article. Restart its RAF and
+  // wake the analyser when returning to the original countdown.
+  for(const kind of ['tfw:seamless-return','tfw:seamless-gesture','pageshow','focus']){
+    window.addEventListener(kind,()=>{
+      if(soundEnabled())ensureMusicGraph({userGesture:kind==='tfw:seamless-gesture'});
+      stopVisualizer(false);startVisualizer();
+    });
+  }
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(finalePreview)stopFinalePreview();else if(previewCard)hideCard()}});
   if(Number.isFinite(window.__tfwLastRemaining))maybeTrigger(window.__tfwLastRemaining,false);
 })();
