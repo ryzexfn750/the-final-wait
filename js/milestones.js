@@ -79,7 +79,7 @@
     }
   });
 
-  function soundEnabled(){return storage.get('tfw_sound')!=='off'}
+  function soundEnabled(){return !new URLSearchParams(location.search).has('tfw_embed')&&storage.get('tfw_sound')!=='off'}
   function masterVolume(){return window.__tfwMasterVolume?.()??1}
   function clamp(v,min,max){return Math.min(max,Math.max(min,v))}
   function pad(n,len=2){return String(Math.max(0,Math.floor(n))).padStart(len,'0')}
