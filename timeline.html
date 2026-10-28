@@ -10,11 +10,18 @@
   <title>The Road to Leonida — The Final Wait</title>
   <link rel="icon" href="assets/icon-192.png" sizes="192x192" />
   <link rel="stylesheet" href="css/base.css?v=31">
-  <link rel="stylesheet" href="css/site-polish.css?v=44">
+  <link rel="stylesheet" href="css/site-polish.css?v=46">
     <link rel="stylesheet" href="css/audio-controls.css?v=39">
-  <link rel="stylesheet" href="css/secondary-controls.css?v=44">
+  <link rel="stylesheet" href="css/secondary-controls.css?v=46">
+  <script>document.documentElement.classList.add('tfw-page-booting');</script>
 </head>
 <body class="article-page timeline-article-page">
+<div id="tfwPageLoader" role="status" aria-live="polite">
+  <img src="assets/gta-vi-logo.webp" alt="" aria-hidden="true">
+  <p class="tfw-page-loader-caption">ENTERING LEONIDA</p>
+  <span class="tfw-page-loader-meter" aria-hidden="true"></span>
+  <button class="tfw-page-loader-retry" type="button" hidden>RETRY LOADING</button>
+</div>
   <div class="page-noise" aria-hidden="true"></div>
   <div class="page-grid" aria-hidden="true"></div>
   <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
@@ -83,11 +90,14 @@
       <div class="route-loader-track"><i></i></div>
     </div>
   </div>
-  <script type="module" src="js/timeline-article.js?v=44"></script>
+  <script type="module" src="js/timeline-article.js?v=46"></script>
   <script defer src="js/motion.js?v=31"></script>
   <script defer src="js/language.js?v=31"></script>
   <script defer src="js/site-polish.js?v=43"></script>
-<script defer src="js/audio-controls.js?v=39"></script>
-<script defer src="js/secondary-controls.js?v=45"></script>
+<script defer src="js/audio-controls.js?v=46"></script>
+<script defer src="js/secondary-controls.js?v=46"></script>
+<script defer src="js/secondary-share.js?v=46"></script>
+<script defer src="js/page-ready.js?v=46"></script>
+<script defer src="js/seamless-navigation.js?v=46"></script>
 </body>
 </html>
