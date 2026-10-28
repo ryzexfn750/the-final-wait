@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <script src="js/timezone-init.js?v=2"></script>
+  <script src="js/timezone-init.js?v=3"></script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#09070e" />
@@ -242,7 +242,7 @@
     <button class="modal-close" id="closeTimezone" type="button" aria-label="Close">×</button>
     <p class="eyebrow bright">COUNTDOWN TARGET</p>
     <h2 id="timezoneTitle">CHOOSE A TIME ZONE.</h2>
-    <p>The countdown automatically uses the time zone estimated from your network location, with your device as a fallback. You can choose another time zone. It ends at midnight on November 19 in the selected region.</p>
+    <p>The countdown automatically uses your device time zone and compares it with your network location. If they differ (for example, when using a VPN), your device takes priority. You can always choose a time zone manually. The countdown ends at midnight on November 19 in the selected region.</p>
     <button class="timezone-option timezone-auto-button" id="timezoneAuto" type="button"><strong>AUTO-DETECT MY TIME ZONE</strong><span id="timezoneAutoStatus">DETECT BY LOCATION</span></button>
     <div class="timezone-search-wrap"><input id="timezoneSearch" type="search" placeholder="Search Europe, America, Tokyo..." autocomplete="off" /></div>
     <div class="timezone-list" id="timezoneList"></div>
@@ -274,7 +274,7 @@
   </div>
   <script defer src="js/audio-controls.js?v=46"></script>
   <script defer src="js/clock.js?v=48"></script>
-  <script type="module" src="js/app.js?v=49"></script>
+  <script type="module" src="js/app.js?v=50"></script>
   <script defer src="js/milestones.js?v=51"></script>
   <script defer src="js/final-call.js?v=46"></script>
   <script defer src="js/final-call-locales.js?v=48"></script>
