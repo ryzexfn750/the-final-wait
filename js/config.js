@@ -213,7 +213,7 @@ export const TIMELINE = [
     "articleId": "the-album",
     "primaryUrl": "https://www.rockstargames.com/newswire/article/7599a881942544/announcing-grand-theft-auto-vi-the-album-coming-november-19",
     "primaryLabel": "OFFICIAL SOURCE",
-    "sceneId": "scene-45",
+    "sceneId": "scene-164",
     "type": "MUSIC",
     "secondaryUrl": "https://www.rockstargames.com/VI",
     "secondaryLabel": "DETAILED REPORT"
@@ -255,6 +255,18 @@ export const TIMELINE = [
     "secondaryLabel": "DETAILED REPORT"
   },
   {
+    "date": "OCT 15, 2026",
+    "title": "THE LAUNCH TRAILER",
+    "text": "Rockstar released the official Grand Theft Auto VI Launch Trailer on October 15, 2026. Jason and Lucia's story took center stage again, with music from Justice and a renewed confirmation of the November 19 launch.",
+    "articleId": "launch-trailer",
+    "primaryUrl": "https://www.rockstargames.com/VI/launch-trailer",
+    "primaryLabel": "WATCH OFFICIAL TRAILER",
+    "sceneId": "scene-45",
+    "type": "LAUNCH TRAILER",
+    "secondaryUrl": "https://www.rockstargames.com/newswire/article/517572321a549a/watch-the-grand-theft-auto-vi-launch-trailer",
+    "secondaryLabel": "ROCKSTAR NEWSWIRE"
+  },
+  {
     "date": "NOV 12, 2026",
     "title": "PRE-LOAD",
     "text": "November 12 is the announced digital pre-load date — the point when the final week becomes tangible on consoles. For players who pre-ordered digitally, it is scheduled to be the practical preparation step before the November 19 release.",
@@ -273,13 +285,12 @@ export const TIMELINE = [
     "articleId": "welcome-to-leonida",
     "primaryUrl": "https://www.rockstargames.com/VI",
     "primaryLabel": "OFFICIAL SOURCE",
-    "sceneId": "scene-164",
+    "sceneId": "scene-148",
     "type": "SCHEDULED · LAUNCH",
     "secondaryUrl": "https://www.rockstargames.com/newswire/article/ak3ak31a49a221/grand-theft-auto-vi-is-now-set-to-launch-november-19-2026",
     "secondaryLabel": "DETAILED REPORT"
   }
 ];
-
 export const INTEL = [
   {
     category: 'PEOPLE',
