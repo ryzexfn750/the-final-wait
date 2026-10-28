@@ -28,7 +28,7 @@ test('Release call-to-action stays inside the rounded box; effects are anchored 
 
 test('Volume popup is persistent, local and controls all soundtrack owners',()=>{
  const html=read('index.html'),controls=read('js/audio-controls.js');
- assert.match(html,/js\/audio-controls\.js\?v=39/);
+ assert.match(html,/js\/audio-controls\.js\?v=48/);
  assert.match(html,/css\/audio-controls\.css\?v=39/);
  for(const part of ['tfw_volume','tfw_sound','tfw:volume-change','tfw:sound-change','tfwVolumeSlider','tfwMuteToggle'])assert.ok(controls.includes(part),part);
  for(const p of ['js/clock.js','js/milestones.js','js/final-call.js']){
