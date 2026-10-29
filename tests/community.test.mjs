@@ -20,8 +20,8 @@ test('The hype UI is independent of the countdown and load-gated',()=>{
 test('The community assets are available on all standalone routes',()=>{
   for(const path of ['index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html']){
     const page=read(path);
-    assert.match(page,/js\/community\.js\?v=3/);
-    assert.match(page,/css\/community\.css\?v=3/);
+    assert.match(page,/js\/community\.js\?v=4/);
+    assert.match(page,/css\/community\.css\?v=4/);
   }
   const build=read('tools/build-cloudflare-pages.mjs');
   assert.match(build,/include:\['\/api\/timezone','\/api\/community\/\*'\]/);
@@ -336,6 +336,65 @@ test('Login text trimmed and reaction positions avoid countdown controls',()=>{
   assert.match(client,/\.hero-title-wrap/);
   assert.match(client,/\.release-hud/);
   assert.match(client,/\.finale-release/);
-  assert.match(client,/2600/);
+  assert.match(client,/1600/);
   assert.match(client,/fill\.style\.height/);
+});
+
+test('Nested profile, legal and support navigation owns scroll, not homepage hash',()=>{
+  const app=read('js/app.js');
+  const nav=read('js/seamless-navigation.js');
+  const css=read('css/community.css');
+  assert.match(app,/function syncSectionHash\(\)\{\s*\/\/ The persistent homepage must not overwrite iframe route URLs\./);
+  assert.match(app,/document\.body\.classList\.contains\('tfw-route-overlay-open'\)/);
+  assert.match(nav,/document\.documentElement\.classList\.add\('tfw-route-overlay-open'\)/);
+  assert.match(nav,/document\.documentElement\.classList\.remove\('tfw-route-overlay-open'\)/);
+  assert.match(nav,/community-privacy\.html','community-terms\.html','support\.html/);
+  assert.match(nav,/window\.addEventListener\('wheel',parentScrollGuard,\{capture:true,passive:false\}\)/);
+  assert.match(css,/html\.tfw-route-overlay-open/);
+  assert.match(css,/overflow-y:hidden!important/);
+  assert.match(read('tools/build-cloudflare-pages.mjs'),/support\.html/);
+});
+test('Profile includes the real creation date from server-side Supabase',()=>{
+  const shared=read('functions/_lib/community.js');
+  const html=read('profile.html');
+  const script=read('js/community-profile.js');
+  assert.match(shared,/select=id,nickname,created_at,terms_version/);
+  assert.match(html,/<time id="profileCreatedAt"/);
+  assert.match(script,/profile\.created_at/);
+  assert.match(script,/timeZone:'UTC'/);
+});
+test('HYPE sits opposite emoji rail and uses in-tube readable label',()=>{
+  const script=read('js/community.js');
+  const css=read('css/community.css');
+  assert.match(script,/<span>HYPE LEVEL<\/span>/);
+  assert.doesNotMatch(script,/LIVE HYPE LEVEL/);
+  assert.match(css,/left:29px!important;right:auto!important/);
+  assert.match(css,/\.tfw-hype-meter-caption/);
+  assert.match(css,/#hero>\.tfw-hype-intensity \.tfw-hype-meter-caption/);
+  assert.match(css,/tfwHypeQuick 1\.6s/);
+  assert.match(css,/tfwEmojiQuickWiggle/);
+  assert.match(script,/tfw-hype-emoji-glyph/);
+});
+test('Signup uses integrated nickname validation instead of browser tooltips',()=>{
+  const source=read('js/community.js');
+  assert.match(source,/<form id="tfwGateRegister" hidden novalidate>/);
+  assert.match(source,/id="tfwNicknameError" role="alert"/);
+  assert.match(source,/nicknameInput\.setAttribute\('aria-invalid','true'\)/);
+  assert.match(source,/Spaces are not allowed/);
+  assert.doesNotMatch(source,/Choose your permanent nickname and finish registration/);
+});
+test('Support and footer legal disclosure remain readable without a local mail app',()=>{
+  const pages=['index.html','today.html','timeline.html',
+    'intel.html','intel-archive.html','profile.html','newsletter.html'];
+  for(const path of pages){
+    const page=read(path);
+    assert.match(page,/href="support\.html">SUPPORT<\/a>/);
+    assert.match(page,/class="legal-copy"/);
+  }
+  const html=read('support.html');
+  assert.match(html,/id="tfwSupportAddress"/);
+  assert.match(html,/navigator\.clipboard\.writeText/);
+  assert.doesNotMatch(html,/tfw-auth-pending/);
+  assert.match(read('css/community.css'),/body>footer:has\(>\.tfw-community-footer-links\)/);
+  assert.match(read('css/community.css'),/border:0!important;background:transparent!important/);
 });
