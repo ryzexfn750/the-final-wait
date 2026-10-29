@@ -81,3 +81,17 @@
  background:linear-gradient(110deg,#aa3154,#7b243c);border-color:#ff9aa4}
 #profileConfirmStatus{font:700 11px/1.5 Arial;color:#ffb8c9;min-height:8px}
 @media(max-width:700px){.tfw-profile-avatar svg{width:33px;height:33px}}
+
+/* Top-layer HTML dialog can out-rank the site's custom cursor canvas;
+   show a native cursor inside the in-site confirmation dialog. */
+@media(pointer:fine){
+ html.tfw-global-cursor-ready .tfw-profile-confirm,
+ html.tfw-global-cursor-ready .tfw-profile-confirm *{cursor:default!important}
+ html.tfw-global-cursor-ready .tfw-profile-confirm button{cursor:pointer!important}
+}
+.tfw-newsletter-return{margin:22px 0 0;text-align:center}
+.tfw-newsletter-return a{display:inline-flex;justify-content:center;align-items:center;
+ padding:12px 20px;border:1px solid rgba(255,255,255,.22);
+ border-radius:999px;color:#f4c7e6;text-decoration:none;
+ font:800 10px/1 Arial;letter-spacing:.1em}
+.tfw-newsletter-return a:hover{border-color:#e57cbc;background:rgba(237,104,191,.08)}
