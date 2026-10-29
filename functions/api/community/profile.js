@@ -38,7 +38,7 @@ async function handle(request,env,mode){
   if(body?.acceptedTerms!==true||body?.termsVersion!==TERMS_VERSION)
     return fail('Accept the current terms to continue',400);
   const nickname=String(body?.nickname||'').trim();
-  if(!NICKNAME.test(nickname)||/^(admin|administrator|moderator|staff|rockstar|support|system|official)$/i.test(nickname))
+  if(!NICKNAME.test(nickname)||/^(admin|administrator|moderator|staff|rockstar|support|system|official|ryzegtavi|thefinalwait|gta6|gtavi)$/i.test(nickname))
     return fail('Nickname: 3–20 letters, numbers or underscores, no reserved words',400);
   const wantsEmail=body.newsletter===true;
   const now=new Date().toISOString();
