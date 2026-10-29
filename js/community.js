@@ -64,6 +64,7 @@ async function initCommunity(){
       <label class="hype-checkbox"><input id="hypeNewsletter" type="checkbox" />
         <span>I want to receive optional announcements and release reminders by email. I can unsubscribe at any time.</span>
       </label>
+      <div id="hypeTurnstile"></div>
       <button type="submit" class="hype-primary">SAVE & JOIN THE HYPE</button>
       <button type="button" class="hype-text-button" id="hypeCancelProfile">BACK</button>
     </form>
@@ -86,7 +87,8 @@ async function initCommunity(){
   document.body.appendChild(wrapper);
   const $=s=>wrapper.querySelector(s);
   const state={client:null,profile:null,user:null,ws:null,opened:false,retry:0,
-    timer:null,lastSent:0,busy:false,settings,connecting:false};
+    timer:null,lastSent:0,busy:false,settings,connecting:false,
+    challengeToken:'',challengeId:null};
   const launcher=$('#hypeLaunch'),panel=$('#hypePanel'),notice=$('#hypeNotice');
   const announce=(message,error=false)=>{
     notice.textContent=message;notice.classList.toggle('hype-error',error);
@@ -96,6 +98,26 @@ async function initCommunity(){
   const setZoneLabel=()=>{$('#hypeZone').textContent=zone().replaceAll('_',' ')};
   function view(which){
     for(const key of ['Guest','Profile','Member'])$('#hype'+key).hidden=key!==which;
+    if(which==='Profile')void ensureTurnstile();
+  }
+  async function ensureTurnstile(){
+    if(state.challengeId!==null)return;
+    try{
+      if(!window.turnstile){
+        await new Promise((resolve,reject)=>{
+          const script=document.createElement('script');
+          script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+          script.onload=resolve;script.onerror=()=>reject(Error('Security challenge unavailable'));
+          document.head.appendChild(script);
+        });
+      }
+      if(!window.turnstile)throw Error('Security challenge could not start');
+      state.challengeId=window.turnstile.render($('#hypeTurnstile'),{
+        sitekey:settings.turnstileSiteKey,theme:'dark',
+        callback:token=>{state.challengeToken=token},
+        'expired-callback':()=>{state.challengeToken=''}
+      });
+    }catch(e){announce(e.message,true)}
   }
   async function loadAuth(){
     if(state.client)return state.client;
@@ -249,14 +271,19 @@ async function initCommunity(){
   $('#hypeProfile').addEventListener('submit',async event=>{
     event.preventDefault();if(state.busy)return;state.busy=true;
     try{
+      if(!state.challengeToken)throw Error('Complete the security check first');
       const result=await api('profile',{
         nickname:$('#hypeNickname').value.trim(),
         acceptedTerms:$('#hypeTerms').checked,termsVersion:settings.termsVersion,
-        newsletter:$('#hypeNewsletter').checked
+        newsletter:$('#hypeNewsletter').checked,
+        turnstileToken:state.challengeToken
       });
       state.profile=result.profile;showMember();void connectSocket();
     }catch(e){announce(e.message,true)}
-    finally{state.busy=false}
+    finally{
+      state.busy=false;state.challengeToken='';
+      if(state.challengeId!==null)window.turnstile?.reset(state.challengeId);
+    }
   });
   $('#hypeCancelProfile').addEventListener('click',()=>{
     if(state.profile){showMember();void connectSocket()}else view('Guest');
