@@ -494,3 +494,20 @@ html.tfw-global-cursor-ready .timeline-viewport::-webkit-scrollbar{
 .tfw-experience-advisory{display:flex;align-items:flex-start;flex-wrap:wrap;gap:7px;margin:25px 0 0!important;padding-top:17px;border-top:1px solid rgba(255,255,255,.1);font:400 12px/1.6 Arial,sans-serif!important;color:#baafc8!important}
 .tfw-experience-advisory strong{font-weight:900;letter-spacing:.05em;color:#e8c5dd}
 @media(max-width:750px){.tfw-support-project-inner{align-items:flex-start;flex-direction:column}.tfw-coffee-link{align-self:stretch;justify-content:center}.tfw-support-project{margin-top:22px}.tfw-experience-advisory{font-size:11px!important}}
+
+/* Middle-click is handled by the custom autoscroll controller, never OS art. */
+#tfwGlobalCursor.autoscroll .tfw-global-cursor-reticle,
+#tfwGlobalCursor.autoscroll .tfw-global-cursor-glow{opacity:0!important}
+#tfwGlobalCursor .tfw-autoscroll-indicator{position:fixed;left:0;top:0;width:64px;height:64px;z-index:5;pointer-events:none;filter:drop-shadow(0 2px 9px rgba(4,2,11,.7))}
+#tfwGlobalCursor .tfw-autoscroll-indicator[hidden]{display:none!important}
+#tfwGlobalCursor .tfw-autoscroll-indicator svg{display:block;width:64px;height:64px}
+#tfwGlobalCursor.text-selecting .tfw-global-cursor-reticle,
+#tfwGlobalCursor.text-selecting .tfw-global-cursor-glow{opacity:0!important}
+@media(any-hover:hover) and (any-pointer:fine){
+  html.tfw-global-cursor-ready.tfw-text-selection-active body,
+  html.tfw-global-cursor-ready.tfw-text-selection-active body *{cursor:text!important}
+  html.tfw-global-cursor-ready.tfw-text-selection-active button,
+  html.tfw-global-cursor-ready.tfw-text-selection-active a{cursor:pointer!important}
+  html.tfw-global-cursor-ready body,
+  html.tfw-global-cursor-ready body *{scrollbar-color:auto}
+}
