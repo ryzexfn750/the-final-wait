@@ -91,7 +91,14 @@
    if(!isOurs(to))return;
    const current=canonical(new URL(location.href));
    if(sameDocument(to,current)){
-     if(!activeFrame)return; // The homepage already owns its anchor scrolling.
+     if(!activeFrame){
+       // On a standalone profile/legal page, clicking its current route must
+       // be a strict no-op. Keep homepage anchors under the existing scroll UX.
+       if(!document.body.classList.contains('home-page')&&to.hash===current.hash){
+         event.preventDefault();event.stopImmediatePropagation();
+       }
+       return;
+     }
      // Do not reload a current iframe without tfw_embed or start its audio.
      event.preventDefault();event.stopImmediatePropagation();
      if(to.hash&&to.hash!==current.hash){
