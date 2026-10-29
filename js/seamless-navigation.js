@@ -89,7 +89,9 @@
    let to;
    try{to=canonical(new URL(anchor.href,sourceDoc.location?.href||location.href))}catch{return}
    if(!isOurs(to))return;
-   const current=canonical(new URL(location.href));
+   const current=activeFrame
+     ? canonical(new URL(activeFrame.dataset.tfwRoute,origin.origin))
+     : canonical(new URL(originalBase,origin.origin));
    if(sameDocument(to,current)){
      if(!activeFrame){
        // On a standalone profile/legal page, clicking its current route must
@@ -156,18 +158,32 @@
  function navigate(url,push){
    if(document.documentElement.classList.contains('tfw-auth-pending'))return;
    if(!isOurs(url)){location.href=url.href;return}
-   const current=canonical(new URL(location.href));
-   if(activeFrame&&sameDocument(url,current)){
+   const route=url.pathname+url.search+url.hash;
+   const shown=activeFrame
+     ? canonical(new URL(activeFrame.dataset.tfwRoute,origin.origin))
+     : canonical(new URL(originalBase,origin.origin));
+   if(loading&&pendingRoute===route)return;
+   if(activeFrame&&sameDocument(url,shown)){
+     // Popstate changes location before we receive the event: compare visible content.
+     if(loading){seq++;loading=false;pendingRoute='';
+       shell.querySelectorAll('iframe.tfw-frame-preloading').forEach(f=>f.remove());
+       status.hidden=true;
+     }
+     if(push&&location.pathname+location.search+location.hash!==route)
+       history.pushState({tfwSeamless:true},'',route);
+     activeFrame.dataset.tfwRoute=route;
      if(url.hash){try{activeFrame.contentWindow.location.hash=url.hash}catch{}}
      return;
    }
-   const route=url.pathname+url.search+url.hash;
-   if(loading&&pendingRoute===route)return;
    if(push)history.pushState({tfwSeamless:true},'',route);
    if(isOriginal(url)){
      closeFrames();scrollOriginal(url);return;
    }
    const ticket=++seq;
+   // Interrupted preloads must not remain mounted or compete for resources.
+   shell.querySelectorAll('iframe.tfw-frame-preloading').forEach(f=>{
+     if(f!==activeFrame)f.remove();
+   });
    loading=true;pendingRoute=route;shell.hidden=false;
    document.body.classList.add('tfw-route-overlay-open');
    document.documentElement.classList.add('tfw-route-overlay-open');
@@ -185,6 +201,22 @@
    const next=new URL(url.href);
    next.searchParams.set('tfw_embed','1');
    shell.appendChild(frame);
+   let finished=false;
+   const failNavigation=error=>{
+     if(finished||ticket!==seq)return;
+     finished=true;clearTimeout(watchdog);seq++;
+     console.warn('Seamless page failed:',error);
+     loading=false;pendingRoute='';frame.remove();
+     if(activeFrame){
+       status.hidden=true;
+       history.replaceState({tfwSeamless:true},'',activeFrame.dataset.tfwRoute||originalBase);
+       document.title=activeFrame.contentDocument?.title||rememberedTitle;
+     }else{
+       history.replaceState(null,'',originalBase);closeFrames();
+     }
+   };
+   const watchdog=setTimeout(()=>failNavigation(Error('Page loading timed out')),26000);
+   frame.addEventListener('error',()=>failNavigation(Error('Page navigation failed')),{once:true});
    frame.addEventListener('load',async()=>{
      if(ticket!==seq){frame.remove();return}
      const progressTimer=setInterval(()=>{
@@ -206,23 +238,11 @@
        frame.classList.add('tfw-frame-visible');
        status.hidden=true;
        document.title=frame.contentDocument?.title||rememberedTitle;
-       loading=false;pendingRoute='';
+       loading=false;pendingRoute='';finished=true;clearTimeout(watchdog);
        if(old&&old!==frame)old.remove();
      }catch(error){
        clearInterval(progressTimer);
-       if(ticket!==seq)return;
-       console.warn('Seamless page failed:',error);
-       loading=false;pendingRoute='';
-       frame.remove();
-       // A failed load must not leave route-overlay-open permanently enabled.
-       if(activeFrame){
-         status.hidden=true;
-         history.replaceState({tfwSeamless:true},'',activeFrame.dataset.tfwRoute||originalBase);
-         document.title=activeFrame.contentDocument?.title||rememberedTitle;
-       }else{
-         history.replaceState(null,'',originalBase);
-         closeFrames();
-       }
+       failNavigation(error);
      }
    },{once:true});
    frame.src=next.href;
