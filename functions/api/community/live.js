@@ -4,7 +4,8 @@ export async function onRequestGet({request,env}){
   if((request.headers.get('upgrade')||'').toLowerCase()!=='websocket')
     return fail('WebSocket required',426);
   const origin=request.headers.get('origin');
-  if(origin&&origin!==new URL(request.url).origin)return fail('Invalid origin',403);
+  // Browser WebSocket handshakes always supply Origin. Fail closed if absent.
+  if(origin!==new URL(request.url).origin)return fail('Invalid origin',403);
   const url=new URL(request.url);
   const ticket=await verifyTicket(env.HYPE_TICKET_SECRET,url.searchParams.get('ticket'));
   if(!ticket)return fail('Invalid or expired ticket',401);
