@@ -101,3 +101,48 @@ test('All new JavaScript files parse',()=>{
     assert.doesNotThrow(()=>new Function(body),file);
   }
 });
+
+test('Live tickets require acceptance of the current terms (regression)',async()=>{
+  const source=read('functions/api/community/ticket.js')
+    .replace(/^import\s+[\s\S]*?from\s+['"][^'"]+['"];?\s*/,'')
+    .replace('export async function onRequestPost','async function onRequestPost');
+  const makeHandler=new Function('deps',
+    'const {enabled,fail,json,authenticate,getProfile,bodyJSON,validZone,createTicket,TERMS_VERSION}=deps;'+
+    'const crypto={randomUUID:()=>"test-nonce"};'+source+'\nreturn onRequestPost;');
+  let ticketCalls=0;
+  const deps={
+    enabled:()=>true,
+    fail:(error,status)=>({error,status}),
+    json:value=>value,
+    authenticate:async()=>({id:'00000000-0000-4000-8000-000000000001'}),
+    getProfile:async()=>({nickname:'Tester_1',terms_version:'old-version'}),
+    bodyJSON:async()=>({zone:'Europe/Rome'}),
+    validZone:()=>true,
+    createTicket:async()=>{ticketCalls++;return 'signed-ticket'},
+    TERMS_VERSION:'2026-10-29'
+  };
+  const handler=makeHandler(deps);
+  const context={request:{},env:{HYPE_TICKET_SECRET:'mock'}};
+  const rejected=await handler(context);
+  assert.equal(rejected.status,403);
+  assert.equal(ticketCalls,0);
+  deps.getProfile=async()=>({nickname:'Tester_1',terms_version:deps.TERMS_VERSION});
+  const accepted=await handler(context);
+  assert.equal(accepted.ticket,'signed-ticket');
+  assert.equal(ticketCalls,1);
+});
+test('WebSocket ingress is same-origin and the room avoids unbounded ping replies',()=>{
+  const live=read('functions/api/community/live.js');
+  assert.match(live,/if\(origin!==new URL\(request.url\).origin\)/);
+  const worker=read('workers/hype-worker/src/index.js');
+  assert.match(worker,/acceptWebSocket\(server,\['uid:'\+userId\]\)/);
+  assert.match(worker,/getWebSockets\('uid:'\+userId\)/);
+  assert.match(worker,/const latestPeer=Math.max\(/);
+  assert.doesNotMatch(worker,/type:'pong'/);
+});
+test('SQL privileges are restricted to the service role',()=>{
+  const sql=read('supabase/community-schema.sql');
+  assert.match(sql,/grant usage on schema public to service_role/i);
+  assert.match(sql,/grant select, insert, update, delete on table public.community_profiles to service_role/i);
+  assert.doesNotMatch(sql,/grant\s+.+\s+to\s+(anon|authenticated)/i);
+});
