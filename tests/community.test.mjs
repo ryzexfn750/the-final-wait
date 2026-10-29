@@ -94,6 +94,7 @@ test('All new JavaScript files parse',()=>{
     'functions/api/community/config.js','functions/api/community/profile.js',
     'functions/api/community/ticket.js','functions/api/community/live.js',
     'functions/api/community/newsletter.js','js/community-profile.js',
+    'js/community-newsletter.js','js/community-header.js',
     'workers/hype-worker/src/index.js'
   ];
   for(const file of files){
@@ -243,7 +244,7 @@ test('Quota estimator counts short-lived socket renewals and hibernation limits'
 
 test('v2 onboarding must protect all site entry points and preserve footer disclosures',()=>{
   const routes=['index.html','today.html','timeline.html','intel.html',
-    'intel-archive.html','profile.html'];
+    'intel-archive.html','profile.html','newsletter.html'];
   for(const path of routes){
     const html=read(path);
     assert.match(html,/tfw-auth-pending/);
@@ -292,4 +293,49 @@ test('Anonymous first visits show Google registration instead of an auth excepti
   assert.match(client,/provider:'google'/);
   assert.match(client,/termsVersion:settings\.termsVersion/);
   assert.match(client,/newsletter:\$\('#hypeNewsletter'\)\.checked/);
+});
+
+test('UI polish preserves nav position, visible registration cursor and foot-only newsletter',()=>{
+  const css=read('css/community.css');
+  const profile=read('profile.html');
+  const newsletter=read('newsletter.html');
+  const profileJS=read('js/community-profile.js');
+  const footerRoutes=['index.html','today.html','timeline.html','intel.html',
+    'intel-archive.html','profile.html','newsletter.html'];
+  const header=read('js/community-header.js');
+  for(const route of footerRoutes){
+    const html=read(route);
+    assert.match(html,/js\/community-header\.js\?v=3/);
+    assert.match(html,/href="newsletter\.html"/);
+    assert.match(html,/tfw-account-person/);
+  }
+  assert.match(header,/languages\.getBoundingClientRect\(\)/);
+  assert.match(header,/profile\.style\.position='absolute'/);
+  assert.match(css,/html\.tfw-global-cursor-ready #tfwCommunityGate/);
+  assert.match(css,/#hero>\.tfw-hype-intensity/);
+  assert.match(css,/bottom:0;left:0;width:100%!important/);
+  assert.match(css,/height:0;display:block/);
+  assert.match(profile,/class="tfw-profile-confirm"/);
+  assert.match(profile,/<dialog /);
+  assert.match(profile,/tfw-profile-avatar/);
+  assert.doesNotMatch(profile,/profileNewsletterForm|profileTurnstile|Permanent nickname · visible/);
+  assert.doesNotMatch(profileJS,/confirm\(/);
+  assert.match(profileJS,/dialog\.showModal\(\)/);
+  assert.match(profileJS,/profileConfirmAccept/);
+  assert.match(newsletter,/profileNewsletterForm/);
+  assert.match(newsletter,/profileTurnstile/);
+  assert.match(read('js/community-newsletter.js'),/api\('POST','newsletter'/);
+  assert.match(read('js/seamless-navigation.js'),/newsletter\.html/);
+  assert.match(read('tools/build-cloudflare-pages.mjs'),/newsletter\.html/);
+});
+test('Login text trimmed and reaction positions avoid countdown controls',()=>{
+  const client=read('js/community.js');
+  assert.doesNotMatch(client,/COMMUNITY ACCESS|Your email is private|Sign in with Google to enter the site/);
+  assert.match(client,/function randomSafePosition\(\)/);
+  assert.match(client,/getBoundingClientRect\(\)/);
+  assert.match(client,/\.hero-title-wrap/);
+  assert.match(client,/\.release-hud/);
+  assert.match(client,/\.finale-release/);
+  assert.match(client,/2600/);
+  assert.match(client,/fill\.style\.height/);
 });
