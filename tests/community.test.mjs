@@ -195,3 +195,20 @@ test('Protected real WebSocket QA script cannot bypass production limits',()=>{
   assert.match(script,/item\.socket\.close\(1000,'Load test complete'\)/);
   assert.doesNotMatch(script,/SENDER_API_KEY|SUPABASE_SERVICE_ROLE_KEY|HYPE_TICKET_SECRET/);
 });
+
+test('Node high-load benchmark remains local, bounded and uses tagged delivery',()=>{
+  const runner=read('tools/benchmark-hype-ws-local.mjs');
+  const harness=read('workers/hype-worker/src/local-loadtest.js');
+  assert.match(runner,/ALLOWED_SIZES=new Set\(\[250,500,1000\]\)/);
+  assert.match(runner,/ALLOWED_CONCURRENCY=new Set\(\[8,16,32\]\)/);
+  assert.match(runner,/const HOST='127\.0\.0\.1'/);
+  assert.match(runner,/MAX_CLIENT_RSS_MB=600/);
+  assert.match(runner,/MAX_TOTAL_MS=120_000/);
+  assert.match(runner,/runId=randomBytes\(6\)/);
+  assert.match(runner,/item\.nickname===nickname/);
+  assert.match(runner,/broadcastComplete/);
+  assert.match(runner,/socket\.close\(1000,'Local benchmark finished'\)/);
+  assert.match(harness,/run\?'QA'\+run:'LoadTest'/);
+  assert.match(harness,/origin&&origin!==url.origin/);
+  assert.doesNotMatch(runner,/https:\/\/(?:thefinalwait\.com|[^\s]+\.pages\.dev)/i);
+});
