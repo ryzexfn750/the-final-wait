@@ -7,6 +7,7 @@ export function onRequestGet({env}){
     supabaseAnonKey:ready?env.SUPABASE_ANON_KEY:null,
     termsVersion:TERMS_VERSION,
     emojis:EMOJIS,
-    newsletterReady:Boolean(env.SENDER_API_KEY&&env.SENDER_GROUP_ID)
+    newsletterReady:Boolean(env.SENDER_API_KEY&&env.SENDER_GROUP_ID),
+    turnstileSiteKey:ready?env.TURNSTILE_SITE_KEY:null
   });
 }
