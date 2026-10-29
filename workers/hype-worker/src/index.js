@@ -27,13 +27,16 @@ export class HypeRoom extends DurableObject {
     const userId=request.headers.get('X-Hype-User');
     const nickname=request.headers.get('X-Hype-Nickname');
     const zone=request.headers.get('X-Hype-Zone');
-    if(!userId||!nickname||!zone||nickname.length>20)return new Response('Unauthorized',{status:401});
+    if(!/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(userId||'')||
+       !/^[A-Za-z0-9_]{3,20}$/.test(nickname||'')||!zone||zone.length>70)
+      return new Response('Unauthorized',{status:401});
     const peers=this.ctx.getWebSockets();
     if(peers.length>=25_000)return new Response('Room busy',{status:503});
-    const userConnections=peers.reduce((n,s)=>n+(s.deserializeAttachment()?.uid===userId?1:0),0);
+    // Tagged lookups avoid scanning thousands of unrelated sockets on each join.
+    const userConnections=this.ctx.getWebSockets('uid:'+userId).length;
     if(userConnections>=MAX_PER_USER)return new Response('Two tabs maximum',{status:429});
     const [client,server]=Object.values(new WebSocketPair());
-    this.ctx.acceptWebSocket(server);
+    this.ctx.acceptWebSocket(server,['uid:'+userId]);
     server.serializeAttachment({uid:userId,nick:nickname,zone,last:0});
     server.send(JSON.stringify({type:'welcome',zone,online:peers.length+1,cooldown:cooldownFor(peers.length+1)}));
     this.scheduleFlush();
@@ -43,13 +46,16 @@ export class HypeRoom extends DurableObject {
     if(typeof message!=='string'||message.length>160)return;
     let input;
     try{input=JSON.parse(message)}catch{return}
-    if(input?.type==='ping'){ws.send(JSON.stringify({type:'pong'}));return}
+    // No application-level ping reply: native WebSocket control frames are handled by Cloudflare.
     if(input?.type!=='reaction'||!ALLOWED.has(input.emoji))return;
     const session=ws.deserializeAttachment();
     if(!session?.uid)return;
     const now=Date.now();
     const interval=cooldownFor(this.ctx.getWebSockets().length);
-    const last=Math.max(session.last||0,this.lastByUser.get(session.uid)||0);
+    // Recover cooldown shared by two active tabs after Durable Object hibernation.
+    const peers=this.ctx.getWebSockets('uid:'+session.uid);
+    const latestPeer=Math.max(0,...peers.map(s=>Number(s.deserializeAttachment()?.last)||0));
+    const last=Math.max(session.last||0,this.lastByUser.get(session.uid)||0,latestPeer);
     if(now-last<interval){
       ws.send(JSON.stringify({type:'slow_down',wait:Math.ceil((interval-(now-last))/1000),cooldown:interval}));
       return;
