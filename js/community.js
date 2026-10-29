@@ -271,8 +271,18 @@ async function initCommunity(){
     status('Checking your account…');
     try{
       const auth=await loadAuth();
+      const {data:sessionData,error:sessionError}=await auth.auth.getSession();
+      if(sessionError)throw sessionError;
+      // A first-time anonymous visitor normally has NO Supabase session.
+      // getUser() would report AuthSessionMissingError; treat this as
+      // the expected login state rather than a service failure.
+      if(!sessionData?.session){
+        state.user=null;state.profile=null;closeSocket();
+        status('Sign in with Google to enter the site.');
+        showGate('guest');return;
+      }
       const {data,error}=await auth.auth.getUser();
-      if(error&&!data?.user)throw error;
+      if(error)throw error;
       state.user=data?.user||null;
       if(!state.user){
         state.profile=null;closeSocket();
