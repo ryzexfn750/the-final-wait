@@ -1,4 +1,4 @@
-import { INTEL } from './config.js?v=44';
+import { INTEL } from './config.js?v=45';
 
 const $=(selector,root=document)=>root.querySelector(selector);
 const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];

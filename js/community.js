@@ -127,7 +127,7 @@ async function initCommunity(){
   gate.addEventListener('click',event=>{
     if(event.target.closest('[data-tfw-analytics-preferences]')){
       event.preventDefault();event.stopPropagation();
-      const destination=$('#tfwGateRegister').hidden?legalBody:$('#tfwGateAnalytics');
+      const destination=!legalModal.hidden?legalBody:$('#tfwGateAnalytics');
       window.__tfwAnalyticsConsent?.mount(destination);
       window.__tfwAnalyticsConsent?.open();return;
     }
