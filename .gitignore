@@ -1,0 +1,11 @@
+# Local Cloudflare Wrangler files and benchmark outputs
+.wrangler/
+reports/
+# Developer-only credentials: never commit secrets
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+# Build intermediates and dependencies
+node_modules/
+dist/
