@@ -58,7 +58,7 @@ Pages production secret `HYPE_TICKET_SECRET`: generate a random value
 This signs short-lived WebSocket tickets **only in Pages Functions**.
 The DO never receives Supabase tokens, emails or signing secrets.
 
-Rate limit: 1 emoji per connection/account per 10s, 2 connections/account
+Rate limit: dynamic per-user cooldown (10–180s according to room size), 2 connections/account
 per time-zone room, batched outgoing updates. The countdown keeps working
 if the live feature is temporarily unavailable. Guest viewing is not enabled
 in this initial, safer release: users sign in to join rooms.
