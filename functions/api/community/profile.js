@@ -5,7 +5,11 @@ async function handle(request,env,mode){
   const user=await authenticate(request,env);
   if(!user)return fail('Sign in with a verified email first',401);
   let old;
-  try{old=await getProfile(env,user.id)}catch{return fail('Database temporarily unavailable',503)}
+  try{old=await getProfile(env,user.id)}catch(error){
+    // Sanitized diagnostic applies only to the protected QA branch deployment.
+    const qaHost=new URL(request.url).hostname==='community-qa.the-final-wait.pages.dev';
+    return fail('Database temporarily unavailable'+(qaHost?': '+error.message:''),503);
+  }
   if(mode==='GET')return json({user:{id:user.id,email:user.email},profile:old});
   if(mode==='DELETE'){
     if(old?.marketing_opt_in||old?.marketing_status==='pending_unsubscribe'){
