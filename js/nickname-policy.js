@@ -17,10 +17,11 @@ export function nicknameVerdict(value){
   const raw=value.toLowerCase().replace(/_/g,'');
   const canonical=normalizeNickname(value);
   const collapsed=canonical.replace(/(.)\1{2,}/g,'$1$1');
+  const reduced=canonical.replace(/(.)\1{2,}/g,'$1');
   if(reserved.has(raw)||reserved.has(canonical))return {ok:false,reason:'reserved'};
   for(const term of blocked){
     if(term.length<4?(raw===term||canonical===term):
-      (canonical.includes(term)||collapsed.includes(term)))
+      (canonical.includes(term)||collapsed.includes(term)||reduced.includes(term)))
       return {ok:false,reason:'blocked'};
   }
   return {ok:true,reason:null};
