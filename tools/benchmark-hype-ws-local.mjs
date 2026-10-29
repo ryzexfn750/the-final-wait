@@ -57,7 +57,8 @@ async function requireLocalHarness(){
     throw Error('Local Wrangler not responding at '+HTTP+' — start wrangler dev --local first.');
   }
   const body=await response.text();
-  if(response.status!==200||!body.includes('LOCAL ONLY — LIVE HYPE Same-Room Load Test'))
+  if(response.status!==200||!body.includes('LOCAL ONLY — LIVE HYPE Same-Room Load Test')||
+     !body.includes('name="tfw-loadtest-version" content="2"'))
     throw Error('Port 8787 is not running our local-only HypeRoom test harness. Stopping.');
 }
 
