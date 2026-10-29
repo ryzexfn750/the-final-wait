@@ -146,3 +146,40 @@ test('SQL privileges are restricted to the service role',()=>{
   assert.match(sql,/grant select, insert, update, delete on table public.community_profiles to service_role/i);
   assert.doesNotMatch(sql,/grant\s+.+\s+to\s+(anon|authenticated)/i);
 });
+
+test('Durable Object expires WebSockets without storing per-socket alarms',async()=>{
+  const worker=read('workers/hype-worker/src/index.js')
+    .replace(/^import\s+.+?;\s*/,'')
+    .replace('export default {','const entrypoint = {')
+    .replace('export class HypeRoom','class HypeRoom');
+  const fakeBase=class {constructor(ctx,env){this.ctx=ctx;this.env=env}};
+  const {HypeRoom,sessionDeadline}=new Function('DurableObject',
+    worker+'\nreturn {HypeRoom,sessionDeadline}')(fakeBase);
+  const now=Date.now();
+  assert.ok(sessionDeadline(now)>=now+15*60_000);
+  assert.ok(sessionDeadline(now)<now+30*60_000);
+  const closed=[];
+  const peers=[
+    {deserializeAttachment:()=>({expiresAt:now-1000}),
+      close:(code,reason)=>closed.push({code,reason})},
+    {deserializeAttachment:()=>({expiresAt:now+60_000}),
+      close:()=>{throw Error('Active socket should not close')}}
+  ];
+  const alarms=[];
+  const ctx={
+    getWebSockets:()=>peers,
+    storage:{setAlarm:async time=>{alarms.push(time)}}
+  };
+  const room=new HypeRoom(ctx,{});
+  room.scheduleFlush=()=>{};
+  await room.alarm();
+  assert.equal(closed.length,1);
+  assert.equal(closed[0].code,4001);
+  assert.deepEqual(alarms,[now+60_000]);
+  const expiredSocket={
+    deserializeAttachment:()=>({uid:'example',last:0,expiresAt:now-1000}),
+    close:(code,reason)=>closed.push({code,reason})
+  };
+  await room.webSocketMessage(expiredSocket,JSON.stringify({type:'reaction',emoji:'🔥'}));
+  assert.equal(closed.length,2);
+});
