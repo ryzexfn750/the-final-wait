@@ -68,40 +68,41 @@ function getConsentUI() {
     banner.id = 'analyticsConsent';
     banner.className = 'analytics-consent glass';
     banner.hidden = true;
-    banner.innerHTML = '<div><strong>OPTIONAL ANALYTICS</strong><p>Google Analytics helps us measure visits and interactions. Choose whether to allow it. You can change your choice using PRIVACY.</p></div>' +
+    banner.innerHTML = '<div><strong>OPTIONAL GOOGLE ANALYTICS COOKIES</strong><p>May Google Analytics use optional cookies to measure visits? This is independent of your account and newsletter preferences. <a href="community-privacy.html">Privacy Notice</a>.</p></div>' +
       '<div class="consent-actions"><button type="button" id="analyticsDecline">DECLINE</button><button type="button" id="analyticsAccept">ACCEPT</button></div>';
     document.body.appendChild(banner);
   }
-  let privacy = document.getElementById('privacyButton');
-  if (!privacy) {
-    privacy = document.createElement('button');
-    privacy.type = 'button';
-    privacy.id = 'privacyButton';
-    privacy.className = 'tfw-analytics-privacy';
-    privacy.textContent = 'PRIVACY';
-    (document.querySelector('footer') || document.body).appendChild(privacy);
+  if (banner.dataset.tfwConsentBound !== '1') {
+    banner.dataset.tfwConsentBound = '1';
+    banner.querySelector('#analyticsAccept')?.addEventListener('click', () => {
+      saveConsent('yes'); banner.hidden = true; enableAnalytics();
+    });
+    banner.querySelector('#analyticsDecline')?.addEventListener('click', () => {
+      saveConsent('no'); banner.hidden = true; blockAnalytics();
+    });
   }
-  privacy.hidden = false;
-  const accept = banner.querySelector('#analyticsAccept');
-  const decline = banner.querySelector('#analyticsDecline');
-  if (accept) accept.addEventListener('click', () => {
-    saveConsent('yes');
-    banner.hidden = true;
-    enableAnalytics();
-  });
-  if (decline) decline.addEventListener('click', () => {
-    saveConsent('no');
-    banner.hidden = true;
-    blockAnalytics();
-  });
-  privacy.addEventListener('click', () => {
-    // Stop collecting data immediately, even in a tab where gtag.js was loaded.
-    saveConsent(null);
-    blockAnalytics();
-    banner.hidden = false;
-  });
   return banner;
 }
+
+// Reuse the existing analytics ACCEPT/DECLINE buttons inside registration,
+// without adding a mandatory checkbox or coupling it to newsletter consent.
+window.__tfwAnalyticsConsent = Object.freeze({
+  mount(target = null) {
+    const banner = getConsentUI();
+    if (target?.isConnected) {
+      target.appendChild(banner);
+      banner.classList.add('tfw-consent-in-gate');
+    } else {
+      (document.querySelector('footer') || document.body).appendChild(banner);
+      banner.classList.remove('tfw-consent-in-gate');
+    }
+    banner.hidden = ['yes','no'].includes(readConsent());
+  },
+  open() {
+    const banner = getConsentUI();
+    banner.hidden = false;
+  }
+});
 
 export function initAnalytics() {
   if (initialized || !ID) return;
@@ -114,4 +115,5 @@ export function initAnalytics() {
   else blockAnalytics();
   const banner = getConsentUI();
   banner.hidden = state === 'yes' || state === 'no';
+  window.dispatchEvent(new Event('tfw:analytics-ready'));
 }
