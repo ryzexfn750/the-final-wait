@@ -87,7 +87,7 @@ async function initCommunity(){
   document.body.appendChild(wrapper);
   const $=s=>wrapper.querySelector(s);
   const state={client:null,profile:null,user:null,ws:null,opened:false,retry:0,
-    timer:null,lastSent:0,busy:false,settings,connecting:false,
+    timer:null,lastSent:0,cooldownMs:10_000,busy:false,settings,connecting:false,
     challengeToken:'',challengeId:null};
   const launcher=$('#hypeLaunch'),panel=$('#hypePanel'),notice=$('#hypeNotice');
   const announce=(message,error=false)=>{
@@ -219,9 +219,14 @@ async function initCommunity(){
         let message;try{message=JSON.parse(event.data)}catch{return}
         if(message.type==='welcome'||message.type==='hype'){
           $('#hypeOnline').textContent='● '+Number(message.online||0).toLocaleString()+' ONLINE';
+          if(Number(message.cooldown)>0)state.cooldownMs=Number(message.cooldown);
+          $('.hype-rule').textContent='One reaction every '+Math.round(state.cooldownMs/1000)+'s · Only fans in your time zone';
         }
         if(message.type==='hype'&&message.latest?.length)feed(message.latest);
-        if(message.type==='slow_down')announce('Please wait '+message.wait+'s before reacting.');
+        if(message.type==='slow_down'){
+          if(Number(message.cooldown)>0)state.cooldownMs=Number(message.cooldown);
+          announce('Please wait '+message.wait+'s before reacting.');
+        }
       };
       socket.onerror=()=>{$('#hypeState').textContent='UNAVAILABLE'};
       socket.onclose=()=>{
@@ -241,7 +246,7 @@ async function initCommunity(){
     if(!state.ws||state.ws.readyState!==WebSocket.OPEN){
       announce('Connecting to your local hype room…',true);return;
     }
-    const remaining=10_000-(Date.now()-state.lastSent);
+    const remaining=state.cooldownMs-(Date.now()-state.lastSent);
     if(remaining>0){announce('Wait '+Math.ceil(remaining/1000)+'s before reacting.');return}
     state.lastSent=Date.now();
     state.ws.send(JSON.stringify({type:'reaction',emoji}));
