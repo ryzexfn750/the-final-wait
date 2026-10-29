@@ -40,7 +40,7 @@ export async function authenticate(request,env){
 }
 export async function getProfile(env,id){
   const response=await adminApi(env,'/rest/v1/community_profiles?id=eq.'+
-    encodeURIComponent(id)+'&select=id,nickname,terms_version,marketing_opt_in,marketing_status');
+    encodeURIComponent(id)+'&select=id,nickname,created_at,terms_version,marketing_opt_in,marketing_status');
   if(!response.ok){
     // Private QA: expose only upstream HTTP status and a short machine error code.
     // Never include Supabase response text, tokens, URLs with keys or user data.
