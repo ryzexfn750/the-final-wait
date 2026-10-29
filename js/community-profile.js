@@ -1,5 +1,5 @@
 /* Profile-only account actions. Confirmation dialogs are styled in-page,
-   with no native confirm() popups and no newsletter/CAPTCHA in the profile. */
+   without browser-native confirmation popups or newsletter/CAPTCHA widgets. */
 const $=selector=>document.querySelector(selector);
 function feedback(message,error=false){
  const element=$('#profileFeedback');
