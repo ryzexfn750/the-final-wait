@@ -41,7 +41,17 @@ export async function authenticate(request,env){
 export async function getProfile(env,id){
   const response=await adminApi(env,'/rest/v1/community_profiles?id=eq.'+
     encodeURIComponent(id)+'&select=id,nickname,terms_version,marketing_opt_in,marketing_status');
-  if(!response.ok)throw Error('Profile database unavailable');
+  if(!response.ok){
+    // Private QA: expose only upstream HTTP status and a short machine error code.
+    // Never include Supabase response text, tokens, URLs with keys or user data.
+    let code='';
+    try{
+      const payload=await response.json();
+      const candidate=String(payload?.code||'');
+      if(/^[A-Za-z0-9_]{1,24}$/.test(candidate))code=candidate;
+    }catch{}
+    throw Error('Supabase HTTP '+response.status+(code?' / '+code:''));
+  }
   const items=await response.json();
   return items[0]||null;
 }
