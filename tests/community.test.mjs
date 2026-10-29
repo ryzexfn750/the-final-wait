@@ -20,8 +20,8 @@ test('The hype UI is independent of the countdown and load-gated',()=>{
 test('The community assets are available on all standalone routes',()=>{
   for(const path of ['index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html']){
     const page=read(path);
-    assert.match(page,/js\/community\.js\?v=5/);
-    assert.match(page,/css\/community\.css\?v=4/);
+    assert.match(page,/js\/community\.js\?v=6/);
+    assert.match(page,/css\/community\.css\?v=5/);
   }
   const build=read('tools/build-cloudflare-pages.mjs');
   assert.match(build,/include:\['\/api\/timezone','\/api\/community\/\*'\]/);
@@ -398,4 +398,24 @@ test('Support and footer legal disclosure remain readable without a local mail a
   assert.doesNotMatch(html,/tfw-auth-pending/);
   assert.match(read('css/community.css'),/body>footer:has\(>\.tfw-community-footer-links\)/);
   assert.match(read('css/community.css'),/border:0!important;background:transparent!important/);
+});
+
+test('Auth gate legal links stay in one tab and cannot bypass registration',()=>{
+ const community=read('js/community.js'),nav=read('js/seamless-navigation.js');
+ assert.doesNotMatch(community,/target="_blank" rel="noopener">(?:PRIVACY|TERMS|SUPPORT)/);
+ assert.match(community,/tfwGateLegal/);
+ assert.match(community,/legalPages=new Set/);
+ assert.match(nav,/tfw-auth-pending/);
+ assert.match(nav,/pendingRoute/);
+ assert.match(nav,/activeFrame\.contentWindow\.location\.hash/);
+});
+test('Analytics consent is optional and separate; duplicate Privacy button removed',()=>{
+ const consent=read('js/analytics-consent.js'),community=read('js/community.js');
+ assert.match(consent,/__tfwAnalyticsConsent/);
+ assert.doesNotMatch(consent,/privacyButton\s*=\s*document\.createElement/);
+ assert.match(community,/tfwGateAnalytics/);
+ assert.match(community,/acceptedTerms:\$\('#hypeTerms'\)\.checked/);
+ assert.match(community,/newsletter:\$\('#hypeNewsletter'\)\.checked/);
+ assert.doesNotMatch(community,/tfwHypePct/);
+ assert.doesNotMatch(read('support.html'),/If clicking an email link doesn't open anything/);
 });
