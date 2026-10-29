@@ -1,9 +1,9 @@
 name: Validate static site
 on:
   push:
-    branches: [main]
+    branches: [main, community-qa]
   pull_request:
-    branches: [main]
+    branches: [main, community-qa]
 permissions:
   contents: read
 jobs:
