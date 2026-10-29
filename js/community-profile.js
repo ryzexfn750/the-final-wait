@@ -96,6 +96,15 @@ async function initProfile(){
      throw Error('Complete your account registration first');
    profile=data.profile;
    $('#profileNickname').textContent=profile.nickname;
+   if(profile.created_at){
+     const joined=new Date(profile.created_at);
+     if(Number.isFinite(joined.getTime())){
+       $('#profileCreatedAt').dateTime=joined.toISOString();
+       $('#profileCreatedAt').textContent=new Intl.DateTimeFormat('en-US',{
+         day:'numeric',month:'long',year:'numeric',timeZone:'UTC'
+       }).format(joined);
+     }
+   }
  }catch(error){feedback(error.message,true)}
 }
 window.__tfwContentReady=true;
