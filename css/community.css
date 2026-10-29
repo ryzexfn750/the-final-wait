@@ -566,3 +566,6 @@ body>footer:has(>.tfw-community-footer-links)>.tfw-community-footer-links a:hove
 .tfw-gate-support-note{font-size:12px!important;color:#bba9c4!important}
 .tfw-gate-legal-body>.analytics-consent.tfw-consent-in-gate{position:relative!important;left:auto!important;bottom:auto!important;display:grid;grid-template-columns:1fr!important;width:100%!important;margin-top:20px;padding:15px;border:1px solid #ffb4dd55;background:#26192d}
 @media(max-width:520px){.tfw-gate-support-card{padding:15px;gap:12px}.tfw-gate-support-icon{flex-basis:42px;height:42px;font-size:24px}}
+
+/* Modern color-emoji fonts, including the Emoji 15 pink heart glyph. */
+#hero .tfw-hype-emoji-glyph,#hero .tfw-hype-float-emoji{font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif!important}

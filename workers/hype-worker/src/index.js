@@ -50,7 +50,8 @@ export class HypeRoom extends DurableObject {
     // A newly joined socket never replaces an earlier scheduled expiry.
     const alarm=await this.ctx.storage.getAlarm();
     if(alarm===null||alarm>expiresAt)await this.ctx.storage.setAlarm(expiresAt);
-    server.send(JSON.stringify({type:'welcome',zone,online:peers.length+1,cooldown:cooldownFor(peers.length+1)}));
+    server.send(JSON.stringify({type:'welcome',zone,online:peers.length+1,
+      cooldown:cooldownFor(peers.length+1),protocol:2,emojis:[...ALLOWED]}));
     this.scheduleFlush();
     return new Response(null,{status:101,webSocket:client});
   }
@@ -59,7 +60,10 @@ export class HypeRoom extends DurableObject {
     let input;
     try{input=JSON.parse(message)}catch{return}
     // No application-level ping reply: native WebSocket control frames are handled by Cloudflare.
-    if(input?.type!=='reaction'||!ALLOWED.has(input.emoji))return;
+    if(input?.type!=='reaction')return;
+    if(!ALLOWED.has(input.emoji)){
+      ws.send(JSON.stringify({type:'reaction_error',reason:'unsupported_emoji'}));return;
+    }
     const session=ws.deserializeAttachment();
     if(!session?.uid)return;
     const now=Date.now();
@@ -88,6 +92,7 @@ export class HypeRoom extends DurableObject {
     this.pending.set(input.emoji,(this.pending.get(input.emoji)||0)+1);
     this.latest.push({emoji:input.emoji,nickname:session.nick});
     if(this.latest.length>6)this.latest.shift();
+    ws.send(JSON.stringify({type:'reaction_ack',emoji:input.emoji,cooldown:interval}));
     this.scheduleFlush();
   }
   async alarm(){

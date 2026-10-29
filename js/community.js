@@ -6,6 +6,8 @@ try{communityPreview=localStorage.getItem('tfw_community_preview')==='yes'}catch
 const embedded=new URLSearchParams(location.search).has('tfw_embed');
 const active=!embedded&&(PUBLIC_COMMUNITY_ENABLED||communityPreview);
 const EMOJIS=['🔥','🚀','🥳','🎉','🌴','🩷','💜'];
+// Older deployed Workers may still accept only the original four reactions.
+const LEGACY_EMOJIS=['🔥','🚀','🎉','💜'];
 if(active)void initCommunity().catch(error=>{
   console.error('Community boot failed',error);
   document.documentElement.classList.add('tfw-auth-pending');
@@ -158,7 +160,8 @@ async function initCommunity(){
   }catch(error){status(error.message+'. Reload to try again.',true);return}
   const state={user:null,profile:null,ws:null,connecting:false,retry:null,attempt:0,
     cooldown:10000,nextAllowed:0,challengeId:null,challengeToken:'',busy:false,
-    connected:false,online:0,hype:0};
+    connected:false,online:0,hype:0,serverEmojis:LEGACY_EMOJIS,
+    reactionProtocol:0,pendingReaction:null};
   let client=null;
   async function loadAuth(){
     if(client)return client;
@@ -251,6 +254,7 @@ async function initCommunity(){
       if(!EMOJIS.includes(emoji))continue;
       const btn=document.createElement('button');
       btn.type='button';btn.className='tfw-hype-emoji';
+      btn.dataset.emoji=emoji;
       const glyph=document.createElement('span');
       glyph.className='tfw-hype-emoji-glyph';
       glyph.textContent=emoji;btn.appendChild(glyph);
@@ -342,15 +346,33 @@ async function initCommunity(){
     const remaining=Math.ceil(Math.max(0,state.nextAllowed-Date.now())/1000);
     lock.textContent=remaining?remaining+'s':'✓';
     lock.setAttribute('aria-label',remaining?remaining+' seconds until next reaction':'Ready to react');
-    for(const btn of buttons)btn.disabled=!state.connected||remaining>0;
+    for(const btn of buttons){
+      const supported=state.serverEmojis.includes(btn.dataset.emoji);
+      btn.disabled=!state.connected||remaining>0||!!state.pendingReaction||!supported;
+      btn.title=supported?'Send '+btn.dataset.emoji:
+        'This reaction needs a live server update';
+      btn.setAttribute('aria-label',btn.title);
+    }
     if(state.hype>.1){state.hype*=.98;paintHype()}
   }
   setInterval(tick,1000);
   function send(emoji){
     if(!state.ws||state.ws.readyState!==WebSocket.OPEN)return;
-    if(Date.now()<state.nextAllowed)return;
-    state.ws.send(JSON.stringify({type:'reaction',emoji}));
-    state.nextAllowed=Date.now()+state.cooldown;tick();
+    if(Date.now()<state.nextAllowed||state.pendingReaction||
+       !state.serverEmojis.includes(emoji))return;
+    try{
+      state.ws.send(JSON.stringify({type:'reaction',emoji}));
+      if(state.reactionProtocol>=2){
+        state.pendingReaction=emoji;tick();
+        setTimeout(()=>{
+          if(state.pendingReaction===emoji){state.pendingReaction=null;tick()}
+        },4000);
+      }else{
+        // Legacy protocol has no ack; only its known emojis use cooldown.
+        state.nextAllowed=Date.now()+state.cooldown;tick();
+      }
+    }catch{state.pendingReaction=null;tick()}
+
   }
   function closeSocket(){
     clearTimeout(state.retry);state.retry=null;
@@ -378,6 +400,23 @@ async function initCommunity(){
       };
       ws.onmessage=event=>{
         let msg;try{msg=JSON.parse(event.data)}catch{return}
+        if(msg.type==='welcome'){
+          state.reactionProtocol=msg.protocol===2?2:0;
+          state.serverEmojis=Array.isArray(msg.emojis)?
+            msg.emojis.filter(emoji=>EMOJIS.includes(emoji)):LEGACY_EMOJIS;
+          tick();
+        }
+        if(msg.type==='reaction_ack'){
+          if(state.pendingReaction===msg.emoji){
+            state.pendingReaction=null;
+            state.nextAllowed=Date.now()+(Number(msg.cooldown)||state.cooldown);
+            tick();
+          }
+        }
+        if(msg.type==='reaction_error'){
+          state.pendingReaction=null;tick();
+          console.warn('Reaction rejected by the live server:',msg.reason);
+        }
         if(msg.type==='welcome'||msg.type==='hype'){
           state.online=Math.max(0,Number(msg.online)||0);
           if(Number(msg.cooldown)>0)state.cooldown=Number(msg.cooldown);
@@ -388,6 +427,7 @@ async function initCommunity(){
           updateHype(msg.counts);
         }
         if(msg.type==='slow_down'&&Number(msg.wait)>0){
+          state.pendingReaction=null;
           state.nextAllowed=Math.max(state.nextAllowed,Date.now()+Number(msg.wait)*1000);
           tick();
         }
@@ -396,6 +436,8 @@ async function initCommunity(){
       ws.onclose=()=>{
         if(state.ws!==ws)return;
         state.ws=null;state.connected=false;state.connecting=false;
+        state.pendingReaction=null;state.serverEmojis=LEGACY_EMOJIS;
+        state.reactionProtocol=0;
         updateStatus();tick();
         if(!member())return;
         const delay=Math.min(20000,1200*2**Math.min(++state.attempt,5));
