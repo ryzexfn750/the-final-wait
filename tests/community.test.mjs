@@ -283,3 +283,13 @@ test('Nickname is immutable server-side, newsletter changes require identity and
   assert.match(newsletter,/senderUnsubscribe/);
   assert.doesNotMatch(newsletter,/nickname\s*:/);
 });
+
+test('Anonymous first visits show Google registration instead of an auth exception',()=>{
+  const client=read('js/community.js');
+  assert.match(client,/const \{data:sessionData,error:sessionError\}=await auth\.auth\.getSession\(\)/);
+  assert.match(client,/if\(!sessionData\?\.session\)/);
+  assert.match(client,/showGate\('guest'\)/);
+  assert.match(client,/provider:'google'/);
+  assert.match(client,/termsVersion:settings\.termsVersion/);
+  assert.match(client,/newsletter:\$\('#hypeNewsletter'\)\.checked/);
+});
