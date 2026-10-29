@@ -1,5 +1,19 @@
 # The Final Wait — Road to Leonida
 
+## Community Live Hype — sviluppo predisposto
+
+Account Google, nickname, reazioni WebSocket per fuso orario, newsletter
+facoltativa via Sender e verifica Cloudflare Turnstile sono implementati in
+modalità **non pubblica**. Servono le credenziali Supabase/Sender, il Worker
+Durable Objects e la revisione dei Termini/Privacy prima del lancio.
+
+**Guida di installazione:** [docs/COMMUNITY_SETUP.md](docs/COMMUNITY_SETUP.md)
+
+**Test:** `node --test tests/community.test.mjs`
+
+---
+
+
 Sito fan-made e non ufficiale dedicato al conto alla rovescia di **Grand Theft Auto VI**.
 Sviluppato come progetto **statico per GitHub Pages**, senza backend e senza dipendenze JavaScript runtime.
 
