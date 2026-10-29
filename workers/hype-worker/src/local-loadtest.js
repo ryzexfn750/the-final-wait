@@ -8,6 +8,7 @@ export {HypeRoom};
 
 const HOME = `<!doctype html><html lang="en"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="tfw-loadtest-version" content="2">
 <title>LOCAL ONLY — LIVE HYPE Same-Room Load Test</title>
 <style>
 body{font:16px/1.55 system-ui;background:#12131c;color:#f1f1fa;max-width:800px;margin:42px auto;padding:0 24px}
