@@ -1,7 +1,7 @@
 // Shared Cloudflare Pages API helpers. Secrets must only exist server-side.
 export const TERMS_VERSION = '2026-10-29';
 export const NICKNAME = /^[A-Za-z0-9_]{3,20}$/;
-export const EMOJIS = ['🔥','🚀','💜','🎉','❤️'];
+export const EMOJIS = ['🔥','🚀','🥳','🎉','🌴','🩷','💜'];
 export const json = (value,status=200)=>new Response(JSON.stringify(value),{
   status,headers:{'content-type':'application/json; charset=utf-8','cache-control':'no-store',
   'x-content-type-options':'nosniff'}
