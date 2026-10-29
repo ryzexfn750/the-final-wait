@@ -16,7 +16,7 @@
  <link rel="stylesheet" href="css/audio-controls.css?v=39">
  <link rel="stylesheet" href="css/secondary-controls.css?v=48">
  <link rel="stylesheet" href="css/community.css?v=2">
- <link rel="stylesheet" href="css/community-profile.css?v=1">
+ <link rel="stylesheet" href="css/community-profile.css?v=2">
  <script>document.documentElement.classList.add('tfw-page-booting');try{if(localStorage.getItem('tfw_community_preview')==='yes'&&!new URLSearchParams(location.search).has('tfw_embed'))document.documentElement.classList.add('tfw-auth-pending')}catch{}</script>
 </head>
 <body class="article-page tfw-profile-page">
@@ -68,28 +68,12 @@
     <p>Your identity in The Final Wait community.</p>
    </div>
    <div class="tfw-profile-card">
-    <div class="tfw-profile-avatar" aria-hidden="true">◉</div>
+    <div class="tfw-profile-avatar" aria-hidden="true"><svg viewBox="0 0 24 24" width="43" height="43" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20v-1.6A6.4 6.4 0 0 1 11.4 12h1.2a6.4 6.4 0 0 1 6.4 6.4V20"/></svg></div>
     <div><small>PUBLIC USERNAME</small>
      <strong id="profileNickname">LOADING…</strong>
-     <p>Permanent nickname · visible with your live emoji reactions.</p>
     </div>
     <span class="tfw-profile-verified">GOOGLE ACCOUNT</span>
    </div>
-   <section class="tfw-profile-card tfw-profile-settings" id="newsletter" aria-labelledby="tfwNewsletterTitle">
-    <div>
-     <p class="tfw-profile-overline">EMAIL PREFERENCES</p>
-     <h2 id="tfwNewsletterTitle">NEWSLETTER</h2>
-     <p>You can join or leave optional email updates without losing your community account.</p>
-     <p id="profileNewsletterStatus" role="status" aria-live="polite"></p>
-    </div>
-    <form id="profileNewsletterForm">
-      <label class="tfw-profile-toggle"><input type="checkbox" id="profileNewsletter" />
-       <span>Receive launch reminders and community news</span>
-      </label>
-      <div id="profileTurnstile"></div>
-      <button class="tfw-profile-button" id="profileSaveNewsletter" type="submit">SAVE EMAIL PREFERENCES</button>
-    </form>
-   </section>
    <section class="tfw-profile-actions">
      <button class="tfw-profile-button tfw-profile-logout" type="button" id="profileLogout">SIGN OUT</button>
      <button class="tfw-profile-button tfw-profile-danger" type="button" id="profileDelete">DELETE MY ACCOUNT</button>
@@ -102,6 +86,20 @@
   <p class="legal-copy">This is not an official Rockstar Games project. Grand Theft Auto, Grand Theft Auto VI, Rockstar Games, related trademarks, names and official imagery belong to their respective owners. This fan-made website is not affiliated with or endorsed by Rockstar Games or Take-Two Interactive.</p>
   <div class="tfw-community-footer-links"><a href="community-privacy.html">PRIVACY NOTICE</a><a href="community-terms.html">TERMS & CONDITIONS</a><a href="newsletter.html">UNSUBSCRIBE FROM NEWSLETTER</a><a href="mailto:support@thefinalwait.com">SUPPORT</a></div>
  </footer>
+
+ <dialog class="tfw-profile-confirm" id="profileConfirm" aria-labelledby="profileConfirmTitle" aria-describedby="profileConfirmDescription">
+  <div class="tfw-profile-confirm-glow" aria-hidden="true"></div>
+  <div class="tfw-profile-confirm-inner">
+   <p class="tfw-profile-overline">THE FINAL WAIT · ACCOUNT</p>
+   <h2 id="profileConfirmTitle">ARE YOU SURE?</h2>
+   <p id="profileConfirmDescription"></p>
+   <p class="tfw-profile-feedback" id="profileConfirmStatus" role="status" aria-live="polite"></p>
+   <div class="tfw-profile-confirm-actions">
+    <button class="tfw-profile-button" type="button" id="profileConfirmCancel">CANCEL</button>
+    <button class="tfw-profile-button tfw-profile-danger" type="button" id="profileConfirmAccept">CONFIRM</button>
+   </div>
+  </div>
+ </dialog>
  <div class="toast" id="toast" role="status" aria-live="polite"></div>
  <script defer src="js/motion.js?v=31"></script>
  <script defer src="js/language.js?v=48"></script>
@@ -113,7 +111,7 @@
  <script defer src="js/seamless-navigation.js?v=50"></script>
  <script type="module" src="js/analytics-subpages.js?v=1"></script>
  <script type="module" src="js/community.js?v=2"></script>
- <script type="module" src="js/community-profile.js?v=1"></script>
+ <script type="module" src="js/community-profile.js?v=2"></script>
   <script defer src="js/community-header.js?v=3"></script>
 </body>
 </html>
