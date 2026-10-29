@@ -86,6 +86,12 @@ checking the contact list and the opt-out sync queue.
 
 When provider accounts, privacy notice, database and DO binding are tested,
 set Pages production `COMMUNITY_ENABLED=true`, then redeploy Pages.
+For initial QA open browser DevTools on the site and run
+`localStorage.setItem('tfw_community_preview','yes')`, then reload.
+Once tested, switch `PUBLIC_COMMUNITY_ENABLED` to `true` in
+`js/community.js` and bump its query version in all five HTML pages.
+This deliberate two-stage rollout avoids spending one Pages Function request
+per ordinary page view before the community is ready.
 Visit `https://thefinalwait.com/api/community/config`; verify
 `enabled:true`. Only then does the **LIVE HYPE** launcher appear.
 
@@ -97,6 +103,8 @@ unsubscribe before marketing to anyone.
 ## 5. Safety and incident behavior
 
 - /api/community/* is the only additional Pages Functions invocation route.
+- Before activation, the static client feature flag is off, avoiding an API
+  config request for every visitor. The live API requires `COMMUNITY_ENABLED=true`.
 - New feature is hidden while `COMMUNITY_ENABLED` is false or binding is
   missing, and must not alter the countdown.
 - Cloudflare free quotas apply to Worker and DO requests; frequent messages
