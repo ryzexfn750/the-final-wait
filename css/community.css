@@ -143,3 +143,120 @@ body.tfw-route-overlay-open #hero>.tfw-hype-stage{visibility:hidden}
  .tfw-hype-float{animation:tfwHypeStatic 4.5s ease-out both}
  @keyframes tfwHypeStatic{0%,100%{opacity:0}10%,80%{opacity:1}}
 }
+
+
+/* QA v2 polish — native cursor fallback above the fullscreen registration
+   backdrop. The site's hidden custom cursor remains behind this overlay. */
+@media (pointer:fine){
+ html.tfw-auth-pending #tfwCommunityGate,
+ html.tfw-global-cursor-ready #tfwCommunityGate,
+ html.tfw-global-cursor-ready #tfwCommunityGate *{
+   cursor:default!important;
+ }
+ html.tfw-global-cursor-ready #tfwCommunityGate button,
+ html.tfw-global-cursor-ready #tfwCommunityGate a,
+ html.tfw-global-cursor-ready #tfwCommunityGate label,
+ html.tfw-auth-pending #tfwCommunityGate button,
+ html.tfw-auth-pending #tfwCommunityGate a{cursor:pointer!important}
+ html.tfw-global-cursor-ready #tfwCommunityGate input[type="text"],
+ html.tfw-auth-pending #tfwCommunityGate input[type="text"]{cursor:text!important}
+}
+/* An absolute sibling contributes zero flex width, so original topbar
+   navigation positions stay unchanged; community-header.js measures the
+   translated language widget and places this link just to its left. */
+.topbar .tfw-account-link{
+ position:absolute!important;right:var(--tfw-account-fallback,140px);
+ left:auto!important;top:50%;transform:translateY(-50%);
+ margin:0!important;min-height:34px;
+ display:inline-flex;gap:8px;align-items:center;justify-content:center;
+}
+.topbar .tfw-account-link .tfw-account-person{
+ display:block;flex:none;color:#ffd3ef;stroke-width:1.9;
+ filter:drop-shadow(0 0 5px rgba(235,97,185,.28));
+}
+@media(max-width:700px){
+ .topbar .tfw-account-link{min-height:30px;padding:0 7px;font-size:0}
+ .topbar .tfw-account-link .tfw-account-person{width:19px;height:19px}
+}
+/* Visually recenter reaction rail a little farther from the viewport edge. */
+#hero>.tfw-hype-rail{right:29px}
+/* Meter is now a separate vertical glass tube: fill climbs from bottom. */
+#hero>.tfw-hype-intensity{
+ position:absolute!important;top:50%;right:100px;left:auto;bottom:auto;
+ transform:translateY(-50%);height:306px;width:39px;z-index:26;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;
+ padding:11px 6px;border:1px solid rgba(239,141,215,.23);
+ border-radius:24px;background:linear-gradient(160deg,rgba(27,14,37,.55),rgba(8,8,17,.72));
+ box-shadow:inset 0 0 22px rgba(233,79,193,.07),0 12px 38px rgba(0,0,0,.25);
+ backdrop-filter:blur(13px);isolation:isolate
+}
+#hero>.tfw-hype-intensity:before{
+ content:'';position:absolute;inset:22% -11px 4%;
+ background:radial-gradient(ellipse,rgba(245,91,198,.15),transparent 65%);
+ filter:blur(9px);pointer-events:none;animation:tfwMeterAura 3s ease-in-out infinite alternate
+}
+#hero .tfw-hype-meter-caption{display:flex;flex-direction:column;align-items:center;gap:7px;
+ width:auto;margin:0;min-height:0}
+#hero .tfw-hype-meter-caption span{
+ writing-mode:vertical-rl;transform:rotate(180deg);font:900 7px/1 Arial;
+ letter-spacing:.12em;white-space:nowrap;color:#f3b8df
+}
+#hero .tfw-hype-meter-caption b{font:900 10px/1 Arial;color:#fff;font-variant-numeric:tabular-nums}
+#hero .tfw-hype-meter{position:relative;display:block;flex:1;min-height:88px;height:100%;
+ width:14px;margin:0;padding:0;overflow:hidden;border-radius:99px;
+ border:1px solid rgba(255,255,255,.29);
+ background:linear-gradient(90deg,rgba(255,255,255,.075),rgba(255,255,255,.025));
+ box-shadow:inset 0 0 8px rgba(0,0,0,.6);isolation:isolate}
+#hero .tfw-hype-meter i{position:absolute;bottom:0;left:0;width:100%!important;
+ height:0;display:block;border-radius:99px;
+ background:linear-gradient(to top,#8648e8,#e85cbc 60%,#ffd3a7 100%);
+ box-shadow:inset 0 0 6px rgba(255,255,255,.35),0 0 17px rgba(247,104,193,.65);
+ transition:height .65s cubic-bezier(.2,.7,.3,1);animation:tfwHypeElectric 2s ease-in-out infinite alternate}
+@keyframes tfwHypeElectric{from{filter:brightness(1)}to{filter:brightness(1.4)}}
+@keyframes tfwMeterAura{from{opacity:.48}to{opacity:1}}
+/* Quicker and more energetic pop-and-float reactions; nickname stays below. */
+#hero .tfw-hype-float{animation:tfwHypePopFast 2.6s cubic-bezier(.23,.64,.25,1) both;
+ transform-origin:center center}
+#hero .tfw-hype-float:before,#hero .tfw-hype-float:after{
+ content:'';position:absolute;left:50%;top:23%;width:95px;height:95px;
+ transform:translate(-50%,-50%);pointer-events:none;z-index:-1;
+ background:radial-gradient(circle,rgba(255,213,238,.24),rgba(235,84,192,.11) 35%,transparent 70%);
+ opacity:0;animation:tfwEmojiPulse 1s ease-out both
+}
+#hero .tfw-hype-float:after{width:128px;height:128px;animation-delay:.10s;filter:blur(6px)}
+#hero .tfw-hype-float-emoji{filter:drop-shadow(0 0 13px rgba(255,166,221,.55));
+ animation:tfwEmojiWiggle 1.35s ease-in-out both}
+#hero .tfw-hype-float-name{background:rgba(15,9,23,.72);box-shadow:0 4px 16px rgba(0,0,0,.35)}
+@keyframes tfwHypePopFast{
+ 0%{opacity:0;transform:translate3d(0,35px,0) scale(.3) rotate(-14deg);filter:blur(5px)}
+ 17%{opacity:1;transform:translate3d(0,-5px,0) scale(1.22) rotate(9deg);filter:none}
+ 36%{opacity:1;transform:translate3d(0,-19px,0) scale(1) rotate(-4deg)}
+ 78%{opacity:1;transform:translate3d(var(--drift),-66px,0) scale(.96) rotate(var(--spin))}
+ 100%{opacity:0;transform:translate3d(var(--drift),-110px,0) scale(.68) rotate(0);filter:blur(3px)}
+}
+@keyframes tfwEmojiPulse{
+ 0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}
+ 26%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.5)}
+}
+@keyframes tfwEmojiWiggle{
+ 0%{transform:scale(.65) rotate(-18deg)}
+ 27%{transform:scale(1.16) rotate(8deg)}
+ 55%{transform:scale(.98) rotate(-6deg)}
+ 100%{transform:scale(1) rotate(0)}
+}
+@media(max-width:700px){
+ #hero>.tfw-hype-rail{right:12px}
+ #hero>.tfw-hype-intensity{right:62px;top:53%;width:25px;height:228px;
+   padding:9px 3px;gap:6px;border-radius:15px}
+ #hero .tfw-hype-meter-caption span{font-size:6px}
+ #hero .tfw-hype-meter-caption b{font-size:8px}
+ #hero .tfw-hype-meter{width:10px;min-height:70px}
+ #hero .tfw-hype-float-emoji{font-size:32px}
+}
+@media(prefers-reduced-motion:reduce){
+ #hero .tfw-hype-float{animation:tfwHypeStatic 2.6s ease-in-out both}
+ #hero .tfw-hype-float:before,#hero .tfw-hype-float:after{animation:none;opacity:0}
+ #hero .tfw-hype-float-emoji,#hero .tfw-hype-meter i,#hero>.tfw-hype-intensity:before{
+  animation:none!important
+ }
+}
