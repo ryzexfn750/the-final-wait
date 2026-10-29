@@ -112,6 +112,11 @@ requests a fresh ticket and opens a new Pages Function WebSocket route,
 so it typically causes at least **two Pages Function requests** per new
 connection. This can exhaust the Workers quota even when the separate
 Durable Objects request quota is still below its daily allowance.
+For 5,000 continuously connected users over four hours, the illustrative
+22.5-minute session case already creates about **110,000 Pages Function
+invocations**; the 15-minute worst case creates **160,000**. That exceeds
+the Workers Free 100k/day allocation even though the DO request model
+itself may remain under its 100k/day allowance.
 
 Supabase Free currently advertises **50,000 monthly active users**,
 a **500 MB database** and **5 GB egress**. Actual API/Auth throughput and
