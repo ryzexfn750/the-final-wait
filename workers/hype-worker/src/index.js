@@ -1,5 +1,5 @@
 import { DurableObject } from 'cloudflare:workers';
-const ALLOWED=new Set(['🔥','🚀','💜','🎉','❤️']);
+const ALLOWED=new Set(['🔥','🚀','🥳','🎉','🌴','🩷','💜']);
 // Reduce requests under heavy load: the free plan has finite daily quotas.
 function cooldownFor(count){
   return count>8000?180_000:count>3000?90_000:
