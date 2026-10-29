@@ -1,61 +1,145 @@
-/* Standalone optional UI: never changes countdown layout or core scripts. */
-.hype-root{position:fixed;z-index:148;right:18px;bottom:22px;pointer-events:none;
- font-family:Arial,Helvetica,sans-serif;color:#fff}
-.hype-root button,.hype-root input{font-family:inherit}
-.hype-root a{color:#ffb5de;text-decoration:underline}
-.hype-root .hype-launch,.hype-root .hype-panel{pointer-events:auto}
-.hype-launch{display:flex;align-items:center;gap:9px;min-height:42px;
- border:1px solid rgba(248,118,212,.6);border-radius:999px;
- background:linear-gradient(120deg,rgba(38,18,48,.94),rgba(17,15,30,.95));
- color:#fff;padding:11px 18px;font:900 11px/1 Arial,sans-serif;
- letter-spacing:.12em;box-shadow:0 8px 42px rgba(0,0,0,.55);cursor:pointer}
-.hype-live-dot{display:block;width:7px;height:7px;border-radius:50%;background:#fe6ab6;box-shadow:0 0 13px #f95fc5}
-.hype-panel{position:absolute;bottom:56px;right:0;width:min(390px,calc(100vw - 24px));
- max-height:min(76vh,675px);overflow-y:auto;overscroll-behavior:contain;
- border:1px solid rgba(255,255,255,.18);border-radius:20px;
- background:linear-gradient(140deg,#211326,#090910 76%);box-shadow:0 20px 80px rgba(0,0,0,.78);
- padding:20px;color:#fff}
-.hype-panel[hidden],.hype-root [hidden]{display:none!important}
-.hype-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
-.hype-head strong{display:block;font-size:12px;letter-spacing:.07em}
-.hype-head small{display:block;color:#e39dcf;margin-top:9px;letter-spacing:.1em;font-size:10px}
-.hype-head button{border:0;background:none;color:#fff;font-size:23px;cursor:pointer}
-.hype-description{font-size:12px;line-height:1.6;color:#c4b7c9;margin:14px 0}
-.hype-stats{display:flex;justify-content:space-between;gap:8px;
- font-size:9px;font-weight:800;letter-spacing:.12em;color:#c7a4be;padding:12px 0;
- border-top:1px solid #ffffff20;border-bottom:1px solid #ffffff20}
-.hype-notice{min-height:24px;color:#d5b3cb;font-size:11px;line-height:1.5;padding:12px 0 6px}
-.hype-error{color:#ff998f}
-.hype-panel #hypeGuest p{font-size:12px;line-height:1.5;color:#cbbfd1}
-.hype-primary{display:block;width:100%;border:1px solid #f6a7d8;border-radius:11px;
- background:linear-gradient(110deg,#ef61b4,#955de9);color:#fff;padding:12px 14px;
- font-size:11px;font-weight:900;letter-spacing:.05em;cursor:pointer}
-.hype-panel form{display:grid;gap:14px}
-.hype-panel form>label:first-child{font-size:10px;letter-spacing:.12em;color:#dbc8dd;font-weight:900}
-.hype-panel input[type=text]{width:100%;box-sizing:border-box;border:1px solid #ffffff45;
- border-radius:9px;color:white;background:#ffffff0c;padding:12px;font-size:13px}
-.hype-checkbox{display:flex;gap:10px;align-items:flex-start;line-height:1.5;
- color:#d5c7dc;font-size:11px}
-.hype-checkbox input{accent-color:#e766ba;flex:0 0 auto;margin-top:3px}
-.hype-member-row{display:flex;align-items:center;justify-content:space-between;
- gap:10px;margin:12px 0;font-size:13px}
-.hype-text-button{border:0;background:none;padding:7px 3px;cursor:pointer;
- color:#d4accb;font-size:10px;letter-spacing:.09em;font-weight:900}
-.hype-danger{color:#ff9b9b}
-.hype-reactions{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:14px 0}
-.hype-emoji{padding:10px 0;border-radius:11px;border:1px solid #ffffff27;
- background:#ffffff0b;font-size:23px;cursor:pointer;transition:transform .15s}
-.hype-emoji:hover{transform:translateY(-2px);background:#ffffff18}
-.hype-rule{display:block;color:#a89aa9;font-size:10px;line-height:1.4}
-.hype-feed{max-height:140px;overflow:auto;margin:14px 0}
-.hype-feed>div{padding:7px 9px;margin-bottom:4px;background:#ffffff0c;border-radius:7px;
- font-size:11px;color:#d5c7dc;overflow-wrap:anywhere}
-.hype-feed strong{color:#fff}
-.hype-foot{margin-top:15px;padding-top:10px;border-top:1px solid #ffffff1c;
- font-size:9px;color:#8c808f;text-align:center}
-@media(max-width:600px){
- .hype-root{right:12px;bottom:10px}
- .hype-panel{bottom:53px;max-height:calc(100dvh - 120px);padding:15px}
- .hype-launch{padding:10px 13px;min-height:40px;font-size:10px}
+/* THE FINAL WAIT · LIVE HYPE v2 (protected community-qa Preview).
+   Only scoped identity, rail, animation and account UI are affected.
+   Countdown timing, final call, audio and visualizer remain untouched. */
+html.tfw-auth-pending{overflow:hidden!important}
+html.tfw-auth-pending body{visibility:hidden!important;overflow:hidden!important}
+html.tfw-auth-pending #tfwCommunityGate{visibility:visible!important}
+.tfw-auth-gate[hidden]{display:none!important}
+.tfw-auth-gate{
+ position:fixed!important;inset:0!important;z-index:2147483644!important;
+ display:grid;place-items:center;overflow-y:auto;overscroll-behavior:contain;
+ padding:24px 15px;background:#090611;color:#fff;visibility:visible!important;
+ font-family:Arial,Helvetica,sans-serif;isolation:isolate}
+.tfw-auth-gate *{box-sizing:border-box}
+.tfw-gate-aurora{position:fixed;inset:0;pointer-events:none;
+ background:radial-gradient(ellipse at 26% 30%,rgba(224,57,159,.23),transparent 46%),
+ radial-gradient(ellipse at 82% 75%,rgba(112,68,230,.25),transparent 40%),
+ linear-gradient(143deg,#170a24,#080610 65%,#170a1d)}
+.tfw-gate-aurora:after{content:'';position:absolute;inset:0;
+ background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 6px);
+ opacity:.45}
+.tfw-gate-card{position:relative;z-index:1;width:min(500px,100%);
+ padding:clamp(28px,5vw,50px);border:1px solid rgba(250,165,226,.23);
+ border-radius:26px;background:rgba(18,12,28,.83);backdrop-filter:blur(28px);
+ box-shadow:0 32px 120px rgba(0,0,0,.45);text-align:center}
+.tfw-gate-logo{width:100px;height:auto;max-height:120px;object-fit:contain;margin:0 auto 22px;
+ filter:drop-shadow(0 0 28px rgba(234,89,201,.24))}
+.tfw-gate-kicker{margin:0 0 12px;color:#f0a8d7;font:900 10px/1.4 Arial;
+ letter-spacing:.20em}
+.tfw-gate-card h1{font:900 clamp(30px,6vw,48px)/.92 "Arial Black",Impact,Arial;
+ letter-spacing:-.055em;margin:0 0 14px}
+.tfw-gate-lede{margin:0 auto 15px;max-width:360px;color:#d4c5da;
+ font:400 13px/1.65 Arial}
+.tfw-gate-status{min-height:24px;font:800 11px/1.4 Arial;letter-spacing:.025em;color:#e5b9d4;margin:12px 0}
+.tfw-gate-status.error{color:#ffa6ab}
+.tfw-gate-primary{width:100%;min-height:49px;border:1px solid rgba(255,255,255,.3);
+ border-radius:12px;background:linear-gradient(115deg,#e25fac,#965be9);
+ color:#fff;font:900 12px/1.1 Arial;letter-spacing:.08em;cursor:pointer;
+ box-shadow:0 10px 28px rgba(167,64,166,.22);transition:.2s}
+.tfw-gate-primary:hover{filter:brightness(1.13);transform:translateY(-1px)}
+.tfw-gate-primary:disabled{opacity:.5;cursor:wait}
+.tfw-gate-secondary{border:0;background:none;color:#e1a8d9;padding:10px;
+ font:800 10px/1.3 Arial;cursor:pointer;letter-spacing:.06em}
+.tfw-gate-note{font:400 11px/1.65 Arial;color:#b3a2bd;margin:10px 0 15px}
+#tfwGateRegister{display:flex;flex-direction:column;align-items:stretch;gap:14px;text-align:left}
+#tfwGateRegister[hidden],#tfwGateGuest[hidden]{display:none!important}
+.tfw-gate-field{font:900 10px/1.5 Arial;letter-spacing:.11em;color:#f0c8e5}
+.tfw-gate-field input{display:block;width:100%;height:47px;margin-top:8px;
+ padding:0 14px;border:1px solid rgba(255,255,255,.2);border-radius:10px;
+ background:rgba(255,255,255,.045);color:#fff;font:700 14px/1 Arial;letter-spacing:0;outline:none}
+.tfw-gate-field input:focus{border-color:#e866ba;box-shadow:0 0 0 3px rgba(232,102,186,.13)}
+.tfw-gate-field input[readonly]{opacity:.6;cursor:not-allowed}
+#tfwGateRegister>.tfw-gate-note{margin:-9px 0 0}
+.tfw-gate-check{display:flex;align-items:flex-start;gap:10px;color:#d2c4d9;
+ font:400 12px/1.5 Arial;cursor:pointer}
+.tfw-gate-check input{flex:0 0 auto;margin:3px 0 0;accent-color:#ef77c4}
+.tfw-gate-check a,.tfw-gate-bottom a{color:#ffc7e8;text-underline-offset:3px}
+#hypeTurnstile{min-height:60px}
+.tfw-gate-bottom{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;
+ margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.10)}
+.tfw-gate-bottom a{font:800 10px/1 Arial;letter-spacing:.1em;text-decoration:none}
+.tfw-auth-gate :focus-visible,.tfw-hype-rail :focus-visible{outline:2px solid #ffc1ee;outline-offset:3px}
+
+/* A small, vertical seven-reaction rail; intentionally not a popup or feed. */
+#hero>.tfw-hype-rail{position:absolute!important;z-index:28;top:50%;right:14px;
+ transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;
+ padding:10px 7px;background:linear-gradient(160deg,rgba(27,14,37,.72),rgba(8,8,17,.78));
+ border:1px solid rgba(255,255,255,.16);border-radius:24px;
+ box-shadow:0 12px 40px rgba(0,0,0,.36);backdrop-filter:blur(15px);color:#fff}
+.tfw-hype-rail #tfwHypeButtons{display:flex;flex-direction:column;gap:6px;align-items:center}
+.tfw-hype-rail .tfw-hype-emoji{width:43px;height:43px;display:grid;place-items:center;
+ border:1px solid rgba(255,255,255,.13);border-radius:14px;
+ background:rgba(255,255,255,.055);cursor:pointer;color:#fff;font:25px/1 Arial;
+ transition:transform .2s ease,background .2s,border-color .2s}
+.tfw-hype-rail .tfw-hype-emoji:hover:not(:disabled){
+ transform:scale(1.11);background:rgba(234,101,201,.16);border-color:#ed87c9}
+.tfw-hype-rail .tfw-hype-emoji:disabled{cursor:default;opacity:.54}
+.tfw-hype-rail #tfwHypeLock{min-width:28px;color:#ffc3e9;font:900 11px/1 Arial;
+ text-align:center;font-variant-numeric:tabular-nums;letter-spacing:.03em}
+.tfw-hype-rail.tfw-hype-disconnected #tfwHypeLock{opacity:.45}
+#hero>.tfw-hype-intensity{position:absolute!important;z-index:26;left:clamp(15px,3vw,44px);
+ bottom:clamp(88px,11vh,124px);width:clamp(110px,16vw,210px);pointer-events:none;
+ color:#fff}
+.tfw-hype-meter-caption{display:flex;justify-content:space-between;gap:8px;
+ margin-bottom:8px;color:#ffd1eb;font:900 8px/1.2 Arial;letter-spacing:.14em}
+.tfw-hype-meter{height:7px;overflow:hidden;background:rgba(255,255,255,.13);
+ border:1px solid rgba(255,255,255,.22);border-radius:99px}
+.tfw-hype-meter i{display:block;width:0;height:100%;
+ background:linear-gradient(90deg,#a664fb,#e35eac,#ffbf7a);
+ box-shadow:0 0 16px rgba(236,104,191,.7);border-radius:inherit;transition:width 1s ease}
+
+/* Emoji and sender nickname fly directly above the countdown, not inside a panel. */
+#hero>.tfw-hype-stage{position:absolute!important;z-index:27;inset:0;pointer-events:none;overflow:hidden}
+.tfw-hype-float{position:absolute;left:var(--hx);top:var(--hy);
+ display:flex;flex-direction:column;align-items:center;gap:6px;
+ will-change:transform,opacity;animation:tfwHypeFloat 4.5s cubic-bezier(.24,.68,.23,1) both}
+.tfw-hype-float-emoji{font:clamp(33px,5vw,65px)/1 Arial;filter:drop-shadow(0 0 20px rgba(255,146,221,.42))}
+.tfw-hype-float-name{max-width:145px;overflow:hidden;text-overflow:ellipsis;
+ border:1px solid rgba(255,255,255,.15);border-radius:999px;
+ padding:6px 9px;background:rgba(18,11,27,.62);backdrop-filter:blur(4px);
+ color:#fff;white-space:nowrap;text-shadow:0 2px 5px #000;
+ font:900 9px/1 Arial;letter-spacing:.03em}
+@keyframes tfwHypeFloat{
+ 0%{opacity:0;transform:translate3d(0,42px,0) scale(.35) rotate(-13deg);filter:blur(5px)}
+ 14%{opacity:1;transform:translate3d(0,0,0) scale(1.12) rotate(5deg);filter:blur(0)}
+ 32%{opacity:1;transform:translate3d(0,-18px,0) scale(1) rotate(-3deg)}
+ 77%{opacity:1;transform:translate3d(var(--drift),-76px,0) scale(.95) rotate(4deg)}
+ 100%{opacity:0;transform:translate3d(var(--drift),-140px,0) scale(.72) rotate(-5deg);filter:blur(3px)}
 }
-@media(prefers-reduced-motion:reduce){.hype-root *{transition:none!important}}
+body.tfw-route-overlay-open #hero>.tfw-hype-rail,
+body.tfw-route-overlay-open #hero>.tfw-hype-intensity,
+body.tfw-route-overlay-open #hero>.tfw-hype-stage{visibility:hidden}
+
+/* Link sits immediately to the left of the language menu on all page types. */
+.topbar .tfw-account-link{display:inline-flex;align-items:center;justify-content:center;
+ gap:6px;flex:0 0 auto;min-height:34px;padding:0 13px;margin-left:12px;
+ color:#fff;border-radius:999px;border:1px solid rgba(246,145,208,.36);
+ background:rgba(24,14,34,.52);font:900 9px/1 Arial;letter-spacing:.1em;
+ text-decoration:none;white-space:nowrap;transition:background .2s,border-color .2s}
+.topbar .tfw-account-link:hover{background:rgba(242,63,178,.18);border-color:#d887d2}
+.topbar .tfw-account-link span{font-size:15px;color:#ffb9e2}
+.tfw-community-footer-links{display:flex;align-items:center;justify-content:center;
+ gap:15px;flex-wrap:wrap;width:100%;padding-top:14px;margin-top:12px;
+ border-top:1px solid rgba(255,255,255,.09)}
+.tfw-community-footer-links a{color:#d6c3dc;text-decoration:none;
+ font:800 9px/1.4 Arial;letter-spacing:.09em}
+.tfw-community-footer-links a:hover{color:#ffc4e7}
+@media(max-width:700px){
+ #hero>.tfw-hype-rail{right:7px;top:53%;gap:6px;padding:6px 4px;border-radius:18px}
+ .tfw-hype-rail #tfwHypeButtons{gap:4px}
+ .tfw-hype-rail .tfw-hype-emoji{width:33px;height:34px;font-size:21px;border-radius:11px}
+ .tfw-hype-rail #tfwHypeLock{font-size:10px}
+ #hero>.tfw-hype-intensity{left:10px;bottom:87px;width:116px}
+ .tfw-hype-meter-caption{font-size:6px}
+ .tfw-hype-float-emoji{font-size:34px}
+ .tfw-hype-float-name{font-size:8px;padding:5px 7px}
+ .topbar .tfw-account-link{padding:0 8px;min-height:30px;font-size:0;margin-left:auto;margin-right:8px}
+ .topbar .tfw-account-link span{font-size:17px}
+ .tfw-gate-card{padding:24px 20px}
+ .tfw-gate-logo{width:78px;margin-bottom:14px}
+}
+@media(prefers-reduced-motion:reduce){
+ .tfw-auth-gate *,.tfw-hype-rail *,.tfw-hype-intensity *{transition:none!important}
+ .tfw-hype-float{animation:tfwHypeStatic 4.5s ease-out both}
+ @keyframes tfwHypeStatic{0%,100%{opacity:0}10%,80%{opacity:1}}
+}
