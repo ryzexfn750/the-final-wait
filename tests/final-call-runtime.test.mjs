@@ -33,7 +33,7 @@ test('Final Call uses ten allowed images with exact bidirectional dissolves', as
  let tickTime=0,seed=60;
  const window={__tfwPreviewPlaying:true,__tfwPlayCountdownTick:()=>beeps.push(1),crypto:{getRandomValues(a){a[0]=(seed++*1664525+1013904223)>>>0}},addEventListener:on,
    dispatchEvent:e=>send(e.type,e.detail)};
- runInNewContext(JS,{window,document,Image:ImageMock,Audio:AudioMock,matchMedia:()=>({matches:true}),localStorage:{getItem:()=> 'on'},
+ runInNewContext(JS,{window,document,location:{search:''},URLSearchParams,Image:ImageMock,Audio:AudioMock,matchMedia:()=>({matches:true}),localStorage:{getItem:()=> 'on'},
    performance:{now:()=>tickTime},console,Math,Uint32Array,Promise,Number,String,
    CustomEvent:class{constructor(type,opts){this.type=type;this.detail=opts?.detail}}});
  const debug=window.__tfwFinalCallDebug;

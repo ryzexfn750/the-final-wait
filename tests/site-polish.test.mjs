@@ -28,7 +28,7 @@ test('Release call-to-action stays inside the rounded box; effects are anchored 
 
 test('Volume popup is persistent, local and controls all soundtrack owners',()=>{
  const html=read('index.html'),controls=read('js/audio-controls.js');
- assert.match(html,/js\/audio-controls\.js\?v=48/);
+ assert.match(html,/js\/audio-controls\.js\?v=46/);
  assert.match(html,/css\/audio-controls\.css\?v=39/);
  for(const part of ['tfw_volume','tfw_sound','tfw:volume-change','tfw:sound-change','tfwVolumeSlider','tfwMuteToggle'])assert.ok(controls.includes(part),part);
  for(const p of ['js/clock.js','js/milestones.js','js/final-call.js']){
@@ -44,7 +44,7 @@ test('GTA-style pointer illumination runs on home and every article page',()=>{
  assert.match(script,/pointermove/);
  for(const p of ['index.html','today.html','intel.html','timeline.html']){
    const html=read(p);
-   assert.ok(html.includes('css/site-polish.css?v='+(p==='index.html'?47:46)),p);
+   assert.ok(html.includes('css/site-polish.css?v=48'),p);
    assert.ok(html.includes('js/site-polish.js?v=43'),p);
  }
 });

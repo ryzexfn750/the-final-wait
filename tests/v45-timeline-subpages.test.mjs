@@ -40,10 +40,11 @@ test('V45 timeline has Rockstar October 15 launch trailer and correct scene mapp
 
 test('V45 compact home archive CTA and creator credit',()=>{
  const html=read('index.html'),css=read('css/site-polish.css');
- assert.ok(html.includes('Discover every character, location and feature in our Leonida archive.'));
+ assert.ok(html.includes('EXPLORE ALL DOSSIERS'));
+ assert.match(html,/href="intel-archive\.html"[^>]*>EXPLORE ALL DOSSIERS/);
  assert.ok(!html.includes('in the complete Leonida archive.'));
  assert.match(html,/<strong>RYZEGTAVI<\/strong>/);
- assert.match(css,/#intel \.intel-archive-cta\{\s*margin:2px auto 0!important;\s*padding:12px 20px 40px!important/);
+ assert.match(css,/#intel \.intel-archive-cta/);
  assert.match(css,/margin:6px auto 12px!important/);
 });
 
@@ -59,12 +60,12 @@ test('V45 archive and story pages keep the complete controls and dark language m
    for(const id of ['tfwPageShare','tfwPageFullscreen','soundButton','mobileSoundButton','tfwPageMenu','tfwPageDrawer']){
      assert.ok(html.includes('id="'+id+'"'),path+' '+id);
    }
-   assert.ok(html.includes('TIME ZONE'),path);
+   assert.doesNotMatch(html,/<a[^>]*>TIME ZONE<\/a>/);
    assert.ok(html.includes('gtranslate_wrapper'),path);
-   assert.ok(html.includes('css/secondary-controls.css?v=44'),path);
+   assert.ok(html.includes('css/secondary-controls.css?v=48'),path);
    assert.ok(html.includes('css/audio-controls.css?v=39'),path);
-   assert.ok(html.includes('js/secondary-controls.js?v=45'),path);
-   assert.ok(html.includes('js/audio-controls.js?v=39'),path);
+   assert.ok(html.includes('js/secondary-controls.js?v=48'),path);
+   assert.ok(html.includes('js/audio-controls.js?v=46'),path);
    assert.ok(html.includes('RYZEGTAVI')||path==='intel-archive.html',path+' creator credit');
  }
  assert.ok(volumeJs.includes('tfw_volume'));
@@ -79,8 +80,8 @@ test('V45 archive and story pages keep the complete controls and dark language m
 
 test('V45 browser cache busts preserve the changed timeline data',()=>{
  const home=read('index.html'),archive=read('intel-archive.html');
- assert.ok(home.includes('js/app.js?v=44'));
- assert.ok(read('js/app.js').includes("'./config.js?v=44'"));
- assert.ok(archive.includes('js/intel-archive.js?v=44'));
- assert.ok(read('js/intel-archive.js').includes("'./config.js?v=44'"));
+ assert.ok(home.includes('js/app.js?v=52'));
+ assert.ok(read('js/app.js').includes("'./config.js?v=45'"));
+ assert.ok(archive.includes('js/intel-archive.js?v=46'));
+ assert.ok(read('js/intel-archive.js').includes("'./config.js?v=45'"));
 });

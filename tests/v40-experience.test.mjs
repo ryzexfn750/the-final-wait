@@ -83,6 +83,8 @@ test('V40 section hash follows actual viewport transitions on repeated wheel scr
   const spans={hero:[0,1020],today:[1020,2100],timeline:[2100,3120],intel:[3120,4200],share:[4200,5100]};
   let wheelY=0,current='#timeline';
   const document={
+    body:{classList:{contains:()=>false}},
+    documentElement:{classList:{contains:()=>false}},
     getElementById(id){
       const p=spans[id];
       return p?{id,getBoundingClientRect(){return {top:p[0]-wheelY,bottom:p[1]-wheelY}}}:null;

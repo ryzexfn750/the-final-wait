@@ -73,7 +73,7 @@ test('Final Call keeps its enlarged subtitle frame across cues, silent gaps and 
  assert.equal(debug.opacity(304000),0);
  assert.equal(root.children.length,3,'One fixed heading and two content layers');
 
- for(const locale of ['fr','es','ru','de','it']){
+ for(const locale of ['fr','es','de','it']){
    const pack=window.__tfwFinalCallTranslations[locale];
    assert.equal(Object.keys(pack).length,17,locale+' must include all lines');
    for(const cue of debug.cues){

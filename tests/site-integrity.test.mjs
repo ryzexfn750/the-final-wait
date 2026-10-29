@@ -22,9 +22,10 @@ test('all four public pages link to existing local CSS, scripts, icons and pages
      assert.ok(existing(file),page+': broken local link: '+ref);
    }
    const styles=[...html.matchAll(/<link\b[^>]*rel=["']stylesheet["'][^>]*>/g)].map(x=>x[0]);
-   const expected=page==='index.html'?3:1;
-   assert.equal(styles.length,expected,page+': unexpected stylesheet count');
-   assert.match(html,/css\/base\.css\?v=31/);
+   assert.ok(styles.length >= (page==='index.html'?7:4),page+': expected site styles missing');
+   const sheets=styles.map(tag=>tag.match(/href=["']([^"']+)/)?.[1].replace(/\?v=\d+$/,''));
+   assert.equal(new Set(sheets).size,sheets.length,page+': duplicate stylesheet');
+   assert.match(html,/css\/base\.css\?v=32/);
    if(page==='index.html')assert.match(html,/css\/experience\.css\?v=33/);
  }
 });
