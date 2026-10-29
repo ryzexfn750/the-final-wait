@@ -234,4 +234,5 @@ test('Quota estimator counts short-lived socket renewals and hibernation limits'
   assert.match(source,/ceil\(mins\/15\)/);
   assert.match(source,/WS_INCOMING_BILLING_RATIO=20/);
   assert.match(source,/scenario\(5000,4,.05,1\)/);
+  assert.match(source,/estimatedPagesFunctionsWorst:sessionsWorst\*2/);
 });
