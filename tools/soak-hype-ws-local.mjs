@@ -16,7 +16,8 @@ const SIZE=1000;
 const PARALLEL=16;
 const MAX_RSS_MB=600;
 const MAX_RETRY_PER_SLOT=6;
-const PROBE_MS=60_000;
+// Three-minute quiet intervals allow an idle object to become eligible for hibernation.
+const PROBE_MS=180_000;
 const PROBE_TIMEOUT_MS=9_000;
 const MAX_HANDSHAKE_MS=15_000;
 const DURATION_OPTIONS=new Set([20,35]);
