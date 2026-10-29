@@ -1,3 +1,4 @@
+import {nicknameVerdict} from './nickname-policy.js?v=1';
 /* LIVE HYPE v2 — private QA identity gate, countdown reactions.
    Protected API routes remain enforced server-side. */
 const PUBLIC_COMMUNITY_ENABLED=false;
@@ -105,6 +106,7 @@ async function initCommunity(){
       const main=new DOMParser().parseFromString(await response.text(),'text/html').querySelector('main');
       if(!main)throw Error('The document is unavailable.');
       main.querySelector('a[href="./"]')?.remove();
+      if(page==='community-terms.html')main.querySelector('footer')?.remove();
       main.querySelectorAll('script,style,iframe,form').forEach(node=>node.remove());
       if(ticket===legalTicket)legalBody.replaceChildren(...Array.from(main.childNodes));
     }catch(error){if(ticket===legalTicket)legalBody.textContent=error.message}
@@ -518,8 +520,12 @@ async function initCommunity(){
     state.busy=true;$('#hypeSubmit').disabled=true;
     try{
       const nickname=nicknameInput.value;
-      if(!/^[A-Za-z0-9_]{3,20}$/.test(nickname)){
-        nicknameError.textContent='Use 3–20 letters, numbers or underscores. Spaces are not allowed.';
+      const verdict=nicknameVerdict(nickname);
+      if(!verdict.ok){
+        nicknameError.textContent=verdict.reason==='blocked'?
+          'This nickname contains prohibited language. Choose another one.':
+          verdict.reason==='reserved'?'This nickname is reserved. Choose another one.':
+          'Use 3–20 letters, numbers or underscores. Spaces are not allowed.';
         nicknameError.hidden=false;nicknameInput.setAttribute('aria-invalid','true');
         nicknameInput.focus();
         throw Error('Please correct your nickname above.');

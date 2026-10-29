@@ -1,3 +1,4 @@
+import {nicknameVerdict} from '../../../js/nickname-policy.js';
 import {enabled,json,fail,authenticate,adminApi,getProfile,bodyJSON,
   NICKNAME,TERMS_VERSION,senderSubscribe,senderUnsubscribe} from '../../_lib/community.js';
 async function handle(request,env,mode){
@@ -42,8 +43,11 @@ async function handle(request,env,mode){
   if(body?.acceptedTerms!==true||body?.termsVersion!==TERMS_VERSION)
     return fail('Accept the current terms to continue',400);
   const nickname=String(body?.nickname||'').trim();
-  if(!NICKNAME.test(nickname)||/^(admin|administrator|moderator|staff|rockstar|support|system|official|ryzegtavi|thefinalwait|gta6|gtavi)$/i.test(nickname))
-    return fail('Nickname: 3–20 letters, numbers or underscores, no reserved words',400);
+  const verdict=nicknameVerdict(nickname);
+  if(!NICKNAME.test(nickname)||!verdict.ok)
+    return fail(verdict.reason==='blocked'?'Nickname contains prohibited language':
+      verdict.reason==='reserved'?'This nickname is reserved':
+      'Nickname: 3–20 letters, numbers or underscores',400);
   // A nickname is immutable once registered, including case. A change must
   // never be accepted through crafted API requests or an obsolete client.
   if(old?.nickname&&nickname!==old.nickname)
