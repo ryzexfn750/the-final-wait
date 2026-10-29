@@ -27,7 +27,7 @@ agreements. These documents are drafts, **not legal advice**.
 5. Pages production environment variables:
    - `SUPABASE_URL` = `https://<PROJECT>.supabase.co`
    - `SUPABASE_ANON_KEY` = public key (safe for browser)
-   - `SUPABASE_SERVICE_ROLE_KEY` = secret key (encrypted)
+   - `SUPABASE_SERVICE_ROLE_KEY` = server-only secret key (encrypted; supports both modern `sb_secret_` and legacy service_role JWT)
    - `COMMUNITY_ENABLED` = `false` initially.
 
 Google auth is email-based but passwordless. The verified email is private;
@@ -82,7 +82,19 @@ Important: if Sender secrets are absent, account creation still works but
 newsletter requests remain `pending`. Do not launch a campaign before
 checking the contact list and the opt-out sync queue.
 
-## 4. Final enablement
+## 4. Cloudflare Turnstile (free, required before launch)
+
+Create a **Managed** Turnstile widget with allowed hostnames
+`thefinalwait.com` and `www.thefinalwait.com` (plus exact testing hostnames).
+Add Pages production values:
+- `TURNSTILE_SITE_KEY` = public widget site key
+- `TURNSTILE_SECRET` = encrypted server-only secret
+
+Every profile create/update needs a valid single-use Turnstile token, checked
+by the Pages server against Cloudflare Siteverify and the request hostname.
+If these variables are missing, the community remains disabled.
+
+## 5. Final enablement
 
 When provider accounts, privacy notice, database and DO binding are tested,
 set Pages production `COMMUNITY_ENABLED=true`, then redeploy Pages.
@@ -100,7 +112,7 @@ a live emoji sent across two sessions with the same selected time zone, and
 separation between two different zones. Check account deletion and
 unsubscribe before marketing to anyone.
 
-## 5. Safety and incident behavior
+## 6. Safety and incident behavior
 
 - /api/community/* is the only additional Pages Functions invocation route.
 - Before activation, the static client feature flag is off, avoiding an API
