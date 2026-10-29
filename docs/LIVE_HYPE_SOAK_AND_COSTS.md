@@ -105,6 +105,19 @@ continuously active for four hours, they would consume an
 upper-bound ~14,746 GB-s, above the daily Free allowance. With
 hibernation the actual duration can be far less.
 
+Cloudflare Pages Functions on Workers Free share a separate
+**100,000-request/day Workers Free allocation** with other Workers requests
+(not the static site assets). Each community WebSocket reconnect currently
+requests a fresh ticket and opens a new Pages Function WebSocket route,
+so it typically causes at least **two Pages Function requests** per new
+connection. This can exhaust the Workers quota even when the separate
+Durable Objects request quota is still below its daily allowance.
+
+Supabase Free currently advertises **50,000 monthly active users**,
+a **500 MB database** and **5 GB egress**. Actual API/Auth throughput and
+provider quotas still need testing; a Supabase Realtime peak-connections
+quota should not be applied to our Cloudflare-owned WebSocket namespace.
+
 The numbers above **exclude** Cloudflare Pages Functions request
 quotas, Supabase Auth traffic, real browser login, rejected requests,
 other sites using the account, retry storms, and any provider changes.
@@ -124,3 +137,8 @@ fail; there is no guaranteed free capacity for all users.
    and a budget; do not route stress traffic to the live shared DO.
 
 Production `COMMUNITY_ENABLED=false` remains unchanged.
+
+
+Additional documentation:
+- https://developers.cloudflare.com/pages/functions/pricing/
+- https://supabase.com/pricing
