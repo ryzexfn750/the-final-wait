@@ -1,6 +1,10 @@
 import { DurableObject } from 'cloudflare:workers';
 const ALLOWED=new Set(['🔥','🚀','💜','🎉','❤️']);
-const INTERVAL_MS=10_000;
+// Reduce requests under heavy load: the free plan has finite daily quotas.
+function cooldownFor(count){
+  return count>8000?180_000:count>3000?90_000:
+    count>1000?40_000:count>250?20_000:10_000;
+}
 const MAX_PER_USER=2;
 // The worker has no public endpoints. Cloudflare Pages reaches its DO
 // only through the HYPE_ROOMS binding after authenticating the visitor.
@@ -31,7 +35,7 @@ export class HypeRoom extends DurableObject {
     const [client,server]=Object.values(new WebSocketPair());
     this.ctx.acceptWebSocket(server);
     server.serializeAttachment({uid:userId,nick:nickname,zone,last:0});
-    server.send(JSON.stringify({type:'welcome',zone,online:peers.length+1,cooldown:INTERVAL_MS}));
+    server.send(JSON.stringify({type:'welcome',zone,online:peers.length+1,cooldown:cooldownFor(peers.length+1)}));
     this.scheduleFlush();
     return new Response(null,{status:101,webSocket:client});
   }
@@ -44,9 +48,10 @@ export class HypeRoom extends DurableObject {
     const session=ws.deserializeAttachment();
     if(!session?.uid)return;
     const now=Date.now();
+    const interval=cooldownFor(this.ctx.getWebSockets().length);
     const last=Math.max(session.last||0,this.lastByUser.get(session.uid)||0);
-    if(now-last<INTERVAL_MS){
-      ws.send(JSON.stringify({type:'slow_down',wait:Math.ceil((INTERVAL_MS-(now-last))/1000)}));
+    if(now-last<interval){
+      ws.send(JSON.stringify({type:'slow_down',wait:Math.ceil((interval-(now-last))/1000),cooldown:interval}));
       return;
     }
     session.last=now;
@@ -75,7 +80,7 @@ export class HypeRoom extends DurableObject {
     const counts=Object.fromEntries(this.pending);
     const latest=this.latest.slice(-6);
     this.pending.clear();this.latest=[];
-    const packet=JSON.stringify({type:'hype',counts,latest,online:clients.length,
+    const packet=JSON.stringify({type:'hype',counts,latest,online:clients.length,cooldown:cooldownFor(clients.length),
       at:Date.now()});
     for(const client of clients){
       try{client.send(packet)}catch{}
