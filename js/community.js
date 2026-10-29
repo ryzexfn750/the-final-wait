@@ -327,7 +327,7 @@ async function initCommunity(){
       state.user=data?.user||null;
       if(!state.user){
         state.profile=null;closeSocket();
-        status('Sign in with Google to enter the site.');
+        status('');
         showGate('guest');return;
       }
       const result=await api('GET','profile');
