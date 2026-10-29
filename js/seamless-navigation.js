@@ -8,7 +8,7 @@
  const originalBase=origin.pathname+origin.search;
  const rootPrefix=origin.pathname.slice(0,origin.pathname.lastIndexOf('/')+1);
  const allowed=new Set(['','index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html','community-privacy.html','community-terms.html','support.html']);
- let activeFrame=null,seq=0,loading=false,rememberedTitle=document.title;
+ let activeFrame=null,seq=0,loading=false,pendingRoute='',rememberedTitle=document.title;
  const shell=document.createElement('div');
  shell.id='tfwSeamlessShell';
  shell.hidden=true;
@@ -55,7 +55,7 @@
    return normalize(url.pathname)===normalize(initial.pathname)&&url.search===initial.search;
  }
  function closeFrames(){
-   seq++;loading=false;
+   seq++;loading=false;pendingRoute='';
    if(activeFrame)activeFrame.remove();
    activeFrame=null;
    shell.querySelectorAll('iframe').forEach(node=>node.remove());
@@ -76,14 +76,30 @@
  function onClick(event,sourceDoc){
    if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.altKey||event.shiftKey)return;
    const anchor=event.target?.closest?.('a[href]');
-   if(!anchor||anchor.download||anchor.target&&anchor.target!=='_self')return;
+   if(!anchor||anchor.download)return;
+   // Gate links are handled inside their modal; hidden site links cannot be
+   // activated while the user's registration is incomplete.
+   if(document.documentElement.classList.contains('tfw-auth-pending')){
+     if(!anchor.closest('#tfwCommunityGate')){
+       event.preventDefault();event.stopImmediatePropagation();
+     }
+     return;
+   }
+   if(anchor.target&&anchor.target!=='_self')return;
    let to;
    try{to=canonical(new URL(anchor.href,sourceDoc.location?.href||location.href))}catch{return}
    if(!isOurs(to))return;
    const current=canonical(new URL(location.href));
-   if(sameDocument(to,current)&&to.hash===current.hash)return;
-   if(sameDocument(to,current)&&to.hash&&activeFrame)return; // native in-frame anchor
-   if(sameDocument(to,current)&&!activeFrame)return; // homepage scrolling
+   if(sameDocument(to,current)){
+     if(!activeFrame)return; // The homepage already owns its anchor scrolling.
+     // Do not reload a current iframe without tfw_embed or start its audio.
+     event.preventDefault();event.stopImmediatePropagation();
+     if(to.hash&&to.hash!==current.hash){
+       history.pushState({tfwSeamless:true},'',to.pathname+to.search+to.hash);
+       try{activeFrame.contentWindow.location.hash=to.hash}catch{}
+     }
+     return;
+   }
    event.preventDefault();event.stopImmediatePropagation();
    navigate(to,true);
  }
@@ -131,19 +147,28 @@
    }
  }
  function navigate(url,push){
+   if(document.documentElement.classList.contains('tfw-auth-pending'))return;
    if(!isOurs(url)){location.href=url.href;return}
-   if(push)history.pushState({tfwSeamless:true},'',url.pathname+url.search+url.hash);
+   const current=canonical(new URL(location.href));
+   if(activeFrame&&sameDocument(url,current)){
+     if(url.hash){try{activeFrame.contentWindow.location.hash=url.hash}catch{}}
+     return;
+   }
+   const route=url.pathname+url.search+url.hash;
+   if(loading&&pendingRoute===route)return;
+   if(push)history.pushState({tfwSeamless:true},'',route);
    if(isOriginal(url)){
      closeFrames();scrollOriginal(url);return;
    }
    const ticket=++seq;
-   loading=true;shell.hidden=false;
+   loading=true;pendingRoute=route;shell.hidden=false;
    document.body.classList.add('tfw-route-overlay-open');
    document.documentElement.classList.add('tfw-route-overlay-open');
    status.hidden=false;
    direct.hidden=true;label.textContent='LOADING';
    setLoadingProgress(5);
    const frame=document.createElement('iframe');
+   frame.dataset.tfwRoute=route;
    frame.className='tfw-seamless-frame tfw-frame-preloading';
    frame.title='The Final Wait — '+url.pathname.split('/').pop();
    frame.setAttribute('allowfullscreen','');
@@ -174,17 +199,23 @@
        frame.classList.add('tfw-frame-visible');
        status.hidden=true;
        document.title=frame.contentDocument?.title||rememberedTitle;
-       loading=false;
+       loading=false;pendingRoute='';
        if(old&&old!==frame)old.remove();
      }catch(error){
        clearInterval(progressTimer);
        if(ticket!==seq)return;
        console.warn('Seamless page failed:',error);
-       loading=false;
-       label.textContent='LOAD FAILED';
-       direct.href=url.href;direct.hidden=false;
-       // Retain the previously readable document below the error card.
+       loading=false;pendingRoute='';
        frame.remove();
+       // A failed load must not leave route-overlay-open permanently enabled.
+       if(activeFrame){
+         status.hidden=true;
+         history.replaceState({tfwSeamless:true},'',activeFrame.dataset.tfwRoute||originalBase);
+         document.title=activeFrame.contentDocument?.title||rememberedTitle;
+       }else{
+         history.replaceState(null,'',originalBase);
+         closeFrames();
+       }
      }
    },{once:true});
    frame.src=next.href;
@@ -203,6 +234,9 @@
  window.addEventListener('touchmove',parentScrollGuard,{capture:true,passive:false});
  document.addEventListener('click',event=>onClick(event,document),true);
  window.addEventListener('popstate',()=>navigate(canonical(new URL(location.href)),false));
+ window.addEventListener('pageshow',()=>{
+   if(!activeFrame&&document.body.classList.contains('tfw-route-overlay-open'))closeFrames();
+ });
  // Keep the host page's audio on the original document. If a link has
  // been opened in another tab, ordinary navigation works as before.
  window.__tfwSeamlessNavigation={open:href=>navigate(canonical(new URL(href,location.href)),true),get active(){return Boolean(activeFrame)},get loading(){return loading}};
