@@ -1,118 +1,103 @@
-/* Profile page owns account actions; the parent document owns audio and
-   fullscreen navigation when embedded by seamless-navigation.js. */
+/* Profile-only account actions. Confirmation dialogs are styled in-page,
+   with no native confirm() popups and no newsletter/CAPTCHA in the profile. */
 const $=selector=>document.querySelector(selector);
-const feedback=(text,error=false)=>{
-  const el=$('#profileFeedback');
-  el.textContent=text;el.classList.toggle('error',error);
-};
-const status=(value)=>{
-  const map={
-    subscribed:'You are subscribed to optional email updates.',
-    not_requested:'You are not subscribed.',
-    pending:'Subscription confirmation is pending.',
-    pending_unsubscribe:'Your unsubscribe is pending. Contact support@thefinalwait.com if it does not complete.'
-  };
-  $('#profileNewsletterStatus').textContent=map[value]||'Newsletter status unavailable.';
-};
-async function initProfile(){
-  let settings;
-  try{
-    const response=await fetch('/api/community/config',{cache:'no-store'});
-    if(!response.ok)throw Error('Community configuration unavailable');
-    settings=await response.json();
-    if(!settings.enabled)throw Error('Community is not enabled in this environment');
-  }catch(error){feedback(error.message,true);return}
-  let client,profile,user,challengeId=null,challengeToken='',busy=false;
-  const auth=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-  client=auth.createClient(settings.supabaseUrl,settings.supabaseAnonKey,{
-    auth:{flowType:'pkce',detectSessionInUrl:true,
-      autoRefreshToken:true,persistSession:true}
-  });
-  async function api(method,path,body){
-    const session=(await client.auth.getSession()).data?.session;
-    if(!session?.access_token)throw Error('Please sign in again');
-    const response=await fetch('/api/community/'+path,{
-      method,cache:'no-store',
-      headers:{Authorization:'Bearer '+session.access_token,'content-type':'application/json'},
-      ...(body===undefined?{}:{body:JSON.stringify(body)})
-    });
-    let result={};try{result=await response.json()}catch{}
-    if(!response.ok)throw Error(result.error||'Profile service unavailable');
-    return result;
-  }
-  async function challenge(){
-    if(challengeId!==null)return;
-    if(!window.turnstile){
-      await new Promise((resolve,reject)=>{
-        const script=document.createElement('script');
-        script.src='https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
-        script.onload=resolve;script.onerror=()=>reject(Error('Security check unavailable'));
-        document.head.appendChild(script);
-      });
-    }
-    challengeId=window.turnstile.render($('#profileTurnstile'),{
-      sitekey:settings.turnstileSiteKey,theme:'dark',
-      callback:token=>{challengeToken=token},
-      'expired-callback':()=>{challengeToken=''}
-    });
-  }
-  const topHome=()=>{
-    // Seamless navigation uses a same-origin iframe: signing out must also
-    // dismiss the parent member shell so that the account gate returns.
-    try{window.top.location.assign(new URL('index.html',location.href).href)}
-    catch{location.assign('index.html')}
-  };
-  try{
-    const data=await api('GET','profile');
-    user=data.user;profile=data.profile;
-    if(!user||!profile?.nickname||profile.terms_version!==settings.termsVersion){
-      throw Error('Your profile needs registration. Return to the homepage.');
-    }
-    $('#profileNickname').textContent=profile.nickname;
-    $('#profileNewsletter').checked=Boolean(profile.marketing_opt_in);
-    status(profile.marketing_status);
-    if(!settings.newsletterReady)feedback('Newsletter is currently unavailable; contact support for changes.');
-    await challenge();
-  }catch(error){feedback(error.message,true)}
-  $('#profileNewsletterForm').addEventListener('submit',async event=>{
-    event.preventDefault();
-    if(busy||!profile)return;busy=true;
-    $('#profileSaveNewsletter').disabled=true;
-    try{
-      if(!challengeToken)throw Error('Complete the security check first.');
-      const result=await api('POST','newsletter',{
-        newsletter:$('#profileNewsletter').checked,turnstileToken:challengeToken
-      });
-      profile.marketing_opt_in=result.marketingOptIn;
-      profile.marketing_status=result.marketingStatus;
-      status(result.marketingStatus);
-      feedback(result.marketingStatus==='pending_unsubscribe'?
-        'Your unsubscribe request is pending. Contact support if it remains pending.':
-        'Your email preference has been saved.');
-    }catch(error){feedback(error.message,true)}
-    finally{
-      busy=false;$('#profileSaveNewsletter').disabled=false;challengeToken='';
-      if(challengeId!==null)window.turnstile?.reset(challengeId);
-    }
-  });
-  $('#profileLogout').addEventListener('click',async()=>{
-    feedback('Signing out…');
-    try{await client.auth.signOut();topHome()}
-    catch(error){feedback('Sign out failed: '+error.message,true)}
-  });
-  $('#profileDelete').addEventListener('click',async()=>{
-    if(!confirm('Permanently delete your The Final Wait community account? This cannot be undone.'))return;
-    if(!confirm('Confirm permanent account deletion.'))return;
-    feedback('Deleting account…');
-    try{
-      await api('DELETE','profile');
-      await client.auth.signOut().catch(()=>{});
-      topHome();
-    }catch(error){feedback(error.message,true)}
-  });
+function feedback(message,error=false){
+ const element=$('#profileFeedback');
+ element.textContent=message;
+ element.classList.toggle('error',error);
 }
-// The secondary page loader waits for tfw:content-ready. No article data
-// is fetched for profile; the shell itself is ready as soon as the DOM is built.
+async function initProfile(){
+ const dialog=$('#profileConfirm');
+ const heading=$('#profileConfirmTitle');
+ const description=$('#profileConfirmDescription');
+ const accept=$('#profileConfirmAccept');
+ const cancel=$('#profileConfirmCancel');
+ const modalStatus=$('#profileConfirmStatus');
+ let client=null,profile=null,action=null,busy=false;
+ function closeDialog(){
+   if(busy)return;
+   if(dialog.open)dialog.close();
+   action=null;
+ }
+ function openDialog(mode){
+   if(busy||!profile)return;
+   action=mode;
+   modalStatus.textContent='';
+   heading.textContent=mode==='delete'?'DELETE YOUR ACCOUNT?':'SIGN OUT?';
+   description.textContent=mode==='delete'?
+     'This permanently deletes your The Final Wait community account and nickname. This action cannot be undone.':
+     'You will need to sign in with Google again to enter the site.';
+   accept.textContent=mode==='delete'?'DELETE PERMANENTLY':'YES, SIGN OUT';
+   accept.classList.toggle('tfw-profile-delete-confirm',mode==='delete');
+   dialog.showModal();
+   cancel.focus();
+ }
+ const goHome=()=>{
+   const target=new URL('index.html',location.href).href;
+   try{
+     if(window.top!==window){
+       window.top.dispatchEvent(new Event('tfw:community-signout'));
+       window.top.location.assign(target);
+     }else location.assign(target);
+   }catch{location.assign(target)}
+ };
+ dialog.addEventListener('cancel',event=>{
+   if(busy)event.preventDefault();
+   else action=null;
+ });
+ cancel.addEventListener('click',closeDialog);
+ $('#profileLogout').addEventListener('click',()=>openDialog('logout'));
+ $('#profileDelete').addEventListener('click',()=>openDialog('delete'));
+ accept.addEventListener('click',async()=>{
+   if(busy||!action||!client)return;
+   busy=true;accept.disabled=true;cancel.disabled=true;
+   const mode=action;
+   modalStatus.textContent=mode==='delete'?'Deleting your account…':'Signing out…';
+   try{
+     if(mode==='delete'){
+       const session=(await client.auth.getSession()).data?.session;
+       if(!session?.access_token)throw Error('Session expired; sign in again');
+       const response=await fetch('/api/community/profile',{
+         method:'DELETE',cache:'no-store',
+         headers:{Authorization:'Bearer '+session.access_token}
+       });
+       let result={};try{result=await response.json()}catch{}
+       if(!response.ok)throw Error(result.error||'Account deletion failed');
+     }
+     const {error}=await client.auth.signOut();
+     if(error&&mode!=='delete')throw error;
+     if(dialog.open)dialog.close();
+     goHome();
+   }catch(error){
+     modalStatus.textContent=error.message;
+     feedback(error.message,true);
+   }finally{
+     busy=false;accept.disabled=false;cancel.disabled=false;
+   }
+ });
+ try{
+   const response=await fetch('/api/community/config',{cache:'no-store'});
+   if(!response.ok)throw Error('Account service unavailable');
+   const config=await response.json();
+   if(!config.enabled)throw Error('Account service is not active here');
+   const lib=await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+   client=lib.createClient(config.supabaseUrl,config.supabaseAnonKey,{
+     auth:{flowType:'pkce',detectSessionInUrl:true,autoRefreshToken:true,persistSession:true}
+   });
+   const session=(await client.auth.getSession()).data?.session;
+   if(!session?.access_token)throw Error('Sign in with Google to view your profile');
+   const result=await fetch('/api/community/profile',{
+     method:'GET',cache:'no-store',
+     headers:{Authorization:'Bearer '+session.access_token}
+   });
+   let data={};try{data=await result.json()}catch{}
+   if(!result.ok)throw Error(data.error||'Could not load profile');
+   if(!data.profile?.nickname||data.profile.terms_version!==config.termsVersion)
+     throw Error('Complete your account registration first');
+   profile=data.profile;
+   $('#profileNickname').textContent=profile.nickname;
+ }catch(error){feedback(error.message,true)}
+}
 window.__tfwContentReady=true;
 document.dispatchEvent(new Event('tfw:content-ready'));
 void initProfile().catch(error=>feedback(error.message,true));
