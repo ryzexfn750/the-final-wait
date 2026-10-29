@@ -109,7 +109,8 @@ export function initAnalytics() {
   if (initialized || !ID) return;
   // Navigation renders the other pages in same-origin iframes. The outer
   // document owns analytics; embedded copies must not fire duplicate tags.
-  if (new URLSearchParams(location.search).has('tfw_embed')) return;
+  const embedded=new URLSearchParams(location.search).has('tfw_embed')&&window.self!==window.top;
+  if (embedded) return;
   initialized = true;
   const state = readConsent();
   if (state === 'yes') enableAnalytics();

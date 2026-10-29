@@ -3,8 +3,14 @@
    Normal links, new tabs, direct URLs and the browser Back button still work. */
 (()=>{
  'use strict';
- if(new URLSearchParams(location.search).has('tfw_embed'))return;
+ const trustedEmbed=(()=>{if(!new URLSearchParams(location.search).has('tfw_embed')||window.self===window.top)return false;try{return window.parent.location.origin===location.origin&&!!window.parent.__tfwSeamlessNavigation}catch{return false}})();
+ if(trustedEmbed)return;
  const origin=new URL(location.href);
+ // The public support page has no account gate. In QA, avoid loading the
+ // protected countdown through an unguarded iframe from this entry point.
+ let preview=false;
+ try{preview=localStorage.getItem('tfw_community_preview')==='yes'}catch{}
+ if(preview&&origin.pathname.endsWith('/support.html'))return;
  const originalBase=origin.pathname+origin.search;
  const rootPrefix=origin.pathname.slice(0,origin.pathname.lastIndexOf('/')+1);
  const allowed=new Set(['','index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html','community-privacy.html','community-terms.html','support.html']);

@@ -3,7 +3,9 @@
 const PUBLIC_COMMUNITY_ENABLED=false;
 let communityPreview=false;
 try{communityPreview=localStorage.getItem('tfw_community_preview')==='yes'}catch{}
-const embedded=new URLSearchParams(location.search).has('tfw_embed');
+// Only trust an iframe created by the same-origin navigation host.
+// A direct URL ending in ?tfw_embed=1 must never bypass the account gate.
+const embedded=(()=>{if(!new URLSearchParams(location.search).has('tfw_embed')||window.self===window.top)return false;try{return window.parent.location.origin===location.origin&&!!window.parent.__tfwSeamlessNavigation}catch{return false}})();
 const active=!embedded&&(PUBLIC_COMMUNITY_ENABLED||communityPreview);
 const EMOJIS=['🔥','🚀','🥳','🎉','🌴','🩷','💜'];
 // Older deployed Workers may still accept only the original four reactions.

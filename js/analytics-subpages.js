@@ -1,2 +1,2 @@
-import { initAnalytics } from './analytics-consent.js?v=2';
+import { initAnalytics } from './analytics-consent.js?v=3';
 initAnalytics();
