@@ -29,11 +29,12 @@ async function initCommunity(){
     <div id="tfwGateGuest" hidden>
       <button class="tfw-gate-primary" type="button" id="hypeGoogle">CONTINUE WITH GOOGLE</button>
     </div>
-    <form id="tfwGateRegister" hidden>
+    <form id="tfwGateRegister" hidden novalidate>
       <label class="tfw-gate-field" for="hypeNickname">PUBLIC NICKNAME
        <input id="hypeNickname" name="nickname" minlength="3" maxlength="20" pattern="[A-Za-z0-9_]{3,20}"
-        autocomplete="nickname" placeholder="LeonidaFan" required>
+        autocomplete="nickname" placeholder="LeonidaFan" aria-describedby="tfwNicknameError" required>
       </label>
+      <p class="tfw-gate-field-error" id="tfwNicknameError" role="alert" hidden></p>
       <p class="tfw-gate-note">Your nickname cannot be changed after registration.</p>
       <label class="tfw-gate-check"><input id="hypeTerms" type="checkbox" required>
        <span>I accept the <a href="community-terms.html" target="_blank" rel="noopener">Terms & Conditions</a>
@@ -145,7 +146,7 @@ async function initCommunity(){
     meter=document.createElement('div');
     meter.className='tfw-hype-intensity';
     meter.innerHTML=`
-      <div class="tfw-hype-meter-caption"><span>LIVE HYPE LEVEL</span><b id="tfwHypePct">0%</b></div>
+      <div class="tfw-hype-meter-caption"><span>HYPE LEVEL</span><b id="tfwHypePct">0%</b></div>
       <div class="tfw-hype-meter" role="meter" aria-label="Live hype intensity"
         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="tfwHypeFill"></i></div>`;
     hero.appendChild(meter);
@@ -156,7 +157,10 @@ async function initCommunity(){
       if(!EMOJIS.includes(emoji))continue;
       const btn=document.createElement('button');
       btn.type='button';btn.className='tfw-hype-emoji';
-      btn.textContent=emoji;btn.setAttribute('aria-label','Send '+emoji);
+      const glyph=document.createElement('span');
+      glyph.className='tfw-hype-emoji-glyph';
+      glyph.textContent=emoji;btn.appendChild(glyph);
+      btn.setAttribute('aria-label','Send '+emoji);
       btn.title='Send '+emoji;btn.addEventListener('click',()=>send(emoji));
       rail.querySelector('#tfwHypeButtons').appendChild(btn);
       buttons.push(btn);
@@ -222,7 +226,7 @@ async function initCommunity(){
       const name=document.createElement('span');name.className='tfw-hype-float-name';
       name.textContent=item.nickname;node.append(e,name);layer.appendChild(node);
       while(layer.children.length>14)layer.firstElementChild.remove();
-      setTimeout(()=>node.remove(),2600);
+      setTimeout(()=>node.remove(),1600);
     }
   }
   function updateHype(counts){
@@ -339,7 +343,7 @@ async function initCommunity(){
         $('#hypeNickname').readOnly=Boolean(state.profile?.nickname);
         $('#hypeTerms').checked=false;
         $('#hypeNewsletter').checked=Boolean(state.profile?.marketing_opt_in);
-        status('Choose your permanent nickname and finish registration.');
+        status('');
         showGate('register');return;
       }
       hideGate();status('');
@@ -364,13 +368,29 @@ async function initCommunity(){
     state.user=null;state.profile=null;
     status('');showGate('guest');
   });
+  const nicknameInput=$('#hypeNickname');
+  const nicknameError=$('#tfwNicknameError');
+  function clearNicknameError(){
+    nicknameError.textContent='';nicknameError.hidden=true;
+    nicknameInput.removeAttribute('aria-invalid');
+  }
+  nicknameInput.addEventListener('input',clearNicknameError);
   $('#tfwGateRegister').addEventListener('submit',async event=>{
     event.preventDefault();if(state.busy)return;
     state.busy=true;$('#hypeSubmit').disabled=true;
     try{
+      const nickname=nicknameInput.value;
+      if(!/^[A-Za-z0-9_]{3,20}$/.test(nickname)){
+        nicknameError.textContent='Use 3–20 letters, numbers or underscores. Spaces are not allowed.';
+        nicknameError.hidden=false;nicknameInput.setAttribute('aria-invalid','true');
+        nicknameInput.focus();
+        throw Error('Please correct your nickname above.');
+      }
+      clearNicknameError();
+      if(!$('#hypeTerms').checked)throw Error('Please accept the Terms & Conditions.');
       if(!state.challengeToken)throw Error('Complete the security check first.');
       const result=await api('POST','profile',{
-        nickname:$('#hypeNickname').value.trim(),
+        nickname,
         acceptedTerms:$('#hypeTerms').checked,termsVersion:settings.termsVersion,
         newsletter:$('#hypeNewsletter').checked,turnstileToken:state.challengeToken
       });
