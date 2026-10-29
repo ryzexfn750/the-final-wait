@@ -13,10 +13,13 @@ export function enabled(env){
      env.HYPE_TICKET_SECRET&&env.HYPE_ROOMS);
 }
 export function adminApi(env,path,opts={}){
+  // Modern sb_secret_ keys are opaque API keys, not bearer JWTs.
+  // Legacy service_role JWTs still support Authorization: Bearer.
+  const secret=env.SUPABASE_SERVICE_ROLE_KEY;
   return fetch(env.SUPABASE_URL.replace(/\/$/,'')+path,{
     ...opts,headers:{
-      apikey:env.SUPABASE_SERVICE_ROLE_KEY,
-      Authorization:'Bearer '+env.SUPABASE_SERVICE_ROLE_KEY,
+      apikey:secret,
+      ...(secret.startsWith('eyJ')?{Authorization:'Bearer '+secret}:{}),
       'content-type':'application/json',
       ...(opts.headers||{})
     }
