@@ -16,7 +16,8 @@ const remoteTracks = [
 const excluded = new Set(remoteTracks.map(name => 'assets/audio/' + name));
 const publicEntries = [
   'index.html', 'today.html', 'timeline.html', 'intel.html',
-  'intel-archive.html', 'robots.txt', 'site.webmanifest', '_headers',
+  'intel-archive.html', 'community-terms.html', 'community-privacy.html',
+  'robots.txt', 'site.webmanifest', '_headers',
   'css', 'js', 'content', 'assets',
 ];
 
@@ -71,7 +72,7 @@ await checkSize(output);
 // styles, images and audio remain served through the normal Pages CDN.
 await writeFile(join(output,'_routes.json'),JSON.stringify({
   version:1,
-  include:['/api/timezone'],
+  include:['/api/timezone','/api/community/*'],
   exclude:[]
 }));
 console.log('Cloudflare Pages output prepared: dist/');
