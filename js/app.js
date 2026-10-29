@@ -1,5 +1,5 @@
 import { SITE_CONFIG, TIMELINE, INTEL } from './config.js?v=45';
-import { initAnalytics, track } from './analytics-consent.js?v=2';
+import { initAnalytics, track } from './analytics-consent.js?v=4';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
