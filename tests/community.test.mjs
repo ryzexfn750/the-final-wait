@@ -55,7 +55,7 @@ test('Durable Object uses hibernation and rate-limits reactions',()=>{
   const worker=read('workers/hype-worker/src/index.js');
   assert.match(worker,/acceptWebSocket\(server\)/);
   assert.match(worker,/serializeAttachment\(/);
-  assert.match(worker,/INTERVAL_MS=10_000/);
+  assert.match(worker,/function cooldownFor\(count\)/);
   assert.match(worker,/scheduleFlush\(\)/);
   assert.match(worker,/const ALLOWED=new Set/);
   const cfg=read('workers/hype-worker/wrangler.jsonc');
