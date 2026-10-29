@@ -22,13 +22,12 @@ async function initCommunity(){
    <div class="tfw-gate-aurora" aria-hidden="true"></div>
    <div class="tfw-gate-card">
     <img class="tfw-gate-logo" src="assets/gta-vi-logo.webp" alt="Grand Theft Auto VI">
-    <p class="tfw-gate-kicker">THE FINAL WAIT · COMMUNITY ACCESS</p>
+    <p class="tfw-gate-kicker">THE FINAL WAIT</p>
     <h1 id="tfwGateHeading">WELCOME TO LEONIDA.</h1>
     <p class="tfw-gate-lede">Create your account to enter the countdown and join fans in your time zone.</p>
     <p class="tfw-gate-status" id="tfwGateStatus" role="status" aria-live="polite">CHECKING SESSION…</p>
     <div id="tfwGateGuest" hidden>
       <button class="tfw-gate-primary" type="button" id="hypeGoogle">CONTINUE WITH GOOGLE</button>
-      <p class="tfw-gate-note">Your email is private. Other fans see only your nickname and reactions.</p>
     </div>
     <form id="tfwGateRegister" hidden>
       <label class="tfw-gate-field" for="hypeNickname">PUBLIC NICKNAME
@@ -167,21 +166,63 @@ async function initCommunity(){
     if(!rail)return;
     rail.classList.toggle('tfw-hype-disconnected',!state.connected);
   }
+  // Choose safe visual space in the hero, rather than placing reactions
+  // over the clock, copy, controls, final call, or release information.
+  const avoidedSelectors=[
+    '.hero-title-wrap','#countdown','#finalMinuteCountdown',
+    '.phase-pill','.release-hud','.progress-block','.hero-status',
+    '.next-scene','.scroll-cue','.tfw-final-call-headline',
+    '.finale-release','.release-elapsed-clock','#finaleVisualizerWrap',
+    '.tfw-hype-rail','.tfw-hype-intensity'
+  ];
+  function randomSafePosition(){
+    const box=hero.getBoundingClientRect();
+    const w=Math.min(112,Math.max(78,box.width*.25));
+    const h=93;
+    const pad=12;
+    const taken=avoidedSelectors.flatMap(s=>[...hero.querySelectorAll(s)])
+      .filter(el=>getComputedStyle(el).visibility!=='hidden'&&
+        getComputedStyle(el).display!=='none'&&
+        Number(getComputedStyle(el).opacity||1)>.08)
+      .map(el=>el.getBoundingClientRect());
+    for(const node of layer.children)if(node.isConnected)taken.push(node.getBoundingClientRect());
+    const collision=(x,y)=>{
+      const left=box.left+x-pad,right=box.left+x+w+pad;
+      const top=box.top+y-pad,bottom=box.top+y+h+pad;
+      return taken.reduce((score,rect)=>{
+        const intersection=Math.max(0,Math.min(right,rect.right+pad)-Math.max(left,rect.left-pad))*
+          Math.max(0,Math.min(bottom,rect.bottom+pad)-Math.max(top,rect.top-pad));
+        return score+intersection;
+      },0);
+    };
+    let best=null,bestScore=Infinity;
+    for(let i=0;i<60;i++){
+      const x=pad+Math.random()*Math.max(0,box.width-w-pad*2);
+      const y=Math.max(100,box.height*.15)+Math.random()*
+        Math.max(0,box.height-Math.max(100,box.height*.15)-h-72);
+      const score=collision(x,y);
+      if(score<bestScore){best={x,y};bestScore=score}
+      if(score===0)break;
+    }
+    return best||{x:20,y:120};
+  }
   function animate(entries){
     if(!layer||document.hidden)return;
     for(const item of entries.slice(-6)){
       if(!EMOJIS.includes(item.emoji)||typeof item.nickname!=='string'||
          !/^[A-Za-z0-9_]{3,20}$/.test(item.nickname))continue;
+      const pos=randomSafePosition();
       const node=document.createElement('div');node.className='tfw-hype-float';
-      node.style.setProperty('--hx',(15+Math.random()*65).toFixed(1)+'%');
-      node.style.setProperty('--hy',(25+Math.random()*44).toFixed(1)+'%');
-      node.style.setProperty('--drift',(Math.random()*100-50).toFixed(0)+'px');
+      node.style.setProperty('--hx',pos.x.toFixed(1)+'px');
+      node.style.setProperty('--hy',pos.y.toFixed(1)+'px');
+      node.style.setProperty('--drift',(Math.random()*96-48).toFixed(0)+'px');
+      node.style.setProperty('--spin',(Math.random()*22-11).toFixed(0)+'deg');
       const e=document.createElement('span');e.className='tfw-hype-float-emoji';
       e.textContent=item.emoji;
       const name=document.createElement('span');name.className='tfw-hype-float-name';
       name.textContent=item.nickname;node.append(e,name);layer.appendChild(node);
-      while(layer.children.length>18)layer.firstElementChild.remove();
-      setTimeout(()=>node.remove(),4500);
+      while(layer.children.length>14)layer.firstElementChild.remove();
+      setTimeout(()=>node.remove(),2600);
     }
   }
   function updateHype(counts){
@@ -194,7 +235,7 @@ async function initCommunity(){
   }
   function paintHype(){
     if(!fill)return;
-    fill.style.width=state.hype.toFixed(1)+'%';
+    fill.style.height=state.hype.toFixed(1)+'%';
     pct.textContent=Math.round(state.hype)+'%';
     meter.querySelector('.tfw-hype-meter').setAttribute('aria-valuenow',String(Math.round(state.hype)));
   }
@@ -278,7 +319,7 @@ async function initCommunity(){
       // the expected login state rather than a service failure.
       if(!sessionData?.session){
         state.user=null;state.profile=null;closeSocket();
-        status('Sign in with Google to enter the site.');
+        status('');
         showGate('guest');return;
       }
       const {data,error}=await auth.auth.getUser();
@@ -321,7 +362,7 @@ async function initCommunity(){
   $('#hypeSignOut').addEventListener('click',async()=>{
     closeSocket();try{await (await loadAuth()).auth.signOut()}catch{}
     state.user=null;state.profile=null;
-    status('Sign in with Google to enter the site.');showGate('guest');
+    status('');showGate('guest');
   });
   $('#tfwGateRegister').addEventListener('submit',async event=>{
     event.preventDefault();if(state.busy)return;
@@ -352,7 +393,7 @@ async function initCommunity(){
   });
   window.addEventListener('tfw:community-signout',()=>{
     closeSocket();state.user=null;state.profile=null;
-    status('Sign in with Google to enter the site.');showGate('guest');
+    status('');showGate('guest');
   });
   document.addEventListener('visibilitychange',()=>{
     if(!document.hidden&&member()&&!state.ws)void connectSocket();
