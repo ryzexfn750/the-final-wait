@@ -32,7 +32,7 @@
 
     let x=-200,y=-200,frame=0,active=false,mouseSeen=false;
     let lastTouch=0;
-    let autoScroll=null,autoScrollFrame=0;
+    let autoScroll=null,autoScrollFrame=0,skipMiddleMouseDown=false;
     const autoIcon=document.createElement('div');
     autoIcon.className='tfw-autoscroll-indicator';
     autoIcon.hidden=true;
@@ -72,7 +72,9 @@
     // Browsers do not expose styling for their built-in middle-click autoscroll icon.
     // Prevent the native mode and own both the scrolling and its visible indicator.
     function middleClick(event){
-      if(event.button!==1||autoScroll||event.target?.closest?.('a[href],button,input,textarea,select,[contenteditable]'))return;
+      if(event.button!==1)return;
+      if(autoScroll){event.preventDefault();event.stopPropagation();return}
+      if(event.target?.closest?.('a[href],button,input,textarea,select,[contenteditable]'))return;
       const container=scrollingParent(event.target);
       if(!container)return;
       event.preventDefault();event.stopPropagation();
@@ -130,14 +132,23 @@
     document.addEventListener('pointerdown',event=>{
       if(event.pointerType==='touch'){lastTouch=Date.now();stopAutoScroll();hide();return}
       if(autoScroll&&event.button!==1){stopAutoScroll();event.preventDefault();return}
+      if(event.button===1&&autoScroll){
+        event.preventDefault();event.stopPropagation();
+        skipMiddleMouseDown=true;stopAutoScroll();return;
+      }
       if(event.button===1)middleClick(event);
     },{passive:false,capture:true});
-    document.addEventListener('mousedown',middleClick,{passive:false,capture:true});
+    document.addEventListener('mousedown',event=>{
+      if(event.button===1&&skipMiddleMouseDown){
+        event.preventDefault();event.stopPropagation();skipMiddleMouseDown=false;
+      }else middleClick(event);
+    },{passive:false,capture:true});
     document.addEventListener('auxclick',event=>{
       if(event.button===1&&autoScroll)event.preventDefault();
     },{capture:true});
     document.addEventListener('selectionchange',syncSelection);
     document.addEventListener('mouseup',event=>{
+      if(event.button===1)skipMiddleMouseDown=false;
       if(event.button===0){syncSelection();move(event)}
     },{capture:true,passive:true});
     window.addEventListener('keydown',event=>{

@@ -511,3 +511,6 @@ html.tfw-global-cursor-ready .timeline-viewport::-webkit-scrollbar{
   html.tfw-global-cursor-ready body,
   html.tfw-global-cursor-ready body *{scrollbar-color:auto}
 }
+
+/* An embedded route draws its own cursor. Hide the frozen host cursor. */
+html.tfw-route-overlay-open #tfwGlobalCursor{opacity:0!important;visibility:hidden!important}
