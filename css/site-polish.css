@@ -479,3 +479,18 @@ html.tfw-global-cursor-ready .timeline-viewport::-webkit-scrollbar{
   min-height:20px;
   touch-action:none;
 }
+
+/* Creator support: contribution card, never an obstructive popup. */
+.tfw-support-project{position:relative;width:min(1160px,92vw);margin:40px auto 10px;padding:clamp(20px,3vw,34px);border-radius:22px;border:1px solid rgba(241,157,215,.26);background:linear-gradient(125deg,rgba(71,28,66,.42),rgba(20,13,36,.87));box-shadow:0 18px 45px rgba(4,3,13,.22);color:#f7eafa;isolation:isolate}
+.tfw-support-project-inner{display:flex;align-items:center;justify-content:space-between;gap:28px}
+.tfw-support-project-copy{max-width:710px;min-width:0}
+.tfw-support-project-eyebrow{display:block;font:800 10px/1.4 Arial,sans-serif;letter-spacing:.16em;color:#efafd7;margin-bottom:12px}
+.tfw-support-project h2{font:900 clamp(22px,3.3vw,39px)/1.05 Arial Black,Arial,sans-serif;letter-spacing:-.02em;margin:0 0 12px}
+.tfw-support-project-copy p{color:#cfc2d7;font-size:clamp(12px,1.3vw,15px);line-height:1.6;margin:0}
+.tfw-coffee-link{flex:0 0 auto;display:inline-flex;align-items:center;gap:12px;padding:16px 21px;border-radius:12px;background:#f4badc;color:#29142c!important;border:1px solid #fff7;text-decoration:none!important;font:900 12px/1.2 Arial,sans-serif;letter-spacing:.08em;transition:transform .2s,filter .2s}
+.tfw-coffee-link span{font-size:21px}
+.tfw-coffee-link:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.tfw-coffee-link:focus-visible{outline:2px solid white;outline-offset:4px}
+.tfw-experience-advisory{display:flex;align-items:flex-start;flex-wrap:wrap;gap:7px;margin:25px 0 0!important;padding-top:17px;border-top:1px solid rgba(255,255,255,.1);font:400 12px/1.6 Arial,sans-serif!important;color:#baafc8!important}
+.tfw-experience-advisory strong{font-weight:900;letter-spacing:.05em;color:#e8c5dd}
+@media(max-width:750px){.tfw-support-project-inner{align-items:flex-start;flex-direction:column}.tfw-coffee-link{align-self:stretch;justify-content:center}.tfw-support-project{margin-top:22px}.tfw-experience-advisory{font-size:11px!important}}

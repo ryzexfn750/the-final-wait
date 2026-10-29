@@ -241,11 +241,7 @@ function updateZoneUI() {
     autoButton.classList.toggle('active',window.__tfwTimeZoneSource==='auto');
     const detected=window.__tfwDetectTimeZone?.()||SITE_CONFIG.defaultTimeZone;
     const result=window.__tfwGetTimeZoneComparison?.();
-    const note=result?.status==='matched'?' · DEVICE + NETWORK AGREE':
-      result?.status==='different'?' · DEVICE PREFERRED (NETWORK DIFFERS)':
-      result?.status==='network-only'?' · NETWORK FALLBACK':
-      result?.status==='checking'?' · CHECKING NETWORK':
-      result?.status==='default'?' · DEFAULT':' · DEVICE TIME ZONE';
+    const note=' · YOUR LOCAL COUNTDOWN';
     $('#timezoneAutoStatus').textContent=detected.replaceAll('_',' ')+note;
   }
 }

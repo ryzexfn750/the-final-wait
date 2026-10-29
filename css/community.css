@@ -569,3 +569,8 @@ body>footer:has(>.tfw-community-footer-links)>.tfw-community-footer-links a:hove
 
 /* Modern color-emoji fonts, including the Emoji 15 pink heart glyph. */
 #hero .tfw-hype-emoji-glyph,#hero .tfw-hype-float-emoji{font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif!important}
+
+/* Legal viewer only scrolls vertically; no horizontal wheel track. */
+#tfwGateLegal,#tfwGateLegal .tfw-gate-legal-panel{max-width:100vw;min-width:0;overflow-x:hidden!important}
+#tfwGateLegal .tfw-gate-legal-body{min-width:0;max-width:100%;overflow-x:hidden!important;overflow-y:auto;overflow-wrap:anywhere;word-break:normal}
+#tfwGateLegal .tfw-gate-legal-body>*{max-width:100%;min-width:0}

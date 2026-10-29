@@ -96,7 +96,7 @@ async function initCommunity(){
         '<strong>support@thefinalwait.com</strong></div></div>'+
         '<button class="tfw-gate-support-copy" type="button" id="tfwGateCopySupport">COPY EMAIL ADDRESS</button>'+
         '<p id="tfwGateSupportFeedback" role="status" aria-live="polite"></p>'+
-        '<p class="tfw-gate-support-note">Your message opens in your preferred email service when you paste the copied address.</p></section>';
+        '</section>';
       return;
     }
     try{

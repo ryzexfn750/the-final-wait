@@ -19,7 +19,11 @@ a{color:#efb1d6;text-underline-offset:3px}
 a:focus-visible{outline:3px solid #efb1d6;outline-offset:3px}
 .draft{background:#35222c;color:#ffe2cc;border:1px solid #b78169;border-radius:12px;padding:16px;margin:25px 0}
 .small{font-size:14px;color:#c5b9c7}
-footer{border-top:1px solid #ffffff30;margin-top:40px;padding:20px 0;color:#bdb0c2;font-size:13px}
+footer{border-top:1px solid #ffffff30;margin-top:40px;padding:20px 0;color:#bdb0c2;font-size:13px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 22px;overflow-wrap:anywhere}
+footer .tfw-legal-credit{font-weight:600;color:#bdb0c2}
+footer .tfw-legal-links{display:flex;align-items:center;gap:10px;flex-wrap:wrap;white-space:nowrap}
+@media(max-width:570px){footer{justify-content:center;text-align:center}footer .tfw-legal-links{justify-content:center}}
+
 </style>
 </head>
 <body><main>
@@ -94,9 +98,8 @@ Terms acceptance or newsletter subscriptions. Refusing does not limit site acces
 This notice will be updated before public registration and whenever significant
 processing changes are introduced.</p>
 <p><button type="button" id="tfwPrivacyCookiePreferences" data-tfw-analytics-preferences>CHANGE ANALYTICS COOKIE PREFERENCES</button></p>
-<footer>THE FINAL WAIT · INDEPENDENT, UNOFFICIAL FAN PROJECT ·
-<a href="community-terms.html">Community Terms</a> ·
-<a href="support.html">Contact</a></footer>
+<footer><span class="tfw-legal-credit">THE FINAL WAIT · INDEPENDENT FAN PROJECT</span>
+<nav class="tfw-legal-links" aria-label="Legal links"><a href="community-terms.html">Community Terms</a><span aria-hidden="true">·</span><a href="support.html">Contact</a></nav></footer>
 </main>
 <script type="module">
  import {initAnalytics} from './js/analytics-consent.js?v=4';
