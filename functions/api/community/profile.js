@@ -20,6 +20,21 @@ async function handle(request,env,mode){
   }
   let body;
   try{body=await bodyJSON(request)}catch{return fail('Invalid request body',400)}
+  // Turnstile is enforced server-side. Browser-side checks alone are not security.
+  const token=String(body?.turnstileToken||'');
+  if(token.length<10||token.length>2048)return fail('Complete the security challenge',403);
+  const challenge=new URLSearchParams({
+    secret:env.TURNSTILE_SECRET,response:token
+  });
+  let verified;
+  try{
+    const check=await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify',{
+      method:'POST',body:challenge
+    });
+    verified=check.ok?await check.json():null;
+  }catch{}
+  if(!verified?.success||verified.hostname!==new URL(request.url).hostname)
+    return fail('Security verification failed. Please retry',403);
   if(body?.acceptedTerms!==true||body?.termsVersion!==TERMS_VERSION)
     return fail('Accept the current terms to continue',400);
   const nickname=String(body?.nickname||'').trim();
