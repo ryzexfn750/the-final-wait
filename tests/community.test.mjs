@@ -183,3 +183,15 @@ test('Durable Object expires WebSockets without storing per-socket alarms',async
   await room.webSocketMessage(expiredSocket,JSON.stringify({type:'reaction',emoji:'🔥'}));
   assert.equal(closed.length,2);
 });
+
+test('Protected real WebSocket QA script cannot bypass production limits',()=>{
+  const script=read('js/hype-loadtest-qa.js');
+  assert.match(script,/location\.hostname!==QA_HOST/);
+  assert.match(script,/!\[20,50\]\.includes\(connections\)/);
+  assert.match(script,/new WebSocket\(url\)/);
+  assert.match(script,/\/api\/community\/ticket/);
+  assert.match(script,/\/api\/community\/profile/);
+  assert.match(script,/connections\/2/);
+  assert.match(script,/item\.socket\.close\(1000,'Load test complete'\)/);
+  assert.doesNotMatch(script,/SENDER_API_KEY|SUPABASE_SERVICE_ROLE_KEY|HYPE_TICKET_SECRET/);
+});
