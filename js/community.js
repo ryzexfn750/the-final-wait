@@ -7,16 +7,37 @@ let communityPreview=false;
 try{communityPreview=localStorage.getItem('tfw_community_preview')==='yes'}catch{}
 if((PUBLIC_COMMUNITY_ENABLED||communityPreview)&&
    !new URLSearchParams(location.search).has('tfw_embed')){
-  void initCommunity();
+  // Don't spend one Worker request for every visitor who never opens Hype.
+  const launch=document.createElement('button');
+  launch.type='button';
+  launch.className='hype-launch hype-preview-launch';
+  launch.textContent='● LIVE HYPE 🔥';
+  launch.setAttribute('aria-label','Open The Final Wait Live Hype');
+  const mount=document.createElement('div');
+  mount.className='hype-root';
+  mount.appendChild(launch);
+  document.body.appendChild(mount);
+  let opening=false;
+  const start=async()=>{
+    if(opening)return;
+    opening=true;launch.disabled=true;
+    try{
+      const ready=await initCommunity();
+      if(ready){mount.remove();return}
+      launch.textContent='LIVE HYPE · COMING SOON';
+    }finally{opening=false;launch.disabled=false}
+  };
+  launch.addEventListener('click',()=>{void start()});
+  if(sessionStorage.getItem('tfw_hype_open')==='yes')void start();
 }
 async function initCommunity(){
   let settings;
   try{
     const response=await fetch('/api/community/config',{cache:'no-store'});
-    if(!response.ok)return;
+    if(!response.ok)return false;
     settings=await response.json();
-    if(!settings.enabled)return;
-  }catch{return}
+    if(!settings.enabled)return false;
+  }catch{return false}
   const template=`
   <button type="button" class="hype-launch" id="hypeLaunch" aria-controls="hypePanel" aria-expanded="false">
     <span class="hype-live-dot"></span> LIVE HYPE <span aria-hidden="true">🔥</span>
@@ -264,5 +285,8 @@ async function initCommunity(){
   if(sessionStorage.getItem('tfw_hype_open')==='yes'){
     sessionStorage.removeItem('tfw_hype_open');
     void open();
+  }else{
+    void open();
   }
+  return true;
 }
