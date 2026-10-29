@@ -161,7 +161,7 @@ checks. The app-only gate is a UX gate, not static HTTP authorization.
 - **Footer:** legal disclaimer sits beside the brand on desktop;
   privacy/terms/newsletter/support are discreet, small, unbordered links
   below, with responsive stacking on mobile.
-- **Cache:** `js/community.js?v=4`, `css/community.css?v=4`,
+- **Cache:** `js/community.js?v=5`, `css/community.css?v=4`,
   `js/seamless-navigation.js?v=51`, `js/app.js?v=51`,
   `js/community-profile.js?v=3`, `css/community-profile.css?v=3`.
 
@@ -191,3 +191,7 @@ node tools/build-cloudflare-pages.mjs
 ```
 No Production gates, public Worker bindings, or Cloudflare Durable Object
 deployment changes are required for these frontend/Pages Function fixes.
+
+The final `v5` community script also listens for
+`tfw:seamless-return` and restores any HYPE DOM nodes removed by another
+transition, refreshes reaction availability and reconnects only when needed.
