@@ -50,7 +50,7 @@ async function initCommunity(){
     <div class="tfw-gate-bottom">
       <a href="community-privacy.html" target="_blank" rel="noopener">PRIVACY</a>
       <a href="community-terms.html" target="_blank" rel="noopener">TERMS</a>
-      <a href="mailto:support@thefinalwait.com">SUPPORT</a>
+      <a href="support.html" target="_blank" rel="noopener">SUPPORT</a>
     </div>
    </div>`;
   document.body.appendChild(gate);
