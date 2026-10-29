@@ -260,3 +260,203 @@ body.tfw-route-overlay-open #hero>.tfw-hype-stage{visibility:hidden}
   animation:none!important
  }
 }
+
+
+/* QA v4: restore a single scroll owner when a seamless child page is open.
+   The child iframe scrolls independently; the original countdown/audio owner
+   never scrolls, mutates section hash, or produces a second root scrollbar. */
+html.tfw-route-overlay-open,
+html.tfw-route-overlay-open body{
+ overflow:hidden!important;overflow-y:hidden!important;
+ overscroll-behavior:none!important;
+}
+html.tfw-route-overlay-open{scrollbar-width:none!important}
+html.tfw-route-overlay-open::-webkit-scrollbar{display:none!important}
+html.tfw-route-overlay-open #tfwSeamlessShell{overscroll-behavior:contain}
+
+/* Local nickname validation replaces native browser pattern popovers. */
+.tfw-gate-field-error{margin:-8px 0 0;color:#ff9eaf;font:700 11px/1.5 Arial;
+ letter-spacing:0;text-align:left}
+.tfw-gate-field-error[hidden]{display:none!important}
+#hypeNickname[aria-invalid="true"]{
+ border-color:#ff7899!important;
+ box-shadow:0 0 0 3px rgba(255,104,155,.16)!important
+}
+
+/* Opposite-side HYPE LEVEL — same visual stature as seven-emoji rail. The
+   intensity fill rises behind its readable in-tube label and percentage. */
+#hero>.tfw-hype-intensity{
+ left:29px!important;right:auto!important;top:50%!important;bottom:auto!important;
+ height:385px!important;width:58px!important;
+ padding:8px!important;gap:0!important;box-sizing:border-box!important;
+ display:block!important;border-radius:24px!important;
+ transform:translateY(-50%)!important;
+}
+#hero>.tfw-hype-intensity .tfw-hype-meter{
+ width:100%!important;height:100%!important;min-height:0!important;
+ position:relative!important;display:block!important;flex:none!important;
+ border-radius:19px!important;
+ background:linear-gradient(180deg,rgba(22,18,34,.55),rgba(17,7,31,.84))!important;
+ box-shadow:inset 0 0 12px rgba(0,0,0,.55)!important;
+}
+#hero>.tfw-hype-intensity .tfw-hype-meter i{
+ position:absolute!important;bottom:0!important;left:0!important;
+ width:100%!important;height:0;transition:height .5s ease-out!important;
+ background:linear-gradient(to top,#8447f1 0%,#de5ce0 50%,#ff8dca 85%,#ffe2a4 100%)!important;
+ box-shadow:inset 0 0 10px #ffffff42,0 0 16px #ff6ad377!important
+}
+#hero>.tfw-hype-intensity .tfw-hype-meter-caption{
+ position:absolute!important;z-index:4;left:8px;right:8px;top:10px;bottom:10px;
+ display:flex!important;flex-direction:column!important;
+ justify-content:space-between!important;align-items:center!important;
+ gap:10px!important;width:auto!important;pointer-events:none;
+ padding:0!important;margin:0!important;
+}
+#hero>.tfw-hype-intensity .tfw-hype-meter-caption span{
+ font:900 9px/1 Arial!important;letter-spacing:.13em!important;
+ writing-mode:vertical-rl!important;transform:rotate(180deg)!important;
+ color:#fff!important;text-shadow:0 1px 5px #10081c,0 0 10px #130919;
+ margin:auto 0!important;white-space:nowrap!important
+}
+#hero>.tfw-hype-intensity .tfw-hype-meter-caption b{
+ order:-1;color:#fff!important;letter-spacing:0!important;
+ font:900 11px/1 Arial!important;
+ text-shadow:0 2px 5px #10081c,0 0 10px #10081c;
+ background:rgba(12,8,22,.54);padding:5px 2px;border-radius:7px;
+ min-width:35px;text-align:center;
+}
+#hero>.tfw-hype-rail{right:29px!important;box-sizing:border-box!important;
+ width:58px!important;align-items:center!important;
+ padding:10px 6px!important}
+#hero>.tfw-hype-rail #tfwHypeButtons{
+ width:100%;display:grid!important;
+ grid-template-columns:1fr!important;align-items:center!important;
+ justify-items:center!important;gap:6px!important
+}
+#hero>.tfw-hype-rail .tfw-hype-emoji{
+ box-sizing:border-box!important;padding:0!important;margin:0 auto!important;
+ display:grid!important;place-items:center!important;
+ width:43px!important;height:43px!important;
+ text-align:center!important;line-height:1!important
+}
+#hero>.tfw-hype-rail .tfw-hype-emoji-glyph{
+ display:block;line-height:1;transform:translateY(-1px);font-size:25px;
+ font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
+}
+
+/* 1.6s live reactions: quick elastic pop, gentle rotation and short fade.
+   The animation is CSS/GPU driven; DOM nodes are removed after 1600ms. */
+#hero .tfw-hype-float{
+ animation:tfwHypeQuick 1.6s cubic-bezier(.22,.69,.3,1) both!important;
+ transform-origin:50% 50%;filter:none
+}
+#hero .tfw-hype-float-emoji{
+ animation:tfwEmojiQuickWiggle 1.6s ease-in-out both!important;
+ transform-origin:50% 70%
+}
+#hero .tfw-hype-float:before,#hero .tfw-hype-float:after{
+ animation:tfwEmojiPulse .65s ease-out both!important
+}
+@keyframes tfwHypeQuick{
+ 0%{opacity:0;transform:translate3d(0,24px,0) scale(.5) rotate(-12deg)}
+ 18%{opacity:1;transform:translate3d(0,-2px,0) scale(1.14) rotate(7deg)}
+ 40%{opacity:1;transform:translate3d(0,-12px,0) scale(1) rotate(-3deg)}
+ 72%{opacity:.97;transform:translate3d(var(--drift),-38px,0) scale(.99) rotate(var(--spin))}
+ 100%{opacity:0;transform:translate3d(var(--drift),-73px,0) scale(.76) rotate(5deg)}
+}
+@keyframes tfwEmojiQuickWiggle{
+ 0%{transform:scale(.65) rotate(-10deg)}
+ 22%{transform:scale(1.15) rotate(8deg)}
+ 45%{transform:scale(.98) rotate(-5deg)}
+ 72%{transform:scale(1.04) rotate(4deg)}
+ 100%{transform:scale(.92) rotate(0deg)}
+}
+
+/* Footer: disclaimer directly after the THE FINAL WAIT brand; discrete
+   unframed links beneath. Preserve creator credit at the outer edge. */
+body>footer:has(>.tfw-community-footer-links){
+ grid-template-columns:minmax(150px,180px) minmax(0,1fr) auto!important;
+ column-gap:clamp(18px,2.7vw,34px)!important;
+ row-gap:18px!important;align-items:center!important;
+}
+body>footer:has(>.tfw-community-footer-links)>.footer-brand{
+ grid-column:1;grid-row:1;justify-self:start;align-self:center
+}
+body>footer:has(>.tfw-community-footer-links)>.legal-copy{
+ grid-column:2;grid-row:1;justify-self:start;align-self:center;
+ width:auto;max-width:680px;font-size:10px;line-height:1.65;
+ color:rgba(255,255,255,.52)
+}
+body>footer:has(>.tfw-community-footer-links)>.footer-socials,
+body>footer:has(>.tfw-community-footer-links)>.tfw-footer-creator{
+ grid-column:3;grid-row:1;justify-self:end
+}
+body>footer:has(>.tfw-community-footer-links)>.tfw-community-footer-links{
+ grid-column:1/-1;grid-row:2;display:flex;justify-content:flex-start;
+ width:100%;gap:15px;flex-wrap:wrap;
+ margin:2px 0 0!important;padding:0!important;
+ border:0!important;background:transparent!important
+}
+body>footer:has(>.tfw-community-footer-links)>.tfw-community-footer-links a{
+ padding:0!important;margin:0!important;border:0!important;
+ color:rgba(255,255,255,.43);font:700 7px/1.5 Arial!important;
+ letter-spacing:.06em;text-decoration:none!important;opacity:.85
+}
+body>footer:has(>.tfw-community-footer-links)>.tfw-community-footer-links a:hover{
+ color:#f6b9de;opacity:1
+}
+@media(max-width:950px){
+ body>footer:has(>.tfw-community-footer-links){
+  grid-template-columns:minmax(125px,175px) minmax(0,1fr)!important;
+  row-gap:17px!important
+ }
+ body>footer:has(>.tfw-community-footer-links)>.footer-socials,
+ body>footer:has(>.tfw-community-footer-links)>.tfw-footer-creator{
+  grid-column:2!important;grid-row:2!important;justify-self:start!important
+ }
+ body>footer:has(>.tfw-community-footer-links)>.tfw-community-footer-links{
+  grid-column:1/-1!important;grid-row:3!important
+ }
+}
+@media(max-width:700px){
+ #hero>.tfw-hype-intensity{
+  left:12px!important;right:auto!important;top:53%!important;
+  height:281px!important;width:43px!important;padding:5px!important;
+  border-radius:18px!important
+ }
+ #hero>.tfw-hype-intensity .tfw-hype-meter-caption{
+  left:5px;right:5px;top:7px;bottom:7px
+ }
+ #hero>.tfw-hype-intensity .tfw-hype-meter-caption span{font-size:7px!important}
+ #hero>.tfw-hype-intensity .tfw-hype-meter-caption b{
+  font-size:9px!important;min-width:27px;padding:4px 1px
+ }
+ #hero>.tfw-hype-rail{right:12px!important;width:43px!important;
+  padding:7px 4px!important}
+ #hero>.tfw-hype-rail #tfwHypeButtons{gap:4px!important}
+ #hero>.tfw-hype-rail .tfw-hype-emoji{
+  width:33px!important;height:34px!important;border-radius:10px!important
+ }
+ #hero>.tfw-hype-rail .tfw-hype-emoji-glyph{font-size:20px}
+ body>footer:has(>.tfw-community-footer-links){
+  grid-template-columns:1fr!important;row-gap:12px!important
+ }
+ body>footer:has(>.tfw-community-footer-links)>.footer-brand{grid-column:1;grid-row:1}
+ body>footer:has(>.tfw-community-footer-links)>.legal-copy{
+  grid-column:1!important;grid-row:2!important
+ }
+ body>footer:has(>.tfw-community-footer-links)>.footer-socials,
+ body>footer:has(>.tfw-community-footer-links)>.tfw-footer-creator{
+  grid-column:1!important;grid-row:3!important;justify-self:start!important
+ }
+ body>footer:has(>.tfw-community-footer-links)>.tfw-community-footer-links{
+  grid-column:1!important;grid-row:4!important;gap:10px!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ #hero .tfw-hype-float{
+  animation:tfwHypeStatic 1.6s ease-out both!important
+ }
+ #hero .tfw-hype-float-emoji,#hero .tfw-hype-float:before,
+ #hero .tfw-hype-float:after{animation:none!important}
+}
