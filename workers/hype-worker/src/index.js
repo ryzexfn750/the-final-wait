@@ -62,9 +62,12 @@ export class HypeRoom extends DurableObject {
     }
     session.last=now;
     ws.serializeAttachment(session); // Persists per-socket cooldown through hibernation.
+    // Evict the oldest entry instead of clearing every user's cooldown at once.
+    // Connected tabs also preserve timestamps in their WebSocket attachments.
+    this.lastByUser.delete(session.uid);
     this.lastByUser.set(session.uid,now);
-    // Avoid an unbounded per-user cache during large events.
-    if(this.lastByUser.size>12_000)this.lastByUser.clear();
+    if(this.lastByUser.size>12_000)
+      this.lastByUser.delete(this.lastByUser.keys().next().value);
     this.pending.set(input.emoji,(this.pending.get(input.emoji)||0)+1);
     this.latest.push({emoji:input.emoji,nickname:session.nick});
     if(this.latest.length>6)this.latest.shift();
