@@ -212,3 +212,26 @@ test('Node high-load benchmark remains local, bounded and uses tagged delivery',
   assert.match(harness,/origin&&origin!==url.origin/);
   assert.doesNotMatch(runner,/https:\/\/(?:thefinalwait\.com|[^\s]+\.pages\.dev)/i);
 });
+
+test('Long-duration local WebSocket soak is bounded and never contacts Production',()=>{
+  const source=read('tools/soak-hype-ws-local.mjs');
+  assert.match(source,/const URL_BASE='http:\/\/127\.0\.0\.1:8787\/'/);
+  assert.match(source,/const WS_BASE='ws:\/\/127\.0\.0\.1:8787\/connect'/);
+  assert.match(source,/const SIZE=1000/);
+  assert.match(source,/const PARALLEL=16/);
+  assert.match(source,/DURATION_OPTIONS=new Set\(\[20,35\]\)/);
+  assert.match(source,/const PROBE_MS=180_000/);
+  assert.match(source,/const MAX_RSS_MB=600/);
+  assert.match(source,/name="tfw-loadtest-version" content="2"/);
+  assert.match(source,/socket\?\.close\(1000,'Local soak complete'\)/);
+  assert.match(source,/report=output/);
+  assert.doesNotMatch(source,/thefinalwait\.com|\.pages\.dev|SUPABASE_SERVICE_ROLE_KEY|SENDER_API_KEY/);
+});
+test('Quota estimator counts short-lived socket renewals and hibernation limits',()=>{
+  const source=read('tools/hype-free-tier-estimator.mjs');
+  assert.match(source,/DAILY_REQUESTS=100_000/);
+  assert.match(source,/DAILY_GBS=13_000/);
+  assert.match(source,/ceil\(mins\/15\)/);
+  assert.match(source,/WS_INCOMING_BILLING_RATIO=20/);
+  assert.match(source,/scenario\(5000,4,.05,1\)/);
+});
