@@ -1,5 +1,5 @@
 {
-  "//": "LOCAL-ONLY stress harness. NEVER deploy this config.",
+  // LOCAL ONLY: NEVER deploy; start exclusively with wrangler dev --local.
   "name": "the-final-wait-hype-local-loadtest",
   "main": "src/local-loadtest.js",
   "compatibility_date": "2026-10-01",
