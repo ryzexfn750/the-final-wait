@@ -124,9 +124,15 @@ export default {
       return new Response(CLIENT,{headers:{'content-type':'text/javascript; charset=utf-8','cache-control':'no-store'}});
     if(url.pathname!=='/connect'||request.headers.get('Upgrade')?.toLowerCase()!=='websocket')
       return new Response('Not found',{status:404});
-    // Reject cross-origin browser WebSockets even on the loopback interface.
-    if(request.headers.get('Origin')!==url.origin)
+    // Browser requests have Origin; native Node WebSocket clients may omit it.
+    // Reject cross-origin browser connections, accept non-browser loopback only.
+    const origin=request.headers.get('Origin');
+    if(origin&&origin!==url.origin)
       return new Response('Origin mismatch',{status:403});
+    // Optional per-run marker identifies a benchmark's reactions unambiguously.
+    const run=url.searchParams.get('run');
+    if(run!==null&&!/^[a-f0-9]{12}$/.test(run))
+      return new Response('Invalid local benchmark run',{status:400});
     // Every browser socket gets its own synthetic locally scoped test identity.
     const id=env.HYPE_ROOMS.idFromName('tz:Europe/Rome');
     const stub=env.HYPE_ROOMS.get(id);
@@ -135,7 +141,7 @@ export default {
       headers:{
         Upgrade:'websocket',
         'X-Hype-User':userId,
-        'X-Hype-Nickname':'LoadTest',
+        'X-Hype-Nickname':run?'QA'+run:'LoadTest',
         'X-Hype-Zone':'Europe/Rome'
       }
     });
