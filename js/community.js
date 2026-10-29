@@ -418,5 +418,16 @@ async function initCommunity(){
   document.addEventListener('visibilitychange',()=>{
     if(!document.hidden&&member()&&!state.ws)void connectSocket();
   });
+  // The homepage is kept alive beneath seamless pages so audio never resets.
+  // Recover the HYPE components after the first profile visit and Back.
+  window.addEventListener('tfw:seamless-return',()=>{
+    if(!member()||!hero)return;
+    for(const node of [layer,meter,rail]){
+      if(node&&!node.isConnected)hero.appendChild(node);
+      if(node)node.hidden=false;
+    }
+    updateStatus();tick();
+    if(!state.ws)void connectSocket();
+  });
   await refresh();
 }
