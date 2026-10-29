@@ -130,7 +130,7 @@ async function initCommunity(){
     }catch(error){status(error.message,true)}
   }
   const hero=document.getElementById('hero');
-  let layer=null,rail=null,buttons=[],online=null,lock=null,fill=null,pct=null;
+  let layer=null,rail=null,meter=null,buttons=[],lock=null,fill=null,pct=null;
   if(hero){
     layer=document.createElement('div');
     layer.className='tfw-hype-stage';layer.setAttribute('aria-live','off');
@@ -140,18 +140,19 @@ async function initCommunity(){
     rail.className='tfw-hype-rail';
     rail.setAttribute('aria-label','Send live emoji reactions');
     rail.innerHTML=`
-     <strong class="tfw-hype-rail-head"><i></i> LIVE HYPE</strong>
-     <small id="tfwHypeOnline">CONNECTING…</small>
      <div id="tfwHypeButtons" role="group" aria-label="Live emojis"></div>
-     <div id="tfwHypeLock" aria-live="off">READY</div>
-     <div class="tfw-hype-meter-caption"><span>HYPE LEVEL</span><b id="tfwHypePct">0%</b></div>
-     <div class="tfw-hype-meter" role="meter" aria-label="Live hype intensity"
-       aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="tfwHypeFill"></i></div>`;
+     <div id="tfwHypeLock" aria-live="off">READY</div>`;
     hero.appendChild(rail);
-    online=rail.querySelector('#tfwHypeOnline');
+    meter=document.createElement('div');
+    meter.className='tfw-hype-intensity';
+    meter.innerHTML=`
+      <div class="tfw-hype-meter-caption"><span>LIVE HYPE LEVEL</span><b id="tfwHypePct">0%</b></div>
+      <div class="tfw-hype-meter" role="meter" aria-label="Live hype intensity"
+        aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="tfwHypeFill"></i></div>`;
+    hero.appendChild(meter);
     lock=rail.querySelector('#tfwHypeLock');
-    fill=rail.querySelector('#tfwHypeFill');
-    pct=rail.querySelector('#tfwHypePct');
+    fill=meter.querySelector('#tfwHypeFill');
+    pct=meter.querySelector('#tfwHypePct');
     for(const emoji of settings.emojis||EMOJIS){
       if(!EMOJIS.includes(emoji))continue;
       const btn=document.createElement('button');
@@ -164,7 +165,6 @@ async function initCommunity(){
   }
   function updateStatus(){
     if(!rail)return;
-    online.textContent=state.connected?state.online.toLocaleString()+' IN YOUR TIME ZONE':'CONNECTING…';
     rail.classList.toggle('tfw-hype-disconnected',!state.connected);
   }
   function animate(entries){
@@ -196,12 +196,13 @@ async function initCommunity(){
     if(!fill)return;
     fill.style.width=state.hype.toFixed(1)+'%';
     pct.textContent=Math.round(state.hype)+'%';
-    rail.querySelector('.tfw-hype-meter').setAttribute('aria-valuenow',String(Math.round(state.hype)));
+    meter.querySelector('.tfw-hype-meter').setAttribute('aria-valuenow',String(Math.round(state.hype)));
   }
   function tick(){
     if(!rail)return;
     const remaining=Math.ceil(Math.max(0,state.nextAllowed-Date.now())/1000);
-    lock.textContent=remaining?remaining+'s TO NEXT REACTION':'READY TO HYPE';
+    lock.textContent=remaining?remaining+'s':'✓';
+    lock.setAttribute('aria-label',remaining?remaining+' seconds until next reaction':'Ready to react');
     for(const btn of buttons)btn.disabled=!state.connected||remaining>0;
     if(state.hype>.1){state.hype*=.98;paintHype()}
   }
