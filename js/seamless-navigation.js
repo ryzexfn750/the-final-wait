@@ -178,7 +178,7 @@
      if(push&&location.pathname+location.search+location.hash!==route)
        history.pushState({tfwSeamless:true},'',route);
      activeFrame.dataset.tfwRoute=route;
-     if(url.hash){try{activeFrame.contentWindow.location.hash=url.hash}catch{}}
+     try{activeFrame.contentWindow.location.hash=url.hash||''}catch{}
      return;
    }
    if(push)history.pushState({tfwSeamless:true},'',route);

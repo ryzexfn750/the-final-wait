@@ -16,5 +16,13 @@ jobs:
           node-version: '22'
       - name: Validate site JavaScript, timing and assets
         run: node --test tests/*.test.mjs
+      - name: Validate changed JS syntax as ES modules
+        run: |
+          node --input-type=module --check < js/app.js
+          node --input-type=module --check < js/community.js
+          node --input-type=module --check < js/seamless-navigation.js
+          node --input-type=module --check < js/analytics-consent.js
+          node --input-type=module --check < js/analytics-subpages.js
+          node --input-type=module --check < workers/hype-worker/src/index.js
       - name: Check Python helper syntax
         run: python -m py_compile tools/add_screenshots.py tools/build_today_card.py
