@@ -8,7 +8,7 @@ test('All site routes use v48 assets and the Russian translator is removed',()=>
  for(const asset of ['js/clock.js?v=48','js/milestones.js?v=51',
    'js/language.js?v=48','js/final-call-locales.js?v=48',
    'js/seamless-navigation.js?v=54','js/inpage-scroll.js?v=48',
-   'css/site-polish.css?v=48']){
+   'css/site-polish.css?v=50']){
     assert.ok(home.includes(asset),asset);
  }
  const language=read('js/language.js');
@@ -20,7 +20,7 @@ test('All site routes use v48 assets and the Russian translator is removed',()=>
    const html=read(page);
    assert.ok(html.includes('js/language.js?v=48'),page);
    assert.ok(html.includes('js/secondary-controls.js?v=48'),page);
-   assert.ok(html.includes('css/site-polish.css?v=48'),page);
+   assert.ok(html.includes('css/site-polish.css?v=50'),page);
  }
 });
 

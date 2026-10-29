@@ -40,7 +40,7 @@ test('Global GTA pointer is independent of hero/article detection and works on m
   const layer=document.getElementById('tfwGlobalCursor');
   assert.ok(layer,'Standalone layer created on the document root');
   assert.equal(root.children.length,1);
-  assert.equal(layer.children.length,2,'One global halo and one reticle');
+  assert.equal(layer.children.length,3,'Halo, reticle and autoscroll indicator');
   assert.equal(window.__tfwGlobalCursorStatus().active,false);
   assert.equal(document.documentElement.classList.contains('tfw-global-cursor-ready'),false);
 
@@ -103,7 +103,7 @@ test('Global mouse halo is fixed above all sections and installed on every site 
   assert.doesNotMatch(js,/if\(!fine\|\|reduced\|\|!glow\)return/);
   for(const page of ['index.html','today.html','intel.html','timeline.html','intel-archive.html']){
     const html=read(page);
-    assert.ok(html.includes('css/site-polish.css?v=48'),page+' updated stylesheet');
+    assert.ok(html.includes('css/site-polish.css?v=50'),page+' updated stylesheet');
     assert.ok(html.includes('js/site-polish.js?v=43'),page+' updated script');
   }
 });

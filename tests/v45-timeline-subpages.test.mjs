@@ -80,7 +80,7 @@ test('V45 archive and story pages keep the complete controls and dark language m
 
 test('V45 browser cache busts preserve the changed timeline data',()=>{
  const home=read('index.html'),archive=read('intel-archive.html');
- assert.ok(home.includes('js/app.js?v=52'));
+ assert.ok(home.includes('js/app.js?v=53'));
  assert.ok(read('js/app.js').includes("'./config.js?v=45'"));
  assert.ok(archive.includes('js/intel-archive.js?v=47'));
  assert.ok(read('js/intel-archive.js').includes("'./config.js?v=45'"));
