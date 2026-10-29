@@ -33,7 +33,8 @@ if(raw.length!==2||raw[0]!=='--minutes'||!DURATION_OPTIONS.has(Number(raw[1]))){
   process.exit(2);
 }
 const minutes=Number(raw[1]);
-if(typeof WebSocket!=='function'||Number(process.versions.node.split('.')[0])<22){
+const [nodeMajor,nodeMinor]=process.versions.node.split('.').map(Number);
+if(typeof WebSocket!=='function'||nodeMajor<22||(nodeMajor===22&&nodeMinor<4)){
   console.error('Node.js 22.4+ with native WebSocket required');
   process.exit(2);
 }
