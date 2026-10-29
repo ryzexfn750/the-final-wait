@@ -37,28 +37,87 @@ async function initCommunity(){
       <p class="tfw-gate-field-error" id="tfwNicknameError" role="alert" hidden></p>
       <p class="tfw-gate-note">Your nickname cannot be changed after registration.</p>
       <label class="tfw-gate-check"><input id="hypeTerms" type="checkbox" required>
-       <span>I accept the <a href="community-terms.html" target="_blank" rel="noopener">Terms & Conditions</a>
-       and have read the <a href="community-privacy.html" target="_blank" rel="noopener">Privacy Notice</a>.</span>
+       <span>I accept the <a href="community-terms.html" >Terms & Conditions</a>
+       and have read the <a href="community-privacy.html" >Privacy Notice</a>.</span>
       </label>
       <label class="tfw-gate-check"><input id="hypeNewsletter" type="checkbox">
        <span>Optional newsletter: email me launch news and reminders. I can unsubscribe any time.</span>
       </label>
-      <div id="hypeTurnstile"></div>
+      <div id="hypeTurnstile"></div><div id="tfwGateAnalytics" aria-label="Optional analytics cookies"></div>
       <button id="hypeSubmit" class="tfw-gate-primary" type="submit">CREATE MY ACCOUNT</button>
       <button id="hypeSignOut" class="tfw-gate-secondary" type="button">USE ANOTHER GOOGLE ACCOUNT</button>
     </form>
     <div class="tfw-gate-bottom">
-      <a href="community-privacy.html" target="_blank" rel="noopener">PRIVACY</a>
-      <a href="community-terms.html" target="_blank" rel="noopener">TERMS</a>
-      <a href="support.html" target="_blank" rel="noopener">SUPPORT</a>
+      
+      <a href="community-terms.html">TERMS</a>
+      <a href="support.html">SUPPORT</a>
     </div>
    </div>`;
   document.body.appendChild(gate);
+  gate.insertAdjacentHTML('beforeend',
+    '<div id="tfwGateLegal" class="tfw-gate-legal" role="dialog" aria-modal="true" aria-label="Information" hidden>'+
+    '<section class="tfw-gate-legal-panel"><div class="tfw-gate-legal-top">'+
+    '<strong id="tfwGateLegalTitle">INFORMATION</strong><button type="button" id="tfwGateLegalClose">BACK TO REGISTRATION</button></div>'+
+    '<div id="tfwGateLegalBody" class="tfw-gate-legal-body" tabindex="-1"></div></section></div>');
+
   const $=selector=>gate.querySelector(selector);
   const status=(message,error=false)=>{
     const el=$('#tfwGateStatus');
     el.textContent=message;el.classList.toggle('error',error);
   };
+  const legalPages=new Set(['community-privacy.html','community-terms.html','support.html']);
+  const legalModal=$('#tfwGateLegal'),legalBody=$('#tfwGateLegalBody');
+  let legalTicket=0;
+  function closeLegal(){legalTicket++;legalModal.hidden=true;legalBody.replaceChildren()}
+  async function openLegal(page){
+    if(!legalPages.has(page))return;
+    const ticket=++legalTicket;
+    legalModal.hidden=false;
+    $('#tfwGateLegalTitle').textContent=page==='support.html'?'SUPPORT':
+      page==='community-terms.html'?'TERMS & CONDITIONS':'PRIVACY NOTICE';
+    legalBody.textContent='LOADING…';
+    $('#tfwGateLegalClose').focus();
+    if(page==='support.html'){
+      legalBody.innerHTML='<h2>SUPPORT.</h2><p>Questions about your account, privacy or the website?</p>'+
+        '<p>CONTACT EMAIL</p><strong>support@thefinalwait.com</strong>'+
+        '<p><button type="button" id="tfwGateCopySupport">COPY EMAIL ADDRESS</button></p>'+
+        '<p id="tfwGateSupportFeedback" role="status"></p>';
+      return;
+    }
+    try{
+      const response=await fetch(page,{cache:'no-store'});
+      if(!response.ok)throw Error('The document could not be loaded.');
+      const main=new DOMParser().parseFromString(await response.text(),'text/html').querySelector('main');
+      if(!main)throw Error('The document is unavailable.');
+      main.querySelector('a[href="./"]')?.remove();
+      main.querySelectorAll('script,style,iframe,form').forEach(node=>node.remove());
+      if(ticket===legalTicket)legalBody.replaceChildren(...Array.from(main.childNodes));
+    }catch(error){if(ticket===legalTicket)legalBody.textContent=error.message}
+  }
+  $('#tfwGateLegalClose').addEventListener('click',closeLegal);
+  gate.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&!legalModal.hidden){event.preventDefault();closeLegal()}
+  });
+  gate.addEventListener('click',event=>{
+    if(event.target.closest('#tfwGateCopySupport')){
+      const output=$('#tfwGateSupportFeedback'),task=navigator.clipboard?.writeText('support@thefinalwait.com');
+      if(task)task.then(()=>{if(output)output.textContent='EMAIL COPIED'})
+        .catch(()=>{if(output)output.textContent='Select and copy the address above.'});
+      else if(output)output.textContent='Select and copy the address above.';
+      return;
+    }
+    const anchor=event.target.closest('a[href]');if(!anchor)return;
+    const target=new URL(anchor.href,location.href),page=target.pathname.split('/').pop();
+    if(target.origin===location.origin&&legalPages.has(page)){
+      event.preventDefault();void openLegal(page);
+    }else if(target.origin===location.origin){
+      event.preventDefault();if(!page&&!legalModal.hidden)closeLegal();
+    }else{anchor.target='_blank';anchor.rel='noopener noreferrer'}
+  });
+  window.addEventListener('tfw:analytics-ready',()=>{
+    if(!gate.hidden&&!$('#tfwGateRegister').hidden)
+      window.__tfwAnalyticsConsent?.mount($('#tfwGateAnalytics'));
+  });
   let settings;
   try{
     const response=await fetch('/api/community/config',{cache:'no-store'});
@@ -105,9 +164,13 @@ async function initCommunity(){
     $('#tfwGateGuest').hidden=which!=='guest';
     $('#tfwGateRegister').hidden=which!=='register';
     $('#tfwGateHeading').textContent=which==='register'?'ONE LAST STEP.':'WELCOME TO LEONIDA.';
-    if(which==='register')void ensureTurnstile();
+    if(which==='register'){
+      window.__tfwAnalyticsConsent?.mount($('#tfwGateAnalytics'));
+      void ensureTurnstile();
+    }else window.__tfwAnalyticsConsent?.mount();
   };
   const hideGate=()=>{
+    closeLegal();window.__tfwAnalyticsConsent?.mount();
     gate.hidden=true;document.documentElement.classList.remove('tfw-auth-pending');
   };
   async function ensureTurnstile(){
@@ -130,7 +193,7 @@ async function initCommunity(){
     }catch(error){status(error.message,true)}
   }
   const hero=document.getElementById('hero');
-  let layer=null,rail=null,meter=null,buttons=[],lock=null,fill=null,pct=null;
+  let layer=null,rail=null,meter=null,buttons=[],lock=null,fill=null;
   if(hero){
     layer=document.createElement('div');
     layer.className='tfw-hype-stage';layer.setAttribute('aria-live','off');
@@ -146,13 +209,13 @@ async function initCommunity(){
     meter=document.createElement('div');
     meter.className='tfw-hype-intensity';
     meter.innerHTML=`
-      <div class="tfw-hype-meter-caption"><span>HYPE LEVEL</span><b id="tfwHypePct">0%</b></div>
+      <div class="tfw-hype-meter-caption"><span>HYPE LEVEL</span></div>
       <div class="tfw-hype-meter" role="meter" aria-label="Live hype intensity"
         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="tfwHypeFill"></i></div>`;
     hero.appendChild(meter);
     lock=rail.querySelector('#tfwHypeLock');
     fill=meter.querySelector('#tfwHypeFill');
-    pct=meter.querySelector('#tfwHypePct');
+    
     for(const emoji of settings.emojis||EMOJIS){
       if(!EMOJIS.includes(emoji))continue;
       const btn=document.createElement('button');
@@ -226,7 +289,7 @@ async function initCommunity(){
       const name=document.createElement('span');name.className='tfw-hype-float-name';
       name.textContent=item.nickname;node.append(e,name);layer.appendChild(node);
       while(layer.children.length>14)layer.firstElementChild.remove();
-      setTimeout(()=>node.remove(),1600);
+      setTimeout(()=>node.remove(),1150);
     }
   }
   function updateHype(counts){
@@ -240,7 +303,7 @@ async function initCommunity(){
   function paintHype(){
     if(!fill)return;
     fill.style.height=state.hype.toFixed(1)+'%';
-    pct.textContent=Math.round(state.hype)+'%';
+    
     meter.querySelector('.tfw-hype-meter').setAttribute('aria-valuenow',String(Math.round(state.hype)));
   }
   function tick(){
@@ -420,14 +483,27 @@ async function initCommunity(){
   });
   // The homepage is kept alive beneath seamless pages so audio never resets.
   // Recover the HYPE components after the first profile visit and Back.
-  window.addEventListener('tfw:seamless-return',()=>{
+  const restoreHype=()=>{
     if(!member()||!hero)return;
     for(const node of [layer,meter,rail]){
       if(node&&!node.isConnected)hero.appendChild(node);
-      if(node)node.hidden=false;
+      if(node?.hidden)node.hidden=false;
     }
     updateStatus();tick();
-    if(!state.ws)void connectSocket();
+  };
+  window.addEventListener('tfw:seamless-return',()=>{
+    restoreHype();if(member()&&!state.ws)void connectSocket();
   });
+  window.addEventListener('pageshow',restoreHype);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)restoreHype()});
+  if(hero&&typeof MutationObserver!=='undefined'){
+    let scheduled=false;
+    new MutationObserver(()=>{
+      if(scheduled||!member())return;
+      if([layer,meter,rail].every(node=>node?.isConnected))return;
+      scheduled=true;
+      requestAnimationFrame(()=>{scheduled=false;restoreHype()});
+    }).observe(hero,{childList:true});
+  }
   await refresh();
 }
