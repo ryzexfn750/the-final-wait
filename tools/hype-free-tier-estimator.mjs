@@ -7,7 +7,7 @@
  */
 const DAILY_REQUESTS=100_000;
 const DAILY_GBS=13_000;
-const MEMORY_GB=128/1024; // DO allocation: 128 MiB ~ 0.125 GiB
+const MEMORY_GB=128/1000; // Cloudflare pricing examples allocate 128 MB = 0.128 GB
 const REACTION_COOLDOWN_SECONDS=20; // current room size >250
 const WS_INCOMING_BILLING_RATIO=20;
 const ALARM_INTERVAL_MINUTES=15;
