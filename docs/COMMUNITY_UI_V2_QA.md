@@ -120,7 +120,7 @@ tests have passed.
   preserving seamless navigation and audio. The dedicated newsletter page
   still performs Cloudflare Turnstile verification for secure preference
   changes, using the existing authenticated API.
-- Current web asset versions: `community.js?v=3`,
+- Previous web asset versions: `community.js?v=3`,
   `community.css?v=3`, `community-profile.js?v=2`,
   `community-profile.css?v=2`, `community-header.js?v=3`.
 - Run `node --test tests/community.test.mjs` and
@@ -132,3 +132,62 @@ tests have passed.
 
 Do not deploy the community module to Production before legal and runtime
 checks. The app-only gate is a UX gate, not static HTTP authorization.
+
+## October 29 — QA v4 bug fixes (post-soak)
+
+- **Seamless routing and wheel isolation:** opening profile, newsletter,
+  privacy, terms or support now locks the original homepage at both `html`
+  and `body` levels. Underlying `syncSectionHash()` ignores scroll events
+  while a page overlay is open. The iframe remains the only active scroll
+  owner and should restore the original HYPE UI upon Back/Return.
+- **Registration date:** the authenticated profile query now selects the
+  actual Supabase `created_at` field. The profile displays "MEMBER SINCE"
+  with a UTC-formatted date. No timestamp is accepted from the client.
+- **HYPE tube:** same approximate height as the seven-emoji rail,
+  now physically opposite on the left side of the countdown, with
+  "HYPE LEVEL" and percent INSIDE the vertical tube. Fill rises bottom-up.
+- **Emoji glyphs:** consistent grid cell measurements, no button padding
+  variations. Reaction particles fade/rotate in just **1.6 seconds**,
+  retaining reduced-motion accessibility.
+- **Registration:** `novalidate` disables the browser validation bubble.
+  Nicknames with spaces or forbidden characters get a styled inline error,
+  `aria-invalid`, and focused input. Redundant instructions were removed.
+  Server-side validation still applies.
+- **Support:** footer links now open `support.html`, displaying a copyable
+  email address even when Windows has no configured `mailto:` client.
+  Support remains accessible without a signed-in account, just like
+  the legal/privacy disclosures. Check externally that
+  `support@thefinalwait.com` is configured to receive real messages.
+- **Footer:** legal disclaimer sits beside the brand on desktop;
+  privacy/terms/newsletter/support are discreet, small, unbordered links
+  below, with responsive stacking on mobile.
+- **Cache:** `js/community.js?v=4`, `css/community.css?v=4`,
+  `js/seamless-navigation.js?v=51`, `js/app.js?v=51`,
+  `js/community-profile.js?v=3`, `css/community-profile.css?v=3`.
+
+### Regression checklist in the protected QA Preview
+
+1. Test new registration with `John Doe` and `John_Doe`: the first must
+   produce our inline error; no browser popover should appear.
+2. Verify member-since date after Google registration.
+3. Open profile, scroll to bottom, press browser Back, then repeat.
+   Underlying URL should remain `/profile.html` during profile scrolling
+   and HYPE emoji bars must still be visible after return. No double
+   scrollbar, even on the very first visit after registration.
+4. Repeat with Privacy Notice, Terms, Newsletter, and Support in the footer.
+   Verify links and audio continuity.
+5. Check HYPE tube opposite the seven emoji and alignment on desktop,
+   tablets and narrow phones. Test release preview and Final Call.
+6. Send multiple emoji, checking slight rotations, 1.6-second decay and
+   avoidance of clock text/control regions.
+7. Inspect footer: logo/disclaimer side-by-side desktop, tiny legal links
+   without rule, and readable stacked layout mobile.
+
+Run from the `community-qa` branch:
+```powershell
+git pull --ff-only origin community-qa
+node --test tests/community.test.mjs
+node tools/build-cloudflare-pages.mjs
+```
+No Production gates, public Worker bindings, or Cloudflare Durable Object
+deployment changes are required for these frontend/Pages Function fixes.
