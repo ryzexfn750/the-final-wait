@@ -824,6 +824,8 @@ function routeLabelFor(href){
 }
 
 function syncSectionHash(){
+  // The persistent homepage must not overwrite iframe route URLs.
+  if(document.body.classList.contains('tfw-route-overlay-open'))return;
   // The viewport center (plus the sticky header) determines the active
   // section, even after a user follows an anchor and then wheel-scrolls.
   // This is history-neutral: a scroll doesn't add Back-button entries.
@@ -872,6 +874,7 @@ function bindNavigationTransitions(){
   });
   let scrollHashFrame=0;
   const refreshHash=()=>{
+    if(document.body.classList.contains('tfw-route-overlay-open'))return;
     if(!scrollHashFrame)scrollHashFrame=requestAnimationFrame(()=>{
       scrollHashFrame=0;syncSectionHash();
     });
