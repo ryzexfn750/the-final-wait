@@ -3,13 +3,27 @@
 Status: **CODE COMPLETE FOR INTEGRATION TESTING; NOT ACTIVE UNTIL CONFIGURED**.
 The existing countdown, R2 audio and Google Analytics operate independently.
 
-## 0. Legal checklist — do this before any public registrations
+## 0. Legal and privacy-first launch gate — before public registration
 
-Edit `community-terms.html` and `community-privacy.html`. Replace every
-`[ADD ...]` / `[FINALIZE]` placeholder with the actual operator, privacy
-contact and retention policy. Review age-appropriate eligibility, lawful bases,
-moderation and deletion workflows, international transfers and processor
-agreements. These documents are drafts, **not legal advice**.
+Public-facing project identity: **The Final Wait**. Single contact:
+**support@thefinalwait.com**. No operator's personal name, home address,
+private social profile or other identifying information may be invented or
+published without authorization.
+
+`community-terms.html` and `community-privacy.html` now use that public
+branding and contact address. They remain clearly labelled **DRAFT**, since
+Article 13 GDPR requires the actual controller's identity and contact details;
+a project brand or mailbox alone may not identify a natural-person controller.
+Before publishing public registrations, legally verify and disclose the required
+controller details in a privacy-preserving manner. Do not silently claim that
+the project brand is a registered company or legal entity.
+
+Also review provider processor agreements, processing regions/transfers,
+the actual logs/backups and retention periods, account deletion and newsletter
+opt-out behavior, lawful bases and any applicable eligibility requirements.
+Optional newsletters must use separate, affirmative, recorded consent.
+**Keep `COMMUNITY_ENABLED=false` until this gate and technical QA are complete.**
+These documents are drafts, not legal advice.
 
 ## 1. Supabase project (Free tier)
 
