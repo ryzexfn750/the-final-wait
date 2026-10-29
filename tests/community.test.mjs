@@ -20,7 +20,7 @@ test('The hype UI is independent of the countdown and load-gated',()=>{
 test('The community assets are available on all standalone routes',()=>{
   for(const path of ['index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html']){
     const page=read(path);
-    assert.match(page,/js\/community\.js\?v=4/);
+    assert.match(page,/js\/community\.js\?v=5/);
     assert.match(page,/css\/community\.css\?v=4/);
   }
   const build=read('tools/build-cloudflare-pages.mjs');
@@ -349,6 +349,7 @@ test('Nested profile, legal and support navigation owns scroll, not homepage has
   assert.match(nav,/document\.documentElement\.classList\.add\('tfw-route-overlay-open'\)/);
   assert.match(nav,/document\.documentElement\.classList\.remove\('tfw-route-overlay-open'\)/);
   assert.match(nav,/community-privacy\.html','community-terms\.html','support\.html/);
+  assert.match(read('js/community.js'),/window\.addEventListener\('tfw:seamless-return'/);
   assert.match(nav,/window\.addEventListener\('wheel',parentScrollGuard,\{capture:true,passive:false\}\)/);
   assert.match(css,/html\.tfw-route-overlay-open/);
   assert.match(css,/overflow-y:hidden!important/);
