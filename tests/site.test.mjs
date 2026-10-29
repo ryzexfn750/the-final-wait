@@ -18,7 +18,7 @@ const section=oldName=>{
 
 test('all JavaScript sources parse',()=>{
   for(const path of ['js/app.js','js/clock.js','js/milestones.js','js/article.js','js/timeline-article.js','js/intel-article.js','js/language.js','js/motion.js']){
-    const source=read(path).replace(/^import\s+.*\n/,'');
+    const source=read(path).replace(/^import\s+.*\n/gm,'');
     assert.doesNotThrow(()=>new Function(source),path);
   }
 });
@@ -49,13 +49,13 @@ test('ambient soundtrack stops precisely at -30 minutes',()=>{
   const start=clock.indexOf('function backgroundAllowed()');
   const end=clock.indexOf('function syncSoundUi()',start);
   assert.ok(start>=0&&end>start);
-  const factory=new Function('remainingForAudio','document','BG_CUTOFF','previewFinalFive',
+  const factory=new Function('remainingForAudio','document','BG_CUTOFF','previewFinalFive','location',
     clock.slice(start,end)+'\nreturn backgroundAllowed;');
   const document={body:{classList:{contains:()=>false}}};
-  assert.equal(factory(()=>30*60000+1,document,30*60000,false)(),true);
-  assert.equal(factory(()=>30*60000,document,30*60000,false)(),false);
-  assert.equal(factory(()=>29*60000,document,30*60000,false)(),false);
-  assert.equal(factory(()=>60*60000,document,30*60000,true)(),false);
+  assert.equal(factory(()=>30*60000+1,document,30*60000,false,{search:''})(),true);
+  assert.equal(factory(()=>30*60000,document,30*60000,false,{search:''})(),false);
+  assert.equal(factory(()=>29*60000,document,30*60000,false,{search:''})(),false);
+  assert.equal(factory(()=>60*60000,document,30*60000,true,{search:''})(),false);
 });
 
 test('background audio retry preserves gesture and has a valid fallback',()=>{
@@ -234,8 +234,8 @@ test('V27 simulated release elapsed clock advances independently of wall clock',
 
 test('V27 audio bars are rendered from FFT and release layout uses real dimensions',()=>{
   const js=read('js/milestones.js'),css=section('v27.css'),html=read('index.html');
-  assert.match(js,/musicAnalyser\.getByteFrequencyData\(musicData\)/);
-  assert.match(js,/const hasSignal=Boolean\(soundEnabled\(\)/);
+  assert.match(js,/analyzer\.getByteFrequencyData\(musicData\)/);
+  assert.match(js,/const hasSignal=Boolean\(localSignal\|\|fallbackSignal\|\|/);
   assert.match(js,/startVisualizer\(\);\s*\['pointerdown','keydown','touchstart'\]/);
   assert.doesNotMatch(js,/const waveA=\(Math\.sin/);
   assert.match(css,/body\.tfw-visualizer-ready \.finale-visualizer-wrap/);
@@ -246,7 +246,7 @@ test('V27 audio bars are rendered from FFT and release layout uses real dimensio
   assert.match(css,/max-height 1200ms/);
   assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/js\/clock\.js\?v=48/);
-  assert.match(html,/js\/milestones\.js\?v=50/);
+  assert.match(html,/js\/milestones\.js\?v=51/);
 });
 
 test('V28 starts the release clock without waiting for the next polling cycle',()=>{
@@ -297,7 +297,7 @@ test('V28 audio graph retries suspended playback on a real user gesture',async()
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(context.state,'running');
   assert.ok(resumeCalls>=1);
-  assert.equal(sourceCount,4);
+  assert.equal(sourceCount,3,'three local music tracks; ambient uses captureStream, not output rerouting');
   assert.match(js,/ensureMusicGraph\(\{userGesture:true\}\)/);
   assert.match(js,/getByteFrequencyData\(musicData\)/);
   assert.match(js,/Math\.pow\(sample\/255,\.70\)\*1\.32/);
@@ -311,7 +311,7 @@ test('V28 release message and secondary-scale elapsed layout are present',()=>{
   assert.match(css,/height:clamp\(72px,7\.8vw,105px\)!important/);
   assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/js\/clock\.js\?v=48/);
-  assert.match(html,/js\/milestones\.js\?v=50/);
+  assert.match(html,/js\/milestones\.js\?v=51/);
 });
 
 
@@ -343,12 +343,12 @@ test('V29 visualizer resizes its initially hidden bitmap and receives FFT',()=>{
   const data=new Uint8Array(256);
   const analyser={getByteFrequencyData(x){samples++;x.fill(110);}};
   const source="let visualizerRaf=0,visualizerResize=null;"+
-    "const musicCtx={state:'running'},ambientMusicSource={},finalMusicSource=null;"+
+    "const musicCtx={state:'running'},ambientMusicSource=null,ambientCaptureAnalyser=musicAnalyser,finalCallMusicSource=null,finalMusicSource=null,voiceMusicSource=null,sequenceMusicSource=null;"+
     "const $=sel=>sel==='#finaleVisualizer'?canvas:null;"+
     js.slice(a,b)+";return startVisualizer;";
   const create=new Function('canvas','document','window','matchMedia','devicePixelRatio',
     'requestAnimationFrame','soundEnabled','musicIsPlaying','clamp','musicAnalyser','musicData',source);
-  const start=create(canvas,fakeDocument,{addEventListener(){}},()=>({matches:false}),1,frame,
+  const start=create(canvas,fakeDocument,{addEventListener(){},__tfwAmbientAudio:{paused:false}},()=>({matches:false}),1,frame,
     ()=>true,()=>true,(n,min,max)=>Math.max(min,Math.min(max,n)),analyser,data);
   start();
   assert.equal(canvas.height,1,'starts with zero CSS height');
@@ -455,9 +455,9 @@ test('V29 phase-two typography uses one fixed title footprint',()=>{
   assert.match(css,/margin-top:clamp\(24px,3svh,40px\)!important/);
   assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/css\/experience\.css\?v=33/);
-  assert.match(html,/js\/app\.js\?v=46/);
+  assert.match(html,/js\/app\.js\?v=52/);
   assert.match(html,/js\/clock\.js\?v=48/);
-  assert.match(html,/js\/milestones\.js\?v=50/);
+  assert.match(html,/js\/milestones\.js\?v=51/);
   assert.match(js,/if\(pill&&remaining>0&&remaining<=FINAL_FIVE\)/);
 });
 
