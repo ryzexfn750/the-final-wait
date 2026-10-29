@@ -224,7 +224,7 @@ test('Long-duration local WebSocket soak is bounded and never contacts Productio
   assert.match(source,/const MAX_RSS_MB=600/);
   assert.match(source,/name="tfw-loadtest-version" content="2"/);
   assert.match(source,/socket\?\.close\(1000,'Local soak complete'\)/);
-  assert.match(source,/report=output/);
+  assert.match(source,/report:output/);
   assert.doesNotMatch(source,/thefinalwait\.com|\.pages\.dev|SUPABASE_SERVICE_ROLE_KEY|SENDER_API_KEY/);
 });
 test('Quota estimator counts short-lived socket renewals and hibernation limits',()=>{
