@@ -1,6 +1,12 @@
 /* The Final Wait: optional community. Fails closed if external services
    are not configured; countdown/music are never dependent on this module. */
-if(!new URLSearchParams(location.search).has('tfw_embed')){
+// Static gate: prevents consuming Pages Functions quota for every visitor
+// before public launch. During QA, set tfw_community_preview=yes in localStorage.
+const PUBLIC_COMMUNITY_ENABLED=false;
+let communityPreview=false;
+try{communityPreview=localStorage.getItem('tfw_community_preview')==='yes'}catch{}
+if((PUBLIC_COMMUNITY_ENABLED||communityPreview)&&
+   !new URLSearchParams(location.search).has('tfw_embed')){
   void initCommunity();
 }
 async function initCommunity(){
