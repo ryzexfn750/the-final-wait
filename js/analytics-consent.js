@@ -101,6 +101,7 @@ window.__tfwAnalyticsConsent = Object.freeze({
   open() {
     const banner = getConsentUI();
     banner.hidden = false;
+    banner.querySelector('#analyticsDecline')?.focus();
   }
 });
 
@@ -117,3 +118,11 @@ export function initAnalytics() {
   banner.hidden = state === 'yes' || state === 'no';
   window.dispatchEvent(new Event('tfw:analytics-ready'));
 }
+
+// A consent change made in a legal iframe must also update the persistent host.
+window.addEventListener('storage', event => {
+  if (event.key !== CONSENT_KEY || !initialized) return;
+  if (readConsent() === 'yes') enableAnalytics();
+  else blockAnalytics();
+  getConsentUI().hidden = true;
+});

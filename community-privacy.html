@@ -3,6 +3,8 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,follow">
+<link rel="stylesheet" href="css/base.css?v=32">
+<link rel="stylesheet" href="css/analytics-consent.css?v=1">
 <title>Community Privacy Notice — The Final Wait</title>
 <style>
 :root{color-scheme:dark}
@@ -12,6 +14,7 @@ main{max-width:800px;margin:42px auto;padding:0 24px 50px}
 h1{font-size:clamp(30px,5vw,42px);line-height:1.15;letter-spacing:-.04em;margin-top:24px}
 h2{font-size:20px;margin-top:30px;color:#f8b8e1}
 p,li{max-width:75ch}
+#tfwPrivacyCookiePreferences{padding:11px 14px;margin:10px 0 20px;border:1px solid #e3a1cd;border-radius:10px;background:#29162a;color:white;font:700 13px system-ui;cursor:pointer}
 a{color:#efb1d6;text-underline-offset:3px}
 a:focus-visible{outline:3px solid #efb1d6;outline-offset:3px}
 .draft{background:#35222c;color:#ffe2cc;border:1px solid #b78169;border-radius:12px;padding:16px;margin:25px 0}
@@ -90,7 +93,16 @@ separate ACCEPT/DECLINE controls. They are not required for account registration
 Terms acceptance or newsletter subscriptions. Refusing does not limit site access.
 This notice will be updated before public registration and whenever significant
 processing changes are introduced.</p>
+<p><button type="button" id="tfwPrivacyCookiePreferences" data-tfw-analytics-preferences>CHANGE ANALYTICS COOKIE PREFERENCES</button></p>
 <footer>THE FINAL WAIT · INDEPENDENT, UNOFFICIAL FAN PROJECT ·
 <a href="community-terms.html">Community Terms</a> ·
 <a href="support.html">Contact</a></footer>
-</main></body></html>
+</main>
+<script type="module">
+ import {initAnalytics} from './js/analytics-consent.js?v=3';
+ initAnalytics();
+ document.querySelector('#tfwPrivacyCookiePreferences')?.addEventListener('click',()=>{
+   window.__tfwAnalyticsConsent?.open();
+ });
+</script>
+</body></html>

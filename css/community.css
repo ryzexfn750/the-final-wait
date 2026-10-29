@@ -552,3 +552,17 @@ body>footer:has(>.tfw-community-footer-links)>.tfw-community-footer-links a:hove
   border-top:1px solid #ffffff30;padding:18px 0;margin-top:28px;
   font-size:12px;color:#bdb0c2
 }
+
+/* Registration-only help panel uses the same design system as the Terms viewer. */
+.tfw-gate-support{max-width:590px;margin:0 auto;padding:clamp(8px,2.5vw,20px) 0;text-align:center}
+.tfw-gate-support-kicker{display:inline-block;border:1px solid #e37fb966;background:#b4449f16;border-radius:50px;padding:9px 13px;color:#f7b0dc;font:900 10px/1.4 Arial;letter-spacing:.13em}
+.tfw-gate-support h2{font:900 clamp(26px,5vw,44px)/1.07 Arial Black,Arial,sans-serif!important;color:#fff!important;margin:28px 0 15px!important}
+.tfw-gate-support>p{max-width:430px;margin:14px auto 26px;color:#cfc1d4}
+.tfw-gate-support-card{display:flex;align-items:center;gap:19px;text-align:left;padding:24px;min-width:0;border-radius:18px;border:1px solid #ec8bcb55;background:linear-gradient(135deg,#3e213e,#24152e);box-shadow:0 10px 44px #09040f80}
+.tfw-gate-support-icon{display:grid;place-items:center;flex:0 0 56px;height:56px;border-radius:15px;background:#ed85cb24;color:#ffbbe6;font-size:28px}
+.tfw-gate-support-contact{min-width:0}.tfw-gate-support-contact small{display:block;font:800 10px/1.4 Arial;letter-spacing:.13em;color:#d7a0cb;margin-bottom:9px}
+.tfw-gate-support-contact strong{font:800 clamp(12px,2.5vw,19px)/1.4 Arial,sans-serif;color:#fff;overflow-wrap:anywhere}
+.tfw-gate-support-copy{margin:24px auto 0!important;padding:13px 25px!important;border:1px solid #f6b3df9c!important;border-radius:11px!important;background:#e865b526!important;font-size:12px!important}
+.tfw-gate-support-note{font-size:12px!important;color:#bba9c4!important}
+.tfw-gate-legal-body>.analytics-consent.tfw-consent-in-gate{position:relative!important;left:auto!important;bottom:auto!important;display:grid;grid-template-columns:1fr!important;width:100%!important;margin-top:20px;padding:15px;border:1px solid #ffb4dd55;background:#26192d}
+@media(max-width:520px){.tfw-gate-support-card{padding:15px;gap:12px}.tfw-gate-support-icon{flex-basis:42px;height:42px;font-size:24px}}

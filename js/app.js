@@ -825,7 +825,8 @@ function routeLabelFor(href){
 
 function syncSectionHash(){
   // The persistent homepage must not overwrite iframe route URLs.
-  if(document.body.classList.contains('tfw-route-overlay-open'))return;
+  if(document.body.classList.contains('tfw-route-overlay-open') ||
+     document.documentElement.classList.contains('tfw-auth-pending'))return;
   // The viewport center (plus the sticky header) determines the active
   // section, even after a user follows an anchor and then wheel-scrolls.
   // This is history-neutral: a scroll doesn't add Back-button entries.
@@ -851,6 +852,7 @@ function bindNavigationTransitions(){
     if(href.startsWith('#')){
       a.dataset.transitionBound='1';
       a.addEventListener('click',e=>{
+        if(a.closest('#tfwCommunityGate') || document.documentElement.classList.contains('tfw-auth-pending'))return;
         const target=$(href); if(!target)return;
         e.preventDefault(); closeMobileMenu();
         history.replaceState(null,'',location.pathname+location.search+(href==='#hero'?'':href));
@@ -860,9 +862,20 @@ function bindNavigationTransitions(){
       a.dataset.transitionBound='1';
       a.addEventListener('click',e=>{
         if(e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||e.button!==0)return;
+        if(a.closest('#tfwCommunityGate') || document.documentElement.classList.contains('tfw-auth-pending')){
+          e.preventDefault();return;
+        }
         e.preventDefault();
+        const destination=a.href;
         showRouteLoader(routeLabelFor(href));
-        setTimeout(()=>{ location.href=a.href; },900);
+        setTimeout(()=>{
+          if(document.documentElement.classList.contains('tfw-auth-pending')){
+            hideRouteLoader();return;
+          }
+          if(window.__tfwSeamlessNavigation?.open){
+            hideRouteLoader();window.__tfwSeamlessNavigation.open(destination);
+          }else location.href=destination;
+        },900);
       });
     }
   });

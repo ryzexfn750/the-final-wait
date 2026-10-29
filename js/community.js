@@ -67,8 +67,13 @@ async function initCommunity(){
   };
   const legalPages=new Set(['community-privacy.html','community-terms.html','support.html']);
   const legalModal=$('#tfwGateLegal'),legalBody=$('#tfwGateLegalBody');
-  let legalTicket=0;
-  function closeLegal(){legalTicket++;legalModal.hidden=true;legalBody.replaceChildren()}
+  let legalTicket=0,legalOpener=null;
+  function closeLegal(){
+    const wasOpen=!legalModal.hidden;
+    legalTicket++;legalModal.hidden=true;legalBody.replaceChildren();
+    if(wasOpen&&legalOpener?.isConnected&&!gate.hidden)legalOpener.focus();
+    legalOpener=null;
+  }
   async function openLegal(page){
     if(!legalPages.has(page))return;
     const ticket=++legalTicket;
@@ -78,10 +83,16 @@ async function initCommunity(){
     legalBody.textContent='LOADING…';
     $('#tfwGateLegalClose').focus();
     if(page==='support.html'){
-      legalBody.innerHTML='<h2>SUPPORT.</h2><p>Questions about your account, privacy or the website?</p>'+
-        '<p>CONTACT EMAIL</p><strong>support@thefinalwait.com</strong>'+
-        '<p><button type="button" id="tfwGateCopySupport">COPY EMAIL ADDRESS</button></p>'+
-        '<p id="tfwGateSupportFeedback" role="status"></p>';
+      legalBody.innerHTML='<section class="tfw-gate-support">'+
+        '<span class="tfw-gate-support-kicker">THE FINAL WAIT · HELP CENTER</span>'+
+        '<h2>HOW CAN WE HELP?</h2>'+
+        '<p>Questions about your account, privacy, or the website? Contact our support team directly.</p>'+
+        '<div class="tfw-gate-support-card"><div class="tfw-gate-support-icon" aria-hidden="true">✉</div>'+
+        '<div class="tfw-gate-support-contact"><small>OFFICIAL SUPPORT EMAIL</small>'+
+        '<strong>support@thefinalwait.com</strong></div></div>'+
+        '<button class="tfw-gate-support-copy" type="button" id="tfwGateCopySupport">COPY EMAIL ADDRESS</button>'+
+        '<p id="tfwGateSupportFeedback" role="status" aria-live="polite"></p>'+
+        '<p class="tfw-gate-support-note">Your message opens in your preferred email service when you paste the copied address.</p></section>';
       return;
     }
     try{
@@ -96,9 +107,26 @@ async function initCommunity(){
   }
   $('#tfwGateLegalClose').addEventListener('click',closeLegal);
   gate.addEventListener('keydown',event=>{
-    if(event.key==='Escape'&&!legalModal.hidden){event.preventDefault();closeLegal()}
+    if(legalModal.hidden)return;
+    if(event.key==='Escape'){
+      event.preventDefault();event.stopPropagation();closeLegal();return;
+    }
+    if(event.key==='Tab'){
+      const controls=[...legalModal.querySelectorAll('a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])')]
+        .filter(el=>el.getClientRects().length>0);
+      if(!controls.length)return;
+      const first=controls[0],last=controls[controls.length-1];
+      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
+      else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
+    }
   });
   gate.addEventListener('click',event=>{
+    if(event.target.closest('[data-tfw-analytics-preferences]')){
+      event.preventDefault();event.stopPropagation();
+      const destination=$('#tfwGateRegister').hidden?legalBody:$('#tfwGateAnalytics');
+      window.__tfwAnalyticsConsent?.mount(destination);
+      window.__tfwAnalyticsConsent?.open();return;
+    }
     if(event.target.closest('#tfwGateCopySupport')){
       const output=$('#tfwGateSupportFeedback'),task=navigator.clipboard?.writeText('support@thefinalwait.com');
       if(task)task.then(()=>{if(output)output.textContent='EMAIL COPIED'})
@@ -109,11 +137,14 @@ async function initCommunity(){
     const anchor=event.target.closest('a[href]');if(!anchor)return;
     const target=new URL(anchor.href,location.href),page=target.pathname.split('/').pop();
     if(target.origin===location.origin&&legalPages.has(page)){
-      event.preventDefault();void openLegal(page);
+      event.preventDefault();event.stopPropagation();legalOpener=anchor;void openLegal(page);
     }else if(target.origin===location.origin){
-      event.preventDefault();if(!page&&!legalModal.hidden)closeLegal();
-    }else{anchor.target='_blank';anchor.rel='noopener noreferrer'}
-  });
+      event.preventDefault();event.stopPropagation();
+      if((!page||page==='index.html')&&!legalModal.hidden)closeLegal();
+    }else if(target.protocol==='http:'||target.protocol==='https:'){
+      anchor.target='_blank';anchor.rel='noopener noreferrer';
+    }
+  },true);
   window.addEventListener('tfw:analytics-ready',()=>{
     if(!gate.hidden&&!$('#tfwGateRegister').hidden)
       window.__tfwAnalyticsConsent?.mount($('#tfwGateAnalytics'));
