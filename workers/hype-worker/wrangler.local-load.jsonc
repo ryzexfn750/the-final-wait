@@ -1,0 +1,15 @@
+{
+  "//": "LOCAL-ONLY stress harness. NEVER deploy this config.",
+  "name": "the-final-wait-hype-local-loadtest",
+  "main": "src/local-loadtest.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "durable_objects": {
+    "bindings": [
+      { "name": "HYPE_ROOMS", "class_name": "HypeRoom" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["HypeRoom"] }
+  ]
+}
