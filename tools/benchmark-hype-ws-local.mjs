@@ -147,7 +147,7 @@ async function main(){
   const started=performance.now(),cpuStart=process.cpuUsage();
   const before=process.memoryUsage();
   let peakRss=before.rss;
-  let cursor=0,aborted=false;
+  let cursor=0,failed=0,aborted=false;
   const lag=[],sampleStart={last:performance.now()};
   const measure=setInterval(()=>{
     const now=performance.now();
@@ -166,6 +166,7 @@ async function main(){
           const peer=await connectSocket(url);
           peers.push(peer);
         }catch(error){
+          failed++;
           if(failures.length<12)failures.push({index,reason:String(error?.message||error)});
           aborted=true;
         }
@@ -188,8 +189,10 @@ async function main(){
       room:'Europe/Rome',
       targetConnections:connections,
       concurrency,
+      attemptedConnections:cursor,
       connected:peers.length,
-      failedHandshakes:connections-peers.length,
+      failedHandshakes:failed,
+      unattemptedConnections:connections-cursor,
       connectionRampMs:round(rampMs),
       handshakeP50ms:percentile(timings,.5),
       handshakeP95ms:percentile(timings,.95),
@@ -204,7 +207,7 @@ async function main(){
       failures:failures.slice(0,5)
     };
     console.log(JSON.stringify(report,null,2));
-    if(report.failedHandshakes!==0||!report.broadcastComplete||
+    if(report.connected!==connections||report.failedHandshakes!==0||!report.broadcastComplete||
        report.delivered!==report.expected){
       process.exitCode=1;
       console.error('TEST FAILED — stop here; do not increase the connection count.');
