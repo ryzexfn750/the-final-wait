@@ -16,5 +16,9 @@ create unique index if not exists community_nickname_ci
   on public.community_profiles(lower(nickname));
 alter table public.community_profiles enable row level security;
 revoke all on public.community_profiles from anon, authenticated;
+-- Only the privileged server-side API role can access this table.
+-- RLS bypass does not bypass ordinary PostgreSQL GRANT checks.
+grant usage on schema public to service_role;
+grant select, insert, update, delete on table public.community_profiles to service_role;
 -- Do NOT create broad public read/write policies.
 -- Server uses service_role with RLS bypass after verifying the Supabase bearer token.
