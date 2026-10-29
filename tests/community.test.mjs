@@ -53,7 +53,7 @@ test('Pages API validates auth and only issues short-lived tickets',()=>{
 });
 test('Durable Object uses hibernation and rate-limits reactions',()=>{
   const worker=read('workers/hype-worker/src/index.js');
-  assert.match(worker,/acceptWebSocket\(server\)/);
+  assert.match(worker,/acceptWebSocket\(server,\s*\['uid:'\+userId\]\)/);
   assert.match(worker,/serializeAttachment\(/);
   assert.match(worker,/function cooldownFor\(count\)/);
   assert.match(worker,/scheduleFlush\(\)/);
