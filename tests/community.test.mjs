@@ -75,7 +75,7 @@ test('HMAC tickets are tamper-evident and expire',async()=>{
     exp:Date.now()+30_000,nonce:'abcd'};
   const ticket=await createTicket(secret,payload);
   assert.equal((await verifyTicket(secret,ticket)).nickname,'LeonidaFan');
-  const changed=ticket.slice(0,-1)+(ticket.at(-1)==='A'?'B':'A');
+  const changed=(ticket[0]==='A'?'B':'A')+ticket.slice(1);
   assert.equal(await verifyTicket(secret,changed),null);
   const expired=await createTicket(secret,{...payload,exp:Date.now()-1000});
   assert.equal(await verifyTicket(secret,expired),null);
