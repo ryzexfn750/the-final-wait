@@ -127,7 +127,7 @@ test('Live tickets require acceptance of the current terms (regression)',async()
   assert.equal(rejected.status,403);
   assert.equal(ticketCalls,0);
   deps.getProfile=async()=>({nickname:'Tester_1',terms_version:deps.TERMS_VERSION});
-  const accepted=await handler(context);
+  const accepted=await makeHandler(deps)(context);
   assert.equal(accepted.ticket,'signed-ticket');
   assert.equal(ticketCalls,1);
 });
