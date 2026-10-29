@@ -95,3 +95,12 @@
  border-radius:999px;color:#f4c7e6;text-decoration:none;
  font:800 10px/1 Arial;letter-spacing:.1em}
 .tfw-newsletter-return a:hover{border-color:#e57cbc;background:rgba(237,104,191,.08)}
+
+/* Registration date is read-only and comes from the Supabase profile row. */
+.tfw-profile-joined{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:13px}
+.tfw-profile-joined span{color:#a79ab4;font:800 9px/1.4 Arial;letter-spacing:.11em}
+.tfw-profile-joined time{color:#edc5e7;font:800 12px/1.4 Arial}
+.tfw-support-card{display:flex;justify-content:flex-start}
+.tfw-support-card>div{max-width:100%;min-width:0}
+.tfw-support-card strong{overflow-wrap:anywhere;font-size:clamp(20px,3vw,32px)}
+.tfw-support-card .tfw-profile-button{margin-top:16px}
