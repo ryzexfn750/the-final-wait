@@ -10,21 +10,24 @@ test('The hype UI is independent of the countdown and load-gated',()=>{
   const script=read('js/community.js');
   assert.match(script,/PUBLIC_COMMUNITY_ENABLED=false/);
   assert.match(script,/tfw_community_preview/);
-  assert.match(script,/start=async/);
-  assert.match(script,/initCommunity\(\)/);
+  assert.match(script,/void initCommunity\(\)/);
+  assert.match(script,/tfw-auth-pending/);
+  assert.match(script,/tfw-hype-stage/);
+  assert.match(script,/tfw-hype-rail/);
   assert.match(script,/\/api\/community\/config/);
   assert.doesNotMatch(read('js/app.js'),/supabase-js|hype-room|HYPE_TICKET_SECRET/);
 });
 test('The community assets are available on all standalone routes',()=>{
-  for(const path of ['index.html','today.html','timeline.html','intel.html','intel-archive.html']){
+  for(const path of ['index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html']){
     const page=read(path);
-    assert.match(page,/js\/community\.js\?v=1/);
-    assert.match(page,/css\/community\.css\?v=1/);
+    assert.match(page,/js\/community\.js\?v=2/);
+    assert.match(page,/css\/community\.css\?v=2/);
   }
   const build=read('tools/build-cloudflare-pages.mjs');
   assert.match(build,/include:\['\/api\/timezone','\/api\/community\/\*'\]/);
   assert.match(build,/community-privacy.html/);
   assert.match(build,/community-terms.html/);
+  assert.match(build,/profile.html/);
 });
 test('No privileged credentials shipped to the browser',()=>{
   const client=read('js/community.js');
@@ -90,6 +93,7 @@ test('All new JavaScript files parse',()=>{
     'js/community.js','functions/_lib/community.js',
     'functions/api/community/config.js','functions/api/community/profile.js',
     'functions/api/community/ticket.js','functions/api/community/live.js',
+    'functions/api/community/newsletter.js','js/community-profile.js',
     'workers/hype-worker/src/index.js'
   ];
   for(const file of files){
@@ -235,4 +239,47 @@ test('Quota estimator counts short-lived socket renewals and hibernation limits'
   assert.match(source,/WS_INCOMING_BILLING_RATIO=20/);
   assert.match(source,/scenario\(5000,4,.05,1\)/);
   assert.match(source,/estimatedPagesFunctionsWorst:sessionsWorst\*2/);
+});
+
+test('v2 onboarding must protect all site entry points and preserve footer disclosures',()=>{
+  const routes=['index.html','today.html','timeline.html','intel.html',
+    'intel-archive.html','profile.html'];
+  for(const path of routes){
+    const html=read(path);
+    assert.match(html,/tfw-auth-pending/);
+    assert.match(html,/tfw-account-link/);
+    assert.match(html,/profile\.html/);
+    assert.match(html,/community-privacy\.html/);
+    assert.match(html,/community-terms\.html/);
+  }
+  const nav=read('js/seamless-navigation.js');
+  assert.match(nav,/intel-archive\.html','profile\.html/);
+  assert.match(read('css/community.css'),/tfw-auth-gate/);
+});
+test('Seven requested emoji are identical on the API, Durable Object and UI',()=>{
+  const shared=read('functions/_lib/community.js');
+  const worker=read('workers/hype-worker/src/index.js');
+  const client=read('js/community.js');
+  const emojis=['🔥','🚀','🥳','🎉','🌴','🩷','💜'];
+  for(const emoji of emojis){
+    assert.ok(shared.includes(emoji));
+    assert.ok(worker.includes(emoji));
+    assert.ok(client.includes(emoji));
+  }
+  assert.match(client,/item\.nickname/);
+  assert.match(client,/name\.textContent=item\.nickname/);
+  assert.match(client,/state\.nextAllowed/);
+  assert.match(client,/tfw-hype-intensity/);
+});
+test('Nickname is immutable server-side, newsletter changes require identity and Turnstile',()=>{
+  const profile=read('functions/api/community/profile.js');
+  assert.match(profile,/old\?\.nickname&&nickname!==old\.nickname/);
+  const newsletter=read('functions/api/community/newsletter.js');
+  assert.match(newsletter,/authenticate\(request,env\)/);
+  assert.match(newsletter,/getProfile\(env,user\.id\)/);
+  assert.match(newsletter,/siteverify/);
+  assert.match(newsletter,/proof\.hostname!==new URL\(request\.url\)\.hostname/);
+  assert.match(newsletter,/senderSubscribe/);
+  assert.match(newsletter,/senderUnsubscribe/);
+  assert.doesNotMatch(newsletter,/nickname\s*:/);
 });
