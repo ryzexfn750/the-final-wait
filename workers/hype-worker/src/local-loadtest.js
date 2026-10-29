@@ -124,6 +124,9 @@ export default {
       return new Response(CLIENT,{headers:{'content-type':'text/javascript; charset=utf-8','cache-control':'no-store'}});
     if(url.pathname!=='/connect'||request.headers.get('Upgrade')?.toLowerCase()!=='websocket')
       return new Response('Not found',{status:404});
+    // Reject cross-origin browser WebSockets even on the loopback interface.
+    if(request.headers.get('Origin')!==url.origin)
+      return new Response('Origin mismatch',{status:403});
     // Every browser socket gets its own synthetic locally scoped test identity.
     const id=env.HYPE_ROOMS.idFromName('tz:Europe/Rome');
     const stub=env.HYPE_ROOMS.get(id);
