@@ -6,6 +6,7 @@
  * Run: node tools/hype-free-tier-estimator.mjs
  */
 const DAILY_REQUESTS=100_000;
+const WORKERS_FREE_DAILY_REQUESTS=100_000;
 const DAILY_GBS=13_000;
 const MEMORY_GB=128/1000; // Cloudflare pricing examples allocate 128 MB = 0.128 GB
 const REACTION_COOLDOWN_SECONDS=20; // current room size >250
@@ -33,13 +34,18 @@ function scenario(users,hours,participation,rooms=1){
     estimatedDailyDORequestsTypical:requestsTypical,
     estimatedDailyDORequestsWorst:requestsWorst,
     worstCaseShareOfFreeRequests:Math.round(requestsWorst/DAILY_REQUESTS*1000)/10+'%',
+    // Pages Functions are Workers requests, in a separate shared quota.
+    // Each rejoin uses POST /ticket and GET /live (2 Functions requests).
+    estimatedPagesFunctionsTypical:sessionsMid*2,
+    estimatedPagesFunctionsWorst:sessionsWorst*2,
+    exceedsWorkersFreeLimitWorst:sessionsWorst*2>WORKERS_FREE_DAILY_REQUESTS,
     upperBoundActiveGBs:Math.round(upperGBs),
     exceedsRequestsFreeLimitWorst:requestsWorst>DAILY_REQUESTS,
     exceedsDurationFreeLimitIfAlwaysActive:upperGBs>DAILY_GBS
   };
 }
 console.log('THE FINAL WAIT: Cloudflare DO Free illustrative event budget');
-console.log('Daily quotas: 100,000 DO requests; 13,000 GB-s duration.');
+console.log('Daily quotas: 100,000 DO requests; 13,000 DO GB-s; 100,000 Workers/Pages requests.');
 console.log('Assumptions: all users remain inside LIVE HYPE for event duration;');
 console.log('one WebSocket per user; connection renewals at 15–30 min;');
 console.log('selected fraction of users sends 1 reaction every 20s;');
