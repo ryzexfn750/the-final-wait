@@ -10,7 +10,8 @@ export const fail=(message,status=400)=>json({error:message},status);
 export function enabled(env){
   return env.COMMUNITY_ENABLED==='true' &&
    Boolean(env.SUPABASE_URL&&env.SUPABASE_ANON_KEY&&env.SUPABASE_SERVICE_ROLE_KEY&&
-     env.HYPE_TICKET_SECRET&&env.HYPE_ROOMS);
+     env.HYPE_TICKET_SECRET&&env.HYPE_ROOMS&&
+     env.TURNSTILE_SITE_KEY&&env.TURNSTILE_SECRET);
 }
 export function adminApi(env,path,opts={}){
   // Modern sb_secret_ keys are opaque API keys, not bearer JWTs.
