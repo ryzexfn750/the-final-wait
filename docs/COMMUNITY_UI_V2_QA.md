@@ -96,3 +96,39 @@ Durable Object Worker needs a separate deployment** before the three new
 emojis are usable end-to-end. Never deploy the special *local* load-test
 config. Deploy only the original Worker config after soak is complete and
 tests have passed.
+
+## Visual refinement pass — October 29
+
+- Registration: always display a visible pointer over the full-screen gate;
+  the kicker is now just THE FINAL WAIT. Repeated Google invitation and
+  private-email caption were removed.
+- Original header geometry is preserved: the profile control is an
+  absolutely positioned person-outline icon next to the actual language
+  widget. A separate header coordinator measures its position on narrow
+  screens and after translator DOM updates.
+- Reactions: emoji rail is inset a little from the right edge, while its
+  separate intensity tube is vertical, bottom-up, and animated.
+- Animated reactions sample available countdown space. The sampler rejects
+  collisions with titles, countdown, release HUD, navigation and special
+  Final Call content whenever safe positions are available. Animation
+  lifetime is 2.6 seconds and DOM nodes are bounded.
+- Profile: simple person-outline avatar, permanent nickname text without
+  extra caption, logout and delete with a branded, accessible confirmation
+  dialog rather than native `confirm()` prompts.
+- Newsletter/CAPTCHA controls are completely absent from `profile.html`.
+  The unsubscribe link in **every footer** opens `newsletter.html`,
+  preserving seamless navigation and audio. The dedicated newsletter page
+  still performs Cloudflare Turnstile verification for secure preference
+  changes, using the existing authenticated API.
+- Current web asset versions: `community.js?v=3`,
+  `community.css?v=3`, `community-profile.js?v=2`,
+  `community-profile.css?v=2`, `community-header.js?v=3`.
+- Run `node --test tests/community.test.mjs` and
+  `node tools/build-cloudflare-pages.mjs` on `community-qa`.
+  Browser QA must explicitly confirm cursor appearance on an anonymous
+  new session, no navbar shifting with each translator language, newsletter
+  unsubscribe in footer, modal operations, mobile layout and post-release
+  animated reactions.
+
+Do not deploy the community module to Production before legal and runtime
+checks. The app-only gate is a UX gate, not static HTTP authorization.
