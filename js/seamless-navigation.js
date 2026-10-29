@@ -7,7 +7,7 @@
  const origin=new URL(location.href);
  const originalBase=origin.pathname+origin.search;
  const rootPrefix=origin.pathname.slice(0,origin.pathname.lastIndexOf('/')+1);
- const allowed=new Set(['','index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html']);
+ const allowed=new Set(['','index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html','community-privacy.html','community-terms.html','support.html']);
  let activeFrame=null,seq=0,loading=false,rememberedTitle=document.title;
  const shell=document.createElement('div');
  shell.id='tfwSeamlessShell';
@@ -61,6 +61,7 @@
    shell.querySelectorAll('iframe').forEach(node=>node.remove());
    shell.hidden=true;
    document.body.classList.remove('tfw-route-overlay-open');
+   document.documentElement.classList.remove('tfw-route-overlay-open');
    document.title=rememberedTitle;
    window.dispatchEvent(new Event('tfw:seamless-return'));
  }
@@ -138,6 +139,7 @@
    const ticket=++seq;
    loading=true;shell.hidden=false;
    document.body.classList.add('tfw-route-overlay-open');
+   document.documentElement.classList.add('tfw-route-overlay-open');
    status.hidden=false;
    direct.hidden=true;label.textContent='LOADING';
    setLoadingProgress(5);
@@ -187,6 +189,18 @@
    },{once:true});
    frame.src=next.href;
  }
+ // Block wheel/keyboard scrolling of the audio-owning root while its
+ // full-screen iframe owns focus. Events from inside a cross-document iframe
+ // do not bubble to this parent, so article/profile scrolling remains native.
+ const parentScrollGuard=event=>{
+   if(!document.body.classList.contains('tfw-route-overlay-open'))return;
+   const element=event.target;
+   if(element?.closest?.('#tfwSeamlessShell'))return;
+   event.preventDefault();
+   event.stopImmediatePropagation();
+ };
+ window.addEventListener('wheel',parentScrollGuard,{capture:true,passive:false});
+ window.addEventListener('touchmove',parentScrollGuard,{capture:true,passive:false});
  document.addEventListener('click',event=>onClick(event,document),true);
  window.addEventListener('popstate',()=>navigate(canonical(new URL(location.href)),false));
  // Keep the host page's audio on the original document. If a link has
