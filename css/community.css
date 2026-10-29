@@ -1,0 +1,61 @@
+/* Standalone optional UI: never changes countdown layout or core scripts. */
+.hype-root{position:fixed;z-index:148;right:18px;bottom:22px;pointer-events:none;
+ font-family:Arial,Helvetica,sans-serif;color:#fff}
+.hype-root button,.hype-root input{font-family:inherit}
+.hype-root a{color:#ffb5de;text-decoration:underline}
+.hype-root .hype-launch,.hype-root .hype-panel{pointer-events:auto}
+.hype-launch{display:flex;align-items:center;gap:9px;min-height:42px;
+ border:1px solid rgba(248,118,212,.6);border-radius:999px;
+ background:linear-gradient(120deg,rgba(38,18,48,.94),rgba(17,15,30,.95));
+ color:#fff;padding:11px 18px;font:900 11px/1 Arial,sans-serif;
+ letter-spacing:.12em;box-shadow:0 8px 42px rgba(0,0,0,.55);cursor:pointer}
+.hype-live-dot{display:block;width:7px;height:7px;border-radius:50%;background:#fe6ab6;box-shadow:0 0 13px #f95fc5}
+.hype-panel{position:absolute;bottom:56px;right:0;width:min(390px,calc(100vw - 24px));
+ max-height:min(76vh,675px);overflow-y:auto;overscroll-behavior:contain;
+ border:1px solid rgba(255,255,255,.18);border-radius:20px;
+ background:linear-gradient(140deg,#211326,#090910 76%);box-shadow:0 20px 80px rgba(0,0,0,.78);
+ padding:20px;color:#fff}
+.hype-panel[hidden],.hype-root [hidden]{display:none!important}
+.hype-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.hype-head strong{display:block;font-size:12px;letter-spacing:.07em}
+.hype-head small{display:block;color:#e39dcf;margin-top:9px;letter-spacing:.1em;font-size:10px}
+.hype-head button{border:0;background:none;color:#fff;font-size:23px;cursor:pointer}
+.hype-description{font-size:12px;line-height:1.6;color:#c4b7c9;margin:14px 0}
+.hype-stats{display:flex;justify-content:space-between;gap:8px;
+ font-size:9px;font-weight:800;letter-spacing:.12em;color:#c7a4be;padding:12px 0;
+ border-top:1px solid #ffffff20;border-bottom:1px solid #ffffff20}
+.hype-notice{min-height:24px;color:#d5b3cb;font-size:11px;line-height:1.5;padding:12px 0 6px}
+.hype-error{color:#ff998f}
+.hype-panel #hypeGuest p{font-size:12px;line-height:1.5;color:#cbbfd1}
+.hype-primary{display:block;width:100%;border:1px solid #f6a7d8;border-radius:11px;
+ background:linear-gradient(110deg,#ef61b4,#955de9);color:#fff;padding:12px 14px;
+ font-size:11px;font-weight:900;letter-spacing:.05em;cursor:pointer}
+.hype-panel form{display:grid;gap:14px}
+.hype-panel form>label:first-child{font-size:10px;letter-spacing:.12em;color:#dbc8dd;font-weight:900}
+.hype-panel input[type=text]{width:100%;box-sizing:border-box;border:1px solid #ffffff45;
+ border-radius:9px;color:white;background:#ffffff0c;padding:12px;font-size:13px}
+.hype-checkbox{display:flex;gap:10px;align-items:flex-start;line-height:1.5;
+ color:#d5c7dc;font-size:11px}
+.hype-checkbox input{accent-color:#e766ba;flex:0 0 auto;margin-top:3px}
+.hype-member-row{display:flex;align-items:center;justify-content:space-between;
+ gap:10px;margin:12px 0;font-size:13px}
+.hype-text-button{border:0;background:none;padding:7px 3px;cursor:pointer;
+ color:#d4accb;font-size:10px;letter-spacing:.09em;font-weight:900}
+.hype-danger{color:#ff9b9b}
+.hype-reactions{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin:14px 0}
+.hype-emoji{padding:10px 0;border-radius:11px;border:1px solid #ffffff27;
+ background:#ffffff0b;font-size:23px;cursor:pointer;transition:transform .15s}
+.hype-emoji:hover{transform:translateY(-2px);background:#ffffff18}
+.hype-rule{display:block;color:#a89aa9;font-size:10px;line-height:1.4}
+.hype-feed{max-height:140px;overflow:auto;margin:14px 0}
+.hype-feed>div{padding:7px 9px;margin-bottom:4px;background:#ffffff0c;border-radius:7px;
+ font-size:11px;color:#d5c7dc;overflow-wrap:anywhere}
+.hype-feed strong{color:#fff}
+.hype-foot{margin-top:15px;padding-top:10px;border-top:1px solid #ffffff1c;
+ font-size:9px;color:#8c808f;text-align:center}
+@media(max-width:600px){
+ .hype-root{right:12px;bottom:10px}
+ .hype-panel{bottom:53px;max-height:calc(100dvh - 120px);padding:15px}
+ .hype-launch{padding:10px 13px;min-height:40px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){.hype-root *{transition:none!important}}
