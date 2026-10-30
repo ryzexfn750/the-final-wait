@@ -681,3 +681,44 @@ html.tfw-streamer-mode .tfw-hype-float-name{display:none!important}
  .topbar .tfw-settings-link .tfw-account-person{width:19px;height:19px}
  .topbar .tfw-settings-link .tfw-settings-label{font-size:0}
 }
+
+
+/* Reactions V3: ghosted micro-floats beside HYPE LEVEL, never across the
+   countdown or Final Call captions. Two nodes maximum, 780ms lifetime. */
+#hero>.tfw-hype-stage{z-index:27;pointer-events:none}
+#hero .tfw-hype-float.tfw-hype-float-quiet{
+ width:max-content;max-width:118px;display:flex;flex-direction:row;gap:4px;
+ align-items:center;justify-content:flex-start;
+ opacity:0;filter:none!important;
+ animation:tfwHypeQuietRise 780ms ease-out both!important;
+ pointer-events:none;
+}
+#hero .tfw-hype-float-quiet::before,
+#hero .tfw-hype-float-quiet::after{display:none!important;content:none!important}
+#hero .tfw-hype-float-quiet .tfw-hype-float-emoji{
+ font:23px/1 "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif!important;
+ filter:none!important;animation:none!important;
+}
+#hero .tfw-hype-float-quiet .tfw-hype-float-name{
+ font:700 8px/1.2 Arial,sans-serif;max-width:75px;
+ padding:2px 3px;color:#f8dfef;background:transparent;border:0;
+ box-shadow:none;text-shadow:0 1px 2px #07040d;backdrop-filter:none;
+}
+@keyframes tfwHypeQuietRise{
+ 0%{opacity:0;transform:translate3d(3px,12px,0) scale(.8) rotate(-9deg)}
+ 20%{opacity:.42;transform:translate3d(0,0,0) scale(1) rotate(3deg)}
+ 65%{opacity:.32;transform:translate3d(-8px,-37px,0) scale(.93) rotate(-4deg)}
+ 100%{opacity:0;transform:translate3d(-15px,-66px,0) scale(.84) rotate(2deg)}
+}
+@media(max-width:700px){
+ #hero .tfw-hype-float-quiet .tfw-hype-float-emoji{font-size:17px!important}
+ #hero .tfw-hype-float-quiet .tfw-hype-float-name{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #hero .tfw-hype-float.tfw-hype-float-quiet{
+  animation:tfwHypeQuietReduced 780ms linear both!important
+ }
+ @keyframes tfwHypeQuietReduced{0%,100%{opacity:0}25%,65%{opacity:.25}}
+}
+html.tfw-ticket-reveal-open #hero>.tfw-hype-stage,
+html.tfw-auth-pending #hero>.tfw-hype-stage{visibility:hidden}

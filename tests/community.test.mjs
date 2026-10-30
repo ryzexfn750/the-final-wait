@@ -336,7 +336,7 @@ test('Login text trimmed and reaction positions avoid countdown controls',()=>{
   assert.match(client,/\.hero-title-wrap/);
   assert.match(client,/\.release-hud/);
   assert.match(client,/\.finale-release/);
-  assert.match(client,/REACTION_DURATION\+60/);
+  assert.match(client,/REACTION_DURATION\+20/);
   assert.match(client,/fill\.style\.height/);
 });
 
@@ -418,4 +418,23 @@ test('Analytics consent is optional and separate; duplicate Privacy button remov
  assert.match(community,/newsletter:\$\('#hypeNewsletter'\)\.checked/);
  assert.doesNotMatch(community,/tfwHypePct/);
  assert.doesNotMatch(read('support.html'),/If clicking an email link doesn't open anything/);
+});
+
+test('Hype animations stay quiet and bounded even during massive local bursts',()=>{
+ const client=read('js/community.js'),css=read('css/community.css');
+ assert.match(client,/const REACTION_DURATION=780/);
+ assert.match(client,/const REACTION_THROTTLE=145/);
+ assert.match(client,/const MAX_VISIBLE_REACTIONS=2/);
+ assert.match(client,/now-lastReactionShownAt<REACTION_THROTTLE/);
+ assert.match(client,/layer\.childElementCount>MAX_VISIBLE_REACTIONS/);
+ assert.match(client,/function randomSafePosition\(\)/);
+ assert.match(client,/const bar=meter\?\.getBoundingClientRect\(\)/);
+ assert.match(client,/document\.body\.classList\.contains\('finale-last-10'\)/);
+ assert.match(client,/document\.documentElement\.classList\.contains\('tfw-ticket-reveal-open'\)/);
+ assert.match(client,/window\.__tfwStressTestHype=\(total=200\)=>/);
+ assert.match(client,/No network traffic/);
+ assert.doesNotMatch(client,/node\.animate\(frames|glyph\.animate\(reactionMotionFrames/);
+ assert.match(css,/tfwHypeQuietRise 780ms/);
+ assert.match(css,/opacity:\.42/);
+ assert.match(css,/tfw-hype-float-quiet::before/);
 });

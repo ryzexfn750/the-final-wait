@@ -290,149 +290,88 @@ async function initCommunity(){
     if(!rail)return;
     rail.classList.toggle('tfw-hype-disconnected',!state.connected);
   }
-  // Choose safe visual space in the hero, rather than placing reactions
-  // over the clock, copy, controls, final call, or release information.
-  const avoidedSelectors=[
-    '.hero-title-wrap','#countdown','#finalMinuteCountdown',
-    '.phase-pill','.release-hud','.progress-block','.hero-status',
-    '.next-scene','.scroll-cue','.tfw-final-call-headline',
-    '.finale-release','.release-elapsed-clock','#finaleVisualizerWrap',
-    '.tfw-hype-rail','.tfw-hype-intensity'
-  ];
+  // A tiny reaction lane alongside HYPE LEVEL, never a full-screen shower.
+  // Subtitles, finale, registration and countdown UI remain unobstructed.
+  const REACTION_DURATION=780; // under one second, including fadeout
+  const REACTION_THROTTLE=145;
+  const MAX_VISIBLE_REACTIONS=2;
+  let lastReactionShownAt=-Infinity;
   function randomSafePosition(){
-    const box=hero.getBoundingClientRect();
-    const w=Math.min(112,Math.max(78,box.width*.25));
-    const h=93;
-    const pad=12;
-    const taken=avoidedSelectors.flatMap(s=>[...hero.querySelectorAll(s)])
-      .filter(el=>getComputedStyle(el).visibility!=='hidden'&&
-        getComputedStyle(el).display!=='none'&&
-        Number(getComputedStyle(el).opacity||1)>.08)
-      .map(el=>el.getBoundingClientRect());
-    for(const node of layer.children)if(node.isConnected)taken.push(node.getBoundingClientRect());
-    const collision=(x,y)=>{
-      const left=box.left+x-pad,right=box.left+x+w+pad;
-      const top=box.top+y-pad,bottom=box.top+y+h+pad;
-      return taken.reduce((score,rect)=>{
-        const intersection=Math.max(0,Math.min(right,rect.right+pad)-Math.max(left,rect.left-pad))*
-          Math.max(0,Math.min(bottom,rect.bottom+pad)-Math.max(top,rect.top-pad));
-        return score+intersection;
-      },0);
-    };
-    let best=null,bestScore=Infinity;
-    for(let i=0;i<60;i++){
-      const x=pad+Math.random()*Math.max(0,box.width-w-pad*2);
-      const y=Math.max(100,box.height*.15)+Math.random()*
-        Math.max(0,box.height-Math.max(100,box.height*.15)-h-72);
-      const score=collision(x,y);
-      if(score<bestScore){best={x,y};bestScore=score}
-      if(score===0)break;
-    }
-    return best||{x:20,y:120};
+    const heroBox=hero.getBoundingClientRect();
+    const bar=meter?.getBoundingClientRect();
+    const left=bar?.width?bar.right-heroBox.left+5:Math.max(12,heroBox.width*.05);
+    const y=bar?.height?bar.top-heroBox.top+bar.height*.70:
+      Math.max(90,heroBox.height*.68);
+    // Clamp only within the side lane: never search the whole viewport.
+    return {x:Math.max(8,Math.min(left,heroBox.width*.18)),
+      y:Math.max(95,Math.min(y,heroBox.height-90))};
   }
-  const emojiMotion={
-    '🔥':'flame','🚀':'launch','🥳':'party','🎉':'party',
-    '🌴':'sway','🩷':'heartbeat','💜':'heartbeat'
-  };
-  // Run each reaction through the Web Animations API, independently of
-  // legacy stylesheet animation declarations that previously competed.
-  // CSS keyframes remain the fallback for engines without Element.animate().
-  const REACTION_DURATION=1750;
-  const reactionMotionFrames={
-    flame:[
-      {transform:'translate3d(0,12px,0) rotate(-18deg) scale(.55)',offset:0},
-      {transform:'translate3d(0,-12px,0) rotate(16deg) scale(1.34)',offset:.23},
-      {transform:'translate3d(0,1px,0) rotate(-14deg) scale(.96)',offset:.48},
-      {transform:'translate3d(0,-11px,0) rotate(13deg) scale(1.15)',offset:.74},
-      {transform:'translate3d(0,-18px,0) rotate(-7deg) scale(.82)',offset:1}
-    ],
-    launch:[
-      {transform:'translate3d(-25px,29px,0) rotate(-38deg) scale(.4)',offset:0},
-      {transform:'translate3d(5px,-9px,0) rotate(17deg) scale(1.35)',offset:.27},
-      {transform:'translate3d(-4px,0,0) rotate(-12deg) scale(1)',offset:.53},
-      {transform:'translate3d(30px,-32px,0) rotate(30deg) scale(.82)',offset:1}
-    ],
-    party:[
-      {transform:'rotate(-43deg) scale(.4)',offset:0},
-      {transform:'rotate(34deg) scale(1.35)',offset:.22},
-      {transform:'rotate(-26deg) scale(.91)',offset:.45},
-      {transform:'rotate(23deg) scale(1.15)',offset:.71},
-      {transform:'rotate(-8deg) scale(.82)',offset:1}
-    ],
-    sway:[
-      {transform:'rotate(-32deg) scale(.5)',offset:0},
-      {transform:'rotate(23deg) scale(1.2)',offset:.25},
-      {transform:'rotate(-19deg) scale(.97)',offset:.51},
-      {transform:'rotate(17deg) scale(1.09)',offset:.76},
-      {transform:'rotate(-10deg) scale(.86)',offset:1}
-    ],
-    heartbeat:[
-      {transform:'rotate(-10deg) scale(.5)',offset:0},
-      {transform:'rotate(8deg) scale(1.39)',offset:.20},
-      {transform:'rotate(0) scale(.91)',offset:.35},
-      {transform:'rotate(-8deg) scale(1.28)',offset:.51},
-      {transform:'rotate(5deg) scale(.99)',offset:.66},
-      {transform:'rotate(0) scale(.82)',offset:1}
-    ]
-  };
-  function animateReaction(node,glyph,kind){
-    if(typeof node.animate!=='function'||typeof glyph.animate!=='function')return false;
-    if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return false;
-    const drift=node.style.getPropertyValue('--drift')||'0px';
-    const frames=[
-      {opacity:0,transform:'translate3d(0,38px,0) scale(.45)',offset:0},
-      {opacity:1,transform:'translate3d(0,0,0) scale(1.14)',offset:.17},
-      {opacity:1,transform:'translate3d(0,-20px,0) scale(1)',offset:.42},
-      {opacity:1,transform:'translate3d('+drift+',-49px,0) scale(1)',offset:.78},
-      {opacity:0,transform:'translate3d('+drift+',-92px,0) scale(.75)',offset:1}
-    ];
-    // Disable only the old CSS animations on this particular live node;
-    // WAAPI animations retain control of opacity/transform without conflicts.
-    node.classList.add('tfw-reaction-waapi');
-    try{
-      node.animate(frames,{duration:REACTION_DURATION,fill:'both',
-        easing:'cubic-bezier(.2,.65,.28,1)'});
-      glyph.animate(reactionMotionFrames[kind]||reactionMotionFrames.party,{
-        duration:REACTION_DURATION,fill:'both',easing:'ease-in-out'
-      });
-      return true;
-    }catch(error){
-      node.classList.remove('tfw-reaction-waapi');
-      console.warn('Reaction animation fallback:',error);
-      return false;
-    }
+  function animatedLayerAvailable(){
+    return Boolean(layer&&layer.isConnected&&!document.hidden&&
+      !document.documentElement.classList.contains('tfw-auth-pending')&&
+      !document.documentElement.classList.contains('tfw-ticket-reveal-open')&&
+      !document.body.classList.contains('tfw-route-overlay-open')&&
+      !document.body.classList.contains('finale-last-10')&&
+      !document.body.classList.contains('finale-last-second'));
   }
   function animate(entries){
-    if(!layer||document.hidden)return;
-    for(const item of entries.slice(-6)){
-      if(!EMOJIS.includes(item.emoji)||typeof item.nickname!=='string'||
-         !/^[A-Za-z0-9_]{3,20}$/.test(item.nickname))continue;
-      const pos=randomSafePosition();
-      const node=document.createElement('div');node.className='tfw-hype-float';
-      node.style.setProperty('--hx',pos.x.toFixed(1)+'px');
-      node.style.setProperty('--hy',pos.y.toFixed(1)+'px');
-      node.style.setProperty('--drift',(Math.random()*96-48).toFixed(0)+'px');
-      node.style.setProperty('--spin',(Math.random()*22-11).toFixed(0)+'deg');
-      const e=document.createElement('span');
-      e.className='tfw-hype-float-emoji tfw-emoji-motion-'+emojiMotion[item.emoji];
-      e.textContent=item.emoji;
-      const name=document.createElement('span');name.className='tfw-hype-float-name';
-      name.textContent=item.nickname;
-      node.appendChild(e);
-      if(!document.documentElement.classList.contains('tfw-streamer-mode'))node.appendChild(name);
-      layer.appendChild(node);
-      animateReaction(node,e,emojiMotion[item.emoji]);
-      while(layer.children.length>14)layer.firstElementChild.remove();
-      setTimeout(()=>node.remove(),REACTION_DURATION+60);
+    if(!animatedLayerAvailable()||!Array.isArray(entries))return;
+    const now=performance.now();
+    if(now-lastReactionShownAt<REACTION_THROTTLE)return;
+    // A hundred websocket reactions in one packet are reduced to ONE
+    // understated visual, while the HYPE percentage still aggregates them.
+    const item=entries.slice(-8).reverse().find(value=>
+      EMOJIS.includes(value?.emoji)&&typeof value.nickname==='string'&&
+      /^[A-Za-z0-9_]{3,20}$/.test(value.nickname));
+    if(!item)return;
+    lastReactionShownAt=now;
+    const pos=randomSafePosition();
+    const node=document.createElement('div');
+    node.className='tfw-hype-float tfw-hype-float-quiet';
+    node.style.setProperty('--hx',pos.x.toFixed(1)+'px');
+    node.style.setProperty('--hy',pos.y.toFixed(1)+'px');
+    node.style.setProperty('--drift','-14px');
+    const glyph=document.createElement('span');
+    glyph.className='tfw-hype-float-emoji';
+    glyph.textContent=item.emoji;
+    node.appendChild(glyph);
+    const finale=document.body.classList.contains('final-five-active')||
+      document.body.classList.contains('tfw-final-call-active')||
+      document.body.classList.contains('finale-released');
+    if(!finale&&!document.documentElement.classList.contains('tfw-streamer-mode')){
+      const name=document.createElement('span');
+      name.className='tfw-hype-float-name';name.textContent=item.nickname;
+      node.appendChild(name);
     }
+    layer.appendChild(node);
+    while(layer.childElementCount>MAX_VISIBLE_REACTIONS)
+      layer.firstElementChild.remove();
+    setTimeout(()=>node.remove(),REACTION_DURATION+20);
   }
-  // Local-only QA diagnostic. Never sends a reaction or bypasses server cooldown.
-  // Example in the preview's developer console: __tfwPreviewHypeReaction('🥳')
+  // Private preview-only stress simulator: it never sends a WebSocket
+  // message or touches server cooldown/rate limits.
   if(communityPreview){
     window.__tfwPreviewHypeReaction=emoji=>{
-      if(!member()||!EMOJIS.includes(emoji)||!layer)return false;
-      animate([{emoji,nickname:state.profile.nickname}]);
+      if(!EMOJIS.includes(emoji)||!layer?.isConnected)return false;
+      animate([{emoji,nickname:state.profile?.nickname||'PreviewFan'}]);
       return true;
+    };
+    let stressTimer=0;
+    window.__tfwStressTestHype=(total=200)=>{
+      if(!layer?.isConnected)return 'HYPE layer is not ready.';
+      clearInterval(stressTimer);
+      const max=Math.min(600,Math.max(1,Math.floor(Number(total)||200)));
+      let sent=0;
+      stressTimer=setInterval(()=>{
+        const count=Math.min(12,max-sent);
+        const batch=Array.from({length:count},(_,i)=>({
+          emoji:EMOJIS[(sent+i)%EMOJIS.length],nickname:'LoadTestFan'
+        }));
+        animate(batch);
+        sent+=count;
+        if(sent>=max){clearInterval(stressTimer);stressTimer=0}
+      },75);
+      return 'Simulating '+max+' LOCAL emoji events. No network traffic.';
     };
   }
   function updateHype(counts){
