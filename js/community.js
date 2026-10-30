@@ -43,7 +43,11 @@ async function initCommunity(){
       <select class="tfw-lang-native" aria-label="Registration language">
        <option value="en">English</option><option value="fr">Français</option>
        <option value="es">Español</option><option value="de">Deutsch</option>
-       <option value="it">Italiano</option>
+       <option value="it">Italiano</option><option value="pt">Português</option>
+       <option value="ru">Русский</option><option value="pl">Polski</option>
+       <option value="ja">日本語</option><option value="tr">Türkçe</option>
+       <option value="nl">Nederlands</option><option value="ko">한국어</option>
+       <option value="zh-CN">简体中文</option><option value="ar">العربية</option>
       </select>
     </div>
     <img class="tfw-gate-logo" src="assets/gta-vi-logo.webp" alt="Grand Theft Auto VI">

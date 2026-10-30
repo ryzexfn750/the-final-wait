@@ -611,7 +611,10 @@ html body .gtranslate_wrapper select.tfw-lang-native{
 .language-widget .tfw-lang-menu[hidden]{display:none!important}
 .language-widget .tfw-lang-menu{
  position:absolute;z-index:1253;right:0;top:calc(100% + 10px);display:grid;gap:4px;
- width:202px;padding:8px;border:1px solid rgba(248,142,215,.4);border-radius:16px;
+ width:222px;max-width:min(90vw,260px);max-height:min(66vh,530px);
+ overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
+ scrollbar-color:rgba(246,136,210,.55) transparent;
+ padding:8px;border:1px solid rgba(248,142,215,.4);border-radius:16px;
  background:linear-gradient(140deg,#27172f,#120d1e);
  box-shadow:0 20px 55px rgba(0,0,0,.62),0 0 35px rgba(228,94,175,.1);
  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)
@@ -636,14 +639,14 @@ html body .gtranslate_wrapper select.tfw-lang-native{
  background:rgba(233,122,207,.18);color:#fff0fc;border-color:rgba(247,164,219,.3)
 }
 .language-widget .tfw-lang-flag{font-size:21px;line-height:1}
-.language-widget .tfw-lang-name{flex:1}
+.language-widget .tfw-lang-name{flex:1;min-width:0;letter-spacing:.02em;text-transform:none;unicode-bidi:plaintext}
 .language-widget .tfw-lang-check{color:#f6ade0;opacity:0}
 .language-widget .tfw-lang-option.selected .tfw-lang-check{opacity:1}
 .language-widget .tfw-lang-trigger:focus-visible,
 .language-widget .tfw-lang-option:focus-visible{outline:2px solid #f6c5e7;outline-offset:3px}
 @media(max-width:700px){
  .language-widget .tfw-lang-trigger{min-width:68px;gap:5px;padding:0 8px;height:31px;font-size:9px}
- .language-widget .tfw-lang-menu{width:192px}
+ .language-widget .tfw-lang-menu{width:210px;max-height:min(60vh,480px)}
 }
 @media(prefers-reduced-motion:reduce){
  .language-widget .tfw-lang-trigger,.language-widget .tfw-lang-option,

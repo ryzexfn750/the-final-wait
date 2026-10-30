@@ -6,7 +6,11 @@
   const labels={
     en:['EN','ENGLISH','🇬🇧'],fr:['FR','FRANÇAIS','🇫🇷'],
     es:['ES','ESPAÑOL','🇪🇸'],de:['DE','DEUTSCH','🇩🇪'],
-    it:['IT','ITALIANO','🇮🇹']
+    it:['IT','ITALIANO','🇮🇹'],pt:['PT','PORTUGUÊS','🇧🇷'],
+    ru:['RU','РУССКИЙ','🇷🇺'],pl:['PL','POLSKI','🇵🇱'],
+    ja:['JA','日本語','🇯🇵'],tr:['TR','TÜRKÇE','🇹🇷'],
+    nl:['NL','NEDERLANDS','🇳🇱'],ko:['KO','한국어','🇰🇷'],
+    'zh-CN':['ZH','简体中文','🇨🇳'],ar:['AR','العربية','🇸🇦']
   };
   const STORE_LANG='tfw_site_language_v1';
   const STORE_MODE='tfw_site_language_mode_v1';
@@ -14,20 +18,31 @@
   const save=(k,v)=>{try{localStorage.setItem(k,v)}catch{}};
   const supported=new Set(Object.keys(labels));
   // Mapping is deliberately conservative. Mixed-language countries are chosen
-  // using the user's browser preference if it is one of our five languages.
+  // using the user's browser preference if it is supported.
   const countryGroups={
     it:'IT,SM,VA',
     fr:'FR,MC',
     es:'ES,MX,AR,CL,CO,PE,VE,EC,BO,PY,UY,CR,CU,DO,GT,HN,NI,SV,PA,PR,GQ',
-    de:'DE,AT,LI'
+    de:'DE,AT,LI',
+    pt:'BR,PT,AO,MZ,CV,GW,ST,TL',
+    ru:'RU,BY',
+    pl:'PL',
+    ja:'JP',
+    tr:'TR',
+    nl:'NL,SR',
+    ko:'KR,KP',
+    'zh-CN':'CN',
+    ar:'SA,AE,EG,QA,KW,BH,OM,JO,LB,SY,IQ,YE,DZ,MA,TN,LY,SD,MR,PS,DJ'
   };
   const singleCountry=new Map(Object.entries(countryGroups).flatMap(([lang,values])=>
     values.split(',').map(country=>[country,lang])));
-  const mixedCountries=new Set(['BE','CH','LU','CA']);
+  const mixedCountries=new Set(['BE','CH','LU','CA','SG','KZ','KG']);
   const langFromBrowser=()=>{
     const device=Array.isArray(navigator.languages)?navigator.languages:[navigator.language];
     for(const value of device){
-      const code=String(value||'').toLowerCase().split('-')[0];
+      const tag=String(value||'').toLowerCase();
+      const code=/^zh(?:-(?:cn|sg|hans))?$/.test(tag)?
+        'zh-CN':tag.split('-')[0];
       if(supported.has(code))return code;
     }
     return 'en';
@@ -43,7 +58,7 @@
       .find(x=>x.startsWith('googtrans='));
     if(!value)return null;
     let code=null;
-    try{code=/\/en\/([a-z]{2})(?:$|\/)/i.exec(decodeURIComponent(value.slice(10)))?.[1]?.toLowerCase()}
+    try{code=languageCode(/\/en\/([a-z]{2}(?:-[a-z]{2,4})?)(?:$|\/)/i.exec(decodeURIComponent(value.slice(10)))?.[1])}
     catch{return null}
     return supported.has(code)?code:null;
   }
@@ -104,7 +119,8 @@
     });
   }
   function languageCode(value){
-    return String(value||'en').split('|').pop().trim().toLowerCase();
+    const code=String(value||'en').split('|').pop().trim().toLowerCase();
+    return code==='zh-cn'?'zh-CN':code;
   }
   function closeMenu(control,restoreFocus=false){
     if(!control)return;
@@ -140,7 +156,7 @@
       select.tabIndex=-1;
       control=document.createElement('div');
       control.className='tfw-lang-control';
-      const id='tfwLangMenu'+[...document.querySelectorAll('.gtranslate_wrapper')].indexOf(wrapper);
+      const id='tfwLangMenu'+[...document.querySelectorAll('.gtranslate_wrapper, .tfw-gate-language-widget')].indexOf(wrapper);
       control.innerHTML=
         '<button type="button" class="tfw-lang-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="'+id+'">'+
           '<span class="tfw-lang-globe" aria-hidden="true">✦</span>'+
@@ -193,6 +209,7 @@
         flagNode.className='tfw-lang-flag';flagNode.textContent=flag;flagNode.setAttribute('aria-hidden','true');
         const text=document.createElement('span');
         text.className='tfw-lang-name';text.textContent=name;
+        text.setAttribute('dir','auto');
         const mark=document.createElement('span');
         mark.className='tfw-lang-check';mark.textContent='✓';mark.setAttribute('aria-hidden','true');
         btn.append(flagNode,text,mark);
@@ -231,7 +248,7 @@
     booted=true;
     window.gtranslateSettings={
       default_language:'en',
-      languages:['en','fr','es','de','it'],
+      languages:['en','fr','es','de','it','pt','ru','pl','ja','tr','nl','ko','zh-CN','ar'],
       wrapper_selector:'.gtranslate_wrapper',
       flag_style:'2d',
       native_language_names:true
