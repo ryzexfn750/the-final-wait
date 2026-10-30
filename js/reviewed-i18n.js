@@ -20,7 +20,14 @@
   const map=maps[code];
   if(map)longEnglish.forEach((key,i)=>map.set(key,values[i]));
  }
- const sourceKeys=new Set([...english,...extraEnglish,...longEnglish]);
+ const todayEnglish=Array.isArray(window.__tfwTodaySource)?window.__tfwTodaySource:[];
+ const todayLocales=window.__tfwTodayLocales||{};
+ for(const [code,values] of Object.entries(todayLocales)){
+  const map=maps[code];
+  if(map&&Array.isArray(values)&&values.length===todayEnglish.length)
+   todayEnglish.forEach((key,i)=>map.set(key,values[i]));
+ }
+ const sourceKeys=new Set([...english,...extraEnglish,...longEnglish,...todayEnglish]);
  const saved=new WeakMap();
  let locale='en',observer=null,scheduled=false,applying=false;
  const ignored='script,style,noscript,textarea,pre,code,svg,option,[contenteditable="true"],.gtranslate_wrapper,.tfw-gate-language-widget';
