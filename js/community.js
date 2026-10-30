@@ -324,6 +324,10 @@ async function initCommunity(){
     }
     return best||{x:20,y:120};
   }
+  const emojiMotion={
+    '🔥':'flame','🚀':'launch','🥳':'party','🎉':'party',
+    '🌴':'sway','🩷':'heartbeat','💜':'heartbeat'
+  };
   function animate(entries){
     if(!layer||document.hidden)return;
     for(const item of entries.slice(-6)){
@@ -335,7 +339,8 @@ async function initCommunity(){
       node.style.setProperty('--hy',pos.y.toFixed(1)+'px');
       node.style.setProperty('--drift',(Math.random()*96-48).toFixed(0)+'px');
       node.style.setProperty('--spin',(Math.random()*22-11).toFixed(0)+'deg');
-      const e=document.createElement('span');e.className='tfw-hype-float-emoji';
+      const e=document.createElement('span');
+      e.className='tfw-hype-float-emoji tfw-emoji-motion-'+emojiMotion[item.emoji];
       e.textContent=item.emoji;
       const name=document.createElement('span');name.className='tfw-hype-float-name';
       name.textContent=item.nickname;
@@ -343,7 +348,7 @@ async function initCommunity(){
       if(!document.documentElement.classList.contains('tfw-streamer-mode'))node.appendChild(name);
       layer.appendChild(node);
       while(layer.children.length>14)layer.firstElementChild.remove();
-      setTimeout(()=>node.remove(),1150);
+      setTimeout(()=>node.remove(),1500);
     }
   }
   function updateHype(counts){

@@ -56,3 +56,21 @@ test('QA Worker supports all seven reactions and versioned WebSocket protocol',(
   assert.match(worker,/reaction_ack/);
   assert.match(config,/"name": "the-final-wait-hype-qa"/);
 });
+
+test('Compact custom I-beam persists after selection and profile text is concise',()=>{
+ const js=read('js/site-polish.js'),css=read('css/site-polish.css');
+ assert.match(js,/viewBox="0 0 12 22"/);
+ assert.match(js,/window\.addEventListener\('pointerup'/);
+ assert.match(css,/width:12px!important;height:22px!important/);
+ assert.match(css,/tfw-text-selection-active body \*\{cursor:none!important\}/);
+ assert.doesNotMatch(read('profile.html'),/Saved on this device\. Other visitors can still see nicknames normally/);
+});
+test('Live reactions have distinct GPU animation families and reduced-motion fallback',()=>{
+ const js=read('js/community.js'),css=read('css/community.css');
+ for(const kind of ['flame','launch','party','sway','heartbeat']){
+  assert.match(css,new RegExp('tfwEmoji'+kind[0].toUpperCase()+kind.slice(1)));
+  assert.ok(js.includes("'"+kind+"'"));
+ }
+ assert.match(js,/setTimeout\(\(\)=>node\.remove\(\),1500\)/);
+ assert.match(css,/prefers-reduced-motion:reduce/);
+});

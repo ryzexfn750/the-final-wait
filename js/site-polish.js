@@ -27,9 +27,9 @@
       '<path d="M2 1.5 L2 27 L8.5 21 L14.2 33 L19.7 30.4 L14.1 19 L25.2 18.3 Z" fill="url(#tfwArrowGradient)" stroke="rgba(255,255,255,.92)" stroke-width="1.15" stroke-linejoin="round"/>'+
       '</svg>';
     // Render a matching I-beam inside the same custom cursor when selecting text.
-    reticle.innerHTML+='<svg class="tfw-global-cursor-ibeam" viewBox="0 0 18 32" aria-hidden="true" focusable="false">'+
-      '<path d="M3 3H15M9 3V29M3 29H15" fill="none" stroke="#130d1e" stroke-width="4.3" stroke-linecap="round"/>'+
-      '<path d="M3 3H15M9 3V29M3 29H15" fill="none" stroke="#f8b4e7" stroke-width="2" stroke-linecap="round"/></svg>';
+    reticle.innerHTML+='<svg class="tfw-global-cursor-ibeam" viewBox="0 0 12 22" aria-hidden="true" focusable="false">'+
+      '<path d="M2 2.5H10M6 2.5V19.5M2 19.5H10" fill="none" stroke="#130d1e" stroke-width="3.4" stroke-linecap="round"/>'+
+      '<path d="M2 2.5H10M6 2.5V19.5M2 19.5H10" fill="none" stroke="#f8b4e7" stroke-width="1.65" stroke-linecap="round"/></svg>';
     layer.appendChild(halo);
     layer.appendChild(reticle);
     document.body.appendChild(layer);
@@ -159,7 +159,12 @@
     document.addEventListener('selectionchange',syncSelection);
     document.addEventListener('mouseup',event=>{
       if(event.button===1)skipMiddleMouseDown=false;
-      if(event.button===0){syncSelection();move(event)}
+      if(event.button===0){move(event);syncSelection()}
+    },{capture:true,passive:true});
+    // DOM selection and Windows pointer state can settle after mouseup.
+    // Synchronize immediately in the capture phase, without a delayed timeout.
+    window.addEventListener('pointerup',event=>{
+      if(event.button===0){move(event);syncSelection()}
     },{capture:true,passive:true});
     window.addEventListener('keydown',event=>{
       if(event.key==='Escape')stopAutoScroll();

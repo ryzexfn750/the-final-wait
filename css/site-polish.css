@@ -518,13 +518,11 @@ html.tfw-ui-modal-open{overflow:hidden!important}
 #tfwGlobalCursor .tfw-autoscroll-indicator{position:fixed;left:0;top:0;width:40px;height:40px;z-index:5;pointer-events:none;filter:drop-shadow(0 2px 7px rgba(4,2,11,.7))}
 #tfwGlobalCursor .tfw-autoscroll-indicator[hidden]{display:none!important}
 #tfwGlobalCursor .tfw-autoscroll-indicator svg{display:block;width:40px;height:40px}
-#tfwGlobalCursor.text-selecting .tfw-global-cursor-reticle,
+/* Keep text selection under the custom pointer, never swap to Windows I-beam. */
 #tfwGlobalCursor.text-selecting .tfw-global-cursor-glow{opacity:0!important}
 @media(any-hover:hover) and (any-pointer:fine){
   html.tfw-global-cursor-ready.tfw-text-selection-active body,
-  html.tfw-global-cursor-ready.tfw-text-selection-active body *{cursor:text!important}
-  html.tfw-global-cursor-ready.tfw-text-selection-active button,
-  html.tfw-global-cursor-ready.tfw-text-selection-active a{cursor:pointer!important}
+  html.tfw-global-cursor-ready.tfw-text-selection-active body *{cursor:none!important}
   html.tfw-global-cursor-ready body,
   html.tfw-global-cursor-ready body *{scrollbar-color:auto}
 }
@@ -543,8 +541,8 @@ html.tfw-route-overlay-open #tfwGlobalCursor{opacity:0!important;visibility:hidd
 #tfwGlobalCursor.text-input .tfw-global-cursor-reticle svg.tfw-global-cursor-ibeam,
 #tfwGlobalCursor.text-caret .tfw-global-cursor-reticle svg.tfw-global-cursor-ibeam,
 #tfwGlobalCursor.text-selecting .tfw-global-cursor-reticle svg.tfw-global-cursor-ibeam{
- display:block!important;width:18px!important;height:32px!important;
- transform:translate(-7px,-4px)!important;
+ display:block!important;width:12px!important;height:22px!important;
+ transform:translate(-4px,-2px)!important;
  filter:drop-shadow(0 1px 2px #08030e) drop-shadow(0 0 3px rgba(246,145,215,.35))
 }
 #tfwGlobalCursor.text-selecting .tfw-global-cursor-glow{opacity:0!important}
