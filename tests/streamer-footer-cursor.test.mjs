@@ -23,21 +23,18 @@ test('Standard footer is identical on all eight routes and coffee is below X',()
   assert.match(css,/flex-direction:column;align-items:stretch/);
 });
 
-test('Streamer Mode is profile-controlled, persistent, and keeps nicknames out of DOM',()=>{
-  const html=read('profile.html');
-  const profile=read('js/community-profile.js');
-  const shared=read('js/community.js');
-  const css=read('css/community.css');
-  assert.match(html,/id="profileStreamerMode" type="checkbox" role="switch"/);
-  assert.match(html,/id="profileStreamerModeState"/);
-  assert.match(profile,/localStorage\.setItem\(streamerKey,streamerToggle\.checked\?'on':'off'\)/);
-  assert.match(profile,/window\.parent\.dispatchEvent\(new Event\('tfw:streamer-mode-change'\)\)/);
-  assert.match(shared,/window\.addEventListener\('storage',event=>/);
-  assert.match(shared,/window\.addEventListener\('tfw:streamer-mode-change',updateStreamerMode\)/);
-  assert.match(shared,/if\(!document\.documentElement\.classList\.contains\('tfw-streamer-mode'\)\)node\.appendChild\(name\)/);
-  assert.match(css,/html\.tfw-streamer-mode \.tfw-hype-float-name\{display:none!important\}/);
+test('Streamer Mode lives in Settings and hides nickname reactions',()=>{
+ const settings=read('settings.html'),profile=read('profile.html');
+ const handler=read('js/streamer-mode-settings.js'),shared=read('js/community.js');
+ assert.match(settings,/id="settingsStreamerMode" type="checkbox" role="switch"/);
+ assert.match(settings,/id="settingsStreamerModeState"/);
+ assert.doesNotMatch(profile,/profileStreamerMode/);
+ assert.match(handler,/localStorage\.setItem\(key,input\.checked\?'on':'off'\)/);
+ assert.match(handler,/window\.parent\.dispatchEvent\(new Event\('tfw:streamer-mode-change'\)\)/);
+ assert.match(shared,/window\.addEventListener\('tfw:streamer-mode-change',updateStreamerMode\)/);
+ assert.match(shared,/!document\.documentElement\.classList\.contains\('tfw-streamer-mode'\)/);
+ assert.match(read('css/community.css'),/html\.tfw-streamer-mode \.tfw-hype-float-name\{display:none!important\}/);
 });
-
 test('Text selection uses custom I-beam and the system I-beam stays suppressed',()=>{
   const js=read('js/site-polish.js'),css=read('css/site-polish.css');
   assert.match(js,/tfw-global-cursor-ibeam/);
@@ -65,14 +62,14 @@ test('Compact custom I-beam persists after selection and profile text is concise
  assert.match(css,/tfw-text-selection-active body \*\{cursor:none!important\}/);
  assert.doesNotMatch(read('profile.html'),/Saved on this device\. Other visitors can still see nicknames normally/);
 });
-test('Live reactions have distinct GPU animation families and reduced-motion fallback',()=>{
+test('Live HYPE reactions are subtle, limited and use an accessible reduced-motion fallback',()=>{
  const js=read('js/community.js'),css=read('css/community.css');
- for(const kind of ['flame','launch','party','sway','heartbeat']){
-  assert.match(css,new RegExp('tfwEmoji'+kind[0].toUpperCase()+kind.slice(1)));
-  assert.ok(js.includes("'"+kind+"'"));
- }
- assert.match(js,/animateReaction\(node,e,emojiMotion\[item\.emoji\]\)/);
- assert.match(js,/setTimeout\(\(\)=>node\.remove\(\),REACTION_DURATION\+60\)/);
- assert.match(js,/glyph\.animate\(reactionMotionFrames\[kind\]/);
+ assert.match(js,/const REACTION_DURATION=780/);
+ assert.match(js,/const MAX_VISIBLE_REACTIONS=2/);
+ assert.match(js,/const REACTION_THROTTLE=145/);
+ assert.match(js,/setTimeout\(\(\)=>node\.remove\(\),REACTION_DURATION\+20\)/);
+ assert.match(js,/function animatedLayerAvailable\(\)/);
+ assert.match(css,/tfwHypeQuietRise 780ms/);
  assert.match(css,/prefers-reduced-motion:reduce/);
+ assert.match(css,/tfwHypeQuietReduced 780ms/);
 });
