@@ -103,7 +103,7 @@ test('Global mouse halo is fixed above all sections and installed on every site 
   assert.doesNotMatch(js,/if\(!fine\|\|reduced\|\|!glow\)return/);
   for(const page of ['index.html','today.html','intel.html','timeline.html','intel-archive.html']){
     const html=read(page);
-    assert.ok(html.includes('css/site-polish.css?v=54'),page+' updated stylesheet');
+    assert.ok(html.includes('css/site-polish.css?v=55'),page+' updated stylesheet');
     assert.ok(html.includes('js/site-polish.js?v=48'),page+' updated script');
   }
 });

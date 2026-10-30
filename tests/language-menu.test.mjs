@@ -11,7 +11,7 @@ test('Styled language menu preserves the real GTranslate change and accessibilit
  assert.match(js,/role="listbox"/);
  assert.match(js,/setAttribute\('role','option'\)/);
  for(const code of ['en','it','fr','de','es','pt','ru','pl','ja','tr','nl','ko','ar'])
-  assert.match(js,new RegExp(code+':\\\\['));
+  assert.ok(js.includes(code+':['),code);
  assert.ok(js.includes("'zh-CN':['ZH'"));
  assert.match(js,/event\.key==='Escape'/);
  assert.match(js,/ArrowDown/);

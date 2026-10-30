@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 
-test('All site routes use v48 assets and the Russian translator is removed',()=>{
+test('All site routes retain stable assets and support 14 languages',()=>{
  const home=read('index.html');
  for(const asset of ['js/clock.js?v=49','js/milestones.js?v=52',
    'js/language.js?v=51','js/final-call-locales.js?v=48',
@@ -14,7 +14,7 @@ test('All site routes use v48 assets and the Russian translator is removed',()=>
  const language=read('js/language.js');
  const locales=read('js/final-call-locales.js');
  assert.match(language,/languages:\['en','fr','es','de','it','pt','ru','pl','ja','tr','nl','ko','zh-CN','ar'\]/);
- assert.doesNotMatch(language,/['"]ru['"]/);
+ assert.match(language,/ru:\['RU'/);
  assert.doesNotMatch(locales,/"ru"\s*:/);
  for(const page of ['today.html','timeline.html','intel.html','intel-archive.html']){
    const html=read(page);

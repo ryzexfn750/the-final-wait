@@ -58,7 +58,7 @@ test('Country detection sets automatic language and persists it across secondary
  const other=sandbox({stored:Object.fromEntries(s.values)});
  assert.equal(other.window.__tfwPreferredSiteLanguage(),'it');
  s.listeners['tfw:timezone-detected']({detail:{country:'JP'}});
- assert.equal(s.window.__tfwPreferredSiteLanguage(),'en');
+ assert.equal(s.window.__tfwPreferredSiteLanguage(),'ja');
 });
 test('Previously selected language wins over country auto-detection',()=>{
  const s=sandbox({stored:{tfw_site_language_v1:'de',tfw_site_language_mode_v1:'manual'}});
