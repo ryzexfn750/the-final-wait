@@ -57,7 +57,7 @@ test('QR has the exact decoded user-provided destination, quiet zone and no Bitl
  assert.match(js,/html-to-image@1\.11\.13/);
  assert.match(js,/const visible=document\.querySelector\(selector\)/);
  assert.match(js,/pixelRatio:portrait\?2:1/);
- assert.match(js,/stage\.querySelector\('\.tfw-ticket'\)\.classList\.add\('tfw-ticket--portrait'\)/);
+ assert.match(js,/source\.classList\.add\('tfw-ticket--portrait'\)/);
  assert.doesNotMatch(js,/UNOFFICIAL FAN PROJECT/);
  assert.doesNotMatch(js,/drawTicketWide|drawTicketTall|drawBarcode/);
 });
@@ -113,7 +113,7 @@ test('Profile-only placement, no public sign-in and Cloudflare routing all work 
  assert.match(profile,/id="profileTicketLink"/);
  assert.match(profile,/id="profileTicketCode"/);
  assert.doesNotMatch(profile,/id="profileTicketCanvas"/);
- assert.match(profile,/css\/boarding-pass\.css\?v=4/);
+ assert.match(profile,/css\/boarding-pass\.css\?v=5/);
  assert.match(client,/fetch\('\/api\/community\/boarding-pass'/);
  assert.match(client,/open.href=publicTicketUrl\(pass\)/);
  assert.doesNotMatch(client,/mountBoardingPass\(/);
@@ -129,7 +129,7 @@ test('Profile-only placement, no public sign-in and Cloudflare routing all work 
  assert.match(read('community-privacy.html'),/collectible boarding pass/);
  assert.match(read('community-terms.html'),/decorative, non-transferable/);
  const js=read('js/boarding-pass.js');
- for(const name of ['DOWNLOAD ORIGINAL PNG','DOWNLOAD STORY PNG','SHARE ON X','SHARE ON REDDIT','INSTAGRAM','TIKTOK','COPY VERIFIED LINK'])
+ for(const name of ['DOWNLOAD TICKET','DOWNLOAD STORY VERSION','SHARE ON X','SHARE ON REDDIT','INSTAGRAM','TIKTOK','COPY VERIFIED LINK'])
   assert.ok(js.includes(name),name);
 });
 
@@ -145,8 +145,8 @@ test('Detail page reuses full working topbar, language geometry, audio and modal
  assert.doesNotMatch(page,/Every boarding pass is unique/);
  assert.doesNotMatch(read('js/public-boarding-pass.js'),/Authenticity checked against an active The Final Wait community account/);
  const js=read('js/boarding-pass.js'),css=read('css/boarding-pass.css');
- assert.match(js,/download\.textContent='↓ DOWNLOAD'/);
- assert.match(js,/share\.textContent='↗ SHARE'/);
+ assert.match(js,/download\.textContent='DOWNLOAD'/);
+ assert.match(js,/share\.textContent='SHARE'/);
  assert.match(js,/const openModal=kind=>/);
  assert.match(js,/modal\.setAttribute\('aria-modal','true'\)/);
  assert.match(js,/download\.addEventListener\('click',\(\)=>openModal\('download'\)\)/);
@@ -158,7 +158,7 @@ test('Original layout, user-supplied scan-safe QR and portrait use one shared DO
  const js=read('js/boarding-pass.js'),css=read('css/boarding-pass.css');
  assert.doesNotMatch(js,/EXCLUSIVE COMMUNITY COLLECTIBLE/);
  assert.doesNotMatch(js,/✦ VERIFIED PASSENGER/);
- assert.match(js,/✓ VERIFIED PASSENGER/);
+ assert.doesNotMatch(js,/✓ VERIFIED PASSENGER/);
  assert.match(js,/import \{mountTicketQR\} from '\.\/ticket-qr\.js\?v=1'/);
  assert.match(js,/\.tfw-ticket-qr/);
  assert.match(css,/\.tfw-ticket--portrait/);
@@ -171,13 +171,13 @@ test('Registration runs a one-time ticket reveal, with exit, reduced motion and 
  const css=read('css/ticket-reveal.css');
  assert.match(src,/const firstRegistration=!state\.profile\?\.nickname/);
  assert.match(src,/if\(firstRegistration\)/);
- assert.match(src,/import\('\.\/ticket-reveal\.js\?v=2'\)/);
+ assert.match(src,/import\('\.\/ticket-reveal\.js\?v=3'\)/);
  assert.match(src,/api\('GET','boarding-pass'\)/);
  assert.match(intro,/export async function showTicketReveal\(loadTicket\)/);
  assert.match(intro,/mountBoardingPass\(holder,pass\)/);
  assert.match(intro,/tfw-reveal-printing/);
  assert.match(intro,/tfw-reveal-complete/);
- assert.match(intro,/setTimeout\(\(\)=>overlay\.remove\(\)/);
+ assert.match(intro,/overlay\.remove\(\)/);
  assert.match(intro,/tfw-reveal-skip/);
  assert.match(intro,/tfw-reveal-continue/);
  assert.doesNotMatch(intro,/tfw-reveal-open|APPROVED FOR BOARDING/);
@@ -198,6 +198,50 @@ test('First registration never exposes countdown beneath the reveal and reminder
  assert.match(css,/#tfwGlobalCursor\.tfw-global-cursor-layer\{z-index:2147483000/);
  assert.match(reveal,/window\.__tfwTicketRevealFinished=true/);
  const support=read('js/support-experience.js');
- assert.match(support,/if\(window\.__tfwTicketRevealFinished\)/);
- assert.match(support,/setTimeout\(offerExperience,400\)/);
+ assert.match(support,/addEventListener\('tfw:ticket-reveal-closed',offerExperience\)/);
+ assert.match(support,/document\.getElementById\('tfwTicketReveal'\)/);
+});
+
+
+test('Exact PNG export includes actual screenshot and ticket contents in both layouts',()=>{
+ const js=read('js/boarding-pass.js'),css=read('css/boarding-pass.css');
+ assert.match(js,/card\.querySelector\('\.tfw-ticket-scene'\)\.src=e\.image/);
+ assert.match(js,/const visible=document\.querySelector\(selector\)/);
+ assert.match(js,/source=mountBoardingPass\(stage,pass\)/);
+ assert.match(js,/await prepareTicketMedia\(source\)/);
+ assert.match(js,/await image\.decode\(\)/);
+ assert.match(js,/source\.classList\.add\('tfw-ticket-exporting'\)/);
+ assert.match(js,/source\.classList\.add\('tfw-ticket--portrait'\)/);
+ assert.doesNotMatch(js,/backgroundColor\s*:/);
+ assert.match(css,/\.tfw-ticket \.tfw-ticket-scene\{/);
+ assert.match(css,/\.tfw-ticket\.tfw-ticket-exporting:after\{display:none!important\}/);
+ assert.doesNotMatch(js,/✓ VERIFIED PASSENGER/);
+});
+test('Buttons and dialog options are text-only, fully visible and keep cursor above overlays',()=>{
+ const js=read('js/boarding-pass.js'),css=read('css/boarding-pass.css');
+ for(const label of ['DOWNLOAD','SHARE','DOWNLOAD TICKET','DOWNLOAD STORY VERSION',
+   'SHARE ON X','SHARE ON REDDIT','INSTAGRAM','TIKTOK','COPY VERIFIED LINK'])
+   assert.ok(js.includes("'"+label+"'"),label);
+ assert.match(js,/Download your ticket in your preferred format/);
+ assert.doesNotMatch(js,/Choose the version you want to save/);
+ assert.match(css,/\.tfw-ticket-quick-button:hover/);
+ assert.match(css,/#tfwGlobalCursor\.tfw-global-cursor-layer\{z-index:2147483000!important\}/);
+ assert.match(css,/\.tfw-ticket-modal\{z-index:2147482450!important\}/);
+ assert.match(css,/html\.tfw-global-cursor-ready \.tfw-ticket-modal/);
+});
+test('Ceremony intercepts wheel and scroll keys, animates scanner across measured width and releases modal on close',()=>{
+ const js=read('js/ticket-reveal.js'),css=read('css/ticket-reveal.css'),support=read('js/support-experience.js');
+ for(const pattern of [
+  "document.documentElement.classList.add('tfw-ticket-reveal-open')",
+  "document.documentElement.classList.remove('tfw-ticket-reveal-open')",
+  "window.addEventListener('wheel',blockScroll,{capture:true,passive:false})",
+  "window.addEventListener('touchmove',blockScroll,{capture:true,passive:false})",
+  "window.dispatchEvent(new Event('tfw:ticket-reveal-closed'))",
+  "Math.max(0,holder.getBoundingClientRect().width-5)"
+ ])assert.ok(js.includes(pattern),pattern);
+ assert.match(css,/html\.tfw-ticket-reveal-open body\{overflow:hidden!important/);
+ assert.match(css,/tfwRevealScanMove/);
+ assert.match(css,/translate3d\(var\(--tfw-scan-distance/);
+ assert.match(support,/document\.getElementById\('tfwTicketReveal'\)/);
+ assert.match(support,/addEventListener\('tfw:ticket-reveal-closed',offerExperience\)/);
 });

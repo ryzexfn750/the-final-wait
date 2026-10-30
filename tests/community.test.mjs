@@ -20,7 +20,7 @@ test('The hype UI is independent of the countdown and load-gated',()=>{
 test('The community assets are available on all standalone routes',()=>{
   for(const path of ['index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html']){
     const page=read(path);
-    assert.match(page,/js\/community\.js\?v=15/);
+    assert.match(page,/js\/community\.js\?v=16/);
     assert.match(page,/css\/community\.css\?v=10/);
   }
   const build=read('tools/build-cloudflare-pages.mjs');
