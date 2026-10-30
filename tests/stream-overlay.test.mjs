@@ -57,7 +57,14 @@ test('Browser source is transparent, compact, audio-free, and ends with GTA VI I
  assert.doesNotMatch(page,/ryze-gtavi-logo|id="streamBrand"|<img|stream-live/);
  assert.doesNotMatch(js,/config\.brand|logo\.hidden/);
  assert.match(page,/id="streamCelebration"/);
- assert.match(css,/streamAtmosphereTurn|streamBurst|streamFinalBreath/);
+ assert.match(css,/stream-orbit-a|stream-cube-rotate|stream-hud-levitate|stream-title-unfold/);
+ assert.match(page,/stream-cube/);
+ assert.match(page,/stream-orbit-a/);
+ assert.match(page,/stream-orbit-b/);
+ assert.match(page,/stream-orbit-c/);
+ assert.match(page,/stream-face front/);
+ assert.match(css,/font:900 13px\/1/);
+ assert.doesNotMatch(css,/streamWhiteFlash|stream-final-one[^}]*:after/);
  assert.doesNotMatch(page,/streamMs|MILLISECONDS|msValue|<audio|community\.js|analytics|iframe/);
  assert.doesNotMatch(js,/localStorage|fetch\(|Audio\(|eval\(/);
  assert.match(js,/tfw:overlay-settings/);
@@ -75,7 +82,7 @@ test('Protected creator uses the site header/footer, timezone dialog and live dr
  assert.match(page,/class="legal-copy"/);
  assert.match(page,/id="timezoneModal"/);
  assert.match(page,/id="builderPreview"/);
- assert.match(page,/js\/streamer-overlay-auth\.js\?v=4/);
+ assert.match(page,/js\/streamer-overlay-auth\.js\?v=5/);
  assert.match(page,/id="builderDragBox"/);
  assert.match(page,/data-corner="nw"/);
  assert.match(page,/data-corner="se"/);
@@ -136,6 +143,9 @@ test('Standalone OBS download embeds current configuration, scripts, CSS, and no
  assert.match(second,/"tz":"Asia\/Tokyo","theme":"minimal"/);
  assert.doesNotMatch(first,/src="(?:js\/|assets\/)|href="css\/|<script type="module"|cloudflare|ryze-gtavi-logo/i);
  assert.match(first,/ROAD TO LEONIDA/);
+ assert.match(first,/stream-orbit-a/);
+ assert.match(first,/stream-cube-rotate/);
+ assert.match(first,/stream-title-unfold/);
  assert.match(first,/thefinalwait\.com/);
  const inline=first.match(/<script>\n([\s\S]*?)\n<\/script>/);
  assert.ok(inline,'Export should contain a standalone inline script');
@@ -144,4 +154,24 @@ test('Standalone OBS download embeds current configuration, scripts, CSS, and no
  assert.match(editor,/refs\.code\.value=bundleOverlayHtml/);
  assert.match(editor,/refs\.download\.addEventListener\('click'/);
  assert.match(editor,/URL\.createObjectURL/);
+});
+
+test('Visual choreography preserves 3D transform stages without full-screen flashes',()=>{
+ const css=read('css/stream-overlay.css'),html=read('stream-overlay.html'),
+  runner=read('js/stream-overlay.js'),builder=read('js/streamer-overlay-builder.js');
+ assert.match(css,/transform-style:preserve-3d/);
+ assert.match(css,/transform:rotateY\(90deg\) translateZ\(13px\)/);
+ assert.match(css,/animation:stream-orbit-a 8s linear infinite/);
+ assert.match(css,/animation:stream-cube-rotate 8s linear infinite/);
+ assert.match(css,/stream-title-unfold/);
+ assert.match(css,/stream-prism-shards/);
+ assert.match(css,/stream-digit-turn/);
+ assert.match(runner,/stream-number-swap/);
+ assert.match(runner,/stream-final-five/);
+ assert.match(runner,/stream-final-one/);
+ assert.match(html,/class="stream-subtitle">ROAD TO LEONIDA/);
+ assert.doesNotMatch(html,/stream-vfx-scan|stream-vfx-shimmer|stream-release-halo/);
+ assert.doesNotMatch(css,/streamWhiteFlash|stream-final-one\s+\.stream-widget:after/);
+ assert.match(builder,/stream-overlay\.html\?v=5/);
+ assert.match(builder,/js\/stream-overlay\.js\?v=5/);
 });
