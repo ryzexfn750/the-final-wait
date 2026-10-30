@@ -81,7 +81,7 @@ body{font-family:Inter,"Segoe UI",Arial,Helvetica,sans-serif;color:#fff;-webkit-
  padding-right:82px;min-height:31px}
 .stream-identity{display:grid;gap:4px;min-width:0}
 .stream-subtitle{position:relative;display:block;white-space:nowrap;color:#ffe1f3;
- font:900 13px/1 "Arial Black",Arial,sans-serif;letter-spacing:.075em;
+ font:900 14px/1 "Arial Black",Arial,sans-serif;letter-spacing:.075em;
  text-shadow:0 0 13px #e66ab66b}
 .stream-domain{display:block;font:800 8px/1 Arial,sans-serif;letter-spacing:.055em;
  color:#edb7dd;white-space:nowrap}
