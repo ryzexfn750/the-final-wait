@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {Script} from 'node:vm';
+import {bundleOverlayHtml} from '../js/stream-overlay-export.js';
 import {DEFAULTS,isValidZone,normalizeOptions,parseOptions,buildOverlayUrl,
  releaseInstant,remaining,waitProgress,WAIT_START,overlayGeometry,CANVAS,formatWaitPercent} from '../js/stream-overlay-core.js';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
@@ -17,12 +19,13 @@ test('Only safe settings get into a URL; there is no millisecond option',()=>{
  assert.equal(isValidZone('<img onerror=alert(1)>'),false);
  assert.equal(normalizeOptions({theme:'evil',position:'elsewhere',size:'xxl',tz:'../../etc/passwd'}).tz,'Europe/Rome');
  assert.deepEqual(parseOptions('?theme=neon&position=top-right&size=small&tz=Asia%2FTokyo&brand=0&progress=0&ms=1'),{
-  tz:'Asia/Tokyo',theme:'neon',position:'top-right',size:'small',brand:false,progress:false,x:38,y:920,w:420
+  tz:'Asia/Tokyo',theme:'neon',position:'top-right',size:'small',progress:false,x:38,y:920,w:420
  });
  const url=buildOverlayUrl('https://thefinalwait.com/streamer-overlay.html',parseOptions('?theme=minimal&ms=1'));
  assert.equal(new URL(url).pathname,'/stream-overlay.html');
  assert.equal(new URL(url).searchParams.has('ms'),false);
- assert.equal(new URL(url).searchParams.get('v'),'3');
+ assert.equal(new URL(url).searchParams.get('v'),'4');
+ assert.equal(new URL(url).searchParams.has('brand'),false);
  const nested=buildOverlayUrl('https://example.com/the-final-wait/streamer-overlay.html',{tz:'Europe/Rome'});
  assert.equal(new URL(nested).pathname,'/the-final-wait/stream-overlay.html');
 });
@@ -50,9 +53,11 @@ test('Browser source is transparent, compact, audio-free, and ends with GTA VI I
  const page=read('stream-overlay.html'),js=read('js/stream-overlay.js'),css=read('css/stream-overlay.css');
  assert.match(page,/GTA VI IS OUT!/);
  assert.match(page,/class="stream-domain">thefinalwait\.com<\/strong>/);
- assert.match(page,/id="streamBrand" class="stream-logo" src="assets\/ryze-gtavi-logo-lockup\.png"/);
- assert.doesNotMatch(page,/> LIVE<\/span>|stream-live/);
- assert.match(js,/logo\.hidden=!config\.brand/);
+ assert.match(page,/ROAD TO LEONIDA/);
+ assert.doesNotMatch(page,/ryze-gtavi-logo|id="streamBrand"|<img|stream-live/);
+ assert.doesNotMatch(js,/config\.brand|logo\.hidden/);
+ assert.match(page,/id="streamCelebration"/);
+ assert.match(css,/streamAtmosphereTurn|streamBurst|streamFinalBreath/);
  assert.doesNotMatch(page,/streamMs|MILLISECONDS|msValue|<audio|community\.js|analytics|iframe/);
  assert.doesNotMatch(js,/localStorage|fetch\(|Audio\(|eval\(/);
  assert.match(js,/tfw:overlay-settings/);
@@ -70,12 +75,16 @@ test('Protected creator uses the site header/footer, timezone dialog and live dr
  assert.match(page,/class="legal-copy"/);
  assert.match(page,/id="timezoneModal"/);
  assert.match(page,/id="builderPreview"/);
- assert.match(page,/js\/streamer-overlay-auth\.js\?v=2/);
+ assert.match(page,/js\/streamer-overlay-auth\.js\?v=4/);
  assert.match(page,/id="builderDragBox"/);
  assert.match(page,/data-corner="nw"/);
  assert.match(page,/data-corner="se"/);
  assert.match(page,/id="overlayDemo"/);
- assert.match(page,/Show RyzeGTAVI logo/);
+ assert.doesNotMatch(page,/Show RyzeGTAVI logo|id="overlayBrand"/);
+ assert.match(page,/id="overlayDownload"/);
+ assert.match(page,/id="overlayCode"/);
+ assert.match(page,/Local file/);
+ assert.doesNotMatch(page,/↻ REPLAY LAST 5 SECONDS/);
  assert.doesNotMatch(page,/Custom · drag to move|Custom · drag a corner|Preview the release moment without changing the real countdown/);
  assert.doesNotMatch(js,/PREVIEW MODE — THE REAL STREAM COUNTDOWN IS UNAFFECTED/);
  assert.match(read('css/streamer-overlay-builder.css'),/#timezoneModal\{z-index:2147482800\}/);
@@ -112,4 +121,27 @@ test('All presets use the redesigned compact footprint and stay in canvas bounds
    assert.ok(g.x>=0&&g.y>=0&&g.x+g.w<=1920&&g.y+g.h<=1080,position+' '+size);
   }
  }
+});
+
+test('Standalone OBS download embeds current configuration, scripts, CSS, and no Cloudflare URLs',()=>{
+ const inputs={template:read('stream-overlay.html'),css:read('css/stream-overlay.css'),
+  core:read('js/stream-overlay-core.js'),runner:read('js/stream-overlay.js')};
+ const first=bundleOverlayHtml({...inputs,options:{tz:'Europe/Rome',theme:'neon',position:'custom',size:'custom',x:600,y:400,w:640}});
+ const second=bundleOverlayHtml({...inputs,options:{tz:'Asia/Tokyo',theme:'minimal',position:'bottom-right',size:'small'}});
+ assert.notEqual(first,second,'Changing settings must regenerate the exported source');
+ assert.match(first,/<style>/);
+ assert.match(first,/<script>/);
+ assert.match(first,/let config=normalizeOptions\(\{"tz":"Europe\/Rome","theme":"neon"/);
+ assert.match(first,/"x":600,"y":400,"w":640/);
+ assert.match(second,/"tz":"Asia\/Tokyo","theme":"minimal"/);
+ assert.doesNotMatch(first,/src="(?:js\/|assets\/)|href="css\/|<script type="module"|cloudflare|ryze-gtavi-logo/i);
+ assert.match(first,/ROAD TO LEONIDA/);
+ assert.match(first,/thefinalwait\.com/);
+ const inline=first.match(/<script>\n([\s\S]*?)\n<\/script>/);
+ assert.ok(inline,'Export should contain a standalone inline script');
+ assert.doesNotThrow(()=>new Script(inline[1]),'Bundled script must compile without module imports');
+ const editor=read('js/streamer-overlay-builder.js');
+ assert.match(editor,/refs\.code\.value=bundleOverlayHtml/);
+ assert.match(editor,/refs\.download\.addEventListener\('click'/);
+ assert.match(editor,/URL\.createObjectURL/);
 });
