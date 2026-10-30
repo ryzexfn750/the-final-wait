@@ -1,0 +1,41 @@
+
+/* Settings hub: deliberate extension of the existing profile visual language. */
+.tfw-settings-shell{width:min(1080px,100%)}
+.tfw-settings-main{padding-top:clamp(115px,14vh,165px);min-height:calc(100vh - 140px)}
+.tfw-settings-dot{color:#ec79bd}
+.tfw-settings-section-head{display:flex;justify-content:space-between;align-items:center;gap:16px;
+ padding:10px 4px 14px;color:#e9b6dd;font:900 10px/1.3 Arial;letter-spacing:.17em}
+.tfw-settings-section-head span:last-child{color:#b6a8c1;font-size:9px}
+.tfw-settings-section-head .tfw-settings-label-new{color:#c1efc8!important}
+.tfw-settings-feature{position:relative;display:grid;grid-template-columns:94px minmax(0,1fr) auto;gap:22px;
+ align-items:center;padding:clamp(22px,4vw,34px);border:1px solid #ef9ed04b;border-radius:22px;
+ background:radial-gradient(ellipse at 0 0,#9f38812c,transparent 55%),linear-gradient(135deg,#301b39ed,#120d1eec);
+ box-shadow:0 24px 80px #0004,0 0 60px #a7498333}
+.tfw-settings-feature-graphic{width:85px;height:85px;display:grid;place-items:center;border-radius:22px;
+ background:linear-gradient(135deg,#cf5b9cbd,#7554ceb0);border:1px solid #f7bbeb68;color:#fff;box-shadow:0 0 40px #ca50a942}
+.tfw-settings-feature-graphic svg{width:50px;height:50px}
+.tfw-settings-feature-copy{min-width:0}
+.tfw-settings-feature-copy .tfw-profile-overline{margin:0;color:#e7a1cb}
+.tfw-settings-feature h2{margin:7px 0 9px;font:900 clamp(22px,3vw,32px)/1.1 "Arial Black",Arial;letter-spacing:-.03em}
+.tfw-settings-feature-copy>p:not(.tfw-profile-overline){color:#d1c3d7;font:13px/1.65 Arial;max-width:540px;margin:0}
+.tfw-settings-feature-chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:17px}
+.tfw-settings-feature-chips span{padding:6px 9px;border-radius:999px;background:#f1abe50b;border:1px solid #ffffff27;
+ color:#f1cae5;font:900 8px/1 Arial;letter-spacing:.08em}
+.tfw-settings-launch{display:inline-flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;
+ min-height:48px;padding:13px 18px;border-radius:12px;border:1px solid #f5a6d8;
+ background:linear-gradient(120deg,#cc5fa7,#8053c2);color:#fff;font:900 10px/1.3 Arial;letter-spacing:.08em;
+ box-shadow:0 10px 30px #7e3d8b35;transition:filter .2s,transform .2s}
+.tfw-settings-launch:hover{filter:brightness(1.12);transform:translateY(-2px)}
+.tfw-settings-launch:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.tfw-settings-future-head{margin-top:32px}
+.tfw-settings-upcoming{display:flex;align-items:center;gap:20px;padding:25px 30px;border:1px dashed #e2a4d144;border-radius:19px;background:#ffffff06}
+.tfw-settings-upcoming-icon{display:grid;place-items:center;flex:none;width:48px;height:48px;border-radius:13px;
+ background:#e5a1d017;color:#d79bca;font-size:24px}
+.tfw-settings-upcoming h2{margin:0 0 6px;font:900 13px/1.4 Arial;letter-spacing:.08em;color:#dcc4de}
+.tfw-settings-upcoming p{margin:0;color:#a89ab1;font:13px/1.5 Arial}
+@media(max-width:940px){.tfw-settings-feature{grid-template-columns:82px minmax(0,1fr)}.tfw-settings-feature-graphic{width:74px;height:74px}
+ .tfw-settings-launch{grid-column:2;justify-self:start}}
+@media(max-width:600px){.tfw-settings-feature{grid-template-columns:1fr;gap:15px}.tfw-settings-feature-graphic{width:64px;height:64px;border-radius:16px}
+ .tfw-settings-feature-graphic svg{width:39px;height:39px}.tfw-settings-launch{grid-column:1;justify-self:stretch}
+ .tfw-settings-section-head{font-size:8px}.tfw-settings-upcoming{padding:20px;gap:12px}
+}

@@ -13,7 +13,7 @@
  if(preview&&origin.pathname.endsWith('/support.html'))return;
  const originalBase=origin.pathname+origin.search;
  const rootPrefix=origin.pathname.slice(0,origin.pathname.lastIndexOf('/')+1);
- const allowed=new Set(['','index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html','community-privacy.html','community-terms.html','support.html']);
+ const allowed=new Set(['','index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html','community-privacy.html','community-terms.html','support.html','settings.html','streamer-overlay.html']);
  let activeFrame=null,seq=0,loading=false,pendingRoute='',rememberedTitle=document.title;
  const shell=document.createElement('div');
  shell.id='tfwSeamlessShell';

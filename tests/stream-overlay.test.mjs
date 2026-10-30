@@ -57,5 +57,6 @@ test('Builder exposes OBS instructions, previews and links from site',()=>{
  assert.match(builder,/1920 × 1080/);
  assert.match(builder,/Browser Source/);
  assert.match(builder,/overlayCopy/);
- assert.match(index,/href="streamer-overlay\.html"/);
+ assert.match(read('settings.html'),/href="streamer-overlay\.html"/);
+ assert.match(index,/js\/community-header\.js/);
 });

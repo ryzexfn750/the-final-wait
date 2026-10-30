@@ -60,3 +60,10 @@ body>footer a{color:#dca8d1}
  .builder-settings{display:flex;padding:21px}.builder-workspace{padding:18px}.builder-howto{padding:22px}.builder-howto ol{grid-template-columns:1fr}
  .builder-link{flex-direction:column}.builder-link button{padding:14px}.builder-export-label p{font-size:12px}
 }
+
+/* Editor: stable title and accessible live status at all viewport widths. */
+.builder-header-links{display:flex;align-items:center;gap:21px;flex-wrap:wrap}
+.builder-home-link{font:800 9px/1.4 Arial;letter-spacing:.12em;color:#bca1c7}
+.builder-home-link:hover{color:#fff}
+.builder-preview-hint{margin:9px 0 0;max-width:470px;color:#b6a6c0;font-size:12px;line-height:1.6}
+@media(max-width:630px){.builder-header-links{gap:10px}.builder-home-link{display:none}}

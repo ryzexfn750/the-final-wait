@@ -17,6 +17,7 @@ const excluded = new Set(remoteTracks.map(name => 'assets/audio/' + name));
 const publicEntries = [
   'index.html', 'today.html', 'timeline.html', 'intel.html',
   'intel-archive.html', 'profile.html', 'ticket.html', 'newsletter.html', 'support.html', 'community-terms.html', 'community-privacy.html',
+  'settings.html', 'streamer-overlay.html', 'stream-overlay.html',
   'robots.txt', 'site.webmanifest', '_headers',
   'css', 'js', 'content', 'assets',
 ];

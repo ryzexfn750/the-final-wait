@@ -659,3 +659,18 @@ html.tfw-streamer-mode .tfw-hype-float-name{display:none!important}
  #hero .tfw-hype-float{animation:tfwReactionReduced 1.75s linear both!important}
  #hero .tfw-hype-float-emoji[class*="tfw-emoji-motion-"]{animation:none!important}
 }
+
+
+/* Tools hub: PROFILE — SETTINGS — LANGUAGE, with active state. */
+.topbar .tfw-settings-link{z-index:126;white-space:nowrap}
+.topbar .tfw-account-link[aria-current="page"]{
+ border-color:rgba(253,172,229,.78);background:rgba(234,100,179,.22);
+ box-shadow:0 0 19px rgba(229,103,194,.12)
+}
+.topbar .tfw-settings-link:hover{background:rgba(242,63,178,.2)}
+.topbar .tfw-settings-link .tfw-account-person{color:#edb1e2}
+@media(max-width:700px){
+ .topbar .tfw-settings-link{min-height:30px;padding:0 7px}
+ .topbar .tfw-settings-link .tfw-account-person{width:19px;height:19px}
+ .topbar .tfw-settings-link .tfw-settings-label{font-size:0}
+}
