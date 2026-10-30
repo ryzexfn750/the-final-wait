@@ -80,7 +80,7 @@ test('Registration reuses the same accessible menu, options and language state',
  assert.match(lang,/\.gtranslate_wrapper, \.tfw-gate-language-widget/);
  assert.match(lang,/window\.addEventListener\('tfw:registration-gate-mounted',watchWidget\)/);
  assert.match(lang,/updateLanguage\(code,true\)/);
- assert.match(lang,/select\.dispatchEvent\(new Event\('change'/);
+ assert.match(lang,/native\.dispatchEvent\(new Event\('change'/);
  assert.match(style,/#tfwGateLanguage \.tfw-lang-menu/);
  assert.match(style,/#tfwGateLanguage select\.tfw-lang-native/);
 });

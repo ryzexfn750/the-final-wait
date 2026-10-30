@@ -101,7 +101,7 @@ test('GitHub Pages does not call unavailable Pages Function',async()=>{
 test('timezone bootstrap loads before main scripts on every route',()=>{
   for(const page of ['index.html','today.html','timeline.html','intel.html','intel-archive.html']){
     const html=readFileSync(new URL('../'+page,import.meta.url),'utf8');
-    assert.ok(html.indexOf('js/timezone-init.js?v=3')>=0);
+    assert.ok(html.indexOf('js/timezone-init.js?v=4')>=0);
     assert.ok(html.indexOf('js/timezone-init.js?v=3')<html.indexOf('</head>'));
   }
 });

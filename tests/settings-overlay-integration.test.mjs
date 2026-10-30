@@ -13,7 +13,7 @@ test('The QA site exposes Profile, Settings and Language in the correct order',(
  for(const path of all){
   const html=read(path);
   assert.match(html,/js\/community-header\.js\?v=4/,path);
-  assert.match(html,/css\/community\.css\?v=(?:12|13|14)/,path);
+  assert.match(html,/css\/community\.css\?v=(?:12|13|14|15)/,path);
   assert.match(html,new RegExp('js/seamless-navigation\\.js\\?v='+(60)),path);
  }
 });
