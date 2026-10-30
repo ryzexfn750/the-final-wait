@@ -131,7 +131,7 @@ test('Homepage CTA, seamless navigation and Cloudflare publication are connected
  const home=read('index.html'),nav=read('js/seamless-navigation.js'),build=read('tools/build-cloudflare-pages.mjs');
  assert.match(home,/id="tfwWaveTeaserHeading">THE GLOBAL MIDNIGHT WAVE/);
  assert.match(home,/href="global-wave\.html"/);
- assert.match(home,/css\/global-wave-teaser\.css\?v=2/);
+ assert.match(home,/css\/global-wave-teaser\.css\?v=3/);
  assert.match(nav,/'global-wave\.html'/);
  assert.match(build,/'global-wave\.html'/);
  for(const page of ['index.html','today.html','timeline.html','intel.html',
@@ -185,4 +185,26 @@ test('Homepage wave is first after countdown and follows other section visual pa
  assert.match(css,/grid-template-columns:minmax\(0,1\.06fr\) minmax\(0,\.94fr\)/);
  assert.match(css,/@media\(max-width:560px\)/);
  assert.doesNotMatch(home,/tfw-wave-teaser-inner|tfw-wave-teaser-orb/);
+});
+
+test('All four homepage chapters have full-width scenic backdrops without boxed columns',()=>{
+ const home=read('index.html'),base=read('css/base.css'),style=read('css/global-wave-teaser.css');
+ for(const [id,backdrop] of [
+  ['globalWavePreview','tfw-wave-backdrop'],
+  ['today','today-backdrop'],
+  ['timeline','timeline-backdrop'],
+  ['intel','intel-backdrop']
+ ]){
+  assert.match(home,new RegExp('id="'+id+'"[\\s\\S]*?class="section-backdrop '+backdrop+'"'));
+ }
+ assert.match(base,/\.section-backdrop\{position:absolute;z-index:-2;left:50%;width:100vw;/);
+ for(const id of ['globalWavePreview','today','timeline'])
+  assert.ok(style.includes('.home-page main > #'+id),'Section '+id+' should span viewport');
+ assert.match(style,/width:100%;\s*max-width:none;/);
+ assert.match(style,/\.home-page main > #today > \.newspaper-card/);
+ assert.match(style,/\.home-page main > #timeline > \.section-head/);
+ assert.match(style,/width:min\(1240px,90vw\)/);
+ assert.match(style,/@media\(max-width:900px\)/);
+ assert.match(style,/@media\(max-width:560px\)/);
+ assert.match(home,/css\/global-wave-teaser\.css\?v=3/);
 });

@@ -126,3 +126,45 @@
  .tfw-wave-feature-equator{width:min(62vw,255px)}
 }
 @media(prefers-reduced-motion:reduce){.tfw-wave-feature-planet{animation:none}}
+
+
+/* Full-bleed scenery for homepage chapters 01–03.
+   The chapter sections used to be restricted to the 1240px content column,
+   causing their animated background to be clipped into a vertical rectangle.
+   Chapter 04 (#intel) already spans the viewport. Give all four the same
+   full-width backdrop, while retaining the established centered content. */
+.home-page main > #globalWavePreview,
+.home-page main > #today,
+.home-page main > #timeline {
+ width:100%;
+ max-width:none;
+ margin-left:0;
+ margin-right:0;
+}
+.home-page main > #globalWavePreview > .section-head,
+.home-page main > #globalWavePreview > .tfw-wave-feature,
+.home-page main > #today > .section-head,
+.home-page main > #today > .newspaper-card,
+.home-page main > #timeline > .section-head {
+ width:min(1240px,90vw);
+ margin-left:auto;
+ margin-right:auto;
+}
+@media(max-width:900px){
+ .home-page main > #globalWavePreview > .section-head,
+ .home-page main > #globalWavePreview > .tfw-wave-feature,
+ .home-page main > #today > .section-head,
+ .home-page main > #today > .newspaper-card,
+ .home-page main > #timeline > .section-head {
+  width:min(92vw,760px);
+ }
+}
+@media(max-width:560px){
+ .home-page main > #globalWavePreview > .section-head,
+ .home-page main > #globalWavePreview > .tfw-wave-feature,
+ .home-page main > #today > .section-head,
+ .home-page main > #today > .newspaper-card,
+ .home-page main > #timeline > .section-head {
+  width:92vw;
+ }
+}
