@@ -94,6 +94,21 @@
    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
    let node;
    while((node=walker.nextNode()))render(node);
+   // Keep article metadata in the selected language, including after a
+   // runtime language switch or asynchronous article render.
+   const page=location.pathname.split('/').pop();
+   if(page==='today.html'||page==='timeline.html'){
+    const headline=document.getElementById('articleHeadline')?.textContent?.trim();
+    if(headline){
+     const section=page==='today.html'?'Today in Leonida':'The Road to Leonida';
+     document.title=headline+' — '+section;
+    }
+   }
+   if(page==='today.html'||page==='timeline.html'||page==='intel.html'){
+    const dek=document.getElementById('articleDek')?.textContent?.trim();
+    const meta=document.querySelector('meta[name="description"]');
+    if(meta&&dek&&meta.content!==dek)meta.content=dek;
+   }
   }finally{applying=false}
  }
  function queue(){
