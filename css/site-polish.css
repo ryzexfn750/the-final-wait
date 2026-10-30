@@ -578,3 +578,74 @@ body>footer .footer-ryze-logo{flex:0 0 auto;max-width:min(140px,24vw);object-fit
  body>footer:has(>.tfw-community-footer-links)>.footer-socials{gap:10px!important}
  body>footer .footer-ryze-logo{max-width:min(120px,28vw)}
 }
+
+
+/* Accessible five-language menu over the original GTranslate select. */
+html body .gtranslate_wrapper select.tfw-lang-native{
+ position:absolute!important;width:1px!important;height:1px!important;
+ min-width:1px!important;min-height:1px!important;max-width:1px!important;
+ padding:0!important;margin:0!important;border:0!important;opacity:0!important;
+ clip-path:inset(50%)!important;pointer-events:none!important
+}
+.language-widget:has(.tfw-lang-control):after{display:none!important}
+.language-widget .tfw-lang-control{position:relative;width:100%;min-width:0;z-index:1251}
+.language-widget .tfw-lang-trigger{
+ display:flex;align-items:center;justify-content:center;gap:7px;
+ width:100%;min-width:72px;height:35px;box-sizing:border-box;padding:0 11px;
+ border-radius:999px;border:1px solid rgba(255,186,224,.32);
+ background:linear-gradient(120deg,rgba(55,29,66,.95),rgba(20,14,33,.97));
+ color:#ffe9f6;font:900 10px/1 Arial,sans-serif;letter-spacing:.09em;
+ cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+ transition:border-color .2s,background .2s,box-shadow .2s
+}
+.language-widget .tfw-lang-trigger:hover,.language-widget .tfw-lang-control.open .tfw-lang-trigger{
+ border-color:rgba(246,136,210,.85);box-shadow:0 0 19px rgba(236,74,171,.12)
+}
+.language-widget .tfw-lang-globe{display:grid;place-items:center;color:#f39cda;font-size:13px}
+.language-widget .tfw-lang-chevron{
+ width:6px;height:6px;margin-left:1px;border-right:1.7px solid #e3b4d9;
+ border-bottom:1.7px solid #e3b4d9;transform:translateY(-2px) rotate(45deg);
+ transition:transform .2s
+}
+.language-widget .tfw-lang-control.open .tfw-lang-chevron{transform:translateY(1px) rotate(225deg)}
+.language-widget .tfw-lang-menu[hidden]{display:none!important}
+.language-widget .tfw-lang-menu{
+ position:absolute;z-index:1253;right:0;top:calc(100% + 10px);display:grid;gap:4px;
+ width:202px;padding:8px;border:1px solid rgba(248,142,215,.4);border-radius:16px;
+ background:linear-gradient(140deg,#27172f,#120d1e);
+ box-shadow:0 20px 55px rgba(0,0,0,.62),0 0 35px rgba(228,94,175,.1);
+ backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)
+}
+.language-widget .tfw-lang-menu:before{
+ content:"";position:absolute;top:-5px;right:28px;width:8px;height:8px;
+ background:#27172f;transform:rotate(45deg);
+ border-top:1px solid rgba(248,142,215,.4);border-left:1px solid rgba(248,142,215,.4)
+}
+.language-widget .tfw-lang-option{
+ position:relative;display:flex;align-items:center;gap:10px;
+ width:100%;min-height:40px;padding:8px 11px;box-sizing:border-box;
+ color:#e6d7ee;background:transparent;border:1px solid transparent;
+ border-radius:10px;text-align:left;cursor:pointer;
+ font:800 10px/1.3 Arial,sans-serif;letter-spacing:.065em;
+ transition:background .15s,border-color .15s,transform .15s
+}
+.language-widget .tfw-lang-option:hover,.language-widget .tfw-lang-option:focus-visible{
+ background:rgba(245,120,195,.14);border-color:rgba(245,120,195,.3);outline:none
+}
+.language-widget .tfw-lang-option.selected{
+ background:rgba(233,122,207,.18);color:#fff0fc;border-color:rgba(247,164,219,.3)
+}
+.language-widget .tfw-lang-flag{font-size:21px;line-height:1}
+.language-widget .tfw-lang-name{flex:1}
+.language-widget .tfw-lang-check{color:#f6ade0;opacity:0}
+.language-widget .tfw-lang-option.selected .tfw-lang-check{opacity:1}
+.language-widget .tfw-lang-trigger:focus-visible,
+.language-widget .tfw-lang-option:focus-visible{outline:2px solid #f6c5e7;outline-offset:3px}
+@media(max-width:700px){
+ .language-widget .tfw-lang-trigger{min-width:68px;gap:5px;padding:0 8px;height:31px;font-size:9px}
+ .language-widget .tfw-lang-menu{width:192px}
+}
+@media(prefers-reduced-motion:reduce){
+ .language-widget .tfw-lang-trigger,.language-widget .tfw-lang-option,
+ .language-widget .tfw-lang-chevron{transition:none!important}
+}
