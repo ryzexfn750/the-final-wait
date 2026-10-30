@@ -6,9 +6,9 @@ const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 test('All site routes retain stable assets and support 14 languages',()=>{
  const home=read('index.html');
  for(const asset of ['js/clock.js?v=49','js/milestones.js?v=52',
-   'js/language.js?v=51','js/final-call-locales.js?v=48',
+   'js/language.js?v=52','js/final-call-locales.js?v=48',
    'js/seamless-navigation.js?v=60','js/inpage-scroll.js?v=48',
-   'css/site-polish.css?v=55']){
+   'css/site-polish.css?v=56']){
     assert.ok(home.includes(asset),asset);
  }
  const language=read('js/language.js');
@@ -18,9 +18,9 @@ test('All site routes retain stable assets and support 14 languages',()=>{
  assert.doesNotMatch(locales,/"ru"\s*:/);
  for(const page of ['today.html','timeline.html','intel.html','intel-archive.html']){
    const html=read(page);
-   assert.ok(html.includes('js/language.js?v=51'),page);
+   assert.ok(html.includes('js/language.js?v=52'),page);
    assert.ok(html.includes('js/secondary-controls.js?v=49'),page);
-   assert.ok(html.includes('css/site-polish.css?v=55'),page);
+   assert.ok(html.includes('css/site-polish.css?v=56'),page);
  }
 });
 

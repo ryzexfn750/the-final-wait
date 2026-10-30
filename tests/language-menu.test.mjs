@@ -21,8 +21,8 @@ test('Styled language menu preserves the real GTranslate change and accessibilit
  assert.match(css,/html body \.gtranslate_wrapper select\.tfw-lang-native/);
  for(const p of ['index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html','support.html']){
   const html=read(p);
-  assert.match(html,/js\/language\.js\?v=51/);
-  assert.match(html,/css\/site-polish\.css\?v=55/);
+  assert.match(html,/js\/language\.js\?v=52/);
+  assert.match(html,/css\/site-polish\.css\?v=56/);
   assert.match(html,/js\/site-polish\.js\?v=48/);
  }
 });

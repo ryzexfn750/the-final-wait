@@ -74,6 +74,8 @@ test('Previously selected language wins over country auto-detection',()=>{
  const arabic=sandbox({stored:{tfw_site_language_v1:'ar',tfw_site_language_mode_v1:'manual'}});
  arabic.listeners['tfw:timezone-detected']({detail:{country:'JP'}});
  assert.equal(arabic.window.__tfwPreferredSiteLanguage(),'ar');
+ assert.equal(arabic.document.documentElement.lang,'ar');
+ assert.equal(arabic.document.documentElement.dir,'ltr');
 });
 test('Cloudflare geo endpoint returns only timezone and ISO country code, not IP',()=>{
  const file=read('functions/api/timezone.js').replace('export function onRequestGet','function onRequestGet');
@@ -120,4 +122,21 @@ test('All fourteen language codes are exposed by the widget and the registration
  assert.match(script,/code==='zh-cn'\?'zh-CN':code/);
  assert.match(read('css/site-polish.css'),/overflow-y:auto;overscroll-behavior:contain/);
  assert.match(read('css/site-polish.css'),/max-height:min\(66vh,530px\)/);
+});
+
+test('Arabic affects text flow, never page or control ordering',()=>{
+ const css=read('css/site-polish.css');
+ assert.match(css,/html:lang\(ar\) body \*\{\s*direction:ltr!important/);
+ assert.match(css,/:not\(:has\(\*\)\)\{\s*direction:rtl!important;\s*unicode-bidi:plaintext/);
+ assert.match(css,/html:lang\(ar\) textarea\{direction:rtl!important/);
+ const js=read('js/language.js');
+ assert.match(js,/function preserveLayoutDirection\(\)/);
+ assert.match(js,/if\(root\.dir!=='ltr'\)root\.dir='ltr'/);
+ assert.match(js,/if\(document\.body&&document\.body\.dir!=='ltr'\)document\.body\.dir='ltr'/);
+ assert.match(js,/attributeFilter:\['lang','dir'\]/);
+ const s=sandbox({stored:{tfw_site_language_v1:'ar',tfw_site_language_mode_v1:'manual'}});
+ assert.equal(s.document.documentElement.lang,'ar');
+ assert.equal(s.document.documentElement.dir,'ltr');
+ s.listeners['tfw:timezone-detected']({detail:{country:'DE'}});
+ assert.equal(s.document.documentElement.lang,'ar');
 });
