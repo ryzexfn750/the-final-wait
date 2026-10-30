@@ -46,7 +46,7 @@ export function mountBoardingPass(host,pass){
     '<div class="tfw-ticket-main">'+
       '<div class="tfw-ticket-topline"><span class="tfw-ticket-brand">THE FINAL WAIT <b>AIRWAYS</b></span>'+
       '<span class="tfw-ticket-top-mark">✦ LEONIDA INTERNATIONAL ✦</span></div>'+
-      '<div class="tfw-ticket-intro"><span class="tfw-ticket-kicker">OFFICIAL COMMUNITY COLLECTIBLE</span>'+
+      '<div class="tfw-ticket-intro"><span class="tfw-ticket-kicker">EXCLUSIVE COMMUNITY COLLECTIBLE</span>'+
       '<h3>YOUR TICKET <em>TO LEONIDA.</em></h3>'+
       '<span class="tfw-ticket-edition"></span></div>'+
       '<div class="tfw-ticket-fields"></div>'+
@@ -115,7 +115,8 @@ function text(ctx,str,x,y,size,color='#fff',weight=700,maxWidth=Infinity){
  ctx.fillStyle=color;
  ctx.font=weight+' '+size+'px "Arial Black",Arial,sans-serif';
  ctx.textBaseline='alphabetic';
- ctx.fillText(String(str),x,y,maxWidth);
+ if(Number.isFinite(maxWidth))ctx.fillText(String(str),x,y,maxWidth);
+ else ctx.fillText(String(str),x,y);
 }
 function textBlock(ctx,label,value,x,y,width,scale=1){
  text(ctx,label,x,y,15*scale,'#f8c7e6',800);
@@ -133,10 +134,8 @@ function drawBarcode(ctx,code,x,y,width,height){
  }
 }
 function ticketFrame(ctx,w,h,e,portrait){
- const glow=ctx.createLinearGradient(0,0,w,h);
- glow.addColorStop(0,'#2b102c');glow.addColorStop(.52,'#0d0a1d');glow.addColorStop(1,'#29102e');
- ctx.fillStyle=glow;ctx.fillRect(0,0,w,h);
- ctx.save();ctx.globalAlpha=.75;
+ // Keep the actual GTA VI screenshot visible in both exported formats.
+ ctx.save();ctx.globalAlpha=.42;
  const x=ctx.createRadialGradient(w*.65,h*.22,5,w*.65,h*.22,w*.8);
  x.addColorStop(0,e.accent2+'a1');x.addColorStop(1,'#100a2100');
  ctx.fillStyle=x;ctx.fillRect(0,0,w,h);
@@ -146,8 +145,8 @@ function ticketFrame(ctx,w,h,e,portrait){
  roundRect(ctx,m,m,w-m*2,h-m*2,portrait?38:38,false);
  const inner=portrait?65:72;
  const grad=ctx.createLinearGradient(inner,inner,w-inner,h-inner);
- grad.addColorStop(0,'#170e28dc');grad.addColorStop(.66,'#110b20dd');
- grad.addColorStop(1,'#290f31d9');
+ grad.addColorStop(0,'#170e28a1');grad.addColorStop(.66,'#110b2085');
+ grad.addColorStop(1,'#290f319e');
  ctx.fillStyle=grad;roundRect(ctx,inner,inner,w-2*inner,h-2*inner,29,true);
 }
 function drawTicketWide(ctx,pass,e){
@@ -211,9 +210,9 @@ export async function renderBoardingPassPNG(pass,portrait=false){
  const shot=await loadScene(edition.image);
  if(shot)drawCover(ctx,shot,w,h);
  const overlay=ctx.createLinearGradient(0,0,w,h);
- overlay.addColorStop(0,'#160b24e8');
- overlay.addColorStop(.52,'#160b2596');
- overlay.addColorStop(1,'#140b20ee');
+ overlay.addColorStop(0,'#160b24b4');
+ overlay.addColorStop(.52,'#160b2560');
+ overlay.addColorStop(1,'#140b20b0');
  ctx.fillStyle=overlay;ctx.fillRect(0,0,w,h);
  ticketFrame(ctx,w,h,edition,portrait);
  if(portrait)drawTicketTall(ctx,pass,edition);
