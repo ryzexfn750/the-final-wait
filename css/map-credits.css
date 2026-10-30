@@ -1,19 +1,20 @@
-/* Minimal credits page — same editorial presentation as the Privacy Notice. */
-.tfw-map-credits-page{background:#0b0910;overflow-x:hidden;color:#f1eaf1}
-.tfw-map-credits-page .credits-main{
- max-width:800px;width:100%;margin:0 auto;
- padding:clamp(110px,12vh,140px) 24px 52px;
- font:16px/1.7 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
-}
-.credits-main h1{margin:24px 0 17px;font-size:clamp(30px,5vw,42px);
- line-height:1.15;letter-spacing:-.04em;color:#f1eaf1}
-.credits-main h2{margin:28px 0 9px;font-size:20px;line-height:1.4;
- color:#f8b8e1;font-weight:700}
-.credits-main p{max-width:75ch;margin:0 0 14px;color:#d1c5d3;font-size:15px;line-height:1.75}
-.credits-main a{color:#efb1d6;text-decoration:underline;text-underline-offset:3px}
-.credits-main a:focus-visible{outline:3px solid #efb1d6;outline-offset:3px}
-.credits-main .credits-back{display:inline-block;margin:0 0 9px;
- font-size:14px;font-weight:600;text-decoration:none}
-.credits-main .credits-back:last-child{margin:17px 0 0}
-.credits-main .credits-small{font-size:13px;color:#a79caa}
-@media(max-width:560px){.tfw-map-credits-page .credits-main{padding:105px 20px 40px}}
+/* Simple legal credits page: identical editorial density to Privacy Notice. */
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+body.tfw-map-credits-page{background:#0b0910;color:#f1eaf1;
+ font:16px/1.7 system-ui,-apple-system,Segoe UI,Arial,sans-serif;margin:0}
+.credits-main{max-width:800px;margin:42px auto;padding:0 24px 50px}
+.credits-main h1{font-size:clamp(30px,5vw,42px);line-height:1.15;
+ letter-spacing:-.04em;margin:24px 0 17px;color:#f1eaf1}
+.credits-main h2{font-size:20px;margin:30px 0 10px;color:#f8b8e1}
+.credits-main p{max-width:75ch;margin:0 0 15px;color:#d1c5d3;font-size:15px;line-height:1.7}
+.credits-main .credits-small{font-size:14px;color:#c5b9c7}
+.credits-main a,.credits-footer a{color:#efb1d6;text-underline-offset:3px}
+.credits-main a:focus-visible,.credits-footer a:focus-visible{outline:3px solid #efb1d6;outline-offset:3px}
+.credits-main .credits-back{font-weight:600;text-decoration:none}
+.credits-footer{max-width:752px;margin:0 auto 35px;padding:20px 0;
+ border-top:1px solid #ffffff30;color:#bdb0c2;font-size:12px;
+ display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 22px}
+.credits-footer nav{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+@media(max-width:800px){.credits-footer{margin:0 24px 35px}}
+@media(max-width:570px){.credits-footer{justify-content:center;text-align:center}.credits-footer nav{justify-content:center}}

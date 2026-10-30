@@ -147,8 +147,8 @@ test('Geographic credits open a styled page and keep all dataset attributions',(
  assert.match(globe,/href="map-credits\.html"/);
  assert.doesNotMatch(globe,/href="content\/geo\/README\.md"/);
  assert.match(credits,/<title>Map Data & Credits — The Final Wait<\/title>/);
- assert.match(credits,/class="topbar article-topbar tfw-secondary-topbar"/);
- assert.match(credits,/class="legal-copy"/);
+ assert.match(credits,/class="credits-main"/);
+ assert.match(credits,/class="credits-footer"/);
  assert.match(credits,/Simplified Timezone Boundaries/);
  assert.match(credits,/Timezone Boundary Builder/);
  assert.match(credits,/OpenStreetMap/);
@@ -160,8 +160,9 @@ test('Geographic credits open a styled page and keep all dataset attributions',(
  assert.doesNotMatch(credits,/credits-grid|credits-card|credits-section-title|credits-return/);
  assert.match(navigation,/'map-credits\.html'/);
  assert.match(deploy,/'map-credits\.html'/);
- for(const path of ['index.html','global-wave.html','map-credits.html'])
+ for(const path of ['index.html','global-wave.html'])
   assert.match(read(path),/js\/seamless-navigation\.js\?v=59/,path);
+ assert.doesNotMatch(credits,/seamless-navigation|tfw-secondary-topbar|soundButton/);
 });
 
 test('Homepage wave is first after countdown and follows other section visual patterns',()=>{
