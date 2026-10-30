@@ -1,6 +1,6 @@
 import {DEFAULTS,isValidZone,normalizeOptions,buildOverlayUrl,
- overlayGeometry,releaseInstant,CANVAS} from './stream-overlay-core.js?v=4';
-import {bundleOverlayHtml} from './stream-overlay-export.js?v=1';
+ overlayGeometry,releaseInstant,CANVAS} from './stream-overlay-core.js?v=5';
+import {bundleOverlayHtml} from './stream-overlay-export.js?v=2';
 const $=id=>document.getElementById(id);
 const refs={
  form:$('overlaySettings'),theme:$('overlayTheme'),position:$('overlayPosition'),
@@ -159,8 +159,8 @@ refs.download.addEventListener('click',()=>{
 });
 async function loadSourceTemplates(){
  try{
-  const names=['stream-overlay.html?v=4','css/stream-overlay.css?v=4',
-   'js/stream-overlay-core.js?v=4','js/stream-overlay.js?v=4'];
+  const names=['stream-overlay.html?v=5','css/stream-overlay.css?v=5',
+   'js/stream-overlay-core.js?v=5','js/stream-overlay.js?v=5'];
   const texts=await Promise.all(names.map(async name=>{
    const response=await fetch(new URL(name,location.href),{cache:'force-cache'});
    if(!response.ok)throw Error('Overlay source unavailable ('+response.status+')');

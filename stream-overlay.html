@@ -7,48 +7,62 @@
  <meta name="referrer" content="no-referrer">
  <meta name="color-scheme" content="dark">
  <title>The Final Wait — Stream Overlay</title>
- <link rel="stylesheet" href="css/stream-overlay.css?v=4">
+ <link rel="stylesheet" href="css/stream-overlay.css?v=5">
 </head>
 <body>
  <main id="streamSurface" class="stream-surface" aria-label="GTA VI live countdown overlay">
   <section id="streamWidget" class="stream-widget">
-   <div class="stream-vfx" aria-hidden="true">
-    <i class="stream-vfx-wave"></i><i class="stream-vfx-scan"></i><i class="stream-vfx-shimmer"></i>
-    <i class="stream-vfx-mote m1"></i><i class="stream-vfx-mote m2"></i><i class="stream-vfx-mote m3"></i>
-    <i class="stream-vfx-mote m4"></i><i class="stream-vfx-mote m5"></i>
+   <div class="stream-atmosphere" aria-hidden="true">
+    <i class="stream-depth-grid"></i><i class="stream-aurora"></i><i class="stream-edge-trace"></i>
+    <i class="stream-light-stream stream-light-one"></i><i class="stream-light-stream stream-light-two"></i>
    </div>
-   <div class="stream-header">
-    <div class="stream-identity">
-     <span class="stream-subtitle">ROAD TO LEONIDA</span>
-     <strong class="stream-domain">thefinalwait.com</strong>
+   <div class="stream-hologram" aria-hidden="true">
+    <div class="stream-hologram-float">
+     <div class="stream-orbit stream-orbit-a"></div>
+     <div class="stream-orbit stream-orbit-b"></div>
+     <div class="stream-orbit stream-orbit-c"></div>
+     <div class="stream-cube">
+      <i class="stream-face front"></i><i class="stream-face back"></i>
+      <i class="stream-face right"></i><i class="stream-face left"></i>
+      <i class="stream-face top"></i><i class="stream-face bottom"></i>
+     </div>
+     <div class="stream-orb-flare"></div>
     </div>
-    <span id="streamZone" class="stream-zone">EUROPE/ROME</span>
    </div>
-   <div id="streamNumbers" class="stream-numbers">
-    <div class="stream-unit"><strong id="streamDays">00</strong><small>DAYS</small></div>
-    <span class="stream-colon">:</span>
-    <div class="stream-unit"><strong id="streamHours">00</strong><small>HOURS</small></div>
-    <span class="stream-colon">:</span>
-    <div class="stream-unit"><strong id="streamMinutes">00</strong><small>MINUTES</small></div>
-    <span class="stream-colon">:</span>
-    <div class="stream-unit"><strong id="streamSeconds">00</strong><small>SECONDS</small></div>
-   </div>
-   <div class="stream-progress" id="streamProgress">
-    <div class="stream-progress-track"><i id="streamProgressFill"></i></div>
-    <span id="streamPercent">0.00%</span>
+   <div class="stream-content">
+    <header class="stream-header">
+     <div class="stream-identity">
+      <strong class="stream-subtitle">ROAD TO LEONIDA</strong>
+      <span class="stream-domain">thefinalwait.com</span>
+     </div>
+     <span id="streamZone" class="stream-zone">EUROPE/ROME</span>
+    </header>
+    <div id="streamNumbers" class="stream-numbers">
+     <div class="stream-unit"><strong id="streamDays">00</strong><small>DAYS</small></div>
+     <span class="stream-colon">:</span>
+     <div class="stream-unit"><strong id="streamHours">00</strong><small>HOURS</small></div>
+     <span class="stream-colon">:</span>
+     <div class="stream-unit"><strong id="streamMinutes">00</strong><small>MINUTES</small></div>
+     <span class="stream-colon">:</span>
+     <div class="stream-unit"><strong id="streamSeconds">00</strong><small>SECONDS</small></div>
+    </div>
+    <div class="stream-progress" id="streamProgress">
+     <div class="stream-progress-track"><i id="streamProgressFill"></i></div>
+     <span id="streamPercent">0.00%</span>
+    </div>
    </div>
    <div id="streamReleased" class="stream-released" hidden>
-    <div class="stream-release-halo" aria-hidden="true"></div>
-    <strong>GTA VI IS OUT!</strong><span>THE WAIT IS OVER.</span>
+    <i class="stream-release-line" aria-hidden="true"></i>
+    <strong>GTA VI IS OUT!</strong>
+    <span>THE WAIT IS OVER.</span>
    </div>
    <div id="streamCelebration" class="stream-celebration" aria-hidden="true" hidden>
     <i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i>
     <i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i>
     <i style="--i:8"></i><i style="--i:9"></i><i style="--i:10"></i><i style="--i:11"></i>
-    <i style="--i:12"></i><i style="--i:13"></i><i style="--i:14"></i><i style="--i:15"></i>
    </div>
   </section>
  </main>
- <script type="module" src="js/stream-overlay.js?v=4"></script>
+ <script type="module" src="js/stream-overlay.js?v=5"></script>
 </body>
 </html>

@@ -1,5 +1,5 @@
 /* Build a dependency-free browser source that works without Cloudflare Access. */
-import {normalizeOptions} from './stream-overlay-core.js?v=4';
+import {normalizeOptions} from './stream-overlay-core.js?v=5';
 export function bundleOverlayHtml({template,css,core,runner,options}){
  const normalized=normalizeOptions(options);
  const settings=JSON.stringify(normalized).replace(/</g,'\\u003c');
