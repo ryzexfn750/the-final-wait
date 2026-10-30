@@ -631,6 +631,7 @@ async function initCommunity(){
       clearNicknameError();
       if(!$('#hypeTerms').checked)throw Error('Please accept the Terms & Conditions.');
       if(!state.challengeToken)throw Error('Complete the security check first.');
+      const firstRegistration=!state.profile?.nickname;
       const result=await api('POST','profile',{
         nickname,
         acceptedTerms:$('#hypeTerms').checked,termsVersion:settings.termsVersion,
@@ -639,7 +640,17 @@ async function initCommunity(){
       state.profile=result.profile;
       if(!member())throw Error('Registration incomplete');
       hideGate();void connectSocket();
-      window.dispatchEvent(new Event('tfw:community-ready'));
+      // Run the cinematic ticket issuance only after a genuinely new account.
+      // Re-accepting terms for an existing nickname must not replay onboarding.
+      if(firstRegistration){
+        void import('./ticket-reveal.js?v=1')
+          .then(({showTicketReveal})=>showTicketReveal(async()=>{
+            const issued=await api('GET','boarding-pass');
+            return issued.ticket;
+          }))
+          .catch(error=>console.warn('Ticket welcome unavailable:',error))
+          .finally(()=>window.dispatchEvent(new Event('tfw:community-ready')));
+      }else window.dispatchEvent(new Event('tfw:community-ready'));
     }catch(error){status(error.message,true)}
     finally{
       state.busy=false;$('#hypeSubmit').disabled=false;state.challengeToken='';
