@@ -26,7 +26,7 @@ test('SQL migration makes each ticket unique, secure, automatically issued and d
 });
 test('Four editions use real repository screenshots and preserve a stable private code',async()=>{
  const js=read('js/boarding-pass.js');
- const m=await import('data:text/javascript;charset=utf-8,'+encodeURIComponent(js));
+ const m=await import(new URL('../js/boarding-pass.js',import.meta.url).href);
  for(const [edition,prefix] of Object.entries({founders:'F',early:'E',final:'B',welcome:'W'})){
   const item={...sample,edition,ticketCode:prefix+'-00012'};
   assert.equal(m.validBoardingPass(item),true);
@@ -42,35 +42,24 @@ test('Four editions use real repository screenshots and preserve a stable privat
  assert.match(js,/caption\.textContent=label/);
  assert.doesNotMatch(js,/innerHTML\s*=\s*.*pass\.nickname/);
 });
-test('Canvas PNG exports retain source imagery and draw both intended formats',async()=>{
- const m=await import('data:text/javascript;charset=utf-8,'+
-  encodeURIComponent(read('js/boarding-pass.js'))+'#png-tests');
- const seen=[],canvasDims=[];
- const ctx={
-  fillRect(){},beginPath(){},stroke(){},fill(){},save(){},restore(){},moveTo(){},lineTo(){},roundRect(){},
-  createLinearGradient:()=>({addColorStop(){}}),
-  createRadialGradient:()=>({addColorStop(){}}),
-  drawImage(){seen.push('image')},
-  fillText(...args){if(args.length===4&&!Number.isFinite(args[3]))throw Error('Invalid canvas width');seen.push(String(args[0]))}
- };
- const prevDoc=globalThis.document,prevImage=globalThis.Image;
- globalThis.document={createElement:tag=>{
-   assert.equal(tag,'canvas');
-   const canvas={width:0,height:0,getContext:()=>ctx,toBlob:cb=>{
-     canvasDims.push([canvas.width,canvas.height]);cb(new Blob(['png'],{type:'image/png'}));
-   }};
-   return canvas;
- }};
- globalThis.Image=class{width=1920;height=1080;set src(value){seen.push(value);this.onload()}};
- try{
-  assert.equal((await m.renderBoardingPassPNG(sample,false)).type,'image/png');
-  assert.equal((await m.renderBoardingPassPNG(sample,true)).type,'image/png');
-  assert.deepEqual(canvasDims,[[1600,900],[1080,1920]]);
-  assert.ok(seen.filter(x=>x==='image').length===2,'Both formats must draw local scenes');
-  assert.ok(seen.includes(m.EDITIONS.founders.image));
-  for(const text of ['LeonidaFan','19 NOV 2026','F-00027','LEONIDA'])
-   assert.ok(seen.includes(text),text);
- }finally{globalThis.document=prevDoc;globalThis.Image=prevImage}
+test('QR has the exact decoded user-provided destination, quiet zone and no Bitly logo',async()=>{
+ const mod=await import(new URL('../js/ticket-qr.js',import.meta.url).href);
+ assert.equal(mod.TICKET_QR_TARGET,'https://bit.ly/4A3VRzz?r=qr');
+ const svg=mod.qrSvgMarkup();
+ assert.match(svg,/viewBox="0 0 41 41"/);
+ assert.match(svg,/fill="#ffeaf6"/);
+ assert.match(svg,/fill="#171020"/);
+ assert.doesNotMatch(svg,/bitly|watermark/i);
+ assert.ok((svg.match(/h1v1h-1z/g)||[]).length>300);
+ const js=read('js/boarding-pass.js');
+ assert.match(js,/mountTicketQR\(card\.querySelector\('\.tfw-ticket-qr'\)\)/);
+ assert.match(js,/renderBoardingPassPNG\(pass,portrait=false\)/);
+ assert.match(js,/html-to-image@1\.11\.13/);
+ assert.match(js,/const visible=document\.querySelector\(selector\)/);
+ assert.match(js,/pixelRatio:portrait\?2:1/);
+ assert.match(js,/stage\.querySelector\('\.tfw-ticket'\)\.classList\.add\('tfw-ticket--portrait'\)/);
+ assert.doesNotMatch(js,/UNOFFICIAL FAN PROJECT/);
+ assert.doesNotMatch(js,/drawTicketWide|drawTicketTall|drawBarcode/);
 });
 test('Authenticated issuance rejects guests; public verification checks live DB membership',async()=>{
  const secure=read('functions/api/community/boarding-pass.js')
@@ -140,47 +129,49 @@ test('Profile-only placement, no public sign-in and Cloudflare routing all work 
  assert.match(read('community-privacy.html'),/collectible boarding pass/);
  assert.match(read('community-terms.html'),/decorative, non-transferable/);
  const js=read('js/boarding-pass.js');
- for(const name of ['DOWNLOAD TICKET PNG','DOWNLOAD STORY PNG','SHARE ON X','SHARE ON REDDIT','INSTAGRAM','TIKTOK','COPY VERIFIED LINK'])
+ for(const name of ['DOWNLOAD ORIGINAL PNG','DOWNLOAD STORY PNG','SHARE ON X','SHARE ON REDDIT','INSTAGRAM','TIKTOK','COPY VERIFIED LINK'])
   assert.ok(js.includes(name),name);
 });
 
-test('Detail page has consistent navigation, audio, translation, and distinct share panels',()=>{
- const html=read('ticket.html'),js=read('js/boarding-pass.js'),css=read('css/boarding-pass.css');
- for(const id of ['tfwPageShare','tfwPageFullscreen','soundButton','mobileSoundButton','tfwPageMenu','tfwPageDrawer','profileTicketLink']){
-  if(id==='profileTicketLink')assert.match(read('profile.html'),new RegExp('id="'+id+'"'));
-  else assert.match(html,new RegExp('id="'+id+'"'));
- }
- for(const asset of ['js/audio-controls.js','js/secondary-controls.js',
-  'js/secondary-share.js','js/language.js','js/seamless-navigation.js'])
-  assert.ok(html.includes(asset),asset);
- assert.match(html,/gtranslate_wrapper language-widget/);
- assert.match(html,/<base href="\/">/);
- assert.doesNotMatch(html,/Every boarding pass is unique/);
+test('Detail page reuses full working topbar, language geometry, audio and modal CTA',()=>{
+ const page=read('ticket.html'),profile=read('profile.html');
+ for(const id of ['tfwPageShare','tfwPageFullscreen','soundButton','mobileSoundButton','tfwPageMenu','tfwPageDrawer'])
+  assert.match(page,new RegExp('id="'+id+'"'));
+ assert.match(page,/js\/community-header\.js\?v=3/);
+ assert.match(page,/js\/secondary-controls\.js\?v=48/);
+ assert.match(page,/gtranslate_wrapper language-widget/);
+ assert.match(page,/js\/secondary-share\.js\?v=46/);
+ assert.match(profile,/id="profileTicketLink"/);
+ assert.doesNotMatch(page,/Every boarding pass is unique/);
  assert.doesNotMatch(read('js/public-boarding-pass.js'),/Authenticity checked against an active The Final Wait community account/);
- assert.match(js,/DOWNLOAD YOUR TICKET/);
- assert.match(js,/SHARE THE EXPERIENCE/);
- assert.match(js,/destination=downloads/);
- assert.match(js,/destination=socials/);
- assert.match(css,/\.tfw-ticket-action-panel/);
- assert.match(css,/#ticketVerified\[hidden\]/);
+ const js=read('js/boarding-pass.js'),css=read('css/boarding-pass.css');
+ assert.match(js,/download\.textContent='↓ DOWNLOAD'/);
+ assert.match(js,/share\.textContent='↗ SHARE'/);
+ assert.match(js,/const openModal=kind=>/);
+ assert.match(js,/modal\.setAttribute\('aria-modal','true'\)/);
+ assert.match(js,/download\.addEventListener\('click',\(\)=>openModal\('download'\)\)/);
+ assert.match(js,/share\.addEventListener\('click',\(\)=>openModal\('share'\)\)/);
+ assert.match(css,/\.tfw-ticket-modal/);
+ assert.match(css,/\.tfw-ticket-quick-button/);
 });
-test('Ticket artwork uses denser spacing, one verification mark and SVG barcode',()=>{
- const src=read('js/boarding-pass.js'),css=read('css/boarding-pass.css');
- assert.doesNotMatch(src,/EXCLUSIVE COMMUNITY COLLECTIBLE/);
- assert.doesNotMatch(src,/✦ VERIFIED PASSENGER/);
- assert.match(src,/✓ VERIFIED PASSENGER/);
- assert.match(src,/document\.createElementNS\(ns,'svg'\)/);
- assert.match(src,/function drawBarcode\(ctx,code,x,y,width,height\)/);
- assert.match(css,/min-height:350px!important/);
- for(const item of ['function drawTicketTall','function drawTicketWide'])
-  assert.ok(src.includes(item),item);
+test('Original layout, user-supplied scan-safe QR and portrait use one shared DOM',()=>{
+ const js=read('js/boarding-pass.js'),css=read('css/boarding-pass.css');
+ assert.doesNotMatch(js,/EXCLUSIVE COMMUNITY COLLECTIBLE/);
+ assert.doesNotMatch(js,/✦ VERIFIED PASSENGER/);
+ assert.match(js,/✓ VERIFIED PASSENGER/);
+ assert.match(js,/import \{mountTicketQR\} from '\.\/ticket-qr\.js\?v=1'/);
+ assert.match(js,/\.tfw-ticket-qr/);
+ assert.match(css,/\.tfw-ticket--portrait/);
+ assert.match(css,/width:540px!important;height:960px!important/);
+ assert.match(js,/downloadBoardingPass\(pass,false\)/);
+ assert.match(js,/downloadBoardingPass\(pass,true\)/);
 });
 test('Registration runs a one-time ticket reveal, with exit, reduced motion and safe fallback',()=>{
  const src=read('js/community.js'),intro=read('js/ticket-reveal.js');
  const css=read('css/ticket-reveal.css');
  assert.match(src,/const firstRegistration=!state\.profile\?\.nickname/);
  assert.match(src,/if\(firstRegistration\)/);
- assert.match(src,/import\('\.\/ticket-reveal\.js\?v=1'\)/);
+ assert.match(src,/import\('\.\/ticket-reveal\.js\?v=2'\)/);
  assert.match(src,/api\('GET','boarding-pass'\)/);
  assert.match(intro,/export async function showTicketReveal\(loadTicket\)/);
  assert.match(intro,/mountBoardingPass\(holder,pass\)/);
@@ -189,7 +180,24 @@ test('Registration runs a one-time ticket reveal, with exit, reduced motion and 
  assert.match(intro,/setTimeout\(\(\)=>overlay\.remove\(\)/);
  assert.match(intro,/tfw-reveal-skip/);
  assert.match(intro,/tfw-reveal-continue/);
- assert.match(intro,/tfw-reveal-open/);
+ assert.doesNotMatch(intro,/tfw-reveal-open|APPROVED FOR BOARDING/);
  assert.match(css,/@keyframes tfwRevealPrint/);
  assert.match(css, /prefers-reduced-motion:reduce/);
+});
+
+test('First registration never exposes countdown beneath the reveal and reminder follows',()=>{
+ const src=read('js/community.js');
+ assert.match(src,/const \{showTicketReveal\}=await import/);
+ assert.match(src,/const ceremony=showTicketReveal\(/);
+ assert.match(src,/hideGate\(\);void connectSocket\(\);\s*void ceremony/);
+ const reveal=read('js/ticket-reveal.js'),css=read('css/ticket-reveal.css');
+ assert.match(reveal,/await pause\(6400\)/);
+ assert.match(css,/clip-path:inset\(0 0 0 100%/);
+ assert.match(css,/animation:tfwRevealPrint 6\.4s/);
+ assert.match(css,/z-index:2147482600/);
+ assert.match(css,/#tfwGlobalCursor\.tfw-global-cursor-layer\{z-index:2147483000/);
+ assert.match(reveal,/window\.__tfwTicketRevealFinished=true/);
+ const support=read('js/support-experience.js');
+ assert.match(support,/if\(window\.__tfwTicketRevealFinished\)/);
+ assert.match(support,/setTimeout\(offerExperience,400\)/);
 });

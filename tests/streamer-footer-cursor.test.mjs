@@ -11,7 +11,7 @@ test('Standard footer is identical on all eight routes and coffee is below X',()
   for(const page of pages){
     const html=read(page),footer=html.match(/<footer>[\s\S]*?<\/footer>/)?.[0];
     assert.equal(footer,canonical,page+' must use the same footer markup');
-    assert.match(html,/js\/support-experience\.js\?v=2/);
+    assert.match(html,/js\/support-experience\.js\?v=3/);
     assert.match(footer,/class="footer-ryze-logo"/);
     assert.match(footer,/class="creator-chip magnetic"/);
     assert.match(footer,/href="newsletter\.html"/);
