@@ -64,7 +64,7 @@ test('V45 archive and story pages keep the complete controls and dark language m
    assert.ok(html.includes('gtranslate_wrapper'),path);
    assert.ok(html.includes('css/secondary-controls.css?v=48'),path);
    assert.ok(html.includes('css/audio-controls.css?v=39'),path);
-   assert.ok(html.includes('js/secondary-controls.js?v=48'),path);
+   assert.ok(html.includes('js/secondary-controls.js?v=49'),path);
    assert.ok(html.includes('js/audio-controls.js?v=46'),path);
    assert.ok(html.includes('RYZEGTAVI')||path==='intel-archive.html',path+' creator credit');
  }
