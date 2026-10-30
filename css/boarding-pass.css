@@ -182,3 +182,7 @@
  .tfw-ticket-barcode{width:100%;max-width:100%;height:74px;margin:5px 0}
  .tfw-ticket-layout{min-height:0!important}
 }
+
+/* Native hidden attribute must win over author display:flex. */
+#ticketVerified[hidden]{display:none!important}
+.tfw-ticket-public-page .tfw-secondary-topbar{z-index:85}
