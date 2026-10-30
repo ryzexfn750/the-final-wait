@@ -2,7 +2,7 @@
 export const RELEASE={year:2026,month:11,day:19,hour:0,minute:0,second:0};
 export const DEFAULTS=Object.freeze({
  tz:'Europe/Rome',theme:'glass',position:'bottom-left',size:'medium',
- brand:true,progress:true,x:38,y:862,w:460
+ brand:true,progress:true,x:38,y:920,w:420
 });
 export const OPTIONS=Object.freeze({
  theme:['glass','neon','minimal'],
@@ -24,7 +24,7 @@ export function normalizeOptions(input={}){
   size:validChoice('size',input.size),
   brand:input.brand===false||input.brand==='0'?false:true,
   progress:input.progress===false||input.progress==='0'?false:true,
-  x:bound(input.x,0,1920-220,38),y:bound(input.y,0,1080-85,862),w:bound(input.w,220,850,460)
+  x:bound(input.x,0,1920-220,38),y:bound(input.y,0,1080-69,920),w:bound(input.w,220,850,420)
  };
 }
 export function parseOptions(search){
@@ -80,8 +80,8 @@ export function waitProgress(epoch,now){
  return Math.min(1,Math.max(0,(now-WAIT_START)/Math.max(1,epoch-WAIT_START)));
 }
 
-export const CANVAS={width:1920,height:1080,widgetWidth:460,widgetHeight:184};
-export const PRESET_WIDTH=Object.freeze({small:322,medium:460,large:598});
+export const CANVAS={width:1920,height:1080,widgetWidth:420,widgetHeight:120};
+export const PRESET_WIDTH=Object.freeze({small:294,medium:420,large:546});
 export function overlayGeometry(input={}){
  const o=normalizeOptions(input);
  const w=o.size==='custom'?o.w:PRESET_WIDTH[o.size];
@@ -98,4 +98,14 @@ export function overlayGeometry(input={}){
   y:Math.max(0,Math.min(CANVAS.height-h,Math.round(y))),
   w:Math.round(w),h:Math.round(h)
  };
+}
+
+/* The final seconds are a tiny fraction of a year: two decimals falsely
+   round to 100%. Switch to enough precision to visibly track the last 5 s. */
+export function formatWaitPercent(epoch, now){
+ const percent=waitProgress(epoch,now)*100;
+ const remainingMs=epoch-now;
+ if(remainingMs>0&&remainingMs<=10000)
+  return Math.min(99.99999999,percent).toFixed(8)+'%';
+ return percent.toFixed(2)+'%';
 }

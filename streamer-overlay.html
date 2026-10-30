@@ -16,7 +16,7 @@
  <link rel="stylesheet" href="css/secondary-controls.css?v=48">
  <link rel="stylesheet" href="css/community.css?v=11">
  <link rel="stylesheet" href="css/community-profile.css?v=4">
- <link rel="stylesheet" href="css/streamer-overlay-builder.css?v=2">
+ <link rel="stylesheet" href="css/streamer-overlay-builder.css?v=3">
 </head>
 <body class="article-page tfw-profile-page tfw-streamer-builder-page">
  <div class="page-noise" aria-hidden="true"></div>
@@ -74,19 +74,19 @@
        <select id="overlayPosition" name="position">
         <option value="bottom-left">Bottom left</option><option value="bottom-right">Bottom right</option>
         <option value="top-left">Top left</option><option value="top-right">Top right</option>
-        <option value="bottom-center">Bottom center</option><option value="custom">Custom · drag to move</option>
+        <option value="bottom-center">Bottom center</option><option value="custom">CUSTOM</option>
        </select></div>
       <div><label for="overlaySize">SIZE</label>
        <select id="overlaySize" name="size">
         <option value="small">Compact</option><option value="medium" selected>Standard</option>
-        <option value="large">Large</option><option value="custom">Custom · drag a corner</option>
+        <option value="large">Large</option><option value="custom">CUSTOM</option>
        </select></div>
      </div>
      <label for="overlayTimezoneOpen">RELEASE TIME ZONE</label>
      <button id="overlayTimezoneOpen" class="builder-zone-button" type="button" aria-haspopup="dialog" aria-controls="timezoneModal"><span id="overlayTimezoneValue">Europe/Rome</span><span aria-hidden="true">CHANGE ↗</span></button>
      <small class="builder-tip">The timer ends at midnight on November 19 in your selected time zone.</small>
      <fieldset class="builder-toggles"><legend>DISPLAY OPTIONS</legend>
-      <label><input type="checkbox" id="overlayBrand" name="brand" checked> Show The Final Wait branding</label>
+      <label><input type="checkbox" id="overlayBrand" name="brand" checked> Show RyzeGTAVI logo</label>
       <label><input type="checkbox" id="overlayProgress" name="progress" checked> Show waiting progress</label>
      </fieldset>
     </form>
@@ -108,7 +108,6 @@
      </div>
      <div class="builder-preview-tools">
       <button id="overlayDemo" class="builder-demo" type="button">▶ PLAY LAST 5 SECONDS</button>
-      <span>Preview the release moment without changing the real countdown.</span>
      </div>
      <div class="builder-export">
       <div class="builder-export-label"><span>CONNECT YOUR STREAM</span></div>

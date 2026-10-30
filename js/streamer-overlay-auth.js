@@ -26,7 +26,7 @@ window.__tfwWhenReady=(async()=>{
   if(!data.profile?.nickname||data.profile.terms_version!==config.termsVersion)
    throw Error('Complete your account registration before using this tool.');
   protectedContent.hidden=false;notice.hidden=true;
-  await import('./streamer-overlay-builder.js?v=2');
+  await import('./streamer-overlay-builder.js?v=3');
   return true;
  }catch(error){
   setError(error?.message||'Please return to the countdown and sign in.');

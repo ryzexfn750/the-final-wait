@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {DEFAULTS,isValidZone,normalizeOptions,parseOptions,buildOverlayUrl,
- releaseInstant,remaining,waitProgress,WAIT_START,overlayGeometry,CANVAS} from '../js/stream-overlay-core.js';
+ releaseInstant,remaining,waitProgress,WAIT_START,overlayGeometry,CANVAS,formatWaitPercent} from '../js/stream-overlay-core.js';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 test('Overlay midnight matches the main countdown in six time zones',()=>{
  const expected={
@@ -17,7 +17,7 @@ test('Only safe settings get into a URL; there is no millisecond option',()=>{
  assert.equal(isValidZone('<img onerror=alert(1)>'),false);
  assert.equal(normalizeOptions({theme:'evil',position:'elsewhere',size:'xxl',tz:'../../etc/passwd'}).tz,'Europe/Rome');
  assert.deepEqual(parseOptions('?theme=neon&position=top-right&size=small&tz=Asia%2FTokyo&brand=0&progress=0&ms=1'),{
-  tz:'Asia/Tokyo',theme:'neon',position:'top-right',size:'small',brand:false,progress:false,x:38,y:862,w:460
+  tz:'Asia/Tokyo',theme:'neon',position:'top-right',size:'small',brand:false,progress:false,x:38,y:920,w:420
  });
  const url=buildOverlayUrl('https://thefinalwait.com/streamer-overlay.html',parseOptions('?theme=minimal&ms=1'));
  assert.equal(new URL(url).pathname,'/stream-overlay.html');
@@ -48,13 +48,18 @@ test('Absolute time and wait progress remain bounded',()=>{
 test('Browser source is transparent, compact, audio-free, and ends with GTA VI IS OUT',()=>{
  const page=read('stream-overlay.html'),js=read('js/stream-overlay.js'),css=read('css/stream-overlay.css');
  assert.match(page,/GTA VI IS OUT!/);
+ assert.match(page,/class="stream-domain">thefinalwait\.com<\/strong>/);
+ assert.match(page,/id="streamBrand" class="stream-logo" src="assets\/ryze-gtavi-logo-lockup\.png"/);
+ assert.doesNotMatch(page,/> LIVE<\/span>|stream-live/);
+ assert.match(js,/logo\.hidden=!config\.brand/);
  assert.doesNotMatch(page,/streamMs|MILLISECONDS|msValue|<audio|community\.js|analytics|iframe/);
  assert.doesNotMatch(js,/localStorage|fetch\(|Audio\(|eval\(/);
  assert.match(js,/tfw:overlay-settings/);
  assert.match(js,/tfw:overlay-demo/);
  assert.match(js,/Date\.now\(\)/);
+ assert.match(js,/formatWaitPercent\(target,simulatedTime\)/);
  assert.match(css,/background:transparent!important/);
- assert.match(css,/width:460px;height:184px/);
+ assert.match(css,/width:420px;height:120px/);
  assert.match(css,/pointer-events:none/);
 });
 test('Protected creator uses the site header/footer, timezone dialog and live drag handles',()=>{
@@ -68,6 +73,11 @@ test('Protected creator uses the site header/footer, timezone dialog and live dr
  assert.match(page,/data-corner="nw"/);
  assert.match(page,/data-corner="se"/);
  assert.match(page,/id="overlayDemo"/);
+ assert.match(page,/Show RyzeGTAVI logo/);
+ assert.doesNotMatch(page,/Custom · drag to move|Custom · drag a corner|Preview the release moment without changing the real countdown/);
+ assert.doesNotMatch(js,/PREVIEW MODE — THE REAL STREAM COUNTDOWN IS UNAFFECTED/);
+ assert.match(read('css/streamer-overlay-builder.css'),/#timezoneModal\{z-index:2147482800\}/);
+ assert.doesNotMatch(settings,/tfw-settings-feature-chips|LIVE PREVIEW<\/span><span>TRANSPARENT/);
  assert.doesNotMatch(page,/overlayMs|No account required|THE FINAL WAIT · CREATOR TOOLS|Each link includes only/);
  assert.match(js,/setPointerCapture/);
  assert.match(js,/tfw:overlay-demo/);
@@ -76,4 +86,28 @@ test('Protected creator uses the site header/footer, timezone dialog and live dr
  assert.match(auth,/data\.profile\?\.nickname/);
  assert.match(auth,/data\.profile\.terms_version!==config\.termsVersion/);
  assert.match(settings,/href="streamer-overlay\.html"/);
+});
+
+test('Final-five-seconds progress preserves sub-second accuracy and never prints 100 early',()=>{
+ const epoch=releaseInstant('Europe/Rome');
+ const five=formatWaitPercent(epoch,epoch-5000);
+ const three=formatWaitPercent(epoch,epoch-3000);
+ const one=formatWaitPercent(epoch,epoch-1000);
+ assert.match(five,/^99\.\d{8}%$/);
+ assert.notEqual(five,three);
+ assert.notEqual(three,one);
+ assert.notEqual(one,'100.00000000%');
+ assert.notEqual(formatWaitPercent(epoch,epoch-1),'100.00000000%');
+ assert.equal(formatWaitPercent(epoch,epoch),'100.00%');
+});
+test('All presets use the redesigned compact footprint and stay in canvas bounds',()=>{
+ assert.deepEqual([CANVAS.widgetWidth,CANVAS.widgetHeight],[420,120]);
+ const regular=overlayGeometry({size:'medium',position:'bottom-left'});
+ assert.deepEqual({w:regular.w,h:regular.h},{w:420,h:120});
+ for(const position of ['top-left','top-right','bottom-left','bottom-right','bottom-center','custom']){
+  for(const size of ['small','medium','large','custom']){
+   const g=overlayGeometry({position,size,x:1143,y:980,w:680});
+   assert.ok(g.x>=0&&g.y>=0&&g.x+g.w<=1920&&g.y+g.h<=1080,position+' '+size);
+  }
+ }
 });

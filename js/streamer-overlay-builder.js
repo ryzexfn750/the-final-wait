@@ -1,5 +1,5 @@
 import {DEFAULTS,isValidZone,normalizeOptions,buildOverlayUrl,
- overlayGeometry,releaseInstant,CANVAS} from './stream-overlay-core.js?v=2';
+ overlayGeometry,releaseInstant,CANVAS} from './stream-overlay-core.js?v=3';
 const $=id=>document.getElementById(id);
 const refs={
  form:$('overlaySettings'),theme:$('overlayTheme'),position:$('overlayPosition'),
@@ -144,7 +144,6 @@ refs.demo.addEventListener('click',()=>{
  if(!refs.frame.contentWindow)return;
  refs.frame.contentWindow.postMessage({type:'tfw:overlay-demo'},location.origin);
  refs.demo.textContent='↻ REPLAY LAST 5 SECONDS';
- refs.feedback.textContent='PREVIEW MODE — THE REAL STREAM COUNTDOWN IS UNAFFECTED.';
 });
 function allZones(){
  let zones=['Europe/Rome','UTC','Europe/London','America/New_York','America/Los_Angeles',

@@ -7,17 +7,16 @@
  <meta name="referrer" content="no-referrer">
  <meta name="color-scheme" content="dark">
  <title>The Final Wait — Stream Overlay</title>
- <link rel="stylesheet" href="css/stream-overlay.css?v=2">
+ <link rel="stylesheet" href="css/stream-overlay.css?v=3">
 </head>
 <body>
  <main id="streamSurface" class="stream-surface" aria-label="GTA VI live countdown overlay">
   <section id="streamWidget" class="stream-widget">
-   <div class="stream-top" id="streamBrand">
-    <span class="stream-symbol">VI</span>
-    <div class="stream-brand-copy"><strong>THE FINAL WAIT</strong><span>ROAD TO LEONIDA</span></div>
-    <span class="stream-live"><i></i> LIVE</span>
+   <div class="stream-header">
+    <img id="streamBrand" class="stream-logo" src="assets/ryze-gtavi-logo-lockup.png" alt="RyzeGTAVI">
+    <strong class="stream-domain">thefinalwait.com</strong>
+    <span id="streamZone" class="stream-zone">EUROPE/ROME</span>
    </div>
-   <div class="stream-kicker" id="streamKicker">COUNTDOWN TO LEONIDA</div>
    <div id="streamNumbers" class="stream-numbers">
     <div class="stream-unit"><strong id="streamDays">00</strong><small>DAYS</small></div>
     <span class="stream-colon">:</span>
@@ -27,13 +26,15 @@
     <span class="stream-colon">:</span>
     <div class="stream-unit"><strong id="streamSeconds">00</strong><small>SECONDS</small></div>
    </div>
-   <div class="stream-progress" id="streamProgress"><div class="stream-progress-track"><i id="streamProgressFill"></i></div><span id="streamPercent">0.00%</span></div>
-   <div class="stream-foot"><span>GTA VI · 19 NOV 2026</span><span id="streamZone">EUROPE/ROME</span></div>
+   <div class="stream-progress" id="streamProgress">
+    <div class="stream-progress-track"><i id="streamProgressFill"></i></div>
+    <span id="streamPercent">0.00%</span>
+   </div>
    <div id="streamReleased" class="stream-released" hidden>
     <strong>GTA VI IS OUT!</strong><span>THE WAIT IS OVER.</span>
    </div>
   </section>
  </main>
- <script type="module" src="js/stream-overlay.js?v=2"></script>
+ <script type="module" src="js/stream-overlay.js?v=3"></script>
 </body>
 </html>
