@@ -1,8 +1,8 @@
 /* One-time post-registration boarding pass ceremony.
    Loaded only after a first successful community registration. */
-import {mountBoardingPass,publicTicketUrl,validBoardingPass} from './boarding-pass.js?v=3';
+import {mountBoardingPass,validBoardingPass} from './boarding-pass.js?v=4';
 function injectStyles(){
- for(const path of ['css/boarding-pass.css?v=3','css/ticket-reveal.css?v=1']){
+ for(const path of ['css/boarding-pass.css?v=4','css/ticket-reveal.css?v=2']){
   if(document.querySelector('link[data-tfw-ticket-reveal="'+path+'"]'))continue;
   const link=document.createElement('link');
   link.rel='stylesheet';link.href=path;
@@ -33,10 +33,10 @@ export async function showTicketReveal(loadTicket){
    '<div class="tfw-reveal-ticket" id="tfwRevealTicket" aria-live="off">'+
     '<div class="tfw-reveal-placeholder" aria-hidden="true"><span>✦</span><strong>TFW AIRWAYS</strong></div>'+
    '</div>'+
-   '<p class="tfw-reveal-stamp" aria-hidden="true">✦ APPROVED FOR BOARDING ✦</p>'+
+
    '<div class="tfw-reveal-choices" hidden>'+
     '<button type="button" class="tfw-reveal-continue">EXPLORE THE COUNTDOWN</button>'+
-    '<button type="button" class="tfw-reveal-open">VIEW MY BOARDING PASS ↗</button>'+
+
    '</div>'+
    '<button type="button" class="tfw-reveal-skip">SKIP INTRO ↗</button>'+
   '</div>';
@@ -75,13 +75,6 @@ export async function showTicketReveal(loadTicket){
  document.addEventListener('keydown',onKeydown,true);
  skip.addEventListener('click',close);
  overlay.querySelector('.tfw-reveal-continue').addEventListener('click',close);
- overlay.querySelector('.tfw-reveal-open').addEventListener('click',()=>{
-  if(!pass)return;
-  const to=publicTicketUrl(pass);
-  close();
-  if(window.__tfwSeamlessNavigation)window.__tfwSeamlessNavigation.open(to);
-  else location.assign(to);
- });
  skip.focus({preventScroll:true});
  const update=(step,label)=>{
   if(closed)return;
@@ -97,13 +90,13 @@ export async function showTicketReveal(loadTicket){
    if(closed)return;
    if(!validBoardingPass(result))throw Error('Ticket cannot be verified');
    pass=result;
-   await pause(550);if(closed)return;
+   await pause(1150);if(closed)return;
    update(2,'ASSIGNING YOUR FLIGHT TO LEONIDA');
-   await pause(650);if(closed)return;
+   await pause(1250);if(closed)return;
    mountBoardingPass(holder,pass);
    update(3,'PRINTING YOUR PERSONAL BOARDING PASS');
    overlay.classList.add('tfw-reveal-printing');
-   await pause(1600);if(closed)return;
+   await pause(6400);if(closed)return;
    update(4,'BOARDING PASS ISSUED');
    overlay.classList.add('tfw-reveal-complete');
    choices.hidden=false;skip.hidden=true;
@@ -117,7 +110,6 @@ export async function showTicketReveal(loadTicket){
    message.textContent='The boarding pass could not be loaded. Your account is ready.';
    holder.appendChild(message);
    choices.hidden=false;
-   overlay.querySelector('.tfw-reveal-open').hidden=true;
    skip.hidden=true;
    overlay.querySelector('.tfw-reveal-continue').focus({preventScroll:true});
   }

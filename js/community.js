@@ -639,18 +639,27 @@ async function initCommunity(){
       });
       state.profile=result.profile;
       if(!member())throw Error('Registration incomplete');
-      hideGate();void connectSocket();
-      // Run the cinematic ticket issuance only after a genuinely new account.
-      // Re-accepting terms for an existing nickname must not replay onboarding.
+      // Do not reveal the underlying countdown between registration and the
+      // ceremony. Keep the gate up until the dialog has been mounted.
       if(firstRegistration){
-        void import('./ticket-reveal.js?v=1')
-          .then(({showTicketReveal})=>showTicketReveal(async()=>{
+        try{
+          const {showTicketReveal}=await import('./ticket-reveal.js?v=2');
+          const ceremony=showTicketReveal(async()=>{
             const issued=await api('GET','boarding-pass');
             return issued.ticket;
-          }))
-          .catch(error=>console.warn('Ticket welcome unavailable:',error))
-          .finally(()=>window.dispatchEvent(new Event('tfw:community-ready')));
-      }else window.dispatchEvent(new Event('tfw:community-ready'));
+          });
+          hideGate();void connectSocket();
+          void ceremony.catch(error=>console.warn('Ticket welcome unavailable:',error))
+            .finally(()=>window.dispatchEvent(new Event('tfw:community-ready')));
+        }catch(error){
+          hideGate();void connectSocket();
+          console.warn('Ticket welcome unavailable:',error);
+          window.dispatchEvent(new Event('tfw:community-ready'));
+        }
+      }else{
+        hideGate();void connectSocket();
+        window.dispatchEvent(new Event('tfw:community-ready'));
+      }
     }catch(error){status(error.message,true)}
     finally{
       state.busy=false;$('#hypeSubmit').disabled=false;state.challengeToken='';

@@ -186,3 +186,86 @@
 /* Native hidden attribute must win over author display:flex. */
 #ticketVerified[hidden]{display:none!important}
 .tfw-ticket-public-page .tfw-secondary-topbar{z-index:85}
+
+
+/* User-supplied QR data rebuilt without the Bitly watermark. The light matte
+   belongs to the QR itself so the quiet zone remains reliably scannable. */
+.tfw-ticket .tfw-ticket-qr{display:block!important;align-self:flex-start;
+  width:min(168px,100%);aspect-ratio:1;margin:7px 0 3px;flex:none;
+  padding:5px;background:#ffeaf6;border:1px solid #fff7;box-sizing:border-box;
+  box-shadow:0 9px 24px #0007,0 0 0 4px #e9acd313;border-radius:10px}
+.tfw-ticket .tfw-ticket-qr svg{display:block;width:100%;height:100%;shape-rendering:crispEdges}
+.tfw-ticket-quick-actions{display:flex;justify-content:center;align-items:center;gap:14px;margin:25px auto 0}
+.tfw-ticket-quick-button{min-width:175px;min-height:49px;padding:13px 24px;
+ border-radius:13px;border:1px solid #f4b9e65c;color:#fff;
+ background:linear-gradient(105deg,#a34591,#6e469f);
+ box-shadow:inset 0 1px #ffffff26,0 14px 33px #09051275;
+ font:900 11px/1.2 Arial,sans-serif;letter-spacing:.12em;cursor:pointer;
+ transition:transform .18s,border-color .18s,box-shadow .18s}
+.tfw-ticket-quick-button:hover{transform:translateY(-3px);border-color:#ffddf2;box-shadow:0 17px 34px #cc72b22b}
+.tfw-ticket-quick-button:first-child{background:linear-gradient(110deg,#3b204b,#20162f)}
+.tfw-ticket-modal-backdrop{z-index:2147483201!important}
+.tfw-ticket-modal{position:fixed!important;top:50%!important;left:50%!important;
+ transform:translate(-50%,-50%)!important;z-index:2147483202!important;
+ width:min(510px,calc(100vw - 32px));max-height:min(88vh,730px);overflow-y:auto;
+ padding:clamp(24px,4vw,36px);box-sizing:border-box;border:1px solid #f6a4da66;
+ box-shadow:0 35px 100px #000c,0 0 65px #a84ca71d;
+ border-radius:22px;background:linear-gradient(147deg,#25132f,#0c0a17)}
+.tfw-ticket-modal[hidden],.tfw-ticket-modal-backdrop[hidden]{display:none!important}
+.tfw-ticket-modal h2{font:900 clamp(22px,4vw,35px)/1.06 "Arial Black",Arial,sans-serif;
+ letter-spacing:-.045em;margin:11px 0 13px;color:#fff}
+.tfw-ticket-modal-description{font:400 12px/1.65 Arial;color:#d5c3da;margin:0 0 21px}
+.tfw-ticket-modal-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.tfw-ticket-modal-actions .fx-button{display:flex;align-items:center;justify-content:center;
+ min-height:48px;margin:0;padding:11px 9px;white-space:normal;text-align:center;
+ font:900 9px/1.45 Arial,sans-serif;letter-spacing:.07em}
+.tfw-ticket-modal-actions .fx-button:last-child:nth-child(odd){grid-column:1/-1}
+.tfw-ticket-modal .tfw-ticket-action-status{min-height:20px;margin:12px 0 0}
+body.tfw-ticket-modal-open{overflow:hidden!important}
+.tfw-ticket-public-page .tfw-ticket-stub .tfw-ticket-qr{margin-top:6px}
+@media(max-width:900px){
+ .tfw-ticket .tfw-ticket-qr{width:116px;margin:0}
+}
+@media(max-width:560px){
+ .tfw-ticket .tfw-ticket-qr{width:124px;margin:8px auto}
+ .tfw-ticket-quick-button{min-width:0;flex:1;padding:12px 10px}
+ .tfw-ticket-modal-actions{grid-template-columns:1fr}
+ .tfw-ticket-modal-actions .fx-button:last-child:nth-child(odd){grid-column:auto}
+}
+/* Portrait story is rendered from the exact same DOM and styles as the web
+   boarding pass. The offscreen stage is 540x960 CSS px (2x=>1080x1920 PNG). */
+.tfw-ticket-story-stage{display:block!important;background:#130d20!important}
+.tfw-ticket-story-stage>.tfw-ticket.tfw-ticket--portrait{
+ width:540px!important;height:960px!important;max-width:none!important;
+ border-radius:24px!important;box-shadow:none!important;transform:none!important;
+ transition:none!important;box-sizing:border-box;overflow:hidden!important}
+.tfw-ticket--portrait .tfw-ticket-layout{display:flex!important;flex-direction:column!important;
+ height:100%!important;min-height:0!important}
+.tfw-ticket--portrait .tfw-ticket-main{flex:1 1 auto;padding:40px 38px 10px!important}
+.tfw-ticket--portrait .tfw-ticket-intro{padding:40px 0 34px!important}
+.tfw-ticket--portrait .tfw-ticket-intro h3{font-size:52px!important}
+.tfw-ticket--portrait .tfw-ticket-topline{font-size:10px!important}
+.tfw-ticket--portrait .tfw-ticket-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ gap:27px 20px!important}
+.tfw-ticket--portrait .tfw-ticket-field:nth-child(1),
+.tfw-ticket--portrait .tfw-ticket-field:nth-child(2){grid-column:span 1!important}
+.tfw-ticket--portrait .tfw-ticket-field span{font-size:10px!important}
+.tfw-ticket--portrait .tfw-ticket-field strong,
+.tfw-ticket--portrait .tfw-ticket-field:first-child strong{font-size:21px!important}
+.tfw-ticket--portrait .tfw-ticket-bottomline{font-size:10px!important}
+.tfw-ticket--portrait .tfw-ticket-stub{flex:0 0 225px!important;
+ display:grid!important;grid-template-columns:minmax(0,1fr) 155px!important;
+ grid-template-rows:repeat(4,min-content)!important;gap:7px 14px!important;
+ border-left:0!important;border-top:2px dashed #fcd1ee88!important;
+ padding:22px 37px!important;align-content:center}
+.tfw-ticket--portrait .tfw-ticket-stub-label{grid-column:1;grid-row:1}
+.tfw-ticket--portrait .tfw-ticket-destination{grid-column:1;grid-row:2;font-size:27px!important}
+.tfw-ticket--portrait .tfw-ticket-flight{grid-column:1;grid-row:3;font-size:11px!important}
+.tfw-ticket--portrait .tfw-ticket-mini{grid-column:1;grid-row:4}
+.tfw-ticket--portrait .tfw-ticket-code{grid-column:1;grid-row:5}
+.tfw-ticket--portrait .tfw-ticket-verified{grid-column:1;grid-row:6}
+.tfw-ticket--portrait .tfw-ticket-qr{grid-column:2;grid-row:1/7;
+ width:154px!important;height:154px!important;margin:0!important;align-self:center!important}
+@media(prefers-reduced-motion:reduce){
+ .tfw-ticket-quick-button{transition:none}
+}
