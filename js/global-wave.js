@@ -222,6 +222,12 @@ function refreshGlobe(at){
  globe.polygonCapColor(f=>colorOf(f,at));
  globe.polygonStrokeColor(f=>strokeOf(f,at));
  globe.pointColor(city=>at>=midnight(city.tz)?'#fa8bcf':'#d1a7ef');
+ // City-level ripple markers travel with the world wave for one local hour.
+ // Rendering stays cheap: at most a handful of active cities in any offset.
+ globe.ringsData(CITIES.filter(city=>{
+  const delta=at-midnight(city.tz);
+  return delta>=0&&delta<3600000;
+ }));
 }
 function resizeGlobe(){
  if(!globe||view!=='3d')return;
@@ -256,12 +262,12 @@ async function initialize3D(force=false){
  if(!force&&lowPower())return;
  requested3d=true;
  try{
-  await loadScript('https://cdn.jsdelivr.net/npm/globe.gl@2/dist/globe.gl.min.js');
+  await loadScript('https://cdn.jsdelivr.net/npm/globe.gl@2.46.2/dist/globe.gl.min.js');
   const create=window.Globe;
   globe=new create(ui.globe,{rendererConfig:{antialias:!lowPower(),alpha:true},animateIn:false,
    waitForGlobeReady:false})
    .backgroundColor('rgba(0,0,0,0)')
-   .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-night.jpg')
+   .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe@2.45.0/example/img/earth-night.jpg')
    .showAtmosphere(true).atmosphereColor('#ae6ae9').atmosphereAltitude(.2)
    .showGraticules(false).polygonAltitude(.006)
    .polygonCapCurvatureResolution(lowPower()?10:7)
@@ -281,6 +287,10 @@ async function initialize3D(force=false){
    .pointColor(c=>sampleAt()>=midnight(c.tz)?'#fa8bcf':'#c9a9ee')
    .pointLabel(c=>c.name+' · '+c.tz)
    .onPointClick(c=>chooseCity(c))
+   .ringsData([]).ringLat('lat').ringLng('lng')
+   .ringColor(()=>['rgba(253,166,219,.75)','rgba(240,132,214,0)'])
+   .ringAltitude(.009).ringMaxRadius(2.9).ringPropagationSpeed(2)
+   .ringRepeatPeriod(1300).ringResolution(18)
    .pointOfView({lat:22,lng:17,altitude:2.25},0);
   const controls=globe.controls();
   controls.enablePan=false;
@@ -290,7 +300,7 @@ async function initialize3D(force=false){
   controls.autoRotateSpeed=.32;
   controls.autoRotate=autoSpin;
   ui.globe.addEventListener('pointerdown',()=>{autoSpin=false;refreshSpinLabel()},{passive:true});
-  setView('3d');loadingMessage('',false);
+  setView('3d');refreshGlobe(sampleAt());loadingMessage('',false);
  }catch(err){
   try{globe?.pauseAnimation()}catch{}
   globe=null;

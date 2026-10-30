@@ -95,7 +95,9 @@ test('The site exposes a dedicated route with working 3D and 2D interactions',()
  assert.match(page,/id="waveView2D"/);
  assert.match(page,/id="waveView3D"/);
  assert.match(page,/noindex,nofollow/);
- assert.match(js,/globe\.gl@2\/dist\/globe\.gl\.min\.js/);
+ assert.match(js,/globe\.gl@2\.46\.2\/dist\/globe\.gl\.min\.js/);
+ assert.match(js,/ringPropagationSpeed\(2\)/);
+ assert.match(js,/globe\.ringsData\(CITIES\.filter/);
  assert.match(js,/new create\(ui\.globe/);
  assert.match(js,/onPolygonClick/);
  assert.match(js,/pointOfView/);
