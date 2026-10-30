@@ -24,10 +24,12 @@ function sandbox({stored={},languages=['en-US'],cookie=''}={}){
   setTimeout:()=>0,Event:class{constructor(type){this.type=type}}});
  return {window,document,values,listeners};
 }
-test('Country maps exactly to five enabled languages with an English fallback',()=>{
+test('Country maps to all fourteen enabled languages with an English fallback',()=>{
  const {window}=sandbox();
  const cases={IT:'it',SM:'it',FR:'fr',DE:'de',AT:'de',ES:'es',MX:'es',
-  BR:'en',JP:'en',PL:'en',TR:'en',US:'en',GB:'en',XX:'en'};
+  BR:'pt',PT:'pt',RU:'ru',BY:'ru',PL:'pl',JP:'ja',TR:'tr',
+  NL:'nl',KR:'ko',CN:'zh-CN',SA:'ar',AE:'ar',
+  US:'en',GB:'en',XX:'en',NO:'en',IN:'en'};
  for(const [country,lang] of Object.entries(cases))
   assert.equal(window.__tfwDetectedSiteLanguage(country),lang,country);
  assert.equal(window.__tfwDetectedSiteLanguage(null),'en');
@@ -39,6 +41,12 @@ test('Multilingual countries use browser preference without requiring GPS',()=>{
  assert.equal(german.window.__tfwDetectedSiteLanguage('CH'),'de');
  const english=sandbox({languages:['en-US']});
  assert.equal(english.window.__tfwDetectedSiteLanguage('BE'),'en');
+ const chinese=sandbox({languages:['zh-CN','en-US']});
+ assert.equal(chinese.window.__tfwDetectedSiteLanguage('SG'),'zh-CN');
+ const japanese=sandbox({languages:['ja-JP']});
+ assert.equal(japanese.window.__tfwDetectedSiteLanguage('SG'),'ja');
+ const traditional=sandbox({languages:['zh-TW','en-US']});
+ assert.equal(traditional.window.__tfwDetectedSiteLanguage('SG'),'en');
 });
 test('Country detection sets automatic language and persists it across secondary iframes',()=>{
  const s=sandbox();
@@ -61,6 +69,11 @@ test('Previously selected language wins over country auto-detection',()=>{
  assert.equal(prior.window.__tfwPreferredSiteLanguage(),'fr');
  prior.listeners['tfw:timezone-detected']({detail:{country:'IT'}});
  assert.equal(prior.window.__tfwPreferredSiteLanguage(),'fr');
+ const chinese=sandbox({cookie:'googtrans=/en/zh-CN'});
+ assert.equal(chinese.window.__tfwPreferredSiteLanguage(),'zh-CN');
+ const arabic=sandbox({stored:{tfw_site_language_v1:'ar',tfw_site_language_mode_v1:'manual'}});
+ arabic.listeners['tfw:timezone-detected']({detail:{country:'JP'}});
+ assert.equal(arabic.window.__tfwPreferredSiteLanguage(),'ar');
 });
 test('Cloudflare geo endpoint returns only timezone and ISO country code, not IP',()=>{
  const file=read('functions/api/timezone.js').replace('export function onRequestGet','function onRequestGet');
@@ -75,7 +88,7 @@ test('Registration reuses the same accessible menu, options and language state',
  const lang=read('js/language.js'),style=read('css/community.css');
  assert.match(community,/id="tfwGateLanguage" class="language-widget tfw-gate-language-widget"/);
  assert.match(community,/tfw:registration-gate-mounted/);
- for(const langcode of ['en','fr','es','de','it'])
+ for(const langcode of ["en","fr","es","de","it","pt","ru","pl","ja","tr","nl","ko","zh-CN","ar"])
   assert.match(community,new RegExp('<option value="'+langcode+'">'));
  assert.match(lang,/\.gtranslate_wrapper, \.tfw-gate-language-widget/);
  assert.match(lang,/window\.addEventListener\('tfw:registration-gate-mounted',watchWidget\)/);
@@ -89,10 +102,22 @@ test('All translated pages use the new country and locale selector bootstrap',()
   'profile.html','newsletter.html','support.html','settings.html','streamer-overlay.html',
   'global-wave.html','ticket.html']){
   const html=read(page);
-  assert.match(html,/js\/language\.js\?v=50/,page);
+  assert.match(html,/js\/language\.js\?v=51/,page);
   assert.match(html,/js\/timezone-init\.js\?v=4/,page);
  }
- assert.match(read('index.html'),/js\/community\.js\?v=21/);
+ assert.match(read('index.html'),/js\/community\.js\?v=22/);
  assert.match(read('index.html'),/css\/community\.css\?v=15/);
- assert.match(read('js/language.js'),/languages:\['en','fr','es','de','it'\]/);
+ assert.match(read('js/language.js'),/languages:\['en','fr','es','de','it','pt','ru','pl','ja','tr','nl','ko','zh-CN','ar'\]/);
+});
+
+test('All fourteen language codes are exposed by the widget and the registration menu',()=>{
+ const script=read('js/language.js'),gate=read('js/community.js');
+ const codes=["en","fr","es","de","it","pt","ru","pl","ja","tr","nl","ko","zh-CN","ar"];
+ for(const code of codes){
+  assert.ok(script.includes("'"+code+"'"),code);
+  assert.ok(gate.includes('<option value="'+code+'">'),code);
+ }
+ assert.match(script,/code==='zh-cn'\?'zh-CN':code/);
+ assert.match(read('css/site-polish.css'),/overflow-y:auto;overscroll-behavior:contain/);
+ assert.match(read('css/site-polish.css'),/max-height:min\(66vh,530px\)/);
 });

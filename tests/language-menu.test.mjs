@@ -10,7 +10,9 @@ test('Styled language menu preserves the real GTranslate change and accessibilit
  assert.match(js,/observer=new MutationObserver/);
  assert.match(js,/role="listbox"/);
  assert.match(js,/setAttribute\('role','option'\)/);
- for(const code of ['en','it','fr','de','es'])assert.match(js,new RegExp(code+':\\['));
+ for(const code of ['en','it','fr','de','es','pt','ru','pl','ja','tr','nl','ko','ar'])
+  assert.match(js,new RegExp(code+':\\\\['));
+ assert.ok(js.includes("'zh-CN':['ZH'"));
  assert.match(js,/event\.key==='Escape'/);
  assert.match(js,/ArrowDown/);
  assert.match(js,/closeMenu\(control,true\)/);
@@ -19,8 +21,8 @@ test('Styled language menu preserves the real GTranslate change and accessibilit
  assert.match(css,/html body \.gtranslate_wrapper select\.tfw-lang-native/);
  for(const p of ['index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html','support.html']){
   const html=read(p);
-  assert.match(html,/js\/language\.js\?v=50/);
-  assert.match(html,/css\/site-polish\.css\?v=54/);
+  assert.match(html,/js\/language\.js\?v=51/);
+  assert.match(html,/css\/site-polish\.css\?v=55/);
   assert.match(html,/js\/site-polish\.js\?v=48/);
  }
 });

@@ -6,21 +6,21 @@ const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 test('All site routes use v48 assets and the Russian translator is removed',()=>{
  const home=read('index.html');
  for(const asset of ['js/clock.js?v=49','js/milestones.js?v=52',
-   'js/language.js?v=50','js/final-call-locales.js?v=48',
+   'js/language.js?v=51','js/final-call-locales.js?v=48',
    'js/seamless-navigation.js?v=60','js/inpage-scroll.js?v=48',
-   'css/site-polish.css?v=54']){
+   'css/site-polish.css?v=55']){
     assert.ok(home.includes(asset),asset);
  }
  const language=read('js/language.js');
  const locales=read('js/final-call-locales.js');
- assert.match(language,/languages:\['en','fr','es','de','it'\]/);
+ assert.match(language,/languages:\['en','fr','es','de','it','pt','ru','pl','ja','tr','nl','ko','zh-CN','ar'\]/);
  assert.doesNotMatch(language,/['"]ru['"]/);
  assert.doesNotMatch(locales,/"ru"\s*:/);
  for(const page of ['today.html','timeline.html','intel.html','intel-archive.html']){
    const html=read(page);
-   assert.ok(html.includes('js/language.js?v=50'),page);
+   assert.ok(html.includes('js/language.js?v=51'),page);
    assert.ok(html.includes('js/secondary-controls.js?v=49'),page);
-   assert.ok(html.includes('css/site-polish.css?v=54'),page);
+   assert.ok(html.includes('css/site-polish.css?v=55'),page);
  }
 });
 
