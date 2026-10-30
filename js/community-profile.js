@@ -1,4 +1,4 @@
-import {publicTicketUrl,EDITIONS} from './boarding-pass.js?v=4';
+import {publicTicketUrl,EDITIONS} from './boarding-pass.js?v=5';
 /* Profile-only account actions. Confirmation dialogs are styled in-page,
    without browser-native confirmation popups or newsletter/CAPTCHA widgets. */
 const $=selector=>document.querySelector(selector);

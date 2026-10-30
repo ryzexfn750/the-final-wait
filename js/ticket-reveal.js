@@ -1,8 +1,8 @@
 /* One-time post-registration boarding pass ceremony.
    Loaded only after a first successful community registration. */
-import {mountBoardingPass,validBoardingPass} from './boarding-pass.js?v=4';
+import {mountBoardingPass,validBoardingPass} from './boarding-pass.js?v=5';
 function injectStyles(){
- for(const path of ['css/boarding-pass.css?v=4','css/ticket-reveal.css?v=2']){
+ for(const path of ['css/boarding-pass.css?v=5','css/ticket-reveal.css?v=3']){
   if(document.querySelector('link[data-tfw-ticket-reveal="'+path+'"]'))continue;
   const link=document.createElement('link');
   link.rel='stylesheet';link.href=path;

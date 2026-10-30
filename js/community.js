@@ -643,7 +643,7 @@ async function initCommunity(){
       // ceremony. Keep the gate up until the dialog has been mounted.
       if(firstRegistration){
         try{
-          const {showTicketReveal}=await import('./ticket-reveal.js?v=2');
+          const {showTicketReveal}=await import('./ticket-reveal.js?v=3');
           const ceremony=showTicketReveal(async()=>{
             const issued=await api('GET','boarding-pass');
             return issued.ticket;
