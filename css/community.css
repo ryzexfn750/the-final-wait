@@ -669,6 +669,13 @@ html.tfw-streamer-mode .tfw-hype-float-name{display:none!important}
 }
 .topbar .tfw-settings-link:hover{background:rgba(242,63,178,.2)}
 .topbar .tfw-settings-link .tfw-account-person{color:#edb1e2}
+.topbar .tfw-settings-link .tfw-settings-label{
+ font:900 9px/1 Arial;letter-spacing:.1em;color:#fff
+}
+@media(max-width:700px){
+ .topbar .tfw-settings-link .tfw-settings-label{font-size:0}
+}
+
 @media(max-width:700px){
  .topbar .tfw-settings-link{min-height:30px;padding:0 7px}
  .topbar .tfw-settings-link .tfw-account-person{width:19px;height:19px}
