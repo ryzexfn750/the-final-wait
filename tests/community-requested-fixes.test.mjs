@@ -28,7 +28,7 @@ test('Multilingual moderation is shared by frontend and the authoritative server
   const client=read('js/community.js');
   assert.match(server,/import \{nicknameVerdict\} from '\.\.\/\.\.\/\.\.\/js\/nickname-policy\.js'/);
   assert.match(server,/const verdict=nicknameVerdict\(nickname\)/);
-  assert.match(client,/import \{nicknameVerdict\} from '\.\/nickname-policy\.js\?v=1'/);
+  assert.match(client,/import \{nicknameVerdict\} from '\.\/nickname-policy\.js\?v=2'/);
   assert.match(client,/const verdict=nicknameVerdict\(nickname\)/);
   assert.match(client,/nicknameError\.textContent=verdict\.reason/);
 });
