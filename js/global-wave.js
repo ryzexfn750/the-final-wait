@@ -3,6 +3,7 @@
  * The UTC timeline is historical/simulated, not an official unlock schedule.
  */
 import {CITIES} from './global-wave-cities.js?v=1';
+import {createPlanetPainter} from './global-wave-texture.js?v=1';
 import {EARLIEST,LATEST,DURATION,midnight,buildZones,milestones,waveSnapshot,
  timelineAt,timelinePosition,remainingText,fullZoneLabel,cityState,offsetLabel,localClock,clamp}
  from './global-wave-core.js?v=1';
@@ -26,6 +27,7 @@ let features=[],orderedMilestones=[],nowForWave=Date.now();
 let mode='live',simulationAt=EARLIEST,playing=false,playStartedAt=0,playStartedTime=EARLIEST;
 let selected=CITIES.find(city=>city.name==='Miami')||CITIES[0];
 let globe=null,view='2d',autoSpin=true,requested3d=false,haveLoaded=false;
+let painter=null,paintedState='';
 let mapPaths=[],lastStatusKey='',lastListRefresh=0,last2dKey='',lastGlobeKey='';
 const loadingMessage=(text,show=true)=>{ui.message.textContent=text;ui.message.hidden=!show};
 const releaseLabel=at=>new Date(at).toLocaleString('en-GB',{timeZone:'UTC',day:'2-digit',month:'short',year:'numeric',
@@ -48,8 +50,7 @@ function setView(next){
  ui.view2d.classList.toggle('active',next==='2d');
  ui.view3d.setAttribute('aria-pressed',String(next==='3d'));
  ui.view2d.setAttribute('aria-pressed',String(next==='2d'));
- ui.hint.textContent=next==='3d'?'DRAG TO ROTATE · SCROLL TO ZOOM · CLICK A TERRITORY':
-  'SELECT A TERRITORY OR CITY · USE 3D TO ROTATE THE EARTH';
+ // Gesture copy removed to keep the map uncluttered.
  ui.spin.hidden=next!=='3d';
  if(globe){if(next==='3d'&&!document.hidden){globe.resumeAnimation();resizeGlobe()}
   else globe.pauseAnimation();}
@@ -68,7 +69,7 @@ function drawSnapshot(at){
  const snap=waveSnapshot(features,at);
  ui.reached.textContent=String(snap.reached).padStart(2,'0');
  ui.waiting.textContent=String(snap.waiting).padStart(2,'0');
- ui.total.textContent=snap.total+' SIMPLIFIED TIME ZONE REGIONS · NOT POPULATION';
+ ui.total.textContent='OF '+snap.total+' TIME ZONES';
  ui.ratio.style.width=snap.percent.toFixed(2)+'%';
  ui.progressText.textContent=snap.reached+'/'+snap.total+' ZONES';
  ui.modeLabel.textContent=mode==='live'?'LIVE WORLD CLOCK':'TIME TRAVEL SIMULATION';
@@ -168,6 +169,7 @@ function makePath(feature){
 }
 function prepare2D(){
  mapPaths=features.map(f=>({feature:f,path:makePath(f)}));
+ painter=createPlanetPainter(mapPaths);
 }
 function render2D(at){
  if(!haveLoaded||!mapPaths.length)return;
@@ -217,17 +219,41 @@ function refreshSpinLabel(){
  ui.spin.setAttribute('aria-pressed',String(autoSpin));
  if(globe)globe.controls().autoRotate=autoSpin;
 }
+// Only ONE textured planet mesh. Color changes upload a 1024x512 canvas
+// only when a timezone milestone changes, never at every frame.
 function refreshGlobe(at){
- if(!globe)return;
- globe.polygonCapColor(f=>colorOf(f,at));
- globe.polygonStrokeColor(f=>strokeOf(f,at));
+ if(!globe||!painter)return;
+ const milestone=orderedMilestones.findIndex(m=>m.instant>at);
+ const key=(milestone<0?orderedMilestones.length:milestone);
+ if(paintedState!==String(key)){
+  paintedState=String(key);
+  const canvas=painter.paint(at);
+  const material=globe.globeMaterial();
+  if(material?.map?.isTexture){
+   material.map.image=canvas;
+   material.map.needsUpdate=true;
+  }else{
+   globe.globeImageUrl(canvas.toDataURL('image/png'));
+  }
+ }
  globe.pointColor(city=>at>=midnight(city.tz)?'#fa8bcf':'#d1a7ef');
- // City-level ripple markers travel with the world wave for one local hour.
- // Rendering stays cheap: at most a handful of active cities in any offset.
- globe.ringsData(CITIES.filter(city=>{
-  const delta=at-midnight(city.tz);
-  return delta>=0&&delta<3600000;
- }));
+}
+function selectGlobeRegion({lat,lng}){
+ const ctx=ui.canvas.getContext('2d');
+ if(!ctx)return;
+ const x=(lng+180)/360*960,y=(90-lat)/180*480;
+ const close=CITIES.map(city=>({city,d:Math.hypot((city.lng-lng)*Math.cos(lat*Math.PI/180),city.lat-lat)}))
+  .sort((a,b)=>a.d-b.d)[0];
+ if(close?.d<2.5){chooseCity(close.city,false);return}
+ for(let i=mapPaths.length-1;i>=0;i--){
+  const {feature:f,path}=mapPaths[i];
+  if(ctx.isPointInPath(path,x,y,'evenodd')){
+   const city=CITIES.find(c=>c.tz===f.tzid);
+   chooseCity(city||{name:f.tzid.split('/').pop().replaceAll('_',' '),
+    region:'IANA TIME ZONE',tz:f.tzid,lat,lng},false);
+   return;
+  }
+ }
 }
 function resizeGlobe(){
  if(!globe||view!=='3d')return;
@@ -264,34 +290,26 @@ async function initialize3D(force=false){
  try{
   await loadScript('https://cdn.jsdelivr.net/npm/globe.gl@2.46.2/dist/globe.gl.min.js');
   const create=window.Globe;
-  globe=new create(ui.globe,{rendererConfig:{antialias:!lowPower(),alpha:true},animateIn:false,
-   waitForGlobeReady:false})
+  // A single canvas texture handles all IANA region colors; never extrude
+  // giant timezone polygons into 3D triangle meshes.
+  const initial=painter.paint(sampleAt());
+  globe=new create(ui.globe,{rendererConfig:{antialias:false,alpha:true,
+   powerPreference:'low-power'},animateIn:false,waitForGlobeReady:false})
    .backgroundColor('rgba(0,0,0,0)')
-   .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe@2.45.0/example/img/earth-night.jpg')
-   .showAtmosphere(true).atmosphereColor('#ae6ae9').atmosphereAltitude(.2)
-   .showGraticules(false).polygonAltitude(.006)
-   .polygonCapCurvatureResolution(lowPower()?10:7)
-   .polygonsTransitionDuration(0)
-   .polygonsData(features)
-   .polygonCapColor(f=>colorOf(f,sampleAt()))
-   .polygonStrokeColor(f=>strokeOf(f,sampleAt()))
-   .polygonSideColor('rgba(119,81,160,.08)')
-   .onPolygonClick((f,event,where)=>{
-     const city=CITIES.find(c=>c.tz===f.tzid);
-     chooseCity(city||{name:f.tzid.split('/').pop().replaceAll('_',' '),
-      region:'IANA TIME ZONE REGION',tz:f.tzid,lat:where?.lat??0,lng:where?.lng??0});
-   })
+   .globeImageUrl(initial.toDataURL('image/png'))
+   .globeCurvatureResolution(7)
+   .showAtmosphere(true).atmosphereColor('#ae6ae9').atmosphereAltitude(.16)
+   .showGraticules(false)
+   .onGlobeClick(coords=>selectGlobeRegion(coords))
    .pointsData(CITIES)
    .pointLat('lat').pointLng('lng').pointRadius(.23)
    .pointAltitude(.011).pointResolution(6).pointsTransitionDuration(0)
    .pointColor(c=>sampleAt()>=midnight(c.tz)?'#fa8bcf':'#c9a9ee')
    .pointLabel(c=>c.name+' · '+c.tz)
    .onPointClick(c=>chooseCity(c))
-   .ringsData([]).ringLat('lat').ringLng('lng')
-   .ringColor(()=>['rgba(253,166,219,.75)','rgba(240,132,214,0)'])
-   .ringAltitude(.009).ringMaxRadius(2.9).ringPropagationSpeed(2)
-   .ringRepeatPeriod(1300).ringResolution(18)
    .pointOfView({lat:22,lng:17,altitude:2.25},0);
+  try{globe.renderer().setPixelRatio(Math.min(window.devicePixelRatio||1,1.25))}catch{}
+  void painter.loadNight(()=>{paintedState='';refreshGlobe(sampleAt())});
   const controls=globe.controls();
   controls.enablePan=false;
   controls.enableDamping=true;
