@@ -586,13 +586,13 @@ html.tfw-streamer-mode .tfw-hype-float-name{display:none!important}
 
 
 /* Per-emoji motion families; short, GPU-composited and varied by reaction. */
-#hero .tfw-hype-float{animation:tfwReactionFloat 1.5s cubic-bezier(.18,.65,.34,1) both!important}
+#hero .tfw-hype-float{animation:tfwReactionFloat 1.75s cubic-bezier(.18,.65,.34,1) both!important}
 #hero .tfw-hype-float-emoji{display:inline-block;transform-origin:50% 65%}
-#hero .tfw-hype-float-emoji.tfw-emoji-motion-flame{animation:tfwEmojiFlame 1.5s ease-in-out both!important}
-#hero .tfw-hype-float-emoji.tfw-emoji-motion-launch{animation:tfwEmojiLaunch 1.5s cubic-bezier(.2,.75,.3,1) both!important}
-#hero .tfw-hype-float-emoji.tfw-emoji-motion-party{animation:tfwEmojiParty 1.5s ease-in-out both!important}
-#hero .tfw-hype-float-emoji.tfw-emoji-motion-sway{animation:tfwEmojiSway 1.5s ease-in-out both!important}
-#hero .tfw-hype-float-emoji.tfw-emoji-motion-heartbeat{animation:tfwEmojiHeartbeat 1.5s ease-in-out both!important}
+#hero .tfw-hype-float-emoji.tfw-emoji-motion-flame{animation:tfwEmojiFlame 1.75s ease-in-out both!important}
+#hero .tfw-hype-float-emoji.tfw-emoji-motion-launch{animation:tfwEmojiLaunch 1.75s cubic-bezier(.2,.75,.3,1) both!important}
+#hero .tfw-hype-float-emoji.tfw-emoji-motion-party{animation:tfwEmojiParty 1.75s ease-in-out both!important}
+#hero .tfw-hype-float-emoji.tfw-emoji-motion-sway{animation:tfwEmojiSway 1.75s ease-in-out both!important}
+#hero .tfw-hype-float-emoji.tfw-emoji-motion-heartbeat{animation:tfwEmojiHeartbeat 1.75s ease-in-out both!important}
 @keyframes tfwReactionFloat{
   0%{opacity:0;transform:translate3d(0,28px,0) scale(.55)}
   16%{opacity:1;transform:translate3d(0,0,0) scale(1.08)}
@@ -639,4 +639,23 @@ html.tfw-streamer-mode .tfw-hype-float-name{display:none!important}
 @media(prefers-reduced-motion:reduce){
   #hero .tfw-hype-float{animation:tfwReactionReduced 1.5s linear both!important}
   #hero .tfw-hype-float-emoji[class*="tfw-emoji-motion-"]{animation:none!important}
+}
+
+/* The Web Animations API owns visual motion for freshly emitted reactions.
+   Old cascade-heavy CSS animations cannot replace its keyframes anymore. */
+#hero .tfw-hype-float.tfw-reaction-waapi,
+#hero .tfw-hype-float.tfw-reaction-waapi .tfw-hype-float-emoji{
+ animation:none!important;
+}
+#hero .tfw-hype-float.tfw-reaction-waapi{
+ transform-origin:center center;
+ contain:layout style;
+}
+#hero .tfw-hype-float.tfw-reaction-waapi .tfw-hype-float-emoji{
+ transform-origin:center 60%;
+ backface-visibility:hidden;
+}
+@media(prefers-reduced-motion:reduce){
+ #hero .tfw-hype-float{animation:tfwReactionReduced 1.75s linear both!important}
+ #hero .tfw-hype-float-emoji[class*="tfw-emoji-motion-"]{animation:none!important}
 }

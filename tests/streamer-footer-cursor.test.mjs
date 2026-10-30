@@ -71,6 +71,8 @@ test('Live reactions have distinct GPU animation families and reduced-motion fal
   assert.match(css,new RegExp('tfwEmoji'+kind[0].toUpperCase()+kind.slice(1)));
   assert.ok(js.includes("'"+kind+"'"));
  }
- assert.match(js,/setTimeout\(\(\)=>node\.remove\(\),1500\)/);
+ assert.match(js,/animateReaction\(node,e,emojiMotion\[item\.emoji\]\)/);
+ assert.match(js,/setTimeout\(\(\)=>node\.remove\(\),REACTION_DURATION\+60\)/);
+ assert.match(js,/glyph\.animate\(reactionMotionFrames\[kind\]/);
  assert.match(css,/prefers-reduced-motion:reduce/);
 });

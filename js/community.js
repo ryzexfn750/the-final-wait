@@ -328,6 +328,74 @@ async function initCommunity(){
     '🔥':'flame','🚀':'launch','🥳':'party','🎉':'party',
     '🌴':'sway','🩷':'heartbeat','💜':'heartbeat'
   };
+  // Run each reaction through the Web Animations API, independently of
+  // legacy stylesheet animation declarations that previously competed.
+  // CSS keyframes remain the fallback for engines without Element.animate().
+  const REACTION_DURATION=1750;
+  const reactionMotionFrames={
+    flame:[
+      {transform:'translate3d(0,12px,0) rotate(-18deg) scale(.55)',offset:0},
+      {transform:'translate3d(0,-12px,0) rotate(16deg) scale(1.34)',offset:.23},
+      {transform:'translate3d(0,1px,0) rotate(-14deg) scale(.96)',offset:.48},
+      {transform:'translate3d(0,-11px,0) rotate(13deg) scale(1.15)',offset:.74},
+      {transform:'translate3d(0,-18px,0) rotate(-7deg) scale(.82)',offset:1}
+    ],
+    launch:[
+      {transform:'translate3d(-25px,29px,0) rotate(-38deg) scale(.4)',offset:0},
+      {transform:'translate3d(5px,-9px,0) rotate(17deg) scale(1.35)',offset:.27},
+      {transform:'translate3d(-4px,0,0) rotate(-12deg) scale(1)',offset:.53},
+      {transform:'translate3d(30px,-32px,0) rotate(30deg) scale(.82)',offset:1}
+    ],
+    party:[
+      {transform:'rotate(-43deg) scale(.4)',offset:0},
+      {transform:'rotate(34deg) scale(1.35)',offset:.22},
+      {transform:'rotate(-26deg) scale(.91)',offset:.45},
+      {transform:'rotate(23deg) scale(1.15)',offset:.71},
+      {transform:'rotate(-8deg) scale(.82)',offset:1}
+    ],
+    sway:[
+      {transform:'rotate(-32deg) scale(.5)',offset:0},
+      {transform:'rotate(23deg) scale(1.2)',offset:.25},
+      {transform:'rotate(-19deg) scale(.97)',offset:.51},
+      {transform:'rotate(17deg) scale(1.09)',offset:.76},
+      {transform:'rotate(-10deg) scale(.86)',offset:1}
+    ],
+    heartbeat:[
+      {transform:'rotate(-10deg) scale(.5)',offset:0},
+      {transform:'rotate(8deg) scale(1.39)',offset:.20},
+      {transform:'rotate(0) scale(.91)',offset:.35},
+      {transform:'rotate(-8deg) scale(1.28)',offset:.51},
+      {transform:'rotate(5deg) scale(.99)',offset:.66},
+      {transform:'rotate(0) scale(.82)',offset:1}
+    ]
+  };
+  function animateReaction(node,glyph,kind){
+    if(typeof node.animate!=='function'||typeof glyph.animate!=='function')return false;
+    if(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches)return false;
+    const drift=node.style.getPropertyValue('--drift')||'0px';
+    const frames=[
+      {opacity:0,transform:'translate3d(0,38px,0) scale(.45)',offset:0},
+      {opacity:1,transform:'translate3d(0,0,0) scale(1.14)',offset:.17},
+      {opacity:1,transform:'translate3d(0,-20px,0) scale(1)',offset:.42},
+      {opacity:1,transform:'translate3d('+drift+',-49px,0) scale(1)',offset:.78},
+      {opacity:0,transform:'translate3d('+drift+',-92px,0) scale(.75)',offset:1}
+    ];
+    // Disable only the old CSS animations on this particular live node;
+    // WAAPI animations retain control of opacity/transform without conflicts.
+    node.classList.add('tfw-reaction-waapi');
+    try{
+      node.animate(frames,{duration:REACTION_DURATION,fill:'both',
+        easing:'cubic-bezier(.2,.65,.28,1)'});
+      glyph.animate(reactionMotionFrames[kind]||reactionMotionFrames.party,{
+        duration:REACTION_DURATION,fill:'both',easing:'ease-in-out'
+      });
+      return true;
+    }catch(error){
+      node.classList.remove('tfw-reaction-waapi');
+      console.warn('Reaction animation fallback:',error);
+      return false;
+    }
+  }
   function animate(entries){
     if(!layer||document.hidden)return;
     for(const item of entries.slice(-6)){
@@ -347,9 +415,19 @@ async function initCommunity(){
       node.appendChild(e);
       if(!document.documentElement.classList.contains('tfw-streamer-mode'))node.appendChild(name);
       layer.appendChild(node);
+      animateReaction(node,e,emojiMotion[item.emoji]);
       while(layer.children.length>14)layer.firstElementChild.remove();
-      setTimeout(()=>node.remove(),1500);
+      setTimeout(()=>node.remove(),REACTION_DURATION+60);
     }
+  }
+  // Local-only QA diagnostic. Never sends a reaction or bypasses server cooldown.
+  // Example in the preview's developer console: __tfwPreviewHypeReaction('🥳')
+  if(communityPreview){
+    window.__tfwPreviewHypeReaction=emoji=>{
+      if(!member()||!EMOJIS.includes(emoji)||!layer)return false;
+      animate([{emoji,nickname:state.profile.nickname}]);
+      return true;
+    };
   }
   function updateHype(counts){
     if(!rail)return;

@@ -336,7 +336,7 @@ test('Login text trimmed and reaction positions avoid countdown controls',()=>{
   assert.match(client,/\.hero-title-wrap/);
   assert.match(client,/\.release-hud/);
   assert.match(client,/\.finale-release/);
-  assert.match(client,/1500/);
+  assert.match(client,/REACTION_DURATION\+60/);
   assert.match(client,/fill\.style\.height/);
 });
 
