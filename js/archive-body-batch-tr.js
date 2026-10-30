@@ -1,0 +1,117 @@
+/* Hand-reviewed Turkish editorial translations. Preserve English fallback for all other articles. */
+(()=>{
+ const source=window.__tfwArchiveBodyEnglish||{};
+ const locale=(window.__tfwArchiveBodyLocales||{}).tr;
+ if(!locale)return;
+ const records={
+  "intel:cal-hampton": [
+    "Cal, Leonida'ya alışılmadık bir pencereden bakmamızı sağlıyor: Sahil Güvenlik telsizi, tarayıcıda gizli sekmeler, komplo teorileri ve daha büyük hedefleri olan dostu Jason.",
+    "Cal Hampton, Jason'ın arkadaşı ve Brian'ın birlikte çalıştığı kişilerden biri. Rockstar'a göre kendini en güvende evinde, yanında biraları ve internette açık sayısız sekme varken Sahil Güvenlik haberleşmesini dinlerken hissediyor.",
+    "LEONIDA'YA BAŞKA BİR AÇIDAN BAKMAK",
+    "Cal'in karakter tanıtımı, çağdaş Florida kültüründen esinlenen absürt ve paranoyak yönü öne çıkarıyor. Onun dünya görüşü, GTA VI'nın Leonida'yı yalnızca bir mekân değil, kendine özgü toplumsal dokusu olan bir yer olarak hissettirmesine yardımcı oluyor.",
+    "Keys bölgesindeki Jason'ın çevresiyle bağlantılı resmî GTA VI ekran görüntüsü.",
+    "JASON İLE ARASINDAKİ FARK",
+    "Rockstar'a göre Cal, 'Amerika'nın en dip noktasında' yaşamaktan memnun; Jason ise çok daha büyük planlar yapıyor. Bu fark, arkadaşlıkları için hem gerilim hem de mizah kaynağı olabilir.",
+    "THE FINAL WAIT · EDİTÖRYAL YORUM",
+    "LEONIDA'NIN BİLGİ KÜLTÜRÜNE AÇILAN PENCERE",
+    "Cal'in resmî tanıtımı, evde geçirdiği zamanı sıra dışı bir ayrıntıyla anlatıyor. Dinlemek, internette gezinmek, içmek ve dünyayı rahat bir mesafeden yorumlamak onun alışkanlıklarına belirgin bir ritim veriyor. Bu ayrıntı önemli. Cal yalnızca 'komplo teorisyeni' etiketinden ibaret değil; zaman geçirme ve kime güveneceğine karar verme biçimini temsil ediyor. Bize göre bu alışkanlıklar, oyunun geniş kültürel ortamını tek bir kişi üzerinden görünür kılabilir.",
+    "Sahil Güvenlik ayrıntısı, kişiliğini Keys bölgesine de bağlıyor. Karşımızda tropik bir ortama taşınmış sıradan bir internet paranoyası yok. Takip ettiği bilgilerin yerel bir bağlamı var; çıkardığı sonuçlar ise tartışmalı olabilir. Onu ilginç kılan, işe yarayabilecek bir bilgiye sahip olmakla bu bilgiyi güvenilir biçimde yorumlamak arasındaki fark. Bir şeylerin yaşandığını bilmek, neden yaşandığını anlamakla aynı şey değil.",
+    "CAL HAMPTON — resmî GTA VI medya koleksiyonundan.",
+    "AYNI GELECEĞİN PEŞİNDE OLMAYAN BİR DOST",
+    "Jason'ın daha kolay bir hayat arzulaması, Cal'in mevcut düzeninden memnun oluşuyla hemen karşıtlık kuruyor. İki insan aynı çevreyi ve tanıdıkları paylaşsa bile aynı hedeflere sahip olmayabilir. Biri uzaklaşmak için fırsat görürken diğeri kalmanın tanıdık sıkıntılarını tercih edebilir. Bu, Cal'in Jason'a yardım mı edeceğini yoksa engel mi olacağını söylemiyor; ancak ilişkilerine basit bir bilgi alışverişinden fazlasını katıyor.",
+    "Yan karakterler çoğu zaman başkahramanın farklı tepkiler vermesini sağladıkları için akılda kalır. Bir dost gösterişi boşa çıkarabilir, kötü bir kararı normalleştirebilir ya da kişinin geride bırakmaya çalıştığı eski hâlini hatırlatabilir. Bunlar doğrulanmış olaylar listesi değil, gelecekteki sahneleri yorumlamanın olası yolları. Cal, daha oyun çıkmadan Jason'ın görev bekleyen yalnız bir kahramandan ziyade çevresi olan biri olduğunu hissettiriyor.",
+    "İNSAN ÖLÇEĞİNDE HİCİV",
+    "Grand Theft Auto'nun hicvi, davranışların içine yerleştiğinde daha keskin olur. Her tuhaf rastlantıyı kanıt sayan biri komik olabilir; fakat bu kesinlik bir dostluğu veya kararı etkilediğinde şaka daha anlamlı hâle gelir. Cal, bilginin bol olduğu ama özgüvenin anlayışın önüne geçebildiği bir dünyayı küçük ölçekte anlatma olanağı sunuyor. Bunun için oynanabilir, karmaşık bir sosyal medya sistemi varsaymaya gerek yok.",
+    "Cal'in tanıtımına dönerken Rockstar'ın gerçekten anlattıklarıyla hayranların bu alışkanlıklardan çıkardığı ihtimalleri ayırmak gerekiyor. Haberleşmeyi dinlemek onun karakterinin parçası; tek başına bir görev mekaniğini doğrulamaz. Bu ayrım, spekülasyonu özellik vaadine dönüştürmeden eğlenceli tutar. Asıl soru daha basit: Jason güvenebileceği birine ihtiyaç duyduğunda Cal'in dünyaya bakışı ne kadar işe yarayacak?"
+  ],
+  "intel:vice-city-hustle": [
+    "GTA VI'nın müzik dünyası, Boobie Ike, Dre'Quan Priest ve Real Dimez aracılığıyla suç ekonomisine ve gece hayatına doğrudan bağlanıyor.",
+    "Boobie Ike, sokaktan kazandığı parayı gayrimenkul, striptiz kulübü ve kayıt stüdyosunu kapsayan bir imparatorluğa dönüştürmüş bir Vice City efsanesi. Rockstar onu, iş konuşulmaya başlayana kadar karizmatik biri olarak tanıtıyor.",
+    "SADECE ONLY RAW RECORDS",
+    "Dre'Quan Priest, sokakta para kazanmaya çalışırken bile hep müziğe yönelmiş. Boobie ile ortaklığı ve Bae-Luxe ile Roxy'den oluşan Real Dimez'ı bünyesine katması, kulüpler, viral kültür ve şehrin kayıt sektörü arasında doğrudan bağ kuruyor.",
+    "Vice City'nin gece hayatını ve müzik dünyasını gösteren resmî GTA VI ekran görüntüsü.",
+    "BU YAN HİKÂYE NEDEN ÖNEMLİ OLABİLİR?",
+    "Karakter profilleri, Rockstar'ın eğlenceyi, sosyal medyayı, gece hayatını ve suçu birbirinden kopuk arka plan ayrıntıları olarak değil, iç içe geçen unsurlar olarak ele aldığını gösteriyor. Vice City kültürü kendi başına bir ekosistem gibi kuruluyor.",
+    "THE FINAL WAIT · EDİTÖRYAL YORUM",
+    "AYNI HIRSIN ÜÇ FARKLI AŞAMASI",
+    "Boobie Ike, Dre'Quan Priest ve Real Dimez, başarı arayışında farklı konumlarda oldukları için ilgi çekici bir üçlü oluşturuyor. Biri imparatorluğunu kurmuş, diğeri müzik sektöründe ilerlemek istiyor, sanatçıların ise geçici ilgiyi kalıcı bir kariyere dönüştürmesi gerekiyor. Bu profilleri birlikte okumak, 'müzik dünyasını' birbirine rakip ihtiyaçların oluşturduğu bir ağa dönüştürüyor. Bu, hikâyeye ilişkin editöryal bir yorum; ancak verimli bir yorum: bir hit, onu finanse eden, pazarlayan ve seslendirenler için farklı anlamlara gelebilir.",
+    "Kayıt stüdyosu özellikle anlamlı bir mekân. İtibar, para ve yaratıcı emek burada buluşuyor. Bir şarkı kolayca ortaya çıkmış gibi duyulabilir ama arkasındaki anlaşmalar hiç de kolay olmayabilir. GTA VI'nın kurgusal iş dünyası, her müzisyeni konuk oyuncuya ve her şarkıyı arka plan süsüne indirgemeden bu farkı işleyebilir.",
+    "VICE CITY HUSTLE — resmî GTA VI medya koleksiyonundan.",
+    "BİR SEYİRCİ KİTLESİ OLARAK ŞEHİR",
+    "Gece kulübü, sosyal medya akışı ve sokak köşesi dikkati farklı şekillerde toplar. Hepsi aynı kurgusal şehirde bulunduğunda yalnızca yerler listesi değil, insanların tanınmasını sağlayan yollar oluşur. Biri bir kitle için ünlüyken diğerinin gözünde tamamen görünmez olabilir. Bir başkası paraya sahip olduğu hâlde kültürel saygınlık kazanamayabilir. Görünürlük ile güç arasındaki bu fark, Vice City hikâyesi için zengin bir malzeme.",
+    "Bu nedenle karakterleri yeni bir suç planını tahmin etmekten çok, meşruiyetin nasıl sergilendiğine bakarak değerlendiriyoruz. Kusursuz görünen bir işletmenin karışık bir geçmişi olabilir. Parlak bir imaj kırılgan mali durumu gizleyebilir. Başarılı görünen bir sanatçı hâlâ sıradaki fırsata muhtaç olabilir. Bu gerilimler, tüm hikâye ayrıntılarının çıkış öncesinde açıklanmasını gerektirmeden dünyayı güncel hissettiriyor.",
+    "KURGUSAL MÜZİK, GERÇEK İŞ BİRLİKLERİ",
+    "Gerçek dünyadaki albüm kampanyası paralel bir hikâye sunuyor. Rockstar'ın resmî müzik sayfasında 34 özgün parçalık bir albüm ve Travis Scott, Rauw Alejandro, Morgan Wallen ve Keith Richards gibi isimlerin bulunduğu altı erken single yer alıyor. Bu çalışma, kurgusal Only Raw Records'un hedeflerinden ayrı; albümün büyüklüğü de oyundaki toplam şarkı sayısı sanılmamalı.",
+    "İncelenmeye değer bağ sözleşmelerde değil, yaratıcılıkta yatıyor: iki katman da müziği Leonida'nın kendini anlatma biçiminin parçası hâline getiriyor. Kurgusal kişilerin bir parça üretmeye çalıştığını öğrenirken gerçek bir tanıtım şarkısını dinliyoruz. Bu örtüşme, dünyayı kapalı bir hikâyeden çok kendi kültürel üretimi olan bir yer gibi hissettirebilir. Açık kalan soru, her gerçek sanatçının karakter olarak görünüp görünmeyeceği değil, bu iki katmanın oynanışta ne sıklıkla buluşacağı.",
+    "Oyun çıkmadan önce sanatçılara işletme sahipleriyle birlikte bakmakta fayda var. En açıklayıcı ayrıntılar, her birinin peşinde olduğu farklı başarı tanımları olabilir. Stüdyo bir hit, şehir dans edilecek bir şarkı, hırslı karakter ise ilerlemek için fırsat ister. Bu amaçlar kısa bir süre örtüşebilir ama sonsuza dek uyumlu kalmaları gerekmez."
+  ],
+  "intel:raul-bautista": [
+    "Raul Bautista, Rockstar'ın deneyimli banka soyguncusu: çekici, tecrübeli ve ekibini giderek daha tehlikeli işlere sürüklemeye daha istekli.",
+    "Rockstar, Raul'u büyük kazançlar getiren riskleri göze alacak yetenekli insanlar arayan, kendinden emin ve çekici bir banka soygunu ustası olarak tanımlıyor.",
+    "TECRÜBE, TEDBİR DEMEK DEĞİLDİR",
+    "Raul'un en dikkat çekici yönü gözü karalığı. Rockstar'a göre her soygunda risk büyüyor; sonunda çevresindekiler daha fazlasını ortaya koymakla çekip gitmek arasında seçim yapmak zorunda kalıyor.",
+    "Suç dünyasındaki geniş karakter kadrosunu gösteren resmî GTA VI ekran görüntüsü.",
+    "SOYGUN HİKÂYESİYLE DOĞAL BAĞ",
+    "Raul'un profili onu profesyonel soygunlar dünyasının içine yerleştiriyor. Ancak Rockstar henüz kaç işte rol alacağını veya ekibinin Jason ve Lucia ile zaman içinde nasıl kesişeceğini açıklamadı.",
+    "THE FINAL WAIT · EDİTÖRYAL YORUM",
+    "TECRÜBE, TEDBİR DEMEK DEĞİLDİR",
+    "Raul'un resmî profilinde beceri ile gözü karalık yan yana duruyor. Bu birleşim, basit bir tecrübeli akıl hocasından çok daha ilginç. Deneyim tehlikeyi fark etmeyi öğretebilir ama insanı ondan kurtulmakta olağanüstü iyi olduğuna da inandırabilir. Raul'a bakışımız bu gerilimle başlıyor: onu ikna edici kılan geçmiş, başkalarının kabul etmeyeceği kadar büyük riskler almasına da yol açabilir.",
+    "Bir suç hikâyesinde özgüven önemlidir, çünkü tehlikeli planların inananlara ihtiyacı vardır. Bir soygunu inandırıcı biçimde anlatabilen kişi, daha iş başlamadan etkili olur. Çevresindekilerin çözmesi gereken şey, iyi hazırlığın kanıtlarını mı yoksa her seferinde 'bu iş olacak' diyen birinin ustalaşmış sözlerini mi dinledikleridir. Rockstar'ın tanıtımı, hiçbir soygunun sonucunu açıklamadan bu belirsizliğe alan bırakıyor.",
+    "RAUL BAUTISTA — resmî GTA VI medya koleksiyonundan.",
+    "BİR SOYGUN EKİP HAKKINDA NE ANLATIR?",
+    "Bir soygunun çekiciliği, paranın el değiştirdiği anla sınırlı değil. Planlama öncelikleri açığa çıkarır. Biri daha büyük pay, biri daha az sorun, diğeri kontrol ister. Başarılı bir ekip bu hedefleri geçici de olsa uzlaştırmak zorundadır. Raul'un büyüyen risk iştahı, bizi yalnızca soygunun gösterişine değil, iş öncesindeki pazarlıklara da bakmaya çağırıyor.",
+    "Bu, belirli bir planlama arayüzünün, seçilebilir ekip sisteminin ya da dallanan görev yapısının doğrulandığı anlamına gelmez; anlatısal bir değerlendirmedir. Aynı çatışmalar önceden yazılmış sahnelerle de işlenebilir. Önemli olan, soygunun zaman baskısı altında güveni sınamasıdır. Her şey yolundayken çekici olan biri, başka biri planı sorguladığında bambaşka görünebilir.",
+    "DAHA HIZLI BİR KURTULUŞUN CAZİBESİ",
+    "Jason ile Lucia daha iyi bir hayat isteyen insanlar olarak tanıtılıyor. Usta bir banka soyguncusunun bu arayışa yakın durması doğal; büyük bir vurgun, yıllarca sürecek mücadeleyi tek bir fırsata sığdıracakmış gibi gelebilir. Nasıl karşılaşacaklarını bilmesek de Raul'un neden çekici bir teklif sunabileceğini anlayabiliyoruz. Seçenekleri sınırlı birine, tehlikeli bir teklif bile akla yatkın görünebilir.",
+    "Tehlike, bitiş çizgisinin sürekli ileri gitmesi. Başarılı bir iş sonrakini haklı gösterebilir; daha büyük ödül, daha yüksek riski sıradanlaştırabilir. Görevlerin sırasını biliyormuş gibi davranmadan Raul'un resmî tanıtımını böyle okumak mümkün. Bu, karakterler arasında tekrarlanan bir soruya da bağlanıyor: başarı özgürlük mü getirir, yoksa yeni bir yükümlülük mü?",
+    "Çıkış öncesi son incelemede Raul'un yanında kimin rahat göründüğüne, kimi ikna etmek gerektiğine dikkat edin. Karizma, tek başına var olan bir özellikten çok bir ilişki biçimidir. Bu kişiyi izlemeye değer kılan şey, başkalarının ona duyduğu güvenin kendi özgüveni kadar etkili olabilme ihtimali."
+  ],
+  "intel:vice-city": [
+    "Vice City, GTA VI'nın merkezi olarak dönüyor; ancak Rockstar'ın güncel yorumu neonlu kartpostallardan çok daha öteye, mahallelere, otoyollara, gece hayatına, lükse ve suça uzanıyor.",
+    "Rockstar, GTA VI'yı Vice City'de ve Leonida eyaletinin genelinde geçen bir hikâye olarak tanıtıyor. Şehir hâlâ plajları, kuleleri ve neonlarıyla biliniyor ama resmî materyaller, oyuncuların hatırladığı Vice City'den çok daha kapsamlı bir kentsel doku gösteriyor.",
+    "KATMAN KATMAN İNŞA EDİLMİŞ BİR ŞEHİR",
+    "Resmî ekran görüntülerinde sık köprü yolları, sahil kuleleri, eğlence bölgeleri, konut blokları, oteller, ulaşım altyapısı ve kalabalık caddeler görülüyor. Lüksle Leonida'nın daha sert yüzü arasındaki karşıtlık, Rockstar'ın sunduğu görsel kimliğin merkezinde.",
+    "Vice City'yi gösteren resmî GTA VI ekran görüntüsü.",
+    "HİKÂYE DAHA BÜYÜK BİR DÜNYADA BAŞLIYOR",
+    "Rockstar'ın güncel özetine göre kolay görünen bir iş ters gidiyor ve Jason ile Lucia'yı Leonida geneline uzanan suç komplosuna sürüklüyor. Bu nedenle Vice City haritanın tamamı değil, önemli bir merkez.",
+    "THE FINAL WAIT · EDİTÖRYAL YORUM",
+    "TANIDIK BİR İSME DÖNMEK, YENİ BİR YER KEŞFETMEK",
+    "Vice City'nin sokakları yüklenmeden bile adı beklentiler doğuruyor: ışıklar, müzik, aşırılık ve kaçışın kendine özgü bir biçimi. Çağdaş bir yorumun sınavı, bu tanıdıklığı keşfin sonu değil başlangıcı yapmak. Bize göre resmî sunumdaki silüet bir davet; şehrin gerçekten inandırıcı olması ise mahallelerine, günlük trafiğine ve gökdelenlerin altındaki insanlara bağlı.",
+    "Bir şehir birden fazla açıdan büyük hissedilebilir. Fiziksel mesafe önemlidir ama ruh hâli ve toplumsal çevrenin değişmesi de öyle. Gösterişli bir sahil şeridi ile sıradan bir alışveriş caddesi birbirine çok yakınken farklı dünyalara ait gibi durabilir. Vice City'yi düşünmek için haritasının eski oyundan ne kadar büyük olduğunu sormaktan daha zengin bir yaklaşım bu. Asıl soru, içinden geçerken nelerin değiştiğidir.",
+    "KARTPOSTAL VE ÇALIŞAN ŞEHİR",
+    "Kıyı metropollerinin en tanıdık görüntüleri, o yaşamı sürdüren emeği genellikle dışarıda bırakır. Gece hayatı; teslimatlar, bakım, ulaşım ve ziyaretçiler eğlenmeye başladığında mesaisi başlayan insanlar gerektirir. Vice City'ye bu karşıtlık üzerinden bakmak suç hikâyesini daha sağlam zemine oturtur. Servet görünürdür, onu ayakta tutan pratik sistemler de öyle. İnandırıcı bir açık dünya ikisine de yer açar.",
+    "Bu bir editöryal bakış; her hizmetin simüle edilmiş çalışma saatleri olacağı iddiası değil. Fark, lüksü yalnızca sergileyen bir yer ile onu çevresi içinde inandırıcı kılan yer arasındadır. İnsanlar nereye park eder? Yollar semtleri nasıl bağlar? Kamusal alanla özel alanı ne ayırır? Bu ayrıntılar görev hedefi olmasa da şehirde araba kullanma ve yürüme deneyimini biçimlendirir.",
+    "VICE CITY — resmî GTA VI medya koleksiyonundan.",
+    "GERÇEK FLORIDA ARAŞTIRMASI NE KATIYOR?",
+    "Game Informer'ın yakın tarihli haberleri, Rockstar'ın saha araştırmalarını dünya tasarımı tartışmasının merkezine yerleştiriyor. Haberlerde yalnızca simge yapıları değil, gece hayatını ve gündelik karşılaşmaları da kapsayan geziler anlatılıyor. Buradaki önemli nokta, Leonida'nın sadece tanınabilir turistik görüntülerden değil, gözlemlenmiş yaşamdan beslenmesi. Araştırma, kartpostalların gösteremeyeceği karşıtlıklar sunuyor.",
+    "Ardından gelen tasarım sorusu, gözlemleri içinde gezmesi keyifli bir dünyaya dönüştürmenin yolu. Bire bir doğrulukla inandırıcı atmosfer aynı şey değil. Kurgusal bir sokak mesafeleri kısaltabilir ya da bir ilham kaynağının unsurlarını yeniden düzenleyebilir ve yine de bir kentin karakterini aktarabilir. Bu yüzden en ilgi çekici karşılaştırmalar her bloğu gerçek bir adresle eşleştirmekten çok ritim ve kimlikle ilgilidir.",
+    "İLK SÜRÜŞÜNÜZ",
+    "İlk ziyaretin en güzeli belki de hedefsiz olandır. Açık yollardan dar sokaklara geçerken ışığın nasıl değiştiğini, seslerin ilgiyi nasıl çektiğini ve bir mahallenin diğerine doğal biçimde bağlanıp bağlanmadığını izleyin. Bunlar bitmiş oyunda incelenecek şeyler, belirli mekaniklerin vaadi değil. Vice City'nin en büyük fırsatı, sıradan bir yolculuğu bir sonraki görevin sürmeye devam etmek için pek çok nedenden yalnızca biri olacağı kadar akılda kalıcı kılmak."
+  ],
+  "intel:leonida-keys": [
+    "Keys, GTA VI'ya bambaşka bir tempo veriyor: açık deniz, adalar arasındaki yollar, tekne tersaneleri, marinalar ve Jason'ın hayatını doğrudan etkileyen suç geçmişi.",
+    "Rockstar'ın Leonida Keys materyallerinde deniz, köprü yolları ve ada toplulukları öne çıkıyor. Jason yerel uyuşturucu kaçakçıları için burada çalışıyor; Brian Heder de kaçakçılık işini aynı bölgede sürdürüyor.",
+    "SU DÜNYANIN SINIRI DEĞİL, BİR PARÇASI",
+    "Resmî ekran görüntülerinde tekneler, deniz uçakları, köprüler ve uzun sahil şeritleri görülüyor. Bu görüntüler Keys'i yalnızca süs niteliğinde bir kıyı değil, bağlantılı bir seyahat alanı gibi hissettiriyor.",
+    "Leonida'nın ada coğrafyasını gösteren resmî GTA VI ekran görüntüsü.",
+    "FARKLI BİR AÇIK DÜNYA",
+    "Vice City'nin yoğunluğuna karşılık Keys, uzun görüş mesafeleri, açık su ve küçük topluluklar sunuyor. Bu karşıtlık, Leonida'nın ne kadar çeşitli hissettirilmek istendiğinin en açık örneklerinden biri.",
+    "THE FINAL WAIT · EDİTÖRYAL YORUM",
+    "İKİ YANINDA SU OLAN BİR YOL",
+    "Keys, Leonida'ya kendine özgü bir coğrafya kazandırıyor. Ada zinciri hareketi belirli bir yöne yöneltebilir: sıradaki köprü, yolun devamı, karanın yeniden açıldığı bir nokta. Bu, her yöne sapılabilen şehir ızgarasından farklı. Mekâna ilişkin editöryal yorumumuz, burada yolculuğun hedef daha görünmeden bile bir ruh hâli oluşturabileceği yönünde.",
+    "Su, mesafenin anlamını değiştiriyor. İki nokta bir kanalın karşı kıyısında yakın görünebilir ama karayoluyla aralarındaki yol çok daha uzun olabilir. Bir marina, yakındaki sokakların doğrudan ulaşamadığı yerlere bağlı hissedilebilir. Bu mekânsal zıtlıklar ada bölgesini keşfetmeyi ilginç kılar. Herhangi bir kestirmeyi ya da araç erişim kuralını doğrulamaz; bölgenin tropik renklerden fazlasını sunduğunu gösterir.",
+    "TOPLUMSAL YAPISI OLAN BİR CENNET",
+    "Brian, Jason ve Cal sayesinde Keys'i sadece manzarayla değil, insanlarla da tanıyoruz. Aralarındaki bağlar işi, barınmayı, alışkanlıkları ve hedefleri coğrafyanın içine yerleştiriyor. Böylece 'güzel plajlar burada mı?' sorusundan daha anlamlı bir soru doğuyor: 'Bir insan burada nasıl bir hayat kurabilir ve bu hayat neye bağlıdır?' Koşullarını değiştirmeye çalışan insanları konu alan hikâyeye bu soru yakışıyor.",
+    "Güzel bir yer, orada yaşayan biri için kısıtlayıcı olabilir. Tanıdık yüzler güven verirken kötü bir itibardan kaçmayı zorlaştırabilir. Sakin rutin, seçilip seçilmediğine göre huzur ya da boğulmuşluk hissi verebilir. Bunlar oyuncu kadrosunu ve mekânı birlikte yorumlama biçimleridir; Keys'in Vice City'den yalnızca manzaralı bir mola değil, duygusal ağırlığı olan bir yer olabileceğini açıklıyor.",
+    "LEONIDA KEYS — resmî GTA VI medya koleksiyonundan.",
+    "DAHA YAVAŞ BİR TEMPO NEDEN DEĞERLİ?",
+    "Açık dünya, farklı dikkat hızlarına davet eden yerlerden yararlanır. Yoğun şehir bölgeleri bakışları tabelalara, trafiğe ve kalabalıklara çeker. Kıyı yolu ise ufka, hava değişimine veya sudaki harekete yöneltebilir. Karşıtlık iki ortamı da güçlendirir. Kesintisiz yoğunluk zamanla arka plan gürültüsüne dönüşür; sakin bir bölüm yeni heyecanın etkisini artırır.",
+    "Bu nedenle bölgenin çekiciliği yalnızca içerdiği etkinlik sayısıyla ölçülmemeli. Atmosfer, gezinme imkânı ve ilgi noktaları arasındaki mesafeler de önemlidir. Boş görünen bir manzara beklenti yaratıyor ya da varışı ayrılıştan farklı hissettiriyorsa değerli bir iş yapıyordur.",
+    "NELERE DİKKAT ETMELİ?",
+    "Resmî görselleri karşılaştırırken yollar, evler, çalışan kıyı tesisleri ve açık su arasındaki ilişkilere bakın. Bu bağlantılar, güzel yerlerin listesinden daha güçlü bir hikâye anlatır. Oyun çıktıktan sonra asıl sınav, Keys'in yoluyla, yakınındaki insanlarla veya ışığıyla hatırlanan yerel ritimler geliştirip geliştirmeyeceği olacak. Bunu önceden hazırlanmış bir harita değil, yaşayacağımız deneyim gösterebilir."
+  ]
+};
+ for(const [id,values] of Object.entries(records)){
+  if(Array.isArray(source[id])&&source[id].length===values.length&&values.every(x=>typeof x==='string'&&x.trim()))locale[id]=values;
+ }
+})();
