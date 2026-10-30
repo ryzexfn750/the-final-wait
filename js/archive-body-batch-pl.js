@@ -27,7 +27,7 @@
   "intel:vice-city-hustle": [
     "Scena muzyczna GTA VI łączy się bezpośrednio z przestępczym biznesem i nocnym życiem poprzez Boobiego Ike’a, Dre’Quana Priesta i Real Dimez.",
     "Boobie Ike to legenda Vice City, która zamieniła pieniądze z ulicy w imperium nieruchomości, klub ze striptizem i studio nagraniowe. Rockstar przedstawia go jako czarującego człowieka — dopóki nie zaczynają się interesy.",
-    "TYLKO ONLY RAW RECORDS",
+    "ONLY RAW RECORDS",
     "Dre’Quan Priest zawsze celował w muzykę, nawet kiedy zarabiał na ulicy. Współpraca z Boobiem i podpisanie kontraktu z Real Dimez — Bae-Luxe i Roxy — łączą kluby, kulturę wiralowych hitów i branżę nagraniową miasta.",
     "Oficjalny zrzut ekranu z GTA VI przedstawiający nocne życie i scenę muzyczną Vice City.",
     "DLACZEGO TEN WĄTEK MOŻE BYĆ WAŻNY",
