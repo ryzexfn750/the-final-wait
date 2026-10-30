@@ -290,88 +290,131 @@ async function initCommunity(){
     if(!rail)return;
     rail.classList.toggle('tfw-hype-disconnected',!state.connected);
   }
-  // A tiny reaction lane alongside HYPE LEVEL, never a full-screen shower.
-  // Subtitles, finale, registration and countdown UI remain unobstructed.
-  const REACTION_DURATION=780; // under one second, including fadeout
-  const REACTION_THROTTLE=145;
-  const MAX_VISIBLE_REACTIONS=2;
-  let lastReactionShownAt=-Infinity;
-  function randomSafePosition(){
-    const heroBox=hero.getBoundingClientRect();
+  // Every accepted emoji is queued and displayed. A strict *concurrency*
+  // budget protects the countdown, without discarding incoming reactions.
+  // Under load the flight becomes ultra-short and several emojis launch per
+  // frame, directly into the HYPE meter instead of across the whole screen.
+  const REACTION_NORMAL_MS=340;
+  const REACTION_BURST_MS=165;
+  const MAX_VISIBLE_REACTIONS=26;
+  const MAX_REACTIONS_PER_FRAME=5;
+  const reactionQueue=[];
+  const inFlight=new Set();
+  let reactionFrame=0,spawnSequence=0;
+  let totalQueued=0,totalDisplayed=0;
+  function safeLanePosition(){
+    const box=hero.getBoundingClientRect();
     const bar=meter?.getBoundingClientRect();
-    const left=bar?.width?bar.right-heroBox.left+5:Math.max(12,heroBox.width*.05);
-    const y=bar?.height?bar.top-heroBox.top+bar.height*.70:
-      Math.max(90,heroBox.height*.68);
-    // Clamp only within the side lane: never search the whole viewport.
-    return {x:Math.max(8,Math.min(left,heroBox.width*.18)),
-      y:Math.max(95,Math.min(y,heroBox.height-90))};
+    const right=bar?.width?bar.right-box.left+4:Math.max(26,box.width*.065);
+    const start=bar?.height?bar.top-box.top+bar.height*.23:box.height*.31;
+    const range=bar?.height?bar.height*.67:Math.min(220,box.height*.4);
+    // Golden-ratio staggering keeps bursts spread along the meter.
+    const frac=(spawnSequence*.61803398875)%1;
+    return {
+      x:Math.max(8,Math.min(right,box.width*.20)),
+      y:Math.max(65,Math.min(start+frac*range,box.height-55)),
+      distance:Math.min(55,Math.max(28,(bar?.width||44)+8))
+    };
   }
-  function animatedLayerAvailable(){
-    return Boolean(layer&&layer.isConnected&&!document.hidden&&
+  function reactionLayerAvailable(){
+    return Boolean(layer?.isConnected&&!document.hidden&&
       !document.documentElement.classList.contains('tfw-auth-pending')&&
       !document.documentElement.classList.contains('tfw-ticket-reveal-open')&&
-      !document.body.classList.contains('tfw-route-overlay-open')&&
-      !document.body.classList.contains('finale-last-10')&&
-      !document.body.classList.contains('finale-last-second'));
+      !document.body.classList.contains('tfw-route-overlay-open'));
   }
-  function animate(entries){
-    if(!animatedLayerAvailable()||!Array.isArray(entries))return;
-    const now=performance.now();
-    if(now-lastReactionShownAt<REACTION_THROTTLE)return;
-    // A hundred websocket reactions in one packet are reduced to ONE
-    // understated visual, while the HYPE percentage still aggregates them.
-    const item=entries.slice(-8).reverse().find(value=>
-      EMOJIS.includes(value?.emoji)&&typeof value.nickname==='string'&&
-      /^[A-Za-z0-9_]{3,20}$/.test(value.nickname));
-    if(!item)return;
-    lastReactionShownAt=now;
-    const pos=randomSafePosition();
+  function spawnReaction(item,burst){
+    const pos=safeLanePosition();
     const node=document.createElement('div');
-    node.className='tfw-hype-float tfw-hype-float-quiet';
+    node.className='tfw-hype-float tfw-hype-float-quiet tfw-hype-float-stream'+
+      (burst?' tfw-hype-float-burst':'');
     node.style.setProperty('--hx',pos.x.toFixed(1)+'px');
     node.style.setProperty('--hy',pos.y.toFixed(1)+'px');
-    node.style.setProperty('--drift','-14px');
+    node.style.setProperty('--stream-x',(-pos.distance).toFixed(1)+'px');
+    node.style.setProperty('--stream-y',(-44-spawnSequence%4*10)+'px');
+    node.style.setProperty('--stream-spin',(spawnSequence%2===0?22:-18)+'deg');
+    const duration=burst?REACTION_BURST_MS:REACTION_NORMAL_MS;
+    node.style.setProperty('--reaction-duration',duration+'ms');
     const glyph=document.createElement('span');
     glyph.className='tfw-hype-float-emoji';
     glyph.textContent=item.emoji;
     node.appendChild(glyph);
+    // Nicknames are shown only for isolated events. Floods remain discreet;
+    // Streamer Mode never reveals sender names.
     const finale=document.body.classList.contains('final-five-active')||
       document.body.classList.contains('tfw-final-call-active')||
       document.body.classList.contains('finale-released');
-    if(!finale&&!document.documentElement.classList.contains('tfw-streamer-mode')){
+    if(!burst&&!finale&&
+      !document.documentElement.classList.contains('tfw-streamer-mode')){
       const name=document.createElement('span');
-      name.className='tfw-hype-float-name';name.textContent=item.nickname;
+      name.className='tfw-hype-float-name';
+      name.textContent=item.nickname;
       node.appendChild(name);
     }
     layer.appendChild(node);
-    while(layer.childElementCount>MAX_VISIBLE_REACTIONS)
-      layer.firstElementChild.remove();
-    setTimeout(()=>node.remove(),REACTION_DURATION+20);
+    inFlight.add(node);
+    spawnSequence++;
+    totalDisplayed++;
+    setTimeout(()=>{
+      node.remove();inFlight.delete(node);
+      if(reactionQueue.length&&reactionFrame===0&&reactionLayerAvailable())
+        reactionFrame=requestAnimationFrame(drainReactions);
+    },duration+12);
   }
-  // Private preview-only stress simulator: it never sends a WebSocket
-  // message or touches server cooldown/rate limits.
+  function drainReactions(){
+    reactionFrame=0;
+    if(!reactionLayerAvailable()){
+      // Do not show or hold reactions under full-screen dialogs.
+      reactionQueue.length=0;
+      return;
+    }
+    const burst=reactionQueue.length>=12;
+    const available=Math.max(0,MAX_VISIBLE_REACTIONS-inFlight.size);
+    const count=Math.min(reactionQueue.length,MAX_REACTIONS_PER_FRAME,available);
+    for(let i=0;i<count;i++)spawnReaction(reactionQueue.shift(),burst);
+    if(reactionQueue.length)reactionFrame=requestAnimationFrame(drainReactions);
+  }
+  function animate(entries){
+    if(!reactionLayerAvailable()||!Array.isArray(entries))return;
+    for(const item of entries){
+      if(!EMOJIS.includes(item?.emoji)||
+         typeof item.nickname!=='string'||
+         !/^[A-Za-z0-9_]{3,20}$/.test(item.nickname))continue;
+      reactionQueue.push({emoji:item.emoji,nickname:item.nickname});
+      totalQueued++;
+    }
+    if(reactionQueue.length&&!reactionFrame)
+      reactionFrame=requestAnimationFrame(drainReactions);
+  }
+  // Console helpers are limited to the private QA preview. They never send
+  // WebSocket messages, influence HYPE percentage, or bypass server limits.
   if(communityPreview){
+    window.__tfwHypeStats=()=>({
+      queued:totalQueued,displayed:totalDisplayed,
+      pending:reactionQueue.length,active:inFlight.size
+    });
     window.__tfwPreviewHypeReaction=emoji=>{
       if(!EMOJIS.includes(emoji)||!layer?.isConnected)return false;
       animate([{emoji,nickname:state.profile?.nickname||'PreviewFan'}]);
       return true;
     };
     let stressTimer=0;
-    window.__tfwStressTestHype=(total=200)=>{
+    window.__tfwStressTestHype=(total=300)=>{
       if(!layer?.isConnected)return 'HYPE layer is not ready.';
       clearInterval(stressTimer);
-      const max=Math.min(600,Math.max(1,Math.floor(Number(total)||200)));
+      const max=Math.min(1500,Math.max(1,Math.floor(Number(total)||300)));
       let sent=0;
+      // Send in quick packets as a realistic broadcast would; no packet is
+      // collapsed to one reaction. Every emoji enters the visual queue.
       stressTimer=setInterval(()=>{
-        const count=Math.min(12,max-sent);
-        const batch=Array.from({length:count},(_,i)=>({
+        const count=Math.min(20,max-sent);
+        const packet=Array.from({length:count},(_,i)=>({
           emoji:EMOJIS[(sent+i)%EMOJIS.length],nickname:'LoadTestFan'
         }));
-        animate(batch);
+        animate(packet);
         sent+=count;
         if(sent>=max){clearInterval(stressTimer);stressTimer=0}
-      },75);
-      return 'Simulating '+max+' LOCAL emoji events. No network traffic.';
+      },45);
+      return 'Queued '+max+' LOCAL emoji events. No network traffic. Check __tfwHypeStats().';
     };
   }
   function updateHype(counts){
