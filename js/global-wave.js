@@ -326,12 +326,16 @@ window.addEventListener('pagehide',()=>{playing=false;globe?.pauseAnimation()});
 if(typeof ResizeObserver==='function'){
  new ResizeObserver(()=>{if(globe)resizeGlobe()}).observe(ui.stage);
 }
+let lastPaint=0;
 function frame(now){
  if(playing&&mode==='simulation'&&!document.hidden){
   simulationAt=Math.min(LATEST,playStartedTime+(now-playStartedAt)*DURATION/46000);
   if(simulationAt>=LATEST){playing=false;ui.play.textContent='▶ REPLAY THE WAVE'}
  }
- if(!document.hidden&&haveLoaded)update();
+ // Do not recalculate Intl clocks, city rows and 406 zone states at 60 FPS.
+ // Interactive globe rendering is independent of these inexpensive UI ticks.
+ const period=playing?110:1000;
+ if(!document.hidden&&haveLoaded&&now-lastPaint>=period){lastPaint=now;update()}
  requestAnimationFrame(frame);
 }
 async function start(){
