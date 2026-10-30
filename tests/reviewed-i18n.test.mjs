@@ -9,7 +9,7 @@ const locales=JSON.parse(source.match(/const data=(\{[^\n]+\});/)[1]);
 const supported=['it','fr','es','de','pt','ru','pl','ja','tr','nl','ko','zh-CN','ar'];
 test('All thirteen translated catalogues have exactly one reviewed entry per English source',()=>{
  assert.equal(keys.length,72);
- assert.equal(new Set(keys).size,64);
+ assert.equal(new Set(keys).size,keys.length);
  assert.deepEqual(Object.keys(locales).sort(),supported.sort());
  for(const [locale,values] of Object.entries(locales)){
   assert.equal(values.length,keys.length,locale);
