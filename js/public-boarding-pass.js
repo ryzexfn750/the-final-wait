@@ -1,4 +1,4 @@
-import {mountBoardingPass,attachBoardingPassActions} from './boarding-pass.js?v=1';
+import {mountBoardingPass,attachBoardingPassActions} from './boarding-pass.js?v=2';
 (async()=>{
  const holder=document.getElementById('ticketPublicHolder');
  const status=document.getElementById('ticketPublicStatus');

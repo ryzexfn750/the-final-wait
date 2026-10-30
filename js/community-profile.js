@@ -1,4 +1,4 @@
-import {mountBoardingPass,attachBoardingPassActions} from './boarding-pass.js?v=1';
+import {mountBoardingPass,attachBoardingPassActions} from './boarding-pass.js?v=2';
 /* Profile-only account actions. Confirmation dialogs are styled in-page,
    without browser-native confirmation popups or newsletter/CAPTCHA widgets. */
 const $=selector=>document.querySelector(selector);
