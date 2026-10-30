@@ -104,7 +104,7 @@ test('All translated pages use the new country and locale selector bootstrap',()
   'profile.html','newsletter.html','support.html','settings.html','streamer-overlay.html',
   'global-wave.html','ticket.html']){
   const html=read(page);
-  assert.match(html,/js\/language\.js\?v=51/,page);
+  assert.match(html,/js\/language\.js\?v=52/,page);
   assert.match(html,/js\/timezone-init\.js\?v=4/,page);
  }
  assert.match(read('index.html'),/js\/community\.js\?v=22/);
