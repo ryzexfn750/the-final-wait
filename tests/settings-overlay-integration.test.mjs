@@ -14,7 +14,7 @@ test('The QA site exposes Profile, Settings and Language in the correct order',(
   const html=read(path);
   assert.match(html,/js\/community-header\.js\?v=4/,path);
   assert.match(html,/css\/community\.css\?v=11/,path);
-  assert.match(html,/js\/seamless-navigation\.js\?v=58/,path);
+  assert.match(html,new RegExp('js/seamless-navigation\\.js\\?v='+(path==='index.html'?59:58)),path);
  }
 });
 test('Settings hub is accessible through seamless navigation and links to a live editor',()=>{
@@ -30,7 +30,7 @@ test('Settings hub is accessible through seamless navigation and links to a live
 });
 test('Every new HTML page is packaged into the Cloudflare Pages output',()=>{
  const build=read('tools/build-cloudflare-pages.mjs');
- for(const path of ['settings.html','streamer-overlay.html','stream-overlay.html']){
+ for(const path of ['settings.html','streamer-overlay.html','stream-overlay.html','map-credits.html']){
   assert.ok(build.includes("'"+path+"'"),path+' absent from publicEntries');
   assert.ok(read(path).startsWith('<!doctype html>'),path+' HTML missing');
  }

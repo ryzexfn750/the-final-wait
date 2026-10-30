@@ -115,7 +115,10 @@ test('The site exposes a dedicated route with working 3D and 2D interactions',()
  const stage=page.indexOf('id="waveMapStage"');
  const timeline=page.indexOf('class="wave-timeline-panel"');
  const mapEnd=page.indexOf('class="wave-globe-bottom"');
- assert.ok(stage>=0&&stage<timeline&&timeline<mapEnd,'The slider must remain within the map view');
+ const mapBoundary=page.indexOf('\n     </div>\n      <div class="wave-timeline-panel"',stage);
+ assert.ok(stage>=0&&mapBoundary>stage&&timeline>mapBoundary&&timeline<mapEnd,'Timeline must be directly below the map');
+ assert.match(css,/\.wave-globe-panel > \.wave-timeline-panel\{/);
+ assert.match(css,/position:relative;bottom:auto;left:auto;right:auto;/);
  const painter=read('js/global-wave-texture.js');
  assert.match(painter,/1024/);
  assert.match(painter,/fill\(path,'evenodd'\)/);
@@ -133,6 +136,29 @@ test('Homepage CTA, seamless navigation and Cloudflare publication are connected
  assert.match(build,/'global-wave\.html'/);
  for(const page of ['index.html','today.html','timeline.html','intel.html',
   'intel-archive.html','profile.html','newsletter.html','support.html','settings.html','streamer-overlay.html']){
-  assert.match(read(page),/js\/seamless-navigation\.js\?v=58/,page);
+  assert.match(read(page),new RegExp('js/seamless-navigation\\.js\\?v='+(page==='index.html'?59:58)),page);
  }
+});
+
+test('Geographic credits open a styled page and keep all dataset attributions',()=>{
+ const globe=read('global-wave.html'),credits=read('map-credits.html'),
+  style=read('css/map-credits.css'),navigation=read('js/seamless-navigation.js'),
+  deploy=read('tools/build-cloudflare-pages.mjs');
+ assert.match(globe,/href="map-credits\.html"/);
+ assert.doesNotMatch(globe,/href="content\/geo\/README\.md"/);
+ assert.match(credits,/<title>Map Data & Credits — The Final Wait<\/title>/);
+ assert.match(credits,/class="topbar article-topbar tfw-secondary-topbar"/);
+ assert.match(credits,/class="legal-copy"/);
+ assert.match(credits,/Simplified Timezone Boundaries/);
+ assert.match(credits,/Timezone Boundary Builder/);
+ assert.match(credits,/OpenStreetMap/);
+ assert.match(credits,/Open Database License \(ODbL\) 1\.0/);
+ assert.match(credits,/Globe\.GL/);
+ assert.match(credits,/not a statement of Rockstar Games/);
+ assert.match(credits,/href="global-wave\.html"/);
+ assert.match(style,/\.credits-main/);
+ assert.match(navigation,/'map-credits\.html'/);
+ assert.match(deploy,/'map-credits\.html'/);
+ for(const path of ['index.html','global-wave.html','map-credits.html'])
+  assert.match(read(path),/js\/seamless-navigation\.js\?v=59/,path);
 });
