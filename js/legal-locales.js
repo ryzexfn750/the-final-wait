@@ -37,7 +37,8 @@ window.__tfwLegalLocales={
         "Termini della community",
         "Contatti"
       ],
-      "agency": "Garante per la protezione dei dati personali"
+      "agency": "Garante per la protezione dei dati personali",
+      "privacyLabel": "Informativa sulla privacy della community"
     },
     "terms": {
       "title": "Termini di servizio della community",
