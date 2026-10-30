@@ -20,8 +20,8 @@ test('The hype UI is independent of the countdown and load-gated',()=>{
 test('The community assets are available on all standalone routes',()=>{
   for(const path of ['index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html']){
     const page=read(path);
-    assert.match(page,/js\/community\.js\?v=(?:17|18|19)/);
-    assert.match(page,/css\/community\.css\?v=12/);
+    assert.match(page,/js\/community\.js\?v=(?:17|18|19|20)/);
+    assert.match(page,/css\/community\.css\?v=(?:12|13)/);
   }
   const build=read('tools/build-cloudflare-pages.mjs');
   assert.match(build,/include:\['\/api\/timezone','\/api\/community\/\*','\/ticket\/\*'\]/);
@@ -331,7 +331,7 @@ test('UI polish preserves nav position, visible registration cursor and foot-onl
 test('Login text trimmed and reaction positions avoid countdown controls',()=>{
   const client=read('js/community.js');
   assert.doesNotMatch(client,/COMMUNITY ACCESS|Your email is private|Sign in with Google to enter the site/);
-  assert.match(client,/function randomSafePosition\(\)/);
+  assert.match(client,/function safeLanePosition\(\)/);
   assert.match(client,/getBoundingClientRect\(\)/);
   assert.match(client,/const bar=meter\?\.getBoundingClientRect\(\)/);
   assert.match(client,/MAX_VISIBLE_REACTIONS=26/);
