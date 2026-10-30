@@ -19,7 +19,7 @@ test('Secondary pages share centered navigation, volume, Share modal and dark la
     'js/secondary-controls.js?v=48',
     'js/secondary-share.js?v=46',
     'js/page-ready.js?v=47',
-    'js/seamless-navigation.js?v=55',
+    'js/seamless-navigation.js?v=56',
     'css/site-polish.css?v=54'
    ])assert.ok(html.includes(asset),name+' '+asset);
    assert.ok(html.includes('gtranslate_wrapper language-widget'));

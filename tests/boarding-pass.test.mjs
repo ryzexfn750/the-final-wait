@@ -121,12 +121,13 @@ test('Profile-only placement, no public sign-in and Cloudflare routing all work 
  const profile=read('profile.html'),client=read('js/community-profile.js'),page=read('ticket.html');
  const share=read('js/public-boarding-pass.js'),router=read('functions/ticket/[id].js');
  const build=read('tools/build-cloudflare-pages.mjs');
- assert.match(profile,/id="profileTicketCanvas"/);
- assert.match(profile,/id="profileTicketActions"/);
- assert.match(profile,/css\/boarding-pass\.css\?v=2/);
+ assert.match(profile,/id="profileTicketLink"/);
+ assert.match(profile,/id="profileTicketCode"/);
+ assert.doesNotMatch(profile,/id="profileTicketCanvas"/);
+ assert.match(profile,/css\/boarding-pass\.css\?v=3/);
  assert.match(client,/fetch\('\/api\/community\/boarding-pass'/);
- assert.match(client,/mountBoardingPass\(/);
- assert.match(client,/attachBoardingPassActions\(/);
+ assert.match(client,/open.href=publicTicketUrl\(pass\)/);
+ assert.doesNotMatch(client,/mountBoardingPass\(/);
  assert.match(page,/id="ticketPublicHolder"/);
  assert.match(page,/id="ticketPublicActions"/);
  assert.match(page,/VERIFIED BY THE FINAL WAIT/);
@@ -141,4 +142,54 @@ test('Profile-only placement, no public sign-in and Cloudflare routing all work 
  const js=read('js/boarding-pass.js');
  for(const name of ['DOWNLOAD TICKET PNG','DOWNLOAD STORY PNG','SHARE ON X','SHARE ON REDDIT','INSTAGRAM','TIKTOK','COPY VERIFIED LINK'])
   assert.ok(js.includes(name),name);
+});
+
+test('Detail page has consistent navigation, audio, translation, and distinct share panels',()=>{
+ const html=read('ticket.html'),js=read('js/boarding-pass.js'),css=read('css/boarding-pass.css');
+ for(const id of ['tfwPageShare','tfwPageFullscreen','soundButton','mobileSoundButton','tfwPageMenu','tfwPageDrawer','profileTicketLink']){
+  if(id==='profileTicketLink')assert.match(read('profile.html'),new RegExp('id="'+id+'"'));
+  else assert.match(html,new RegExp('id="'+id+'"'));
+ }
+ for(const asset of ['js/audio-controls.js','js/secondary-controls.js',
+  'js/secondary-share.js','js/language.js','js/seamless-navigation.js'])
+  assert.ok(html.includes(asset),asset);
+ assert.match(html,/gtranslate_wrapper language-widget/);
+ assert.match(html,/<base href="\/">/);
+ assert.doesNotMatch(html,/Every boarding pass is unique/);
+ assert.doesNotMatch(read('js/public-boarding-pass.js'),/Authenticity checked against an active The Final Wait community account/);
+ assert.match(js,/DOWNLOAD YOUR TICKET/);
+ assert.match(js,/SHARE THE EXPERIENCE/);
+ assert.match(js,/destination=downloads/);
+ assert.match(js,/destination=socials/);
+ assert.match(css,/\.tfw-ticket-action-panel/);
+ assert.match(css,/#ticketVerified\[hidden\]/);
+});
+test('Ticket artwork uses denser spacing, one verification mark and SVG barcode',()=>{
+ const src=read('js/boarding-pass.js'),css=read('css/boarding-pass.css');
+ assert.doesNotMatch(src,/EXCLUSIVE COMMUNITY COLLECTIBLE/);
+ assert.doesNotMatch(src,/✦ VERIFIED PASSENGER/);
+ assert.match(src,/✓ VERIFIED PASSENGER/);
+ assert.match(src,/document\.createElementNS\(ns,'svg'\)/);
+ assert.match(src,/function drawBarcode\(ctx,code,x,y,width,height\)/);
+ assert.match(css,/min-height:350px!important/);
+ for(const item of ['function drawTicketTall','function drawTicketWide'])
+  assert.ok(src.includes(item),item);
+});
+test('Registration runs a one-time ticket reveal, with exit, reduced motion and safe fallback',()=>{
+ const src=read('js/community.js'),intro=read('js/ticket-reveal.js');
+ const css=read('css/ticket-reveal.css');
+ assert.match(src,/const firstRegistration=!state\.profile\?\.nickname/);
+ assert.match(src,/if\(firstRegistration\)/);
+ assert.match(src,/import\('\.\/ticket-reveal\.js\?v=1'\)/);
+ assert.match(src,/api\('GET','boarding-pass'\)/);
+ assert.match(intro,/export async function showTicketReveal\(loadTicket\)/);
+ assert.match(intro,/mountBoardingPass\(holder,pass\)/);
+ assert.match(intro,/tfw-reveal-printing/);
+ assert.match(intro,/tfw-reveal-complete/);
+ assert.match(intro,/setTimeout\(\(\)=>overlay\.remove\(\)/);
+ assert.match(intro,/tfw-reveal-skip/);
+ assert.match(intro,/tfw-reveal-continue/);
+ assert.match(intro,/tfw-reveal-open/);
+ assert.match(css,/@keyframes tfwRevealPrint/);
+ assert.match(css, /prefers-reduced-motion:reduce/);
 });
