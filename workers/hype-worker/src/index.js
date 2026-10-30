@@ -90,8 +90,10 @@ export class HypeRoom extends DurableObject {
     if(this.lastByUser.size>12_000)
       this.lastByUser.delete(this.lastByUser.keys().next().value);
     this.pending.set(input.emoji,(this.pending.get(input.emoji)||0)+1);
+    // Preserve every accepted reaction until the next flush. Previously the
+    // server retained only six items, preventing clients from ever seeing
+    // the rest. The existing per-account cooldown still limits ingestion.
     this.latest.push({emoji:input.emoji,nickname:session.nick});
-    if(this.latest.length>6)this.latest.shift();
     ws.send(JSON.stringify({type:'reaction_ack',emoji:input.emoji,cooldown:interval}));
     this.scheduleFlush();
   }
@@ -121,12 +123,21 @@ export class HypeRoom extends DurableObject {
   flush(){
     const clients=this.ctx.getWebSockets();
     const counts=Object.fromEntries(this.pending);
-    const latest=this.latest.slice(-6);
+    const latest=this.latest;
     this.pending.clear();this.latest=[];
-    const packet=JSON.stringify({type:'hype',counts,latest,online:clients.length,cooldown:cooldownFor(clients.length),
-      at:Date.now()});
+    // Chunk reaction history to keep each WebSocket frame compact. Send the
+    // state/counts once, then all additional accepted reactions in order.
+    const chunkSize=100,at=Date.now();
+    const primary=JSON.stringify({type:'hype',counts,latest:latest.slice(0,chunkSize),
+      online:clients.length,cooldown:cooldownFor(clients.length),at});
+    const following=[];
+    for(let i=chunkSize;i<latest.length;i+=chunkSize)
+      following.push(JSON.stringify({type:'hype_reactions',latest:latest.slice(i,i+chunkSize),at}));
     for(const client of clients){
-      try{client.send(packet)}catch{}
+      try{
+        client.send(primary);
+        for(const packet of following)client.send(packet);
+      }catch{}
     }
     this.lastBroadcast=Date.now();
   }

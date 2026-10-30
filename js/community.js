@@ -512,9 +512,9 @@ async function initCommunity(){
           if(Number(msg.cooldown)>0)state.cooldown=Number(msg.cooldown);
           updateStatus();
         }
-        if(msg.type==='hype'){
+        if(msg.type==='hype'||msg.type==='hype_reactions'){
           animate(Array.isArray(msg.latest)?msg.latest:[]);
-          updateHype(msg.counts);
+          if(msg.type==='hype')updateHype(msg.counts);
         }
         if(msg.type==='slow_down'&&Number(msg.wait)>0){
           state.pendingReaction=null;
