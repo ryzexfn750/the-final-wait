@@ -722,3 +722,54 @@ html.tfw-streamer-mode .tfw-hype-float-name{display:none!important}
 }
 html.tfw-ticket-reveal-open #hero>.tfw-hype-stage,
 html.tfw-auth-pending #hero>.tfw-hype-stage{visibility:hidden}
+
+
+/* HYPE V4 — actual travel INTO the HYPE meter. High-volume bursts retain
+   EVERY accepted emoji in the animation queue, not as fullscreen overlays.
+   Subtle 24% opacity, fast vertical ascent and visible rotation. */
+#hero .tfw-hype-float.tfw-hype-float-quiet.tfw-hype-float-stream{
+ animation:tfwHypeStreamFlight var(--reaction-duration,340ms) cubic-bezier(.23,.2,.22,1) both!important;
+ transform-origin:50% 65%;
+ will-change:transform,opacity;
+ max-width:94px;
+}
+#hero .tfw-hype-float.tfw-hype-float-stream .tfw-hype-float-emoji{
+ display:inline-block;
+ font-size:19px!important;
+ filter:none!important;
+ animation:tfwHypeStreamTurn var(--reaction-duration,340ms) ease-in-out both!important;
+}
+#hero .tfw-hype-float.tfw-hype-float-stream.tfw-hype-float-burst .tfw-hype-float-emoji{
+ font-size:16px!important;
+}
+#hero .tfw-hype-float.tfw-hype-float-stream .tfw-hype-float-name{
+ color:rgba(255,232,250,.67);
+ font-size:7px;
+ opacity:.7;
+}
+@keyframes tfwHypeStreamFlight{
+ 0%{opacity:0;transform:translate3d(7px,17px,0) scale(.8) rotate(-10deg)}
+ 17%{opacity:.24;transform:translate3d(0,0,0) scale(1) rotate(-3deg)}
+ 62%{opacity:.19;transform:translate3d(calc(var(--stream-x)*.58),calc(var(--stream-y)*.65),0) scale(.85) rotate(11deg)}
+ 100%{opacity:0;transform:translate3d(var(--stream-x),var(--stream-y),0) scale(.54) rotate(var(--stream-spin))}
+}
+@keyframes tfwHypeStreamTurn{
+ 0%{transform:rotate(-17deg) scale(.82)}
+ 37%{transform:rotate(13deg) scale(1.13)}
+ 72%{transform:rotate(-9deg) scale(.96)}
+ 100%{transform:rotate(24deg) scale(.68)}
+}
+@media(max-width:700px){
+ #hero .tfw-hype-float.tfw-hype-float-stream .tfw-hype-float-emoji{font-size:15px!important}
+ #hero .tfw-hype-float.tfw-hype-float-stream.tfw-hype-float-burst .tfw-hype-float-emoji{font-size:13px!important}
+ #hero .tfw-hype-float.tfw-hype-float-stream .tfw-hype-float-name{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+ #hero .tfw-hype-float.tfw-hype-float-quiet.tfw-hype-float-stream{
+  animation:tfwHypeStreamReduced var(--reaction-duration,340ms) linear both!important
+ }
+ #hero .tfw-hype-float.tfw-hype-float-stream .tfw-hype-float-emoji{
+  animation:none!important
+ }
+ @keyframes tfwHypeStreamReduced{0%,100%{opacity:0}30%,70%{opacity:.17}}
+}
