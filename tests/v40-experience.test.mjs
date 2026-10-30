@@ -70,7 +70,7 @@ test('V40 global cursor has guaranteed viewport alignment; small logo appears in
   assert.match(css,/#shareModal \.tfw-share-brand/);
   assert.ok(html.includes('class="tfw-share-brand"'));
   for(const path of ['index.html','today.html','intel.html','timeline.html','intel-archive.html']){
-    assert.ok(read(path).includes('js/site-polish.js?v=46'),path);
+    assert.ok(read(path).includes('js/site-polish.js?v=47'),path);
   }
 });
 

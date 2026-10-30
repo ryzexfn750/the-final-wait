@@ -44,7 +44,7 @@ test('GTA-style pointer illumination runs on home and every article page',()=>{
  assert.match(script,/pointermove/);
  for(const p of ['index.html','today.html','intel.html','timeline.html']){
    const html=read(p);
-   assert.ok(html.includes('css/site-polish.css?v=52'),p);
-   assert.ok(html.includes('js/site-polish.js?v=46'),p);
+   assert.ok(html.includes('css/site-polish.css?v=53'),p);
+   assert.ok(html.includes('js/site-polish.js?v=47'),p);
  }
 });
