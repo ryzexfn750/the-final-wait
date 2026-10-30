@@ -171,7 +171,7 @@ test('First-registration reveal cannot be skipped and uses deterministic browser
  const css=read('css/ticket-reveal.css');
  assert.match(src,/const firstRegistration=!state\.profile\?\.nickname/);
  assert.match(src,/if\(firstRegistration\)/);
- assert.match(src,/import\('\.\/ticket-reveal\.js\?v=4'\)/);
+ assert.match(src,/import\('\.\/ticket-reveal\.js\?v=5'\)/);
  assert.match(src,/api\('GET','boarding-pass'\)/);
  assert.match(intro,/export async function showTicketReveal\(loadTicket\)/);
  assert.match(intro,/mountBoardingPass\(clip,pass\)/);

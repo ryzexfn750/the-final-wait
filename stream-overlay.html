@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1">
+ <meta name="robots" content="noindex,nofollow">
+ <meta name="referrer" content="no-referrer">
+ <meta name="color-scheme" content="dark">
+ <title>The Final Wait — Stream Overlay</title>
+ <link rel="stylesheet" href="css/stream-overlay.css?v=1">
+</head>
+<body>
+ <main id="streamSurface" class="stream-surface" aria-label="The Final Wait live countdown">
+  <section class="stream-widget">
+   <div class="stream-top" id="streamBrand">
+    <span class="stream-symbol">VI</span>
+    <div><strong>THE FINAL WAIT</strong><span>ROAD TO LEONIDA</span></div>
+    <span class="stream-live"><i></i> LIVE COUNTDOWN</span>
+   </div>
+   <div class="stream-kicker" id="streamKicker">YOUR JOURNEY TO LEONIDA</div>
+   <div id="streamNumbers" class="stream-numbers">
+    <div class="stream-unit"><strong id="streamDays">00</strong><small>DAYS</small></div>
+    <span class="stream-colon">:</span>
+    <div class="stream-unit"><strong id="streamHours">00</strong><small>HOURS</small></div>
+    <span class="stream-colon">:</span>
+    <div class="stream-unit"><strong id="streamMinutes">00</strong><small>MINUTES</small></div>
+    <span class="stream-colon">:</span>
+    <div class="stream-unit"><strong id="streamSeconds">00</strong><small>SECONDS</small></div>
+    <div id="streamMillis" class="stream-ms" hidden><strong>.<span id="streamMsValue">000</span></strong><small>MS</small></div>
+   </div>
+   <div class="stream-progress" id="streamProgress"><div class="stream-progress-track"><i id="streamProgressFill"></i></div><span id="streamPercent">0.00%</span></div>
+   <div class="stream-foot"><span>GTA VI · NOV 19, 2026</span><span id="streamZone">EUROPE/ROME</span></div>
+   <div id="streamReleased" class="stream-released" hidden>
+    <strong>WELCOME TO LEONIDA.</strong><span>THE WAIT IS OVER!</span>
+   </div>
+  </section>
+ </main>
+ <script type="module" src="js/stream-overlay.js?v=1"></script>
+</body>
+</html>

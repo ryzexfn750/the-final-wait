@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="theme-color" content="#100b1b">
+ <meta name="description" content="Free GTA VI countdown browser source for OBS Studio. Customize your live overlay, then copy the URL.">
+ <title>Streamer Overlay Creator — The Final Wait</title>
+ <link rel="icon" href="assets/icon-192.png">
+ <link rel="stylesheet" href="css/streamer-overlay-builder.css?v=1">
+</head>
+<body>
+ <header class="builder-header"><a href="index.html" class="builder-brand"><span class="builder-logo">VI</span><span>THE FINAL WAIT <small>ROAD TO LEONIDA</small></span></a><a href="index.html" class="builder-back">← BACK TO COUNTDOWN</a></header>
+ <main class="builder-main">
+  <div class="builder-intro"><span class="builder-eyebrow">THE FINAL WAIT · CREATOR TOOLS</span>
+   <h1>BRING LEONIDA <em>ON STREAM.</em></h1>
+   <p>Make your own live GTA VI countdown overlay. Transparent, lightweight and ready for OBS Studio. No account required.</p>
+  </div>
+  <div class="builder-grid">
+   <form class="builder-settings" id="overlaySettings">
+    <div class="builder-settings-head"><span>01 / CUSTOMIZE</span><h2>YOUR STREAM, YOUR STYLE.</h2></div>
+    <label for="overlayTheme">VISUAL STYLE</label>
+    <select id="overlayTheme" name="theme">
+     <option value="glass">Cinematic glass</option><option value="neon">Vice City neon</option><option value="minimal">Minimal / transparent</option>
+    </select>
+    <div class="builder-duo">
+     <div><label for="overlayPosition">SCREEN POSITION</label>
+      <select id="overlayPosition" name="position"><option value="bottom-left">Bottom left</option><option value="bottom-right">Bottom right</option><option value="top-left">Top left</option><option value="top-right">Top right</option><option value="bottom-center">Bottom center</option></select></div>
+     <div><label for="overlaySize">SIZE</label>
+      <select id="overlaySize" name="size"><option value="small">Compact</option><option value="medium" selected>Standard</option><option value="large">Large</option></select></div>
+    </div>
+    <label for="overlayTimezone">RELEASE TIME ZONE</label>
+    <select id="overlayTimezone" name="tz"><option value="Europe/Rome">Europe/Rome</option></select>
+    <small class="builder-tip">The timer reaches zero at midnight on November 19 in your selected time zone.</small>
+    <fieldset class="builder-toggles"><legend>DISPLAY OPTIONS</legend>
+     <label><input type="checkbox" id="overlayBrand" name="brand" checked> Show The Final Wait branding</label>
+     <label><input type="checkbox" id="overlayProgress" name="progress" checked> Show waiting progress</label>
+     <label><input type="checkbox" id="overlayMs" name="ms"> Show milliseconds (more updates)</label>
+    </fieldset>
+   </form>
+   <section class="builder-workspace">
+    <div class="builder-preview-title"><div><span>02 / LIVE PREVIEW</span><h2>SEE IT ON SCREEN.</h2></div><span class="preview-tag"><i></i> LIVE</span></div>
+    <div class="builder-preview-wrap">
+     <div id="builderPreviewStage" class="builder-preview-stage">
+      <div class="preview-safe" aria-hidden="true"></div>
+      <iframe id="builderPreview" title="Your live stream overlay preview" src="stream-overlay.html?tz=Europe%2FRome" width="1920" height="1080" loading="eager"></iframe>
+     </div>
+     <div class="preview-info"><span>16:9 CANVAS</span><span>1920 × 1080 · ALPHA TRANSPARENCY</span></div>
+    </div>
+    <div class="builder-export">
+     <div class="builder-export-label"><span>03 / CONNECT TO OBS</span><p>Copy the generated URL and add it as a Browser Source.</p></div>
+     <label for="overlayUrl">YOUR UNIQUE OVERLAY LINK</label>
+     <div class="builder-link"><input type="text" id="overlayUrl" readonly spellcheck="false" aria-label="OBS Browser Source URL"><button type="button" id="overlayCopy">COPY LINK</button></div>
+     <div class="builder-export-actions"><a href="#" id="overlayOpen" target="_blank" rel="noopener noreferrer">OPEN OVERLAY ↗</a><button type="button" id="overlayReset">RESET SETTINGS</button></div>
+     <p role="status" aria-live="polite" id="overlayFeedback"></p>
+    </div>
+   </section>
+  </div>
+  <section class="builder-howto"><span class="builder-eyebrow">QUICK SETUP</span><h2>HOW TO ADD IT TO OBS</h2>
+   <ol><li><strong>Copy your overlay link</strong><span>Customize the look above and use COPY LINK.</span></li>
+   <li><strong>Add a Browser Source</strong><span>In OBS Studio, Sources → + → Browser, then paste the URL.</span></li>
+   <li><strong>Set 1920 × 1080</strong><span>Width: 1920 · Height: 1080 · FPS: 30. The canvas stays transparent around the countdown.</span></li></ol>
+   <p>Each link includes only display preferences and a time zone. No login, password, tracking ID or stream key is ever included.</p>
+  </section>
+ </main>
+ <footer>UNOFFICIAL FAN PROJECT · NOT AFFILIATED WITH ROCKSTAR GAMES OR TAKE-TWO INTERACTIVE · <a href="index.html">THEFINALWAIT.COM</a></footer>
+ <script type="module" src="js/streamer-overlay-builder.js?v=1"></script>
+</body>
+</html>
