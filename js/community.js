@@ -1,4 +1,4 @@
-import {nicknameVerdict} from './nickname-policy.js?v=1';
+import {nicknameVerdict} from './nickname-policy.js?v=2';
 /* LIVE HYPE v2 — private QA identity gate, countdown reactions.
    Protected API routes remain enforced server-side. */
 const PUBLIC_COMMUNITY_ENABLED=false;
