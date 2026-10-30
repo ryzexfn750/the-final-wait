@@ -84,15 +84,15 @@ test('Authenticated issuance rejects guests; public verification checks live DB 
   adminApi:async()=>{count++;return {ok:true,json:async()=>sample}},
   TERMS_VERSION:'current'
  };
- const handler=new Function('d','const {enabled,fail,json,authenticate,getProfile,adminApi,TERMS_VERSION}=d;'+secure+';return onRequestGet')(deps);
+ const makeHandler=d=>new Function('d','const {enabled,fail,json,authenticate,getProfile,adminApi,TERMS_VERSION}=d;'+secure+';return onRequestGet')(d);
  const context={request:{},env:{}};
- assert.equal((await handler(context)).status,401);
+ assert.equal((await makeHandler(deps)(context)).status,401);
  assert.equal(count,0);
  deps.authenticate=async()=>({id:'abc'});
- assert.deepEqual((await handler(context)).ticket,sample);
+ assert.deepEqual((await makeHandler(deps)(context)).ticket,sample);
  assert.equal(count,1);
  deps.getProfile=async()=>({nickname:'LeonidaFan',terms_version:'old'});
- assert.equal((await handler(context)).status,403);
+ assert.equal((await makeHandler(deps)(context)).status,403);
  assert.equal(count,1);
 
  const source=read('functions/api/community/boarding-pass-public.js')
