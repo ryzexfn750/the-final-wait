@@ -34,7 +34,19 @@
   if(map&&Array.isArray(values)&&values.length===archiveEnglish.length)
    archiveEnglish.forEach((key,i)=>map.set(key,values[i]));
  }
- const sourceKeys=new Set([...english,...extraEnglish,...longEnglish,...todayEnglish,...archiveEnglish]);
+ const archiveBodyEnglish=window.__tfwArchiveBodyEnglish||{};
+ const archiveBodyLocales=window.__tfwArchiveBodyLocales||{};
+ for(const [code,articles] of Object.entries(archiveBodyLocales)){
+  const map=maps[code];
+  if(!map)continue;
+  for(const [id,values] of Object.entries(articles)){
+   const original=archiveBodyEnglish[id];
+   if(!Array.isArray(original)||!Array.isArray(values)||original.length!==values.length)continue;
+   original.forEach((source,index)=>{if(typeof source==='string'&&source&&typeof values[index]==='string'&&values[index])map.set(source,values[index])});
+  }
+ }
+ const archiveBodySources=Object.values(archiveBodyEnglish).filter(Array.isArray).flat();
+ const sourceKeys=new Set([...english,...extraEnglish,...longEnglish,...todayEnglish,...archiveEnglish,...archiveBodySources]);
  const saved=new WeakMap();
  let locale='en',observer=null,scheduled=false,applying=false;
  const ignored='script,style,noscript,textarea,pre,code,svg,option,[contenteditable="true"],.gtranslate_wrapper,.tfw-gate-language-widget';
