@@ -210,5 +210,145 @@ window.__tfwLegalLocales={
         "Contacto"
       ]
     }
+  },
+  "de": {
+    "privacy": {
+      "title": "Datenschutzhinweise für die Community",
+      "stamp": "Entwurf aktualisiert am 29. Oktober 2026 · Version 2026-10-29",
+      "notice": [
+        "Entwurf – Community-Registrierungen sind noch nicht verfügbar.",
+        "The Final Wait ist der öffentliche Name dieses unabhängigen Fanprojekts. Bevor Konten aktiviert werden, muss die rechtliche Identität der für die Verarbeitung personenbezogener Daten verantwortlichen Person oder Stelle gemäß Artikel 13 DSGVO geprüft und offengelegt werden. Diese Hinweise müssen außerdem anhand der tatsächlichen Vereinbarungen mit Dienstleistern und der Aufbewahrungseinstellungen überprüft werden."
+      ],
+      "heads": [
+        "1. Projekt und Kontakt",
+        "2. Welche Daten wir verarbeiten",
+        "3. Verarbeitungszwecke",
+        "4. Eingesetzte Dienste",
+        "5. Newsletter und Widerruf",
+        "6. Aufbewahrung",
+        "7. Deine Rechte",
+        "8. Website-Analyse und Änderungen"
+      ],
+      "body": [
+        "Öffentlicher Projektname: {site}. Bei Datenschutzfragen, Anfragen oder Problemen mit deinem Konto erreichst du uns unter {mail}. Diese E-Mail-Adresse dient als Kontaktmöglichkeit; der Projektname allein ist keine bestätigte rechtliche Identifizierung des Verantwortlichen.",
+        "Wenn du der Community beitrittst, kann der Dienst deine über Google authentifizierte E-Mail-Adresse, deine Authentifizierungskennung, den gewählten öffentlichen Nickname, die Version und den Zeitpunkt deiner Zustimmung zu den Community-Bedingungen, deine freiwillige Newsletter-Einstellung samt Einwilligungszeitpunkt, die gewählte Zeitzone sowie vorübergehende Informationen für Live-Reaktionen verarbeiten. Google und die Hosting- beziehungsweise Sicherheitsanbieter können technische Verbindungs- und Sicherheitsdaten nach ihren eigenen Richtlinien gesondert verarbeiten.",
+        "Wir verlangen nicht, dass Community-Mitglieder ihren echten Namen veröffentlichen. Deine E-Mail-Adresse wird anderen Mitgliedern nicht angezeigt; Nickname und Live-Emoji-Reaktionen können für Teilnehmende im selben Zeitzonenraum sichtbar sein. Jedes registrierte Konto erhält außerdem eine sammelbare Bordkarte mit öffentlichem Nickname, Edition, Ticketnummer und ursprünglichem Registrierungsdatum. Wer deinen schwer zu erratenden öffentlichen Bestätigungslink besitzt, kann diese Angaben sehen. Der Link ist nicht zur Indexierung vorgesehen und funktioniert nach der Kontolöschung nicht mehr. Teile ihn nicht, wenn du diese Informationen nicht für Empfänger sichtbar machen möchtest.",
+        "Authentifizierung, Kontoverwaltung und Live-Reaktionen werden zur Bereitstellung des angeforderten Community-Dienstes verarbeitet (Artikel 6 Absatz 1 Buchstabe b DSGVO, soweit anwendbar). Sicherheit und Missbrauchsverhinderung können auf berechtigten Interessen beruhen (Artikel 6 Absatz 1 Buchstabe f), vorbehaltlich der erforderlichen Interessenabwägung. Freiwillige Ankündigungs-E-Mails erfordern eine gesonderte ausdrückliche Einwilligung (Artikel 6 Absatz 1 Buchstabe a). Die Ablehnung des Newsletters verhindert keinen Community-Zugang.",
+        "Supabase wird für die Google-Anmeldung und die Speicherung von Konten und Profilen eingesetzt; Google übernimmt die Authentifizierung; Cloudflare stellt Hosting, Sicherheitsprüfungen und die Infrastruktur für Live-Reaktionen bereit; Sender verwaltet den freiwilligen Ankündigungsverteiler. Diese Anbieter können zur Erfüllung ihrer Aufgaben personenbezogene Daten verarbeiten. Ihre Verträge, Verarbeitungsorte, Aufbewahrungsfristen und etwaige Garantien für internationale Übermittlungen müssen vor dem öffentlichen Start überprüft werden. Dieser Entwurf garantiert weder eine bestimmte Speicherregion noch einen bestimmten Übermittlungsmechanismus.",
+        "Die Anmeldung zum Verteiler ist freiwillig. Bei einer Anmeldung wird deine E-Mail-Adresse für Ankündigungen von The Final Wait an Sender weitergegeben. Du kannst die Einwilligung über den Abmeldelink in den Newslettern oder über {mail} widerrufen. Eine Newsletter-Abmeldung erfordert keine Löschung des Community-Kontos. Anfragen, die nicht mit dem E-Mail-Anbieter synchronisiert werden, müssen manuell geklärt werden, bevor weitere E-Mails an die betroffene Adresse versendet werden.",
+        "Konto- und Profildaten werden normalerweise aufbewahrt, solange das Konto aktiv ist, und sollen nach der Kontolöschung entfernt werden, soweit nicht Sicherheits-, Rechts- oder Backup-Aufbewahrungspflichten entgegenstehen. Live-Reaktionsdaten sind auf kurze Lebensdauer ausgelegt. Newsletter-Daten werden während des Abonnements und so lange aufbewahrt, wie es für den Einwilligungsnachweis oder die Beachtung von Abmeldungen erforderlich ist. Die genauen Fristen der Anbieter für Backups, Protokolle und Löschungen sind vor dem Start noch zu prüfen.",
+        "Unter den anwendbaren Voraussetzungen kannst du Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit verlangen oder bestimmten Verarbeitungen widersprechen; eine Newsletter-Einwilligung kannst du jederzeit widerrufen. Schreibe an {mail}. Du kannst dich außerdem bei der zuständigen Datenschutzaufsichtsbehörde beschweren, gegebenenfalls auch bei der {agency}.",
+        "Optionale Google-Analytics-Cookies werden nur nach ausdrücklicher Zustimmung über getrennte AKZEPTIEREN/ABLEHNEN-Schaltflächen verwendet. Sie sind weder für die Kontoerstellung noch für die Annahme der Bedingungen oder Newsletter-Abonnements erforderlich. Eine Ablehnung schränkt den Zugang zur Website nicht ein. Diese Hinweise werden vor der öffentlichen Registrierung und bei wesentlichen Änderungen der Verarbeitung aktualisiert."
+      ],
+      "button": "ANALYSE-COOKIE-EINSTELLUNGEN ÄNDERN",
+      "footer": [
+        "THE FINAL WAIT · UNABHÄNGIGES FANPROJEKT",
+        "Community-Bedingungen",
+        "Kontakt"
+      ],
+      "agency": "italienischen Datenschutzbehörde",
+      "privacyLabel": "Datenschutzhinweise für die Community"
+    },
+    "terms": {
+      "title": "Community-Nutzungsbedingungen",
+      "stamp": "Entwurf aktualisiert am 29. Oktober 2026 · Version 2026-10-29",
+      "notice": [
+        "Entwurf – für öffentliche Registrierungen noch nicht gültig.",
+        "The Final Wait ist der öffentliche Name des Projekts. Vor der Freischaltung öffentlicher Konten muss der rechtlich verantwortliche Betreiber identifiziert und müssen diese Bedingungen überprüft werden."
+      ],
+      "heads": [
+        "1. Unabhängiges Fanprojekt",
+        "2. Community-Zugang",
+        "3. Live-Reaktionen",
+        "4. Freiwillige Ankündigungs-E-Mails",
+        "5. Kontoverwaltung und Datenschutz",
+        "6. Betrieb und Änderungen",
+        "7. Kontakt"
+      ],
+      "body": [
+        "The Final Wait ist eine unabhängige, inoffizielle Fan-Website. Sie steht weder in Verbindung mit Rockstar Games oder Take-Two Interactive noch wird sie von diesen Unternehmen unterstützt oder betrieben. Grand Theft Auto und die zugehörigen Namen, Marken und offiziellen Bilder gehören ihren jeweiligen Rechteinhabern.",
+        "In der aktuellen Community-Vorschau musst du dich mit Google anmelden und einen öffentlichen Nickname wählen, um die Website zu nutzen. Deine E-Mail-Adresse wird anderen Teilnehmenden nicht veröffentlicht. Verwende keinen Nickname, mit dem du dich als andere Person, Moderator, Rockstar Games oder Website-Betreiber ausgibst. Versuche nicht, Authentifizierungs- oder Sicherheitsprüfungen zu umgehen. Jedes registrierte Konto erhält ein dekoratives, nicht übertragbares Sammlerstück von The Final Wait Airways. Es handelt sich weder um eine echte Bordkarte noch um eine Reisebuchung, ein Rockstar-Produkt oder einen Identitätsnachweis. Ein geteilter Bestätigungslink zeigt deinen Nickname und dein Registrierungsdatum. Mit der Kontolöschung verliert auch der Ticketlink seine Gültigkeit.",
+        "Live Hype ermöglicht Emoji-Reaktionen in einem Zeitzonenraum. Reaktionen können mit dem jeweiligen Nickname angezeigt werden. Automatisierter Datenverkehr, Spam, Belästigung, Sicherheitsmissbrauch und Versuche, den Dienst zu überlasten oder zu stören, sind untersagt. Reaktionen können hinsichtlich ihrer Häufigkeit begrenzt, verzögert oder bei hohem Andrang vorübergehend nicht verfügbar sein.",
+        "Newsletter-E-Mails sind vollständig freiwillig und erfordern eine gesonderte aktive Zustimmung. Du kannst sie über einen Abmeldelink oder über {mail} widerrufen, ohne dein Community-Konto zu verlieren.",
+        "Dein gewählter Nickname ist nach der Registrierung dauerhaft. Über die verfügbaren Funktionen kannst du dein Profil einsehen, freiwillige E-Mail-Einstellungen verwalten und die Kontolöschung beantragen. Schlägt eine verknüpfte Entfernung aus der Mailingliste fehl, kann weitere Unterstützung nötig sein, um das Konto sicher zu löschen. In den {privacy} findest du Informationen zur Verarbeitung personenbezogener Daten und zu deinen Rechten.",
+        "Die Community kann moderiert, zeitweise eingeschränkt oder aus Sicherheits- und Zuverlässigkeitsgründen ausgesetzt werden. Eine ununterbrochene Verfügbarkeit der Live-Reaktionen wird nicht garantiert. Der Haupt-Countdown und die Musik sind von der Community-Funktion getrennt. Wesentliche Änderungen dieser Bedingungen werden mitgeteilt, soweit erforderlich.",
+        "Öffentlicher Projektname: <strong>The Final Wait</strong>. Kontakt: {mail}. Die gesetzlich erforderlichen Angaben zur Identität des Betreibers müssen vor der Öffnung der öffentlichen Registrierung noch ergänzt werden."
+      ],
+      "footer": [
+        "THE FINAL WAIT · UNABHÄNGIGES, INOFFIZIELLES FANPROJEKT ·",
+        "Datenschutzhinweise",
+        "Kontakt"
+      ]
+    }
+  },
+  "pt": {
+    "privacy": {
+      "title": "Aviso de Privacidade da Comunidade",
+      "stamp": "Minuta atualizada em 29 de outubro de 2026 · Versão 2026-10-29",
+      "notice": [
+        "Minuta — os cadastros na comunidade ainda não estão disponíveis.",
+        "The Final Wait é o nome público deste projeto independente de fãs. Antes de habilitar as contas, a identidade jurídica da pessoa ou entidade responsável pelo tratamento de dados pessoais precisa ser confirmada e divulgada conforme o artigo 13 do RGPD. Este aviso também deve ser revisto de acordo com os contratos reais com prestadores de serviços e as configurações de retenção de dados."
+      ],
+      "heads": [
+        "1. Projeto e contato",
+        "2. Informações tratadas",
+        "3. Finalidades do tratamento",
+        "4. Serviços envolvidos",
+        "5. Newsletter e retirada do consentimento",
+        "6. Retenção de dados",
+        "7. Seus direitos",
+        "8. Análise do site e alterações"
+      ],
+      "body": [
+        "Nome público do projeto: {site}. Para dúvidas sobre privacidade, solicitações relativas aos seus dados ou ajuda com a conta, entre em contato por {mail}. Este endereço é um canal de contato; o nome do projeto, por si só, não representa a identidade jurídica verificada do controlador dos dados.",
+        "Se você entrar na comunidade, o serviço poderá tratar seu endereço de e-mail autenticado pelo Google, identificador de autenticação, apelido público escolhido, versão e horário da aceitação dos termos da comunidade, preferência opcional pela newsletter e data do consentimento, fuso horário selecionado e informações temporárias necessárias às reações ao vivo. O Google e os provedores de hospedagem e segurança também podem tratar separadamente dados técnicos de conexão e segurança de acordo com suas próprias políticas.",
+        "Não pedimos que os participantes publiquem seus nomes verdadeiros. Seu e-mail não é exibido a outros membros; seu apelido e suas reações com emojis podem ser vistos por participantes da mesma sala de fuso horário. Cada conta cadastrada também recebe um cartão de embarque colecionável com apelido público, edição, número do bilhete e data original de cadastro. Qualquer pessoa que tenha seu link público de verificação, difícil de adivinhar, poderá consultar essas informações. O link não se destina à indexação e deixará de funcionar após a exclusão da conta. Evite compartilhá-lo se não quiser expor essas informações aos destinatários.",
+        "A autenticação, a administração da conta e as reações ao vivo são tratadas para fornecer o serviço da comunidade solicitado (artigo 6.º, n.º 1, alínea b, do RGPD, quando aplicável). A segurança e a prevenção de abusos podem se basear em interesses legítimos (artigo 6.º, n.º 1, alínea f), sujeitos à necessária avaliação de ponderação. Os e-mails opcionais de novidades exigem uma escolha afirmativa e separada (consentimento, artigo 6.º, n.º 1, alínea a). Recusar a newsletter não impede o acesso à comunidade.",
+        "O Supabase é usado para integrar o login com Google e armazenar contas e perfis; o Google fornece a autenticação; o Cloudflare hospeda o site, realiza verificações de segurança e oferece a infraestrutura de reações ao vivo; o Sender gerencia a lista opcional de e-mails de novidades. Esses serviços podem tratar dados pessoais para executar suas funções. Contratos, locais de tratamento, retenção e eventuais garantias para transferências internacionais precisam ser analisados antes do lançamento público. Esta minuta não garante nenhuma região de armazenamento nem mecanismo específico de transferência.",
+        "A assinatura da lista de e-mails é opcional. Ao aceitá-la, seu endereço é enviado ao Sender para comunicados de The Final Wait. Você pode retirar seu consentimento pelo link de cancelamento incluído nas newsletters ou por {mail}. Cancelar a inscrição não exige excluir a conta da comunidade. Solicitações que não forem sincronizadas com o provedor de e-mail precisam ser resolvidas manualmente antes que qualquer outra mensagem seja enviada ao endereço.",
+        "Os registros de conta e perfil normalmente são mantidos enquanto a conta estiver ativa e devem ser removidos após sua exclusão, respeitadas as necessidades de segurança, obrigações legais e retenção de backups. Os dados de reações ao vivo são projetados para ter curta duração. As informações da newsletter são mantidas durante a assinatura e pelo tempo necessário para documentar o consentimento ou atender a pedidos de cancelamento. Os prazos exatos dos provedores para backups, logs e exclusões ainda precisam ser verificados antes do lançamento.",
+        "Conforme os requisitos aplicáveis, você pode solicitar acesso, correção, exclusão, restrição, portabilidade ou se opor a determinados tratamentos; também pode retirar o consentimento da newsletter a qualquer momento. Escreva para {mail}. É possível ainda apresentar reclamação à autoridade competente de proteção de dados, inclusive à {agency}, quando aplicável.",
+        "Os cookies opcionais do Google Analytics são usados somente após consentimento afirmativo por meio de controles separados ACEITAR/RECUSAR. Eles não são necessários para criar a conta, aceitar os termos nem assinar a newsletter. Recusá-los não limita o acesso ao site. Este aviso será atualizado antes da abertura de cadastros públicos e sempre que houver mudanças relevantes no tratamento."
+      ],
+      "button": "ALTERAR PREFERÊNCIAS DE COOKIES ANALÍTICOS",
+      "footer": [
+        "THE FINAL WAIT · PROJETO INDEPENDENTE DE FÃS",
+        "Termos da comunidade",
+        "Contato"
+      ],
+      "agency": "Autoridade Italiana de Proteção de Dados",
+      "privacyLabel": "Aviso de Privacidade da Comunidade"
+    },
+    "terms": {
+      "title": "Termos de Serviço da Comunidade",
+      "stamp": "Minuta atualizada em 29 de outubro de 2026 · Versão 2026-10-29",
+      "notice": [
+        "Minuta — ainda não válida para cadastros públicos.",
+        "The Final Wait é o nome público do projeto. Antes de disponibilizar contas ao público, é necessário identificar o operador legalmente responsável e revisar estes termos."
+      ],
+      "heads": [
+        "1. Projeto independente de fãs",
+        "2. Acesso à comunidade",
+        "3. Reações ao vivo",
+        "4. E-mails opcionais de novidades",
+        "5. Controles da conta e privacidade",
+        "6. Funcionamento e mudanças",
+        "7. Contato"
+      ],
+      "body": [
+        "The Final Wait é um site independente e não oficial feito por fãs. Não é afiliado, endossado nem operado pela Rockstar Games ou pela Take-Two Interactive. Grand Theft Auto e nomes, marcas e imagens oficiais relacionados pertencem a seus respectivos proprietários.",
+        "Na prévia atual da comunidade, você deve entrar com Google e escolher um apelido público para acessar o site. Seu e-mail não é publicado para outros participantes. Não utilize um apelido que se passe por outra pessoa, moderador, Rockstar Games ou operador do site. Não tente contornar as verificações de autenticação ou segurança. Cada conta cadastrada recebe um item decorativo colecionável e intransferível de The Final Wait Airways. Ele não é um cartão de embarque real, reserva de viagem, produto Rockstar ou documento de identidade. Um link de verificação compartilhado mostra seu apelido e data de cadastro. Excluir a conta também invalida o link do bilhete.",
+        "O Live Hype permite que participantes enviem reações com emojis a uma sala de fuso horário. As reações podem aparecer com o apelido. Tráfego automatizado, spam, assédio, abuso de segurança e tentativas de sobrecarregar ou interromper o serviço são proibidos. As reações podem ter limites de frequência, sofrer atrasos ou ficar indisponíveis em períodos de tráfego intenso.",
+        "O recebimento de e-mails da newsletter é totalmente opcional e exige uma escolha afirmativa separada. Você pode retirar essa escolha sem perder sua conta, usando o link de cancelamento ou entrando em contato por {mail}.",
+        "O apelido escolhido é permanente após o cadastro. Você pode visualizar seu perfil, gerenciar preferências opcionais de e-mail e solicitar a exclusão da conta pelos controles disponíveis. Se a remoção da lista de e-mails vinculada falhar, poderá ser necessário suporte adicional para concluir a exclusão com segurança. Consulte o {privacy} para saber como os dados pessoais são tratados e conhecer seus direitos.",
+        "A comunidade poderá passar por moderação, limites temporários ou suspensão quando necessário para a segurança e a confiabilidade do serviço. Não garantimos disponibilidade ininterrupta das reações ao vivo. A contagem regressiva principal e a música são separadas do recurso de comunidade. Mudanças relevantes nestes termos serão comunicadas quando exigido.",
+        "Nome público do projeto: <strong>The Final Wait</strong>. Contato: {mail}. Os dados de identificação legalmente exigidos do operador ainda precisam ser finalizados antes da abertura dos cadastros públicos."
+      ],
+      "footer": [
+        "THE FINAL WAIT · PROJETO INDEPENDENTE E NÃO OFICIAL DE FÃS ·",
+        "Aviso de Privacidade",
+        "Contato"
+      ]
+    }
   }
 };
