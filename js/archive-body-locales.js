@@ -295,5 +295,116 @@ window.__tfwArchiveBodyLocales={
       "OBEJRZYJ OFICJALNY ZWIASTUN",
       "Poniżej znajdują się linki do oryginalnego zwiastuna i towarzyszącej mu wiadomości Rockstar Newswire. To podstawowe źródła daty premiery, opisu fabuły i informacji o muzyce wykorzystanych w artykule."
     ]
+  },
+  "ja": {
+    "intel:jason-duval": [
+      "Rockstarはジェイソンを、犯罪、軍隊、レオニダ・キーズでの生活によって形作られた男として紹介している。彼は安定を望みながら、危険な仕事を選び続けてしまう。",
+      "ジェイソン・デュバルは詐欺師や犯罪者に囲まれて育った。Rockstarによると、彼は問題の多い少年時代から抜け出そうと軍隊に入ったものの、最終的にはレオニダ・キーズで地元の麻薬運びに関わるようになった。",
+      "ルシアと出会う前のキーズ",
+      "GTA VIの物語が始まる頃には、ジェイソンはすでにブライアン・ヘダーの世界に入り込んでいる。地元での恐喝に手を貸す代わりに、ブライアンの所有物件の一つに住むことを許されている。物語が大きく動き出す前から、レオニダの犯罪経済に組み込まれているのだ。",
+      "ジェイソンが登場するGTA VI公式スクリーンショット。",
+      "ジェイソンが重要な理由",
+      "Rockstarの説明からは矛盾が浮かび上がる。ジェイソンは楽な生活を求めているのに、周囲の人々と自分自身の選択が彼をますます危険へ引き込んでいく。ルシアとの関係こそ、この緊張から目をそらせなくなる転機のように見える。",
+      "THE FINAL WAIT · 編集部の視点",
+      "少し違う物語の出発点",
+      "ジェイソンには白紙の主人公より興味深い過去がある。彼は自分を形作った環境から一度は逃げようとしたが、軍隊は永続的な出口にならなかった。麻薬運びの仕事に戻ったことで、ルシアと出会う前から穏やかな暮らしへの希望は揺らいでいる。人物描写として見れば、これは別の人生が可能だと知ることと、実際にそれを築くことの隔たりを描く物語だ。秘密の正体や複雑なファン説を持ち出す必要はない。矛盾は公式の人物紹介にすでに存在している。",
+      "ブライアンとの取り決めは、その問題を具体的にする。住まいを得ることは義務を負うことでもある。安定を与えてくれる相手が、辞めたいはずの仕事から離れられない状況も生み出す。ジェイソンの序盤の場面を見るときは、誰が誰に恩を売り、誰が見返りを求め、いつ普通の用事が危険な仕事に変わるのかに注目したい。未公開のミッションを勝手に想像せずとも、彼の個人的事情を大きな犯罪ネットワークと結び付けて考えられる。",
+      "JASON DUVAL — GTA VI公式メディアコレクションより。",
+      "二人に残された出口は一つ？",
+      "ジェイソンとルシアの関係が魅力的なのは、二種類の緊張を同時に生み出せるからだ。強盗は二人の外側にいる人物のせいで失敗するかもしれないし、二人自身が別々のものを望むせいで失敗するかもしれない。問題を減らしたいジェイソンと、境遇を変えようとするルシアの意志は、互いを支え合うことも、逆方向へ引っ張ることもできる。これは設定に対する編集部の解釈であり、結末の予想ではない。だからこそ、プレイしたときには静かな会話がアクションシーンと同じくらい多くを語るかもしれない。",
+      "公式画像は親密さと危険を交互に映し出す。ひとときを分かち合う二人と犯罪を準備する二人は同じ人物なのに、状況によって信頼の意味が変わる。ジェイソンが銃を扱えるか、逃走車両を運転できるかだけが問題ではない。その技術で彼が何を手に入れようとしているのかが重要だ。安心、自由、金、あるいは大切な人と過ごす時間だろうか。",
+      "リークから分かること、分からないこと",
+      "2026年8月のCyberLeekに関する報道で、ジェイソンは再び注目を集めた。The Vergeは運転や飛行を含む活動を映したとされる映像を紹介している。こうした報道はゲームの情報公開の歴史の一部だが、画面上の各システムの最終的なバランス、利用可能な範囲、進行方式を確定するものではない。",
+      "この資料で最も頼りになるのは、やはり公式の人物像だ。ブライアンへの依存、問題から逃げようとした過去、ルシアとの不確かな未来を覚えておきたい。未完成版の一コマ一コマを完成版への約束と考えるよりも、はるかに確かな出発点になる。"
+    ],
+    "timeline:launch-trailer": [
+      "Rockstarは10月15日にGTA VIの公式ローンチトレーラーを公開し、Justiceの新曲とともにジェイソンとルシアへ再び焦点を当てた。",
+      "2026年10月15日、Rockstar GamesはGrand Theft Auto VIの公式ローンチトレーラーを公開した。映像はジェイソンとルシアに再び焦点を当てる。簡単に稼ぐつもりだった二人は、レオニダ全体に広がる犯罪の陰謀へ巻き込まれていく。11月19日と発表されたコンソール版発売まで約5週間となった時点で、このトレーラーは発売への道のりを示す最後の大きな節目の一つとなった。",
+      "VICE CITYの新たな姿",
+      "ローンチトレーラーは8月の長編プレゼンテーションと9月の報道ラッシュの後に公開された。レオニダの土地を改めて紹介するのではなく、ジェイソンとルシア、失敗した強盗、州全体に及ぶ犯罪の陰謀という要素を二人の物語へまとめている。Rockstarの公式説明では、互いに頼らざるを得ない関係が物語の感情的な軸になっている。単なる場所や活動のモンタージュよりも具体的な物語の予告だ。",
+      "その瞬間を彩る音楽",
+      "Rockstarは、GTA VIのオリジナルスコアに携わる電子音楽デュオJusticeの新曲がトレーラーに使われていると発表した。「Flower in a Hurricane」にはTame Impala、SZA、King Gizzard & The Lizard Wizardが参加している。さらにGrand Theft Auto VI: The Albumへの収録も確認され、最後のトレーラーと公式音楽作品の発売が結び付いた。確認されたクレジットはここまでであり、未発表のラジオ局やライセンス楽曲があることを意味しない。",
+      "10月15日が重要だった理由",
+      "ローンチトレーラーと最初の発表映像では意味が違う。2023年12月と2025年5月の映像は舞台、人物、雰囲気を示し、2026年8月にはゲームをより長く見る機会があった。10月半ばには発売予定日と具体的な予約情報も明らかになっていた。最後の大型映像は、長年の憶測と実際の発売直前の数週間をつなぐ役割を担った。",
+      "Rockstarの発表は、Grand Theft Auto VIが2026年11月19日にPlayStation 5とXbox Series X|S向けに発売予定であることを改めて示した。PC版の発売日は発表されなかった。次の段階は遠い先の新情報ではなく、近づいてきた発売そのものだという明快なメッセージだった。",
+      "年表の中での位置",
+      "それ以前の節目には初期リーク、Rockstarの公式発表、二度の延期、詳細な紹介、雑誌の特集記事などが並ぶ。10月15日はそうした出来事と11月12日予定の事前ダウンロードの間に位置する。記事執筆時点でローンチトレーラーはすでに公開済みの公式映像だが、事前ダウンロードとゲーム発売は今後の予定だった。この区別を残すことで、カウントダウン終了前も終了後も役立つ記録となる。",
+      "公式映像を見る",
+      "元のトレーラーとRockstar Newswireの告知へのリンクは以下に掲載した。発売日、あらすじ、この記事で触れた音楽クレジットについての一次情報源となる。"
+    ]
+  },
+  "tr": {
+    "intel:jason-duval": [
+      "Rockstar, Jason'ı suçun, ordunun ve Leonida Keys'in şekillendirdiği; istikrar isterken sürekli tehlikeli işler seçen bir adam olarak tanıtıyor.",
+      "Jason Duval dolandırıcıların ve suçluların arasında büyüdü. Rockstar'a göre sorunlu gençliğinden kaçmak için orduya katıldı, fakat sonunda Leonida Keys'te yerel uyuşturucu kaçakçıları için çalışmaya başladı.",
+      "LUCIA'DAN ÖNCE KEYS",
+      "GTA VI başladığında Jason çoktan Brian Heder'ın dünyasına girmiştir. Yerel haraç işlerine yardım etmesi karşılığında Brian'ın mülklerinden birinde kalmasına izin verilir. Böylece ana hikâye büyümeden önce Leonida'nın suç ekonomisinin parçası olur.",
+      "Jason'ın yer aldığı resmî GTA VI ekran görüntüsü.",
+      "JASON NEDEN ÖNEMLİ?",
+      "Rockstar'ın açıklaması çelişkiyi ortaya koyuyor: Jason kolay bir hayat istiyor ama çevresindekiler ve kendi kararları onu giderek daha büyük tehlikelere çekiyor. Lucia'yla ilişkisi, bu gerilimin artık görmezden gelinemeyeceği nokta gibi görünüyor.",
+      "THE FINAL WAIT · EDİTÖRYAL BAKIŞ",
+      "FARKLI BİR BAŞLANGIÇ NOKTASI",
+      "Jason'ın geçmişi onu boş bir sayfadan daha ilginç kılıyor. Kendisini şekillendiren çevreden bir kez kaçmayı denemiş ama ordu kalıcı bir çıkış olmamış. Yeniden uyuşturucu kaçakçıları için çalışması, Lucia ortaya çıkmadan önce sakin hayat hayalini baskı altına sokuyor. Karakter anlatısı olarak bu, farklı bir hayatın mümkün olduğunu bilmekle onu gerçekten kurabilmek arasındaki farkın hikâyesi. Gizli kimliklere veya karmaşık hayran teorilerine gerek yok: çelişki resmî tanıtımında zaten bulunuyor.",
+      "Brian'la anlaşması sorunu somutlaştırıyor. Kalacak bir yer aynı zamanda bir yükümlülük demek. Ona istikrar sağlayan kişi, bırakmak isteyebileceği işe bağımlı kalmasına da neden olabilir. Jason'ın ilk sahnelerine böyle bakmak yararlı: Kim kime iyilik yapıyor, karşılığında kim ne bekliyor ve sıradan görünen bir iş ne zaman tehlikeli hâle geliyor? Bu sorular, henüz duyurulmamış görevleri tahmin etmeden kişisel durumunu daha geniş suç ağına bağlıyor.",
+      "JASON DUVAL — resmî GTA VI medya koleksiyonundan.",
+      "İKİ İNSAN, TEK ÇIKIŞ YOLU MU?",
+      "Jason ve Lucia'nın ilişkisi aynı anda iki ayrı gerilim taşıyabilir. Bir soygun ortaklığın dışındaki insanlar yüzünden ters gidebilir; ortaklığın içindeki iki kişi farklı şeyler istediği için de bozulabilir. Jason'ın sorunlardan uzaklaşma isteği ile Lucia'nın hayatını iyileştirme kararlılığı birbirini güçlendirebilir veya onları zıt yönlere çekebilir. Bu, hikâyenin çıkış noktasına dair editöryal bir yorumdur, sonuna yönelik tahmin değil. Bu yüzden oynadığımızda sakin konuşmalar da aksiyon sahneleri kadar açıklayıcı olabilir.",
+      "Resmî görsellerin yakınlık ile tehlike arasında nasıl gidip geldiğine dikkat edin. Bir anı paylaşan çift ve suça hazırlanan çift aynı insanlardır; fakat koşullar aralarındaki güvenin anlamını değiştirir. Asıl soru Jason'ın silah kullanıp kaçış aracı sürebilmesi değildir. Bu becerilerle ne elde etmeyi umduğudur: güvenlik, özgürlük, para ya da sevdiği biriyle vakit mi?",
+      "SIZINTILAR NELERİ ANLATIR, NELERİ ANLATAMAZ?",
+      "Ağustos 2026'daki CyberLeek haberleri Jason'ı yeniden ilgi odağına taşıdı. The Verge, araç ve uçak kullanma gibi etkinliklerin gösterildiği görüntüleri aktardı. Bu haberler oyunun tanıtım geçmişinin parçasıdır; görünen her sistemin nihai dengesini, erişilebilirliğini veya ilerleyişini kanıtlamaz.",
+      "Bu dosyada en sağlam hazırlık yine resmî karakter portresidir. Jason'ın Brian'a bağımlılığını, sorunlardan kaçmak için daha önce gösterdiği çabayı ve Lucia'yla belirsiz geleceğini akılda tutun. Bunlar, tamamlanmamış bir sürümün her karesini çıkacak oyun için verilmiş söz saymaktan çok daha güçlü bir başlangıç sağlar."
+    ],
+    "timeline:launch-trailer": [
+      "Rockstar, 15 Ekim'de GTA VI'nın resmî çıkış fragmanını yayımlayarak Jason ve Lucia'yı Justice'in yeni müziği eşliğinde yeniden öne çıkardı.",
+      "15 Ekim 2026'da Rockstar Games, Grand Theft Auto VI'nın resmî çıkış fragmanını yayımladı. Yeni video yeniden Jason ve Lucia'ya odaklandı. Kolay bir vurgun yapma girişimleri onları tüm Leonida'ya yayılan bir suç komplosuna sürüklüyor. 19 Kasım'da gerçekleşeceği duyurulan konsol çıkışına yalnızca beş hafta kalmışken fragman, çıkışa giden yolun son belirgin dönüm noktalarından biri oldu.",
+      "VICE CITY'YE YENİ BİR BAKIŞ",
+      "Çıkış fragmanı, ağustostaki uzun sunum ve eylüldeki yoğun haberlerin ardından geldi. Leonida'yı yeniden bir mekân olarak tanıtmak yerine farklı unsurları ana çiftin çevresinde birleştirdi: Jason ve Lucia, ters giden bir soygun ve eyalet çapındaki suç komplosunun artan baskısı. Rockstar'ın resmî açıklaması, birbirlerine bağımlılıklarını hikâyenin duygusal eksenine yerleştiriyor. Bu, mekân ve etkinlik montajından daha somut bir anlatı vaadi.",
+      "ANIN MÜZİĞİ",
+      "Rockstar, fragmanda GTA VI'nın özgün müzikleri üzerinde çalışan elektronik müzik ikilisi Justice'in yeni bir parçasının kullanıldığını açıkladı. «Flower in a Hurricane» adlı parçada Tame Impala, SZA ve King Gizzard & The Lizard Wizard yer alıyor. Rockstar parçanın Grand Theft Auto VI: The Album'e de dahil olduğunu belirterek son fragmanı resmî müzik çıkışıyla bağladı. Doğrulanan künyeler bunlardır; henüz duyurulmamış radyolar veya lisanslı şarkılar hakkında bir şey söylemez.",
+      "15 EKİM NEDEN ÖNEMLİYDİ?",
+      "Bir çıkış fragmanı ilk tanıtımdan farklı hissettirir. Aralık 2023 ve Mayıs 2025 fragmanları ortamı, oyuncu kadrosunu ve tonu ortaya koydu; Ağustos 2026 oyuna daha uzun bir bakış sundu. Ekim ortasında oyuncular duyurulmuş çıkış tarihini ve somut ön sipariş koşullarını zaten biliyordu. Böylece son büyük video, yıllarca süren spekülasyon ile bekleyişin son birkaç haftası arasında köprü kurabildi.",
+      "Rockstar'ın duyurusu Grand Theft Auto VI'nın 19 Kasım 2026'da PlayStation 5 ve Xbox Series X|S için planlandığını yineledi. PC çıkış tarihi açıklanmadı. Mesaj açıktı: sıradaki aşama uzaktaki başka bir tanıtım değil, yaklaşan çıkışın kendisiydi.",
+      "ZAMAN ÇİZELGESİNDEKİ YERİ",
+      "Önceki dönüm noktaları uzun hazırlığı anlatıyor: ilk sızıntılar, Rockstar'ın resmî açıklamaları, iki erteleme, ayrıntılı sunum ve dergi haberleri. 15 Ekim, bunlarla 12 Kasım'da planlanan ön yükleme arasında yer alıyor. Çıkış fragmanı yayımlanmış resmî bir video iken ön yükleme ve oyun çıkışı bu yazı yayımlandığında hâlâ geleceğe yönelik planlardı. Bu farkı korumak arşivi geri sayım bitmeden de bittikten sonra da yararlı kılıyor.",
+      "RESMÎ FRAGMANI İZLE",
+      "Özgün fragmanın ve ona eşlik eden Rockstar Newswire duyurusunun bağlantıları aşağıda. Bu yazıdaki çıkış tarihi, hikâye özeti ve müzik künyeleri için birincil kaynaklar bunlardır."
+    ]
+  },
+  "nl": {
+    "intel:jason-duval": [
+      "Rockstar schetst Jason als iemand die is gevormd door misdaad, het leger en de Leonida Keys: een man die stabiliteit zoekt, maar steeds weer gevaarlijk werk aanneemt.",
+      "Jason Duval groeide op tussen oplichters en criminelen. Volgens Rockstar ging hij het leger in om aan een moeilijke jeugd te ontsnappen, maar belandde hij uiteindelijk in de Leonida Keys, waar hij voor plaatselijke drugssmokkelaars werkt.",
+      "DE KEYS VOORDAT LUCIA VERSCHIJNT",
+      "Aan het begin van GTA VI maakt Jason al deel uit van de wereld van Brian Heder. Hij mag in een van Brians panden wonen in ruil voor hulp bij plaatselijke afpersing. Daardoor zit hij al midden in de criminele economie van Leonida voordat het hoofdverhaal escaleert.",
+      "Officiële GTA VI-screenshot met Jason.",
+      "WAAROM JASON BELANGRIJK IS",
+      "Rockstars beschrijving maakt de tegenstelling duidelijk: Jason wil een gemakkelijker leven, maar de mensen om hem heen en zijn eigen keuzes trekken hem steeds dieper het gevaar in. Zijn relatie met Lucia lijkt het punt waarop die spanning niet meer te negeren valt.",
+      "THE FINAL WAIT · REDACTIONELE KIJK",
+      "EEN ANDER SOORT BEGIN",
+      "Jasons levensverhaal maakt hem interessanter dan een onbeschreven blad. Hij probeerde eerder al te ontsnappen aan de omgeving die hem vormde, maar het leger bleek geen blijvende uitweg. Zijn terugkeer naar werk voor drugssmokkelaars zet de belofte van een eenvoudig leven onder druk, nog voordat Lucia verschijnt. Als karakterverhaal gaat het over het verschil tussen weten dat een ander leven mogelijk is en dat leven daadwerkelijk opbouwen. Daarvoor is geen geheime identiteit of ingewikkelde fantheorie nodig: de tegenstelling zit al in zijn officiële introductie.",
+      "Zijn afspraak met Brian maakt het probleem concreet. Een dak boven je hoofd betekent ook verplichtingen. Dezelfde persoon die stabiliteit biedt, kan hem afhankelijk houden van werk dat hij liever achter zich laat. Dat is een bruikbare manier om Jasons eerste scènes te bekijken: wie bewijst wie een dienst, wie verwacht iets terug en wanneer wordt een schijnbaar gewone klus gevaarlijk? Die vragen verbinden zijn persoonlijke situatie met een groter crimineel netwerk zonder te raden naar nog niet onthulde missies.",
+      "JASON DUVAL — uit de officiële GTA VI-mediacollectie.",
+      "TWEE MENSEN, ÉÉN UITWEG?",
+      "Jason en Lucia zijn interessant omdat hun relatie op twee manieren spanning kan oproepen. Een overval kan mislukken door mensen buiten hun samenwerking, maar ook doordat ze binnen die samenwerking iets anders willen. Jasons verlangen naar minder problemen en Lucia's vastberadenheid haar situatie te verbeteren kunnen elkaar versterken of hen juist uit elkaar drijven. Dat is een redactionele interpretatie van de uitgangssituatie, geen voorspelling van het einde. Daarom kunnen rustige gesprekken uiteindelijk net zoveel onthullen als actiescènes.",
+      "Let erop hoe de officiële beelden intimiteit en gevaar afwisselen. Een stel dat een moment deelt en een stel dat een misdaad voorbereidt, bestaat uit dezelfde mensen. Toch verandert de context de betekenis van hun vertrouwen. De interessante vraag is niet alleen of Jason een wapen kan hanteren of een vluchtauto kan besturen, maar wat hij met die vaardigheden denkt te bereiken: zekerheid, vrijheid, geld of tijd met iemand om wie hij geeft.",
+      "WAT LEKKEN WEL EN NIET KUNNEN VERTELLEN",
+      "De berichtgeving over CyberLeek in augustus 2026 bracht Jason opnieuw in de schijnwerpers. The Verge beschreef beelden van onder andere autorijden en vliegen. Zulke berichten maken deel uit van de onthullingsgeschiedenis van de game, maar bewijzen niets over de definitieve balans, beschikbaarheid of voortgang van elk getoond systeem.",
+      "Voor dit dossier blijft het officiële personageportret de beste voorbereiding. Houd Jasons afhankelijkheid van Brian, zijn eerdere poging problemen achter zich te laten en zijn onzekere toekomst met Lucia in gedachten. Samen bieden die een veel stevigere basis dan elk beeld uit een onafgemaakte versie te behandelen als een belofte over de uiteindelijke game."
+    ],
+    "timeline:launch-trailer": [
+      "Rockstar bracht op 15 oktober de officiële lanceringstrailer van GTA VI uit, met Jason en Lucia opnieuw in de hoofdrol en nieuwe muziek van Justice.",
+      "Op 15 oktober 2026 publiceerde Rockstar Games de officiële lanceringstrailer van Grand Theft Auto VI. De nieuwe video richtte de aandacht opnieuw op Jason en Lucia. Hun poging om snel geld te verdienen sleurt hen mee in een criminele samenzwering die zich door heel Leonida uitstrekt. Met nog maar vijf weken tot de aangekondigde consolelancering op 19 november werd de trailer een van de duidelijkste laatste mijlpalen op weg naar de release.",
+      "EEN NIEUWE BLIK OP VICE CITY",
+      "De lanceringstrailer volgde op de langere presentatie in augustus en de golf aan berichtgeving in september. In plaats van Leonida opnieuw als plek te introduceren, bracht hij de verschillende verhaallijnen samen rond het centrale koppel: Jason en Lucia, een mislukte overval en de groeiende druk van een criminele samenzwering door de hele staat. Rockstars officiële beschrijving plaatst hun wederzijdse afhankelijkheid in het emotionele middelpunt. Dat is een concretere verhalende belofte dan een montage van locaties of activiteiten.",
+      "DE MUZIEK VAN HET MOMENT",
+      "Rockstar maakte bekend dat de trailer nieuwe muziek bevat van het elektronische duo Justice, dat aan de originele muziek van GTA VI werkt. In het nummer ‘Flower in a Hurricane’ zijn Tame Impala, SZA en King Gizzard & The Lizard Wizard te horen. Rockstar bevestigde ook dat het op Grand Theft Auto VI: The Album staat, waarmee de laatste trailer aan de officiële muziekrelease wordt gekoppeld. Dit zijn de bevestigde credits; ze zeggen niets over eventuele nog niet aangekondigde radiostations of gelicentieerde nummers.",
+      "WAAROM 15 OKTOBER BELANGRIJK WAS",
+      "Een lanceringstrailer voelt anders dan de eerste onthulling. De trailers uit december 2023 en mei 2025 introduceerden de omgeving, personages en sfeer, terwijl augustus 2026 een langer kijkje in de game bood. Half oktober kenden spelers de aangekondigde releasedag en concrete informatie over voorbestellen. Een laatste grote video kon daardoor de brug slaan tussen jaren van speculatie en de laatste praktische weken van wachten.",
+      "Rockstars aankondiging bevestigde opnieuw dat Grand Theft Auto VI gepland stond voor 19 november 2026 op PlayStation 5 en Xbox Series X|S. Een releasedatum voor pc werd niet aangekondigd. De boodschap was duidelijk: de volgende stap was geen verre nieuwe onthulling, maar de naderende lancering zelf.",
+      "DE PLAATS OP DE TIJDLIJN",
+      "De eerdere mijlpalen vertellen het lange verhaal: de eerste lekken, officiële Rockstar-aankondigingen, twee uitstellingen, een uitgebreide presentatie en een reeks tijdschriftartikelen. 15 oktober valt tussen die gebeurtenissen en de voor 12 november geplande preload. De lanceringstrailer was al officieel uitgebracht, terwijl preload en game-release op het moment van schrijven nog toekomstige gebeurtenissen waren. Dat onderscheid houdt het archief nuttig voor en na het einde van de aftelling.",
+      "BEKIJK DE OFFICIËLE TRAILER",
+      "Hieronder staan links naar de originele trailer en de bijbehorende Rockstar Newswire-aankondiging. Het zijn de primaire bronnen voor de releasedatum, verhaalsamenvatting en muziekcredits uit dit artikel."
+    ]
   }
 };
