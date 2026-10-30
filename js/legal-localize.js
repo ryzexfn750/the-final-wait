@@ -30,7 +30,7 @@
   const strongSite='<strong>The Final Wait</strong> (<a href="https://thefinalwait.com">thefinalwait.com</a>)';
   const support='<a href="support.html">support@thefinalwait.com</a>';
   const agency='<a href="https://www.garanteprivacy.it/">'+pack.agency+'</a>';
-  const privacy='<a href="community-privacy.html">'+(lang==='it'?'Informativa sulla privacy della community':lang==='fr'?'Politique de confidentialité de la communauté':'Community Privacy Notice')+'</a>';
+  const privacy='<a href="community-privacy.html">'+(translations[lang]?.privacy?.privacyLabel||'Community Privacy Notice')+'</a>';
   const expand=value=>value.replaceAll('{site}',strongSite).replaceAll('{mail}',support)
    .replaceAll('{agency}',agency).replaceAll('{privacy}',privacy);
   document.title=pack.title+' — The Final Wait';
