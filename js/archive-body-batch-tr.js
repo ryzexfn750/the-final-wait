@@ -27,7 +27,7 @@
   "intel:vice-city-hustle": [
     "GTA VI'nın müzik dünyası, Boobie Ike, Dre'Quan Priest ve Real Dimez aracılığıyla suç ekonomisine ve gece hayatına doğrudan bağlanıyor.",
     "Boobie Ike, sokaktan kazandığı parayı gayrimenkul, striptiz kulübü ve kayıt stüdyosunu kapsayan bir imparatorluğa dönüştürmüş bir Vice City efsanesi. Rockstar onu, iş konuşulmaya başlayana kadar karizmatik biri olarak tanıtıyor.",
-    "SADECE ONLY RAW RECORDS",
+    "ONLY RAW RECORDS",
     "Dre'Quan Priest, sokakta para kazanmaya çalışırken bile hep müziğe yönelmiş. Boobie ile ortaklığı ve Bae-Luxe ile Roxy'den oluşan Real Dimez'ı bünyesine katması, kulüpler, viral kültür ve şehrin kayıt sektörü arasında doğrudan bağ kuruyor.",
     "Vice City'nin gece hayatını ve müzik dünyasını gösteren resmî GTA VI ekran görüntüsü.",
     "BU YAN HİKÂYE NEDEN ÖNEMLİ OLABİLİR?",
