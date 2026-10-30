@@ -305,7 +305,7 @@ test('UI polish preserves nav position, visible registration cursor and foot-onl
   const header=read('js/community-header.js');
   for(const route of footerRoutes){
     const html=read(route);
-    assert.match(html,/js\/community-header\.js\?v=3/);
+    assert.match(html,/js\/community-header\.js\?v=4/);
     assert.match(html,/href="newsletter\.html"/);
     assert.match(html,/tfw-account-person/);
   }
