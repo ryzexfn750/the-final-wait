@@ -1,0 +1,117 @@
+/* Hand-reviewed Polish editorial translations. Preserve English fallback for all other articles. */
+(()=>{
+ const source=window.__tfwArchiveBodyEnglish||{};
+ const locale=(window.__tfwArchiveBodyLocales||{}).pl;
+ if(!locale)return;
+ const records={
+  "intel:cal-hampton": [
+    "Cal pozwala spojrzeć na Leonidę z nietypowej perspektywy: radio Straży Przybrzeżnej, prywatne karty przeglądarki, teorie spiskowe i przyjaciel Jason, który mierzy wyżej.",
+    "Cal Hampton jest przyjacielem Jasona i podobnie jak on współpracuje z Brianem. Według Rockstar najbezpieczniej czuje się w domu, słuchając łączności Straży Przybrzeżnej, z piwem pod ręką i otwartymi zakamarkami internetu.",
+    "LEONIDA W INNYM ŚWIETLE",
+    "Portret Cala podkreśla absurdalną, podszytą paranoją stronę kultury inspirowanej współczesną Florydą. Dzięki jego spojrzeniu Leonida jest nie tylko miejscem na mapie, lecz także społecznością o własnym charakterze.",
+    "Oficjalny zrzut ekranu z GTA VI przedstawiający otoczenie Jasona na wyspach Keys.",
+    "KONTRAST Z JASONEM",
+    "Rockstar twierdzi, że Calowi odpowiada życie na „odpływie Ameryki”, podczas gdy Jason ma większe plany. Ta różnica zapowiada zarówno napięcia, jak i komiczne sytuacje w ich przyjaźni.",
+    "THE FINAL WAIT · SPOJRZENIE REDAKCJI",
+    "OKNO NA KULTURĘ INFORMACYJNĄ LEONIDY",
+    "Oficjalny opis Cala z niezwykłą dokładnością przedstawia to, co robi w domu. Słuchanie, przeglądanie sieci, picie i interpretowanie świata z bezpiecznej odległości nadają mu rozpoznawalny rytm. To istotny szczegół. Nie jest tylko „wyznawcą teorii spiskowych”, lecz uosabia pewien sposób spędzania czasu i decydowania, komu zaufać. Naszym zdaniem jego codzienne nawyki mogą pokazać szerszą kulturę gry.",
+    "Wątek Straży Przybrzeżnej wiąże też jego osobowość z regionem Keys. To nie jest przypadkowa internetowa paranoja przeniesiona w tropikalną scenerię. Informacje, które śledzi, mają lokalny kontekst, choć jego wnioski mogą być wątpliwe. Właśnie różnica między posiadaniem przydatnych wiadomości a błędnym ich odczytaniem czyni go interesującym. Wiedzieć, że coś się dzieje, i rozumieć dlaczego, to dwie odrębne umiejętności.",
+    "CAL HAMPTON — z oficjalnej kolekcji materiałów GTA VI.",
+    "PRZYJACIEL, KTÓRY NIE MARZY O TEJ SAMEJ PRZYSZŁOŚCI",
+    "Pragnienie łatwiejszego życia u Jasona kontrastuje z przywiązaniem Cala do dotychczasowej rutyny. Dwoje ludzi może mieć tych samych znajomych i mieszkać w tym samym miejscu, a mimo to różnić się ambicjami. Jeden dostrzega szansę na wyjazd, drugi woli znane niedogodności pozostania. Nie wiemy jeszcze, czy Cal pomoże Jasonowi, czy będzie mu przeszkadzać, ale ich relacja już teraz wykracza poza zwykłą wymianę informacji.",
+    "Postacie drugoplanowe zapadają w pamięć, gdy wydobywają z bohatera inne reakcje. Przyjaciel może przebić balon przechwałek, usprawiedliwić złą decyzję albo przypomnieć o przeszłości, od której ktoś próbuje uciec. To możliwe odczytania przyszłych scen, a nie lista potwierdzonych wydarzeń. Już przed premierą Cal sugeruje, że Jason ma własne życie towarzyskie, zamiast samotnie czekać na kolejne misje.",
+    "SATYRA W LUDZKIEJ SKALI",
+    "Satyra Grand Theft Auto jest najostrzejsza wtedy, gdy przejawia się w zachowaniu. Ktoś, kto każde dziwne zrządzenie losu bierze za dowód, może śmieszyć. Dowcip staje się jednak bardziej wymowny, kiedy taka pewność wpływa na przyjaźń lub decyzję. Cal daje możliwość pokazania świata pełnego informacji, w którym przekonanie o własnej racji wyprzedza zrozumienie. Nie trzeba w tym celu zakładać istnienia rozbudowanego, grywalnego systemu mediów społecznościowych.",
+    "Wracając do jego profilu, warto oddzielić fakty podane przez Rockstar od funkcji, które fani przypisują jego zajęciom. Nasłuchiwanie komunikatów jest elementem charakterystyki Cala; samo w sobie nie potwierdza mechaniki misji. Dzięki temu spekulacje pozostają zabawą, a nie obietnicą funkcji. Najciekawsze pytanie jest prostsze: kiedy Jason będzie potrzebował kogoś niezawodnego, na ile przyda się Calowi jego spojrzenie na świat?"
+  ],
+  "intel:vice-city-hustle": [
+    "Scena muzyczna GTA VI łączy się bezpośrednio z przestępczym biznesem i nocnym życiem poprzez Boobiego Ike’a, Dre’Quana Priesta i Real Dimez.",
+    "Boobie Ike to legenda Vice City, która zamieniła pieniądze z ulicy w imperium nieruchomości, klub ze striptizem i studio nagraniowe. Rockstar przedstawia go jako czarującego człowieka — dopóki nie zaczynają się interesy.",
+    "TYLKO ONLY RAW RECORDS",
+    "Dre’Quan Priest zawsze celował w muzykę, nawet kiedy zarabiał na ulicy. Współpraca z Boobiem i podpisanie kontraktu z Real Dimez — Bae-Luxe i Roxy — łączą kluby, kulturę wiralowych hitów i branżę nagraniową miasta.",
+    "Oficjalny zrzut ekranu z GTA VI przedstawiający nocne życie i scenę muzyczną Vice City.",
+    "DLACZEGO TEN WĄTEK MOŻE BYĆ WAŻNY",
+    "Profile pokazują, jak Rockstar splata rozrywkę, media społecznościowe, nocne życie i przestępczość, zamiast traktować je jak niezależne dekoracje. Kultura Vice City staje się odrębnym ekosystemem.",
+    "THE FINAL WAIT · SPOJRZENIE REDAKCJI",
+    "TRZY ETAPY TEJ SAMEJ AMBICJI",
+    "Boobie Ike, Dre’Quan Priest i Real Dimez tworzą interesujące zestawienie, bo każdy znajduje się w innym miejscu drogi do sukcesu. Jeden zbudował imperium, drugi chce mocniej wejść do branży muzycznej, a artystki potrzebują rozgłosu, który przerodzi się w trwałą karierę. Czytane razem, te profile zamieniają „scenę muzyczną” w sieć konkurujących potrzeb. To redakcyjna interpretacja, ale użyteczna: przebój znaczy coś innego dla jego finansującego, sprzedającego i wykonawców.",
+    "Studio nagraniowe ma szczególne znaczenie jako idea. Spotykają się tam reputacja, pieniądze i praca twórcza. Utwór może brzmieć lekko, choć stojące za nim umowy wcale takie nie są. Fikcyjny biznes GTA VI może pokazać tę różnicę bez sprowadzania każdego muzyka do gościnnego występu i każdej piosenki do dekoracji.",
+    "VICE CITY HUSTLE — z oficjalnej kolekcji materiałów GTA VI.",
+    "MIASTO JAKO PUBLICZNOŚĆ",
+    "Klub nocny, kanał w mediach społecznościowych i róg ulicy skupiają uwagę na różne sposoby. Gdy istnieją w jednym fikcyjnym mieście, tworzą nie tylko listę miejsc, ale też ścieżki zdobywania rozpoznawalności. Można być sławnym dla jednej publiczności i niezauważalnym dla innej. Ktoś inny może mieć pieniądze, ale nie mieć wiarygodności w kulturze. Przepaść między widocznością a władzą to świetny temat dla opowieści o Vice City.",
+    "Dlatego patrzymy na tę obsadę nie tyle przez pryzmat zgadywania kolejnego przestępczego planu, ile obserwowania pozorów legalności. Elegancki biznes może mieć brudną przeszłość. Publiczny wizerunek może skrywać niestabilne finanse. Artysta może wyglądać na człowieka sukcesu, a wciąż potrzebować następnej okazji. Te napięcia nadają scenerii współczesny charakter bez ujawniania przed premierą całej fabuły.",
+    "FIKCYJNA MUZYKA, PRAWDZIWE WSPÓŁPRACE",
+    "Kampania promująca prawdziwy album stanowi równoległą historię. Oficjalna strona muzyczna Rockstar wymienia album z 34 oryginalnymi utworami i sześć wcześniejszych singli, z udziałem m.in. Travisa Scotta, Rauwa Alejandra, Morgana Wallena i Keitha Richardsa. To przedsięwzięcie odrębne od fikcyjnych ambicji Only Raw Records, a liczby utworów na albumie nie należy utożsamiać z całkowitą liczbą piosenek w grze.",
+    "Najciekawszy związek jest twórczy, a nie kontraktowy: oba poziomy czynią muzykę częścią tożsamości Leonidy. Słuchamy prawdziwego utworu promocyjnego, poznając fikcyjnych ludzi, którzy próbują nagrać własny. Takie nałożenie się światów może sprawić, że uniwersum będzie przypominać żywe miejsce z własną kulturą. Pytanie brzmi, jak często te wątki spotkają się w rozgrywce, a nie czy każdy realny artysta musi wystąpić jako postać.",
+    "Przed premierą warto zestawić wykonawców z właścicielami interesów. Najwięcej mogą zdradzić ich różne definicje sukcesu. Studio chce przeboju, miasto chce muzyki do tańca, a ambitna postać szuka drogi naprzód. Przez chwilę te cele mogą być wspólne, ale nie muszą pozostać zgodne na zawsze."
+  ],
+  "intel:raul-bautista": [
+    "Raul Bautista to doświadczony rabuś bankowy w świecie Rockstar: czarujący, obyty i coraz bardziej skłonny prowadzić ekipę w niebezpieczne sytuacje.",
+    "Rockstar opisuje Raula jako pewnego siebie, uroczego weterana napadów na banki, który nieustannie szuka utalentowanych ludzi gotowych podjąć ryzyko dla największych zysków.",
+    "DOŚWIADCZENIE NIE OZNACZA OSTROŻNOŚCI",
+    "Najważniejszą cechą Raula jest brawura. Według Rockstar stawka rośnie z każdym skokiem, aż jego towarzysze będą musieli zdecydować, czy zaryzykować jeszcze więcej, czy się wycofać.",
+    "Oficjalny zrzut ekranu z GTA VI przedstawiający szersze grono przestępczych postaci.",
+    "NATURALNE POWIĄZANIE Z NAPADAMI",
+    "Opis Raula wyraźnie osadza go w świecie profesjonalnych rabunków. Rockstar nie ujawniło jednak, w ilu akcjach bierze udział ani jak w trakcie fabuły jego ekipa przecina się z drogami Jasona i Lucii.",
+    "THE FINAL WAIT · SPOJRZENIE REDAKCJI",
+    "DOŚWIADCZENIE NIE OZNACZA OSTROŻNOŚCI",
+    "W oficjalnym profilu Raula kompetencja idzie w parze z brawurą. Takie zestawienie jest ciekawsze niż postać prostego mentora-weterana. Doświadczenie może nauczyć rozpoznawania niebezpieczeństw, ale może też utwierdzić kogoś w przekonaniu, że zawsze potrafi się z nich wywinąć. W tym napięciu widzimy sedno Raula: historia sukcesów, która czyni go przekonującym, może zarazem popychać do ryzyka nie do przyjęcia dla innych.",
+    "Pewność siebie jest ważna w kryminalnej opowieści, bo niebezpieczne plany potrzebują wyznawców. Ktoś, kto umie przekonująco przedstawić skok, wywiera wpływ jeszcze przed rozpoczęciem akcji. Otoczenie musi rozpoznać, czy słyszy dowody dobrego przygotowania, czy wyćwiczone słowa człowieka przekonanego, że kolejny napad na pewno się uda. Wprowadzenie Rockstar pozostawia tę niejednoznaczność bez ujawniania wyników konkretnych skoków.",
+    "RAUL BAUTISTA — z oficjalnej kolekcji materiałów GTA VI.",
+    "CO NAPAD MÓWI O EKIPIE",
+    "Siła opowieści o napadzie nie sprowadza się do chwili przejęcia pieniędzy. Przygotowania odsłaniają priorytety: ktoś chce większej wypłaty, ktoś mniej komplikacji, a ktoś inny kontroli. Sprawna ekipa musi na pewien czas pogodzić te cele. Rosnący apetyt Raula na ryzyko pozwala więc przyglądać się nie tylko widowisku, lecz także negocjacjom poprzedzającym skok.",
+    "To analiza narracyjna, nie potwierdzenie konkretnego interfejsu planowania, systemu wyboru ekipy czy rozgałęzionych misji. Te same konflikty mogą być przedstawione w zaplanowanych scenach. Istotne jest to, że napad wystawia zaufanie na próbę pod presją czasu. Czarujący bohater może wyglądać zupełnie inaczej, gdy ktoś zakwestionuje jego plan.",
+    "POKUSA SZYBKIEJ DROGI WYJŚCIA",
+    "Jason i Lucia zostają przedstawieni jako ludzie pragnący lepszego życia. Wytrawny rabuś bankowy naturalnie wpisuje się w ich otoczenie, bo duży łup może wydawać się szansą na osiągnięcie w jednej chwili tego, co normalnie wymaga lat. Jego atrakcyjność można zrozumieć nawet bez znajomości szczegółów ich spotkań. Oferta nie musi być bezpieczna, żeby wydawać się rozsądna komuś, kto ma niewiele innych możliwości.",
+    "Niebezpieczeństwo polega na tym, że meta może stale się oddalać. Jeden udany skok może uzasadniać kolejny, a większa nagroda oswajać z większym ryzykiem. W ten sposób można odczytywać oficjalny portret Raula bez udawania znajomości kolejności misji. Łączy go to też z pytaniem powracającym wśród bohaterów: czy sukces daje wolność, czy rodzi następne zobowiązanie?",
+    "Podczas ostatniego przedpremierowego seansu warto zwrócić uwagę, kto przy Raulu czuje się swobodnie, a kogo trzeba przekonywać. Urok osobisty to cecha relacji, nie oderwana właściwość. Najciekawsza jest możliwość, że zaufanie innych do Raula okaże się równie ważne jak jego własna pewność siebie."
+  ],
+  "intel:vice-city": [
+    "Vice City wraca jako centrum GTA VI, ale współczesna wersja Rockstar wykracza daleko poza neonowe pocztówki: obejmuje dzielnice mieszkalne, autostrady, kluby nocne, luksus i przestępczość.",
+    "Rockstar przedstawia GTA VI jako historię osadzoną w Vice City i całym stanie Leonida. Plaże, wieżowce i neony nadal definiują miasto, lecz oficjalne materiały pokazują znacznie bogatszą tkankę miejską niż ta zapamiętana z wcześniejszej odsłony.",
+    "MIASTO ZBUDOWANE Z WIELU WARSTW",
+    "Na oficjalnych zrzutach ekranu widać gęstą sieć dróg nad wodą, nadbrzeżne wieżowce, dzielnice rozrywki, osiedla, hotele, transport i ruchliwe ulice. Kontrast między luksusem a szorstszą stroną Leonidy stanowi ważny element prezentowanej tożsamości wizualnej.",
+    "Oficjalny zrzut ekranu z GTA VI przedstawiający Vice City.",
+    "HISTORIA ZACZYNA SIĘ W WIĘKSZYM ŚWIECIE",
+    "Według obecnego streszczenia fabuły Rockstar łatwy skok kończy się niepowodzeniem i wciąga Jasona oraz Lucię w przestępczy spisek sięgający całej Leonidy. Vice City jest więc głównym ośrodkiem, a nie całą mapą.",
+    "THE FINAL WAIT · SPOJRZENIE REDAKCJI",
+    "POWRÓT DO ZNANEJ NAZWY, ODKRYWANIE NOWEGO MIEJSCA",
+    "Vice City budzi oczekiwania, zanim wczyta się choćby jedna ulica. Nazwa przywołuje światła, muzykę, przesadę i szczególną wizję ucieczki od codzienności. Współczesna odsłona powinna uczynić z tego rozpoznania początek odkrywania, a nie jego granicę. Naszym zdaniem prezentacja Rockstar traktuje panoramę miasta jak zaproszenie; wiarygodność miejsca zależy od dzielnic, codziennego ruchu i ludzi żyjących u stóp wieżowców.",
+    "Miasto może sprawiać wrażenie dużego na kilka sposobów. Liczy się odległość, ale też zmiana nastroju i otoczenia społecznego. Luksusowe nabrzeże i zwykła ulica handlowa mogą leżeć blisko siebie, a należeć jakby do różnych światów. To ciekawszy sposób myślenia o Vice City niż pytanie, o ile większa jest jego mapa od poprzedniej. Ważne jest to, co zmienia się podczas przemieszczania się po nim.",
+    "POCZTÓWKA I MIASTO, KTÓRE PRACUJE",
+    "Najbardziej znane obrazy nadmorskiej metropolii pomijają pracę potrzebną do jej funkcjonowania. Nocne życie wymaga dostaw, napraw, transportu i ludzi, których zmiana zaczyna się wtedy, gdy goście odpoczywają. Takie spojrzenie uwiarygadnia przestępczą historię Vice City. Bogactwo jest widoczne, ale widać też mechanizmy, które je podtrzymują. Przekonujący otwarty świat daje miejsce obu stronom.",
+    "To perspektywa redakcyjna, nie obietnica symulacji harmonogramu każdej usługi. Różnica tkwi między miejscem, które jedynie pokazuje luksus, a takim, w którym luksus jest osadzony w realiach. Gdzie ludzie parkują? Jak drogi łączą dzielnice? Co oddziela przestrzeń publiczną od prywatnej? Nawet jeśli te szczegóły nie stają się celami misji, kształtują wrażenia ze spacerowania i jazdy po mieście.",
+    "VICE CITY — z oficjalnej kolekcji materiałów GTA VI.",
+    "CO WNOSI BADANIE PRAWDZIWEJ FLORYDY",
+    "Najnowsze materiały Game Informera stawiają badania terenowe Rockstar w centrum rozmowy o projektowaniu świata. Doniesienia opisują wyjazdy, które obejmowały nie tylko charakterystyczne miejsca, ale też życie nocne i codzienne spotkania. Najważniejsze jest to, że Leonida czerpie z obserwacji życia, a nie wyłącznie z zestawu turystycznych obrazków. Takie badania pozwalają uchwycić kontrasty niedostrzegalne na pocztówce.",
+    "Powstaje więc pytanie, jak przełożyć obserwacje na miejsce, po którym przyjemnie się poruszać. Dosłowna zgodność z rzeczywistością i wiarygodna atmosfera to nie to samo. Fikcyjna ulica może skrócić odległości lub przestawić elementy inspiracji, a mimo to oddawać charakter miasta. Dlatego najciekawsze porównania dotyczą często rytmu i osobowości miejsca, nie dopasowywania każdego kwartału do prawdziwego adresu.",
+    "TWÓJ PIERWSZY PRZEJAZD",
+    "Najciekawsza pierwsza wizyta może odbyć się bez celu. Zwróć uwagę, jak światło zmienia się między odkrytymi drogami a ciasnymi ulicami, jak dźwięki konkurują o uwagę i czy jedna dzielnica naturalnie przechodzi w drugą. To rzeczy, które warto sprawdzić w gotowej grze, nie obietnice konkretnych mechanik. Największą szansą Vice City jest uczynienie zwykłej przejażdżki na tyle pamiętną, by kolejna misja była tylko jednym z powodów dalszej jazdy."
+  ],
+  "intel:leonida-keys": [
+    "Keys nadają GTA VI zupełnie inny rytm: otwarta woda, drogi między wyspami, stocznie, mariny i przestępcza historia bezpośrednio wpływająca na życie Jasona.",
+    "Materiały Rockstar o Leonida Keys podkreślają wodę, mosty i wyspiarskie społeczności. To również tutaj Jason pracuje dla miejscowych przemytników narkotyków, a Brian Heder nadal prowadzi swój interes.",
+    "WODA JEST CZĘŚCIĄ ŚWIATA, NIE JEGO GRANICĄ",
+    "Oficjalne zrzuty ekranu pokazują łodzie, wodnosamoloty, mosty i długie odcinki wybrzeża. Dzięki temu Keys wyglądają na połączoną przestrzeń podróży, a nie tylko ozdobne nabrzeże.",
+    "Oficjalny zrzut ekranu z GTA VI przedstawiający wyspiarską geografię Leonidy.",
+    "INNY RODZAJ OTWARTEGO ŚWIATA",
+    "W porównaniu z gęsto zabudowanym Vice City Keys oferują dalekie widoki, otwarte wody i mniejsze społeczności. To jeden z najczytelniejszych przykładów różnorodności, którą ma odznaczać się Leonida.",
+    "THE FINAL WAIT · SPOJRZENIE REDAKCJI",
+    "DROGA OTOCZONA WODĄ",
+    "Keys nadają Leonidzie szczególną geografię. Łańcuch wysp kieruje ruchem: następny most, kolejny odcinek drogi, następne miejsce, gdzie znów otwiera się przestrzeń. To zupełnie inne doświadczenie niż miejska siatka ulic z zakrętami we wszystkich kierunkach. Z naszej perspektywy podróż w takim regionie może budować nastrój na długo przed dotarciem do celu.",
+    "Woda zmienia pojęcie odległości. Dwa punkty mogą wydawać się bliskie przez kanał, lecz drogą wymagać dłuższego objazdu. Marina może łączyć się z miejscami niedostępnymi bezpośrednio z sąsiedniej ulicy. Te różnice przestrzenne czynią wyspy ciekawym miejscem do zwiedzania. Nie potwierdzają konkretnych skrótów ani zasad dostępu dla pojazdów; pokazują jedynie, że region ma własny charakter, a nie tylko tropikalną kolorystykę.",
+    "RAJ Z WŁASNĄ HIERARCHIĄ SPOŁECZNĄ",
+    "Brian, Jason i Cal sprawiają, że Keys poznajemy nie tylko przez krajobraz, lecz także przez ludzi. Ich powiązania osadzają pracę, mieszkanie, nawyki i ambicje w tym otoczeniu. Zamiast pytać „czy są tu ładne plaże?”, warto spytać: „jakie życie można tu zbudować i od czego ono zależy?”. To pytanie pasuje do historii osób próbujących zmienić swoją sytuację.",
+    "Piękne miejsce może ograniczać tych, którzy w nim mieszkają. Znajomi zapewniają bezpieczeństwo, ale mogą utrudniać ucieczkę od reputacji. Spokojna rutyna bywa przyjemnością albo ciężarem, zależnie od tego, czy jest wyborem. To interpretacje postaci i otoczenia, jednak pomagają zrozumieć, dlaczego Keys mogą być czymś więcej niż malowniczą przerwą od Vice City.",
+    "LEONIDA KEYS — z oficjalnej kolekcji materiałów GTA VI.",
+    "WARTOŚĆ SPOKOJNIEJSZEGO RYTMU",
+    "Otwarty świat zyskuje na miejscach, które zapraszają do różnego tempa obserwacji. Gęsta dzielnica skupia wzrok na szyldach, samochodach i tłumach. Nadmorska droga pozwala patrzeć na horyzont, zmianę pogody lub ruch na wodzie. Ten kontrast wzmacnia oba środowiska. Stała intensywność z czasem staje się szumem tła; spokojny odcinek daje przestrzeń, by następne wydarzenie wybrzmiało mocniej.",
+    "Dlatego atrakcyjności regionu nie należy mierzyć wyłącznie liczbą aktywności. Liczą się także atmosfera, poruszanie się i odległości między interesującymi punktami. Pozornie pusty widok może pełnić ważną funkcję, jeśli buduje oczekiwanie lub nadaje przybyciu inne znaczenie niż wyjazdowi.",
+    "NA CO ZWRÓCIĆ UWAGĘ",
+    "Porównując oficjalne obrazy, przyjrzyj się związkom między drogami, domami, pracującymi nabrzeżami a otwartą wodą. Opowiadają one więcej niż lista malowniczych miejsc. Po premierze prawdziwym sprawdzianem będzie to, czy Keys nabiorą rozpoznawalnych lokalnych rytmów: miejsc zapamiętywanych dzięki trasie, pobliskim ludziom lub światłu. To doświadczenie do odkrycia, którego nie rozstrzygnie przedpremierowa mapa."
+  ]
+};
+ for(const [id,values] of Object.entries(records)){
+  if(Array.isArray(source[id])&&source[id].length===values.length&&values.every(x=>typeof x==='string'&&x.trim()))locale[id]=values;
+ }
+})();
