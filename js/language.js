@@ -42,19 +42,23 @@
     const value=document.cookie.split(';').map(x=>x.trim())
       .find(x=>x.startsWith('googtrans='));
     if(!value)return null;
-    const code=/\/en\/([a-z]{2})(?:$|\/)/i.exec(decodeURIComponent(value.slice(10)))?.[1]?.toLowerCase();
+    let code=null;
+    try{code=/\/en\/([a-z]{2})(?:$|\/)/i.exec(decodeURIComponent(value.slice(10)))?.[1]?.toLowerCase()}
+    catch{return null}
     return supported.has(code)?code:null;
   }
   const saved=read(STORE_LANG),mode=read(STORE_MODE);
   const legacy=mode===null?legacyChoice():null;
   let manual=mode==='manual'&&supported.has(saved)||!!legacy;
-  let current=manual?(supported.has(saved)?saved:legacy):'en';
+  let current=manual?(supported.has(saved)?saved:legacy):
+    mode==='auto'&&supported.has(saved)?saved:'en';
   let preferredAppliedTo='';
   window.__tfwPreferredSiteLanguage=()=>current;
   window.__tfwDetectedSiteLanguage=countryLanguage;
   function updateLanguage(code,userChoice=false){
     if(!supported.has(code))code='en';
     if(userChoice){manual=true;save(STORE_MODE,'manual');save(STORE_LANG,code)}
+    else if(!manual){save(STORE_MODE,'auto');save(STORE_LANG,code)}
     if(current!==code)preferredAppliedTo='';
     current=code;
     document.documentElement.lang=code;
@@ -247,7 +251,10 @@
   window.addEventListener('storage',event=>{
     if(event.key!==STORE_LANG&&event.key!==STORE_MODE)return;
     const code=read(STORE_LANG);
-    if(supported.has(code)){manual=true;current=code;applyPreferred()}
+    if(supported.has(code)){
+      manual=read(STORE_MODE)==='manual';
+      current=code;applyPreferred();
+    }
   });
   document.addEventListener('tfw:content-ready',boot,{once:true});
   window.addEventListener('load',()=>setTimeout(boot,700),{once:true});
