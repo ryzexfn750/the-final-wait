@@ -57,7 +57,8 @@
   function language(){
     const selector=document.querySelector('.gtranslate_wrapper select');
     const value=String(selector?.value||document.documentElement.lang||'en').toLowerCase();
-    return value.split('|').pop().split(/[-_]/)[0]||'en';
+    const code=value.split('|').pop().replace('_','-');
+    return code==='zh-cn'||code==='zh'?'zh-CN':code.split('-')[0]||'en';
   }
   function smoothstep(value){
     const x=Math.max(0,Math.min(1,value));
