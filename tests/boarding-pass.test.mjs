@@ -113,7 +113,7 @@ test('Profile-only placement, no public sign-in and Cloudflare routing all work 
  assert.match(profile,/id="profileTicketLink"/);
  assert.match(profile,/id="profileTicketCode"/);
  assert.doesNotMatch(profile,/id="profileTicketCanvas"/);
- assert.match(profile,/css\/boarding-pass\.css\?v=3/);
+ assert.match(profile,/css\/boarding-pass\.css\?v=4/);
  assert.match(client,/fetch\('\/api\/community\/boarding-pass'/);
  assert.match(client,/open.href=publicTicketUrl\(pass\)/);
  assert.doesNotMatch(client,/mountBoardingPass\(/);

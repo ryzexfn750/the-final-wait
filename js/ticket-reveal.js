@@ -55,6 +55,7 @@ export async function showTicketReveal(loadTicket){
   if(closed)return;
   closed=true;
   window.__tfwTicketRevealActive=false;
+  window.__tfwTicketRevealFinished=true;
   document.removeEventListener('keydown',onKeydown,true);
   overlay.classList.add('tfw-reveal-leaving');
   if(focusBefore?.isConnected)focusBefore.focus({preventScroll:true});
