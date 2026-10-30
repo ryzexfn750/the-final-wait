@@ -134,3 +134,26 @@
 /* Public verification top overline even when profile-only CSS is absent. */
 .tfw-ticket-public-header .tfw-profile-overline{font:900 10px/1.3 Arial,sans-serif;
  letter-spacing:.2em;color:#f6a8d8}
+
+/* Profile only links to the dedicated boarding-pass page. */
+.tfw-profile-ticket-link-card{display:grid!important;grid-template-columns:62px minmax(0,1fr) auto;align-items:center!important;gap:18px!important}
+.tfw-profile-ticket-symbol{width:58px;height:58px;display:grid;place-items:center;border-radius:17px;color:#ffe8fc;font-size:31px;background:linear-gradient(140deg,#ec76b5b8,#8358c69e);border:1px solid #f6b4e76e;box-shadow:0 0 36px #b965b327}
+.tfw-profile-ticket-copy{min-width:0}
+.tfw-profile-ticket-copy h2{font:900 clamp(20px,3.2vw,28px)/1.1 "Arial Black",Arial,sans-serif;letter-spacing:-.035em;margin:7px 0}
+.tfw-profile-ticket-copy p{font-size:12px;line-height:1.5;margin:0}
+.tfw-profile-ticket-meta{display:block;color:#ffc8e8;letter-spacing:.09em;font:900 9px/1.5 Arial;margin-top:11px}
+.tfw-profile-ticket-open{display:inline-flex;align-items:center;justify-content:center;gap:16px;min-height:47px;padding:12px 18px;border-radius:12px;white-space:nowrap;border:1px solid #f5b2df88;background:linear-gradient(105deg,#be4ea3,#7f4eb0);color:#fff;text-decoration:none;letter-spacing:.09em;font:900 10px/1.3 Arial;transition:transform .2s,border-color .2s}
+.tfw-profile-ticket-open:hover{transform:translateY(-2px);border-color:#ffe5f6}
+.tfw-profile-ticket-open[aria-disabled="true"]{pointer-events:none;opacity:.42}
+.tfw-profile-ticket-link-card>.tfw-profile-feedback{grid-column:1/-1;min-height:0;margin:0}
+@media(max-width:750px){.tfw-profile-ticket-link-card{grid-template-columns:53px minmax(0,1fr)}.tfw-profile-ticket-symbol{width:50px;height:50px}.tfw-profile-ticket-open{grid-column:1/-1;width:100%}}
+/* Dedicated panels keep downloads and social sharing legible. */
+.tfw-ticket-actions-layout{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:26px}
+.tfw-ticket-action-panel{min-width:0;padding:24px;border:1px solid #f6a9dc43;border-radius:20px;background:linear-gradient(145deg,#281830ed,#120c20f2);box-shadow:0 15px 36px #0005}
+.tfw-ticket-action-panel h2{font:900 15px/1.2 "Arial Black",Arial,sans-serif;letter-spacing:.08em;margin:0 0 8px;color:#fff3fc}
+.tfw-ticket-action-panel>p{font:400 12px/1.55 Arial;margin:0 0 16px;color:#cdbbd3}
+.tfw-ticket-action-panel>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tfw-ticket-actions-layout .tfw-ticket-action{display:flex;width:100%;text-align:center;min-height:45px;white-space:normal;padding:10px;border-radius:11px}
+.tfw-ticket-actions-layout .tfw-ticket-action-status{grid-column:1/-1;margin:0;padding:3px}
+.tfw-ticket-public-header{margin-bottom:24px}
+@media(max-width:750px){.tfw-ticket-actions-layout{grid-template-columns:1fr;gap:12px}.tfw-ticket-action-panel{padding:18px}.tfw-ticket-public-main{padding-inline:15px}}

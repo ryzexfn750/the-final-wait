@@ -1,4 +1,4 @@
-import {mountBoardingPass,attachBoardingPassActions} from './boarding-pass.js?v=2';
+import {publicTicketUrl,EDITIONS} from './boarding-pass.js?v=3';
 /* Profile-only account actions. Confirmation dialogs are styled in-page,
    without browser-native confirmation popups or newsletter/CAPTCHA widgets. */
 const $=selector=>document.querySelector(selector);
@@ -135,15 +135,15 @@ async function initProfile(){
      });
      const passData=await passResponse.json().catch(()=>({}));
      if(!passResponse.ok)throw Error(passData.error||'Boarding pass unavailable');
-     mountBoardingPass($('#profileTicketCanvas'),passData.ticket);
-     attachBoardingPassActions($('#profileTicketActions'),passData.ticket);
-     $('#profileTicketFeedback').textContent='Issued to your account · Public verification available.';
+     const pass=passData.ticket;
+     const open=$('#profileTicketLink');
+     open.href=publicTicketUrl(pass);
+     open.removeAttribute('aria-disabled');open.removeAttribute('tabindex');
+     $('#profileTicketCode').textContent=pass.ticketCode+' · '+EDITIONS[pass.edition].name;
+     $('#profileTicketFeedback').textContent='';
    }catch(error){
-     $('#profileTicketCanvas').replaceChildren();
-     const problem=document.createElement('p');
-     problem.className='tfw-ticket-loading';
-     problem.textContent='BOARDING PASS TEMPORARILY UNAVAILABLE';
-     $('#profileTicketCanvas').appendChild(problem);
+     $('#profileTicketCode').textContent='BOARDING PASS UNAVAILABLE';
+     $('#profileTicketLink').setAttribute('aria-disabled','true');
      $('#profileTicketFeedback').textContent=error.message;
    }
  }catch(error){feedback(error.message,true)}

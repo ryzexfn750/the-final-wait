@@ -17,7 +17,7 @@
  <link rel="stylesheet" href="css/secondary-controls.css?v=48">
  <link rel="stylesheet" href="css/community.css?v=10">
  <link rel="stylesheet" href="css/community-profile.css?v=4">
- <link rel="stylesheet" href="css/boarding-pass.css?v=2">
+ <link rel="stylesheet" href="css/boarding-pass.css?v=3">
  <script>document.documentElement.classList.add('tfw-page-booting');try{if(localStorage.getItem('tfw_community_preview')==='yes'&&!((()=>{if(!new URLSearchParams(location.search).has('tfw_embed')||window.self===window.top)return false;try{return window.parent.location.origin===location.origin&&!!window.parent.__tfwSeamlessNavigation}catch{return false}})()))document.documentElement.classList.add('tfw-auth-pending')}catch{}</script>
 </head>
 <body class="article-page tfw-profile-page">
@@ -76,14 +76,15 @@
     </div>
     <span class="tfw-profile-verified">GOOGLE ACCOUNT</span>
    </div>
-   <section class="tfw-profile-card tfw-profile-ticket-section" id="profileTicketSection" aria-labelledby="profileTicketHeading">
-    <div class="tfw-profile-ticket-header">
+   <section class="tfw-profile-card tfw-profile-ticket-section tfw-profile-ticket-link-card" id="profileTicketSection" aria-labelledby="profileTicketHeading">
+    <div class="tfw-profile-ticket-symbol" aria-hidden="true">✈</div>
+    <div class="tfw-profile-ticket-copy">
      <p class="tfw-profile-overline">THE FINAL WAIT AIRWAYS</p>
      <h2 id="profileTicketHeading">YOUR TICKET TO LEONIDA.</h2>
-     <p>Your personal collectible boarding pass. Issued automatically at registration.</p>
+     <p>Open your personal collector boarding pass in its dedicated section.</p>
+     <span id="profileTicketCode" class="tfw-profile-ticket-meta">LOADING BOARDING PASS…</span>
     </div>
-    <div id="profileTicketCanvas" class="tfw-ticket-holder"><p class="tfw-ticket-loading">LOADING YOUR BOARDING PASS…</p></div>
-    <div id="profileTicketActions"></div>
+    <a id="profileTicketLink" class="tfw-profile-ticket-open" href="#" aria-disabled="true" tabindex="-1">OPEN MY BOARDING PASS <span aria-hidden="true">↗</span></a>
     <p id="profileTicketFeedback" class="tfw-profile-feedback" role="status" aria-live="polite"></p>
    </section>
    <section class="tfw-profile-card tfw-streamer-card" aria-labelledby="tfwStreamerTitle">
@@ -148,7 +149,7 @@
  <script defer src="js/seamless-navigation.js?v=55"></script>
  <script type="module" src="js/analytics-subpages.js?v=2"></script>
  <script type="module" src="js/community.js?v=13"></script>
- <script type="module" src="js/community-profile.js?v=6"></script>
+ <script type="module" src="js/community-profile.js?v=7"></script>
   <script defer src="js/community-header.js?v=3"></script>
   <script defer src="js/support-experience.js?v=2"></script>
 </body>

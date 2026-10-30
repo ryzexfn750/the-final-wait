@@ -43,7 +43,7 @@
  function isOurs(url){
    if(url.origin!==origin.origin||!url.pathname.startsWith(rootPrefix))return false;
    const part=url.pathname.slice(rootPrefix.length);
-   return allowed.has(part);
+   return allowed.has(part)||/^ticket\/[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(part);
  }
  function canonical(url){
    const out=new URL(url.href);out.searchParams.delete('tfw_embed');return out;

@@ -1,4 +1,4 @@
-import {mountBoardingPass,attachBoardingPassActions} from './boarding-pass.js?v=2';
+import {mountBoardingPass,attachBoardingPassActions} from './boarding-pass.js?v=3';
 (async()=>{
  const holder=document.getElementById('ticketPublicHolder');
  const status=document.getElementById('ticketPublicStatus');
@@ -20,7 +20,7 @@ import {mountBoardingPass,attachBoardingPassActions} from './boarding-pass.js?v=
   mountBoardingPass(holder,payload.ticket);
   attachBoardingPassActions(document.getElementById('ticketPublicActions'),payload.ticket);
   verified.hidden=false;
-  status.textContent='Authenticity checked against an active The Final Wait community account.';
+  status.textContent='';
  }catch(error){
   holder.replaceChildren();
   verified.hidden=true;

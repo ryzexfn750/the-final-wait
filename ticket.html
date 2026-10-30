@@ -10,23 +10,47 @@
  <meta property="og:description" content="A unique collectible boarding pass for the Grand Theft Auto VI countdown community.">
  <meta property="og:type" content="website">
  <meta property="og:image" content="https://thefinalwait.com/assets/screenshots/desktop/scene-17.webp">
- <title>Verify Boarding Pass — The Final Wait</title>
+ <title>Your Ticket to Leonida — The Final Wait</title>
+ <base href="/">
  <link rel="icon" href="/assets/icon-192.png" sizes="192x192">
  <link rel="stylesheet" href="/css/base.css?v=32">
  <link rel="stylesheet" href="/css/site-polish.css?v=54">
+ <link rel="stylesheet" href="/css/analytics-consent.css?v=1">
+ <link rel="stylesheet" href="/css/audio-controls.css?v=39">
+ <link rel="stylesheet" href="/css/secondary-controls.css?v=48">
  <link rel="stylesheet" href="/css/community.css?v=10">
- <link rel="stylesheet" href="/css/boarding-pass.css?v=2">
+ <link rel="stylesheet" href="/css/boarding-pass.css?v=3">
 </head>
 <body class="article-page tfw-ticket-public-page">
+ <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+ <div class="page-grid" aria-hidden="true"></div>
  <div class="page-noise" aria-hidden="true"></div>
- <header class="topbar article-topbar" id="topbar">
-  <a class="brand" href="/index.html" aria-label="Back to The Final Wait homepage">
+ <header class="topbar article-topbar tfw-secondary-topbar" id="topbar">
+  <a class="brand magnetic" href="/index.html" aria-label="The Final Wait homepage">
    <img src="/assets/ryze-gtavi-logo-lockup.png" class="brand-ryze-logo" alt="" width="102">
    <span class="brand-copy"><strong>THE FINAL WAIT</strong><small>ROAD TO LEONIDA</small></span>
   </a>
-  <nav class="nav desktop-nav" aria-label="Navigation">
-   <a href="/index.html">HOME</a>
-   <a href="/index.html#timeline">TIMELINE</a>
+  <nav class="nav desktop-nav tfw-secondary-nav" aria-label="Navigation">
+   <a href="/index.html">HOME</a><a href="/index.html#timeline">TIMELINE</a>
+   <a href="/intel-archive.html">LEONIDA INTEL</a>
+   <button class="nav-button" id="tfwPageShare" type="button">SHARE</button>
+   <button class="nav-button fullscreen-button" id="tfwPageFullscreen" type="button">FULLSCREEN</button>
+   <button class="sound-button" id="soundButton" type="button" aria-pressed="true" title="Adjust soundtrack volume">
+    <span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <span class="sound-label">SOUND</span>
+   </button>
+  </nav>
+  <a class="tfw-account-link" href="/profile.html" aria-label="Your profile"><svg class="tfw-account-person" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20v-1.6A6.4 6.4 0 0 1 11.4 12h1.2a6.4 6.4 0 0 1 6.4 6.4V20"/></svg> PROFILE</a>
+  <div class="gtranslate_wrapper language-widget" aria-label="Translate website"></div>
+  <div class="tfw-secondary-mobile">
+   <button class="sound-button compact" id="mobileSoundButton" type="button" aria-label="Adjust soundtrack volume"><span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>
+   <button class="menu-button" id="tfwPageMenu" type="button" aria-controls="tfwPageDrawer" aria-expanded="false">MENU</button>
+  </div>
+  <nav class="tfw-secondary-drawer" id="tfwPageDrawer" aria-label="Mobile navigation" hidden>
+   <a href="/index.html">HOME</a><a href="/index.html#timeline">TIMELINE</a>
+   <a href="/intel-archive.html">LEONIDA INTEL</a><a href="/profile.html">MY PROFILE</a>
+   <button type="button" id="tfwPageShareMobile" onclick="document.getElementById('tfwPageShare').click()">SHARE</button>
+   <button type="button" id="tfwPageFullscreenMobile" onclick="document.getElementById('tfwPageFullscreen').click()">FULLSCREEN</button>
   </nav>
  </header>
  <main class="tfw-ticket-public-main">
@@ -34,13 +58,12 @@
    <div class="tfw-ticket-public-header">
     <p class="tfw-profile-overline">THE FINAL WAIT AIRWAYS</p>
     <h1>YOUR TICKET TO LEONIDA.</h1>
-    <p>Every boarding pass is unique. Verify its authenticity below.</p>
     <div class="tfw-ticket-public-verified" id="ticketVerified" hidden>✓ VERIFIED BY THE FINAL WAIT</div>
    </div>
    <div id="ticketPublicHolder" class="tfw-ticket-holder" aria-live="polite">
     <p class="tfw-ticket-loading">VERIFYING BOARDING PASS…</p>
    </div>
-   <div id="ticketPublicActions"></div>
+   <div id="ticketPublicActions" class="tfw-ticket-actions-layout"></div>
    <p id="ticketPublicStatus" class="tfw-ticket-action-status" role="status" aria-live="polite"></p>
    <p class="tfw-ticket-legal">This is an unofficial fan-made collectible. No real flight, booking, admission or association with Rockstar Games or Take-Two Interactive.</p>
   </div>
@@ -64,7 +87,15 @@
   </div>
 </footer>
 
+ <div class="toast" id="toast" role="status" aria-live="polite"></div>
+ <script defer src="/js/motion.js?v=31"></script>
+ <script defer src="/js/language.js?v=49"></script>
+ <script defer src="/js/site-polish.js?v=48"></script>
+ <script defer src="/js/audio-controls.js?v=46"></script>
+ <script defer src="/js/secondary-controls.js?v=48"></script>
+ <script defer src="/js/secondary-share.js?v=46"></script>
+ <script defer src="/js/seamless-navigation.js?v=56"></script>
  <script defer src="/js/support-experience.js?v=2"></script>
- <script type="module" src="/js/public-boarding-pass.js?v=2"></script>
+ <script type="module" src="/js/public-boarding-pass.js?v=3"></script>
 </body>
 </html>
