@@ -350,5 +350,145 @@ window.__tfwLegalLocales={
         "Contato"
       ]
     }
+  },
+  "ru": {
+    "privacy": {
+      "title": "Уведомление о конфиденциальности сообщества",
+      "stamp": "Проект обновлён 29 октября 2026 г. · Версия 2026-10-29",
+      "notice": [
+        "Проект документа — регистрация в сообществе пока недоступна.",
+        "The Final Wait — публичное название независимого фанатского проекта. До запуска аккаунтов необходимо установить и раскрыть юридическую личность оператора персональных данных согласно статье 13 GDPR, а также проверить реальные договорённости с поставщиками услуг и сроки хранения данных."
+      ],
+      "heads": [
+        "1. Проект и контакты",
+        "2. Обрабатываемые данные",
+        "3. Цели обработки",
+        "4. Используемые сервисы",
+        "5. Рассылка и отзыв согласия",
+        "6. Хранение данных",
+        "7. Ваши права",
+        "8. Аналитика и изменения"
+      ],
+      "body": [
+        "Название проекта: {site}. По вопросам конфиденциальности и аккаунта обращайтесь на {mail}. Этот адрес служит каналом связи; одно лишь название проекта не подтверждает юридическую личность оператора данных.",
+        "При вступлении в сообщество могут обрабатываться подтверждённый Google адрес почты, идентификатор входа, публичный никнейм, версия и время принятия условий, выбор рассылки и время согласия, часовой пояс и временные данные для живых реакций. Google и провайдеры хостинга и безопасности могут отдельно обрабатывать технические сведения о соединениях и защите согласно своим политикам.",
+        "Мы не требуем публиковать настоящее имя. Почта не отображается другим участникам, но никнейм и реакции с эмодзи могут видеть люди в той же комнате часового пояса. Каждый зарегистрированный аккаунт получает коллекционный посадочный талон с никнеймом, выпуском, номером и исходной датой регистрации. Любой обладатель вашей трудно угадываемой публичной ссылки проверки может увидеть эти сведения. Ссылка не предназначена для индексации и перестанет работать после удаления аккаунта. Не делитесь ею, если не хотите раскрывать данные получателям.",
+        "Вход, управление аккаунтом и реакции служат предоставлению запрошенного сервиса (ст. 6(1)(b) GDPR, если применимо). Безопасность и предотвращение злоупотреблений могут опираться на законный интерес (ст. 6(1)(f)) после обязательной оценки баланса интересов. Необязательные письма требуют отдельного явного согласия (ст. 6(1)(a)); отказ от рассылки не мешает пользоваться сообществом.",
+        "Supabase обеспечивает вход через Google и хранение аккаунтов; Google — аутентификацию; Cloudflare — хостинг, защиту и инфраструктуру реакций; Sender — необязательную рассылку. Они могут обрабатывать персональные данные в рамках своих функций. До запуска нужно проверить договоры, места обработки, сроки хранения и гарантии международной передачи. Этот проект не гарантирует конкретную область хранения или механизм передачи.",
+        "Подписка добровольна. При согласии адрес передаётся Sender для писем The Final Wait. Отозвать согласие можно по ссылке отписки или через {mail} без удаления аккаунта. Несинхронизированные с провайдером запросы требуют ручного решения до дальнейшей отправки писем на этот адрес.",
+        "Данные аккаунта и профиля обычно хранятся до удаления аккаунта, затем предполагается их удаление с учётом правовых, защитных и резервных требований. Реакции рассчитаны на краткосрочное хранение. Данные рассылки сохраняются во время подписки и при необходимости для подтверждения согласия или отказа. Точные сроки хранения резервных копий, журналов и удаления у поставщиков ещё проверяются до запуска.",
+        "При соблюдении применимых условий можно запросить доступ, исправление, удаление, ограничение, перенос данных или возразить против отдельных видов обработки; согласие на рассылку можно отозвать в любой момент. Пишите на {mail}. Также можно подать жалобу в компетентный орган по защите данных, включая {agency}, где это применимо.",
+        "Необязательные cookie Google Analytics используются только после явного согласия через отдельные кнопки ПРИНЯТЬ/ОТКЛОНИТЬ. Они не нужны для регистрации, принятия условий или подписки. Отказ не ограничивает доступ. Уведомление будет обновлено до публичного запуска и при существенных изменениях обработки."
+      ],
+      "button": "ИЗМЕНИТЬ НАСТРОЙКИ АНАЛИТИЧЕСКИХ COOKIE",
+      "footer": [
+        "THE FINAL WAIT · НЕЗАВИСИМЫЙ ФАНАТСКИЙ ПРОЕКТ",
+        "Условия сообщества",
+        "Контакты"
+      ],
+      "agency": "итальянский орган по защите данных",
+      "privacyLabel": "Уведомление о конфиденциальности сообщества"
+    },
+    "terms": {
+      "title": "Условия использования сообщества",
+      "stamp": "Проект обновлён 29 октября 2026 г. · Версия 2026-10-29",
+      "notice": [
+        "Проект — пока не действует для публичной регистрации.",
+        "The Final Wait — публичное название проекта. До открытия аккаунтов необходимо установить юридически ответственного оператора и пересмотреть условия."
+      ],
+      "heads": [
+        "1. Независимый фанатский проект",
+        "2. Доступ в сообщество",
+        "3. Живые реакции",
+        "4. Необязательные письма",
+        "5. Аккаунт и конфиденциальность",
+        "6. Работа сервиса и изменения",
+        "7. Контакты"
+      ],
+      "body": [
+        "The Final Wait — независимый неофициальный фанатский сайт, не связанный с Rockstar Games и Take-Two Interactive, не одобренный и не управляемый ими. Grand Theft Auto, связанные имена, товарные знаки и официальные изображения принадлежат правообладателям.",
+        "В предварительной версии необходим вход через Google и публичный никнейм. Почта не публикуется. Нельзя выдавать себя за других людей, модераторов, Rockstar Games или администратора сайта либо обходить проверки безопасности. Каждый аккаунт получает декоративный непередаваемый коллекционный предмет The Final Wait Airways, не являющийся настоящим посадочным талоном, бронированием поездки, продуктом Rockstar или удостоверением личности. Общая ссылка проверки показывает никнейм и дату регистрации; после удаления аккаунта ссылка на билет недействительна.",
+        "Live Hype позволяет отправлять эмодзи в комнате часового пояса. Реакции могут появляться с никнеймом. Автоматический трафик, спам, травля, злоупотребления безопасностью, перегрузка и вмешательство в работу запрещены. При высокой нагрузке реакции могут ограничиваться, задерживаться или отключаться.",
+        "Рассылка полностью добровольна и требует отдельного явного согласия. Его можно отозвать без потери аккаунта по ссылке отписки или через {mail}.",
+        "После регистрации никнейм нельзя менять. Можно просматривать профиль, настраивать письма и запрашивать удаление аккаунта. Если удаление из связанной рассылки не удалось, может потребоваться поддержка для безопасного удаления. Подробнее — в документе {privacy}.",
+        "Сообщество может модерироваться, ограничиваться или приостанавливаться ради безопасности и надёжности. Бесперебойность реакций не гарантируется. Основной отсчёт и музыка независимы от сообщества. Существенные изменения условий будут сообщены, когда этого требует закон.",
+        "Название проекта: <strong>The Final Wait</strong>. Контакт: {mail}. Требуемые законом сведения об операторе ещё должны быть дополнены до публичной регистрации."
+      ],
+      "footer": [
+        "THE FINAL WAIT · НЕЗАВИСИМЫЙ НЕОФИЦИАЛЬНЫЙ ФАНАТСКИЙ ПРОЕКТ ·",
+        "Конфиденциальность",
+        "Контакты"
+      ]
+    }
+  },
+  "pl": {
+    "privacy": {
+      "title": "Informacja o prywatności społeczności",
+      "stamp": "Projekt zaktualizowano 29 października 2026 r. · Wersja 2026-10-29",
+      "notice": [
+        "Projekt dokumentu — rejestracja w społeczności nie jest jeszcze dostępna.",
+        "The Final Wait to publiczna nazwa niezależnego projektu fanowskiego. Przed udostępnieniem kont należy zweryfikować i ujawnić prawną tożsamość administratora danych zgodnie z art. 13 RODO oraz sprawdzić rzeczywiste umowy z usługodawcami i zasady przechowywania danych."
+      ],
+      "heads": [
+        "1. Projekt i kontakt",
+        "2. Przetwarzane dane",
+        "3. Cele przetwarzania",
+        "4. Dostawcy usług",
+        "5. Newsletter i cofnięcie zgody",
+        "6. Przechowywanie danych",
+        "7. Twoje prawa",
+        "8. Analityka i zmiany"
+      ],
+      "body": [
+        "Nazwa projektu: {site}. Pytania o prywatność, dane i konto kieruj na {mail}. Jest to adres kontaktowy; sama nazwa projektu nie potwierdza tożsamości prawnej administratora.",
+        "Po dołączeniu do społeczności mogą być przetwarzane: adres e-mail uwierzytelniony przez Google, identyfikator uwierzytelnienia, publiczny pseudonim, wersja i czas akceptacji warunków, dobrowolna decyzja o newsletterze i data zgody, strefa czasowa oraz tymczasowe dane reakcji. Google i dostawcy hostingu i zabezpieczeń mogą osobno przetwarzać techniczne dane połączenia i bezpieczeństwa zgodnie z własnymi zasadami.",
+        "Nie wymagamy publikowania prawdziwego nazwiska. E-mail nie jest widoczny dla innych, ale pseudonim i reakcje emoji mogą być widoczne w tym samym pokoju strefy czasowej. Każde konto otrzymuje też kolekcjonerską kartę pokładową z pseudonimem, edycją, numerem biletu i datą pierwszej rejestracji. Każdy, kto ma Twój trudny do odgadnięcia publiczny link weryfikacyjny, może zobaczyć te dane. Link nie jest przeznaczony do indeksowania i wygasa po usunięciu konta. Nie udostępniaj go, jeśli nie chcesz ujawniać danych odbiorcom.",
+        "Uwierzytelnianie, obsługa konta i reakcje służą świadczeniu usługi społecznościowej (art. 6 ust. 1 lit. b RODO, gdy ma zastosowanie). Bezpieczeństwo i zapobieganie nadużyciom mogą opierać się na prawnie uzasadnionym interesie (art. 6 ust. 1 lit. f), z wymaganą oceną równowagi interesów. Opcjonalne wiadomości wymagają osobnej wyraźnej zgody (art. 6 ust. 1 lit. a). Odmowa newslettera nie uniemożliwia korzystania ze społeczności.",
+        "Supabase umożliwia logowanie Google i przechowywanie kont; Google odpowiada za uwierzytelnianie; Cloudflare za hosting, zabezpieczenia i reakcje; Sender za opcjonalną wysyłkę informacji. Dostawcy mogą przetwarzać dane w związku ze swymi zadaniami. Przed startem trzeba sprawdzić umowy, lokalizacje przetwarzania, retencję oraz zabezpieczenia transferu międzynarodowego. Ten projekt nie gwarantuje określonego regionu przechowywania ani mechanizmu transferu.",
+        "Newsletter jest dobrowolny. Po wyrażeniu zgody adres trafia do Sender na potrzeby ogłoszeń The Final Wait. Zgodę można cofnąć przez link rezygnacji lub przez {mail}, bez usuwania konta. Nieprawidłowo zsynchronizowane żądania wymagają ręcznego rozwiązania przed kolejną wysyłką.",
+        "Dane profilu i konta są zwykle przechowywane podczas aktywności konta i mają zostać usunięte po skasowaniu, z uwzględnieniem bezpieczeństwa, prawa i kopii zapasowych. Dane reakcji mają krótki okres życia. Informacje newslettera są zachowywane podczas subskrypcji i w zakresie potrzebnym do dokumentowania zgody lub rezygnacji. Dokładne okresy kopii zapasowych, logów i usuwania u dostawców wymagają weryfikacji przed startem.",
+        "Na odpowiednich warunkach można żądać dostępu, sprostowania, usunięcia, ograniczenia przetwarzania, przeniesienia danych lub sprzeciwić się niektórym operacjom, a zgodę na newsletter cofnąć w dowolnej chwili. Napisz na {mail}. Można też złożyć skargę do organu ochrony danych, w tym {agency}, jeśli ma to zastosowanie.",
+        "Opcjonalne pliki cookie Google Analytics wymagają uprzedniej wyraźnej zgody przez osobne przyciski AKCEPTUJ/ODRZUĆ. Nie są niezbędne do rejestracji, przyjęcia zasad ani newslettera. Odmowa nie ogranicza dostępu. Dokument zostanie zaktualizowany przed publiczną rejestracją i po istotnych zmianach w przetwarzaniu."
+      ],
+      "button": "ZMIEŃ USTAWIENIA ANALITYCZNYCH PLIKÓW COOKIE",
+      "footer": [
+        "THE FINAL WAIT · NIEZALEŻNY PROJEKT FANOWSKI",
+        "Zasady społeczności",
+        "Kontakt"
+      ],
+      "agency": "włoskiego organu ochrony danych",
+      "privacyLabel": "Informacja o prywatności społeczności"
+    },
+    "terms": {
+      "title": "Regulamin społeczności",
+      "stamp": "Projekt zaktualizowano 29 października 2026 r. · Wersja 2026-10-29",
+      "notice": [
+        "Projekt — jeszcze nie obowiązuje przy publicznej rejestracji.",
+        "The Final Wait to publiczna nazwa projektu. Przed udostępnieniem kont trzeba wskazać prawnie odpowiedzialnego operatora i zweryfikować warunki."
+      ],
+      "heads": [
+        "1. Niezależny projekt fanowski",
+        "2. Dostęp do społeczności",
+        "3. Reakcje na żywo",
+        "4. Dobrowolne wiadomości",
+        "5. Konto i prywatność",
+        "6. Działanie i zmiany",
+        "7. Kontakt"
+      ],
+      "body": [
+        "The Final Wait to niezależna, nieoficjalna strona fanowska, niepowiązana, niepopierana ani nieprowadzona przez Rockstar Games lub Take-Two Interactive. Grand Theft Auto oraz związane z nim nazwy, znaki towarowe i oficjalne obrazy należą do ich właścicieli.",
+        "W obecnej wersji próbnej wymagane jest logowanie Google i publiczny pseudonim. E-mail nie jest publikowany. Zabrania się podszywania pod osoby, moderatorów, Rockstar Games lub operatora strony oraz obchodzenia zabezpieczeń. Każde konto otrzymuje dekoracyjny, niezbywalny przedmiot kolekcjonerski The Final Wait Airways, który nie jest prawdziwą kartą pokładową, rezerwacją podróży, produktem Rockstar ani dokumentem tożsamości. Udostępniony link weryfikacyjny pokazuje pseudonim i datę rejestracji; usunięcie konta unieważnia link biletu.",
+        "Live Hype pozwala wysyłać emoji w pokoju strefy czasowej. Reakcje mogą pojawiać się wraz z pseudonimem. Automatyczny ruch, spam, nękanie, nadużycia bezpieczeństwa oraz próby przeciążenia lub zakłócenia usługi są zabronione. Przy dużym obciążeniu reakcje mogą być ograniczone, opóźnione lub niedostępne.",
+        "Newsletter jest całkowicie dobrowolny i wymaga osobnej wyraźnej zgody. Możesz ją cofnąć bez utraty konta, korzystając z linku rezygnacji lub pisząc na {mail}.",
+        "Po rejestracji pseudonim jest stały. Możesz przeglądać profil, zarządzać opcjonalnymi preferencjami wiadomości i wnioskować o usunięcie konta. Jeśli usunięcie z powiązanej listy nie powiedzie się, konieczna może być pomoc w bezpiecznym usunięciu konta. Szczegóły zawiera {privacy}.",
+        "Społeczność może być moderowana, czasowo ograniczona lub zawieszona z powodów bezpieczeństwa i niezawodności. Nie gwarantuje się ciągłego działania reakcji. Odliczanie i muzyka są niezależne od funkcji społeczności. Istotne zmiany regulaminu zostaną ogłoszone, gdy wymaga tego prawo.",
+        "Nazwa projektu: <strong>The Final Wait</strong>. Kontakt: {mail}. Dane prawne operatora wymagane przepisami muszą zostać uzupełnione przed publiczną rejestracją."
+      ],
+      "footer": [
+        "THE FINAL WAIT · NIEZALEŻNY, NIEOFICJALNY PROJEKT FANOWSKI ·",
+        "Informacja o prywatności",
+        "Kontakt"
+      ]
+    }
   }
 };
