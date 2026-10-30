@@ -94,7 +94,7 @@ test('All new JavaScript files parse',()=>{
     'functions/api/community/config.js','functions/api/community/profile.js',
     'functions/api/community/ticket.js','functions/api/community/live.js',
     'functions/api/community/newsletter.js','js/community-profile.js',
-    'js/community-newsletter.js','js/community-header.js',
+    'js/community-newsletter.js','js/community-header.js','js/support-experience.js','js/nickname-policy.js',
     'workers/hype-worker/src/index.js'
   ];
   for(const file of files){

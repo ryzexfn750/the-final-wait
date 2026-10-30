@@ -8,7 +8,7 @@ test('Multilingual moderation is shared by frontend and the authoritative server
   const policy=read('js/nickname-policy.js');
   const {nicknameVerdict,normalizeNickname,BLOCKED_NICKNAME_TOKENS}=await import(
     'data:text/javascript;charset=utf-8,'+encodeURIComponent(policy));
-  assert.ok(BLOCKED_NICKNAME_TOKENS.length>=400);
+  assert.ok(BLOCKED_NICKNAME_TOKENS.length>=900);
   assert.equal(normalizeNickname('N3GR0'),'negro');
   for(const candidate of [
     'n1gg3r','N3GR0','n_i_g_g_e_r','NIGGGGER',
@@ -33,12 +33,22 @@ test('Multilingual moderation is shared by frontend and the authoritative server
   assert.match(client,/nicknameError\.textContent=verdict\.reason/);
 });
 
-test('Creator support, experience advisory and legal panels are present',()=>{
-  const page=read('index.html');
-  assert.match(page,/href="https:\/\/buymeacoffee\.com\/ryzegtavi"/);
-  assert.match(page,/HELP KEEP THE WAIT ALIVE/);
-  assert.match(page,/FOR THE BEST EXPERIENCE/);
-  assert.doesNotMatch(page,/The countdown automatically uses your device time zone and compares/);
+test('Coffee popup is discreet and the reminder offers persistent choice',()=>{
+  const page=read('index.html'),support=read('js/support-experience.js');
+  assert.doesNotMatch(page,/class="tfw-support-project"/);
+  assert.doesNotMatch(page,/class="tfw-experience-advisory"/);
+  for(const p of ['index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html']){
+    assert.match(read(p),/js\/support-experience\.js\?v=1/);
+  }
+  assert.match(support,/https:\/\/buymeacoffee\.com\/ryzegtavi/);
+  assert.match(support,/tfw-footer-coffee-button/);
+  assert.match(support,/HELP KEEP THE WAIT ALIVE/);
+  assert.match(support,/tfwExperienceRepeat/);
+  assert.match(support,/tfwExperienceNever/);
+  assert.match(support,/localStorage\.setItem\(choiceKey,preference\)/);
+  assert.match(support,/sessionStorage\.setItem\(sessionKey,'yes'\)/);
+  assert.match(support,/tfw:community-ready/);
+  assert.match(support,/tfw:seamless-return/);
   const gate=read('js/community.js'),css=read('css/community.css');
   assert.match(gate,/if\(page==='community-terms\.html'\)main\.querySelector\('footer'\)\?\.remove\(\)/);
   assert.doesNotMatch(gate,/Your message opens in your preferred email service/);
@@ -86,6 +96,8 @@ test('Custom middle-click autoscroll and selection state operate without duplica
   assert.equal(prevented,true,'native middle-button action prevented');
   assert.equal(win.__tfwGlobalCursorStatus().autoscroll,true);
   emit('mousemove',{clientX:230,clientY:420,target});
+  assert.match(root.children[0].children[2].style.transform,/210px,400px/,
+    'Autoscroll graphic follows mouse instead of remaining at the click origin');
   for(let i=0;i<4;i++){const fn=frames.shift();if(fn)fn(50*i)}
   assert.ok(distance>0,'middle-button movement scrolls document');
   emit('window:keydown',{key:'Escape'});
