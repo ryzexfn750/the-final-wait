@@ -99,6 +99,7 @@ test('The site exposes a dedicated route with working 3D and 2D interactions',()
  assert.match(js,/createPlanetPainter/);
  assert.match(js,/onGlobeClick/);
  assert.match(js,/globe\.globeMaterial\(\)/);
+ assert.match(js,/m\.instant>at\+3600000/);
  assert.match(js,/material\.map\.needsUpdate=true/);
  assert.doesNotMatch(js,/\.polygonsData\(|\.polygonCapColor\(|\.polygonStrokeColor\(|\.ringsData\(/);
  assert.match(js,/new create\(ui\.globe/);

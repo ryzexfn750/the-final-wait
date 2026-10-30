@@ -106,7 +106,9 @@ function drawSnapshot(at){
 }
 function redrawIfChanged(at){
  const milestoneIndex=orderedMilestones.findIndex(m=>m.instant>at);
- const key=(milestoneIndex===-1?orderedMilestones.length:milestoneIndex)+'/'+selected.tz;
+ const arriving=orderedMilestones.findIndex(m=>m.instant>at+3600000);
+ const key=(milestoneIndex===-1?orderedMilestones.length:milestoneIndex)+'/'+
+  (arriving===-1?orderedMilestones.length:arriving)+'/'+selected.tz;
  if(key!==lastStatusKey){
   lastStatusKey=key;
   if(view==='3d')refreshGlobe(at);
@@ -224,7 +226,9 @@ function refreshSpinLabel(){
 function refreshGlobe(at){
  if(!globe||!painter)return;
  const milestone=orderedMilestones.findIndex(m=>m.instant>at);
- const key=(milestone<0?orderedMilestones.length:milestone)+'/'+selected.tz;
+ const arriving=orderedMilestones.findIndex(m=>m.instant>at+3600000);
+ const key=(milestone<0?orderedMilestones.length:milestone)+'/'+
+  (arriving<0?orderedMilestones.length:arriving)+'/'+selected.tz;
  if(paintedState!==String(key)){
   paintedState=String(key);
   const canvas=painter.paint(at,selected.tz);
