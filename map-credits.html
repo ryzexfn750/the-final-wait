@@ -18,7 +18,7 @@
  <link rel="stylesheet" href="css/community.css?v=11">
  <link rel="stylesheet" href="css/ticket-reveal.css?v=5">
  <link rel="stylesheet" href="css/community-profile.css?v=4">
- <link rel="stylesheet" href="css/map-credits.css?v=1">
+ <link rel="stylesheet" href="css/map-credits.css?v=2">
  <script>try{if(localStorage.getItem('tfw_community_preview')==='yes'&&!((()=>{if(!new URLSearchParams(location.search).has('tfw_embed')||window.self===window.top)return false;try{return window.parent.location.origin===location.origin&&!!window.parent.__tfwSeamlessNavigation}catch{return false}})()))document.documentElement.classList.add('tfw-auth-pending')}catch{}</script>
 </head>
 <body class="article-page tfw-profile-page tfw-map-credits-page">
@@ -54,46 +54,19 @@
   </nav>
  </header>
 
- <main class="credits-main" id="creditsMain">
-  <a class="credits-back" href="global-wave.html">← BACK TO THE GLOBAL MIDNIGHT WAVE</a>
-  <header class="credits-title">
-   <p class="credits-kicker">THE GLOBAL MIDNIGHT WAVE · ATTRIBUTIONS</p>
-   <h1>MAP DATA <em>&</em><br>CREDITS.</h1>
-   <p>Open-source projects, geographic data and licenses behind the interactive world map.</p>
-  </header>
-  <div class="credits-grid">
-   <article class="credits-card">
-    <div class="credits-section-title"><span>01</span><h2>GEOGRAPHIC DATA</h2></div>
-    <p>Time zone polygons are sourced from <strong>Simplified Timezone Boundaries</strong>, derived from <strong>Timezone Boundary Builder</strong> and OpenStreetMap contributors. The site hosts a compact GeoJSON copy containing 406 simplified source regions. Small islands and boundary details may be omitted.</p>
-    <div class="credits-links">
-     <a href="https://github.com/dejurin/simplified-timezone-boundaries" target="_blank" rel="noopener noreferrer">SIMPLIFIED TIMEZONE BOUNDARIES ↗</a>
-     <a href="https://github.com/evansiroky/timezone-boundary-builder" target="_blank" rel="noopener noreferrer">TIMEZONE BOUNDARY BUILDER ↗</a>
-     <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OPENSTREETMAP CONTRIBUTORS ↗</a>
-    </div>
-    <div class="credits-license"><span>GEOGRAPHIC DATA LICENSE</span><strong>Open Database License (ODbL) 1.0</strong>
-     <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener noreferrer">READ THE LICENSE ↗</a></div>
-   </article>
-   <article class="credits-card">
-    <div class="credits-section-title"><span>02</span><h2>3D GLOBE & RENDERING</h2></div>
-    <p>The interactive Earth is powered by <strong>Globe.GL</strong> and Three.js. The night-Earth image is loaded from the Three-Globe example assets. The colorful midnight wave, timeline, region interaction and 2D fallback are custom features of The Final Wait.</p>
-    <div class="credits-links">
-     <a href="https://globe.gl/" target="_blank" rel="noopener noreferrer">GLOBE.GL ↗</a>
-     <a href="https://github.com/vasturiano/three-globe" target="_blank" rel="noopener noreferrer">THREE-GLOBE & EARTH IMAGE ↗</a>
-     <a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">THREE.JS ↗</a>
-    </div>
-    <div class="credits-license"><span>LIBRARY LICENSE</span><strong>MIT (open source)</strong></div>
-   </article>
-   <article class="credits-card credits-card-wide">
-    <div class="credits-section-title"><span>03</span><h2>LOCAL MIDNIGHT CALCULATIONS</h2></div>
-    <p>Each region is illuminated when its IANA time zone reaches <strong>00:00 on November 19, 2026</strong>. The website uses browser internationalization rules to calculate local midnight and account for applicable UTC offsets and daylight saving time.</p>
-    <p>This is a fan-made countdown visualization, <strong>not a statement of Rockstar Games' official release or platform unlock schedule</strong>. The map is illustrative, not a legally authoritative geographic or time zone reference.</p>
-    <div class="credits-links">
-     <a href="content/geo/timezones-simplified.geojson" target="_blank" rel="noopener noreferrer">VIEW THE GEOJSON DATA ↗</a>
-     <a href="https://github.com/ryzexfn750/the-final-wait" target="_blank" rel="noopener noreferrer">THE FINAL WAIT PROJECT ↗</a>
-    </div>
-   </article>
-  </div>
-  <a class="credits-return" href="global-wave.html">RETURN TO THE GLOBE ↗</a>
+
+<main class="credits-main">
+  <a href="global-wave.html" class="credits-back">← THE GLOBAL MIDNIGHT WAVE</a>
+  <h1>Map Data & Credits</h1>
+  <p>Sources and licences used by The Global Midnight Wave.</p>
+  <h2>Geographic data</h2>
+  <p>Time zone boundaries come from <a href="https://github.com/dejurin/simplified-timezone-boundaries" target="_blank" rel="noopener noreferrer">Simplified Timezone Boundaries</a>, derived from <a href="https://github.com/evansiroky/timezone-boundary-builder" target="_blank" rel="noopener noreferrer">Timezone Boundary Builder</a> and <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a>. The geographic data is licensed under the <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener noreferrer">Open Database License (ODbL) 1.0</a>. Boundaries are simplified and may omit small islands.</p>
+  <h2>3D globe</h2>
+  <p>The visualization uses <a href="https://globe.gl/" target="_blank" rel="noopener noreferrer">Globe.GL</a>, <a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">Three.js</a> and an Earth image from the <a href="https://github.com/vasturiano/three-globe" target="_blank" rel="noopener noreferrer">Three-Globe example assets</a>. The JavaScript libraries are available under the MIT licence.</p>
+  <h2>Midnight countdown</h2>
+  <p>Regions are illuminated when their local clock reaches 00:00 on November 19, 2026, using IANA time zones. This fan-made visualization does not represent Rockstar Games' official release or platform unlock times.</p>
+  <p class="credits-small">This map is illustrative, not a legally authoritative source of geographic boundaries or time zone regulations.</p>
+  <a href="global-wave.html" class="credits-back">← BACK TO THE GLOBE</a>
  </main>
  <footer>
   <div class="footer-brand"><strong>THE FINAL WAIT</strong><span>ROAD TO LEONIDA</span></div>

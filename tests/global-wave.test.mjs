@@ -129,9 +129,9 @@ test('The site exposes a dedicated route with working 3D and 2D interactions',()
 });
 test('Homepage CTA, seamless navigation and Cloudflare publication are connected',()=>{
  const home=read('index.html'),nav=read('js/seamless-navigation.js'),build=read('tools/build-cloudflare-pages.mjs');
- assert.match(home,/THE GLOBAL<br><em>MIDNIGHT WAVE/);
+ assert.match(home,/id="tfwWaveTeaserHeading">THE GLOBAL MIDNIGHT WAVE/);
  assert.match(home,/href="global-wave\.html"/);
- assert.match(home,/css\/global-wave-teaser\.css\?v=1/);
+ assert.match(home,/css\/global-wave-teaser\.css\?v=2/);
  assert.match(nav,/'global-wave\.html'/);
  assert.match(build,/'global-wave\.html'/);
  for(const page of ['index.html','today.html','timeline.html','intel.html',
@@ -154,11 +154,34 @@ test('Geographic credits open a styled page and keep all dataset attributions',(
  assert.match(credits,/OpenStreetMap/);
  assert.match(credits,/Open Database License \(ODbL\) 1\.0/);
  assert.match(credits,/Globe\.GL/);
- assert.match(credits,/not a statement of Rockstar Games/);
+ assert.match(credits,/does not represent Rockstar Games/);
  assert.match(credits,/href="global-wave\.html"/);
  assert.match(style,/\.credits-main/);
+ assert.doesNotMatch(credits,/credits-grid|credits-card|credits-section-title|credits-return/);
  assert.match(navigation,/'map-credits\.html'/);
  assert.match(deploy,/'map-credits\.html'/);
  for(const path of ['index.html','global-wave.html','map-credits.html'])
   assert.match(read(path),/js\/seamless-navigation\.js\?v=59/,path);
+});
+
+test('Homepage wave is first after countdown and follows other section visual patterns',()=>{
+ const home=read('index.html'),css=read('css/global-wave-teaser.css'),app=read('js/app.js');
+ const hero=home.indexOf('class="hero" id="hero"');
+ const heroEnd=home.indexOf('</section>',hero);
+ const wave=home.indexOf('class="section tfw-wave-section scene-section" id="globalWavePreview"');
+ const today=home.indexOf('class="section today-section scene-section" id="today"');
+ const timeline=home.indexOf('class="section timeline-section scene-section" id="timeline"');
+ const intel=home.indexOf('class="intel-section scene-section" id="intel"');
+ const share=home.indexOf('class="share-section" id="share"');
+ assert.ok(hero>=0&&heroEnd<wave&&wave<today&&today<timeline&&timeline<intel&&intel<share);
+ assert.equal((home.match(/id="globalWavePreview"/g)||[]).length,1);
+ assert.match(home,/href="#globalWavePreview"/);
+ assert.match(app,/const sections=\['hero','globalWavePreview','today','timeline','intel','share'\]/);
+ assert.match(home,/class="section-head reveal"[\s\S]*?id="tfwWaveTeaserHeading"/);
+ assert.match(home,/class="tfw-wave-feature reveal"/);
+ assert.match(home,/class="section-index">01/);
+ assert.match(css,/\.tfw-wave-section \.section-head/);
+ assert.match(css,/grid-template-columns:minmax\(0,1\.06fr\) minmax\(0,\.94fr\)/);
+ assert.match(css,/@media\(max-width:560px\)/);
+ assert.doesNotMatch(home,/tfw-wave-teaser-inner|tfw-wave-teaser-orb/);
 });

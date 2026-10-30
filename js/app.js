@@ -826,7 +826,7 @@ function syncSectionHash(){
   // The viewport center (plus the sticky header) determines the active
   // section, even after a user follows an anchor and then wheel-scrolls.
   // This is history-neutral: a scroll doesn't add Back-button entries.
-  const sections=['hero','today','timeline','intel','share']
+  const sections=['hero','globalWavePreview','today','timeline','intel','share']
     .map(id=>document.getElementById(id)).filter(Boolean);
   if(!sections.length)return;
   const focusY=Math.max(165,window.innerHeight*.53);

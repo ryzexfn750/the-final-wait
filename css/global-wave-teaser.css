@@ -1,38 +1,128 @@
-/* Global Midnight Wave homepage gateway, styled to remain fast and dependency-free. */
-.tfw-wave-teaser{position:relative;isolation:isolate;min-height:450px;overflow:hidden;
- background:linear-gradient(120deg,#0b0916ee,#170d2c 56%,#0a0919)}
-.tfw-wave-teaser-glow{position:absolute;inset:-10%;z-index:-1;pointer-events:none;
- background:radial-gradient(ellipse at 73% 55%,rgba(169,77,174,.20),transparent 46%),
- radial-gradient(ellipse at 22% 48%,rgba(89,58,164,.19),transparent 55%)}
-.tfw-wave-teaser-inner{width:min(1280px,90vw);min-height:450px;display:grid;
- grid-template-columns:1.1fr .9fr;align-items:center;gap:30px;margin:auto;padding:60px 0}
-.tfw-wave-teaser-copy{position:relative;z-index:2}
-.tfw-wave-teaser-copy h2{font:900 clamp(37px,5vw,70px)/.95 "Arial Black",Impact,Arial,sans-serif;
- color:#fff;margin:16px 0 19px;letter-spacing:-.065em}
-.tfw-wave-teaser-copy h2 em{font-style:normal;color:#f6a0d9;text-shadow:0 0 25px #d75da83b}
-.tfw-wave-teaser-copy>p:not(.eyebrow){max-width:510px;font:14px/1.75 Arial,sans-serif;color:#c1afd1;margin-bottom:24px}
-.tfw-wave-teaser-copy .fx-button{display:inline-flex;align-items:center;justify-content:center;max-width:100%;
- text-decoration:none;padding:15px 20px;font:900 11px/1.4 Arial;letter-spacing:.07em}
-.tfw-wave-teaser-scene{position:relative;min-width:0;min-height:345px;display:grid;place-items:center;
- perspective:750px;pointer-events:none}
-.tfw-wave-teaser-orb{position:relative;width:min(290px,28vw);height:min(290px,28vw);border-radius:50%;
- background:radial-gradient(circle at 34% 31%,#e8b5ef77 0%,#935ab87d 18%,#2c235e 43%,#090b2e 72%);
- box-shadow:inset -18px -11px 45px #05051ed9,inset 12px 12px 22px #f1a7e329,
- 0 0 55px #b76fdd5b,0 0 90px #8453a23b;
- transform:rotate(-11deg);animation:tfwWaveTeaserDrift 11s ease-in-out infinite}
-.tfw-wave-teaser-orb:before{content:"";position:absolute;inset:8%;border-radius:50%;
- border:1px solid #cdb0ff43;box-shadow:inset 0 0 24px #f19fda26}
-.tfw-wave-teaser-latitude{position:absolute;inset:20% -1%;border:1px solid #d6a2e564;border-radius:50%;transform:rotate(-16deg)}
-.tfw-wave-teaser-meridian{position:absolute;inset:-2% 29%;border:1px solid #e0acf162;border-radius:50%;transform:rotate(22deg)}
-.tfw-wave-teaser-orbit{position:absolute;width:380px;height:380px;max-width:90%;border-radius:50%;
- border:1px solid #bd76c133;transform:rotateX(68deg) rotate(-30deg)}
-.tfw-wave-teaser-orbit.orbit-two{transform:rotateY(65deg) rotate(19deg);border-color:#9968da44}
-@keyframes tfwWaveTeaserDrift{50%{transform:translateY(-13px) rotate(6deg)}}
-@media(max-width:750px){.tfw-wave-teaser-inner{display:flex;flex-direction:column;text-align:center;gap:5px;padding:65px 0}
- .tfw-wave-teaser-copy h2{font-size:clamp(34px,9vw,50px)}
- .tfw-wave-teaser-copy>p:not(.eyebrow){font-size:12px}
- .tfw-wave-teaser-scene{min-height:215px;width:100%}
- .tfw-wave-teaser-orb{width:185px;height:185px}
- .tfw-wave-teaser-orbit{width:220px;height:220px}
+/* The Global Midnight Wave: native homepage scene, aligned with Today / Timeline. */
+.tfw-wave-section{
+  position:relative;
+  width:min(1240px,90vw);
+  margin:0 auto;
+  padding:clamp(94px,11vw,132px) 0 110px;
+  isolation:isolate;
 }
-@media(prefers-reduced-motion:reduce){.tfw-wave-teaser-orb{animation:none}}
+.tfw-wave-section .tfw-wave-backdrop{
+  opacity:.10;
+  background-image:linear-gradient(180deg,rgba(7,5,14,.7),rgba(7,5,14,.9)),
+    radial-gradient(ellipse at 72% 40%,rgba(166,67,197,.44),transparent 56%);
+}
+.tfw-wave-section .section-head{padding-bottom:44px}
+.tfw-wave-section .section-head>div{min-width:0}
+.tfw-wave-section .section-head h2{max-width:1120px}
+.tfw-wave-section .section-lede{max-width:700px}
+.tfw-wave-feature{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1.06fr) minmax(0,.94fr);
+  min-width:0;
+  width:100%;
+  min-height:clamp(340px,35vw,435px);
+  overflow:hidden;
+  border:1px solid rgba(247,149,214,.25);
+  border-radius:26px;
+  background:linear-gradient(112deg,#191020,#0d0c1a 53%,#21122c);
+  box-shadow:0 38px 95px rgba(0,0,0,.3),inset 0 1px 0 #ffffff18;
+}
+.tfw-wave-feature:after{
+  position:absolute;inset:0;z-index:1;content:"";pointer-events:none;
+  background:linear-gradient(110deg,rgba(255,255,255,.045),transparent 30%,rgba(226,100,188,.045));
+}
+.tfw-wave-feature-copy{
+  position:relative;z-index:2;display:flex;flex-direction:column;align-items:flex-start;
+  justify-content:center;min-width:0;
+  padding:clamp(28px,5vw,72px);
+}
+.tfw-wave-feature-overline{
+  display:block;margin-bottom:15px;
+  color:#f7abd9;font:900 10px/1.3 Arial,sans-serif;letter-spacing:.2em;
+}
+.tfw-wave-feature-copy h3{
+  margin:0 0 17px;color:#fff;
+  font:900 clamp(28px,3.5vw,49px)/1.05 "Arial Black",Impact,Arial,sans-serif;
+  letter-spacing:-.055em;
+}
+.tfw-wave-feature-copy h3 em{color:#f2a0d6;font-style:normal}
+.tfw-wave-feature-copy>p{
+  max-width:485px;margin:0 0 26px;
+  color:rgba(255,255,255,.68);font:14px/1.75 Arial,sans-serif;
+}
+.tfw-wave-feature-cta{
+  display:inline-flex;justify-content:center;align-items:center;gap:13px;
+  max-width:100%;min-height:48px;
+  padding:13px 18px;text-decoration:none;
+  font:900 10px/1.5 Arial,sans-serif;letter-spacing:.07em;
+  text-align:center;white-space:normal;
+}
+.tfw-wave-feature-art{
+  position:relative;min-width:0;min-height:310px;
+  display:grid;place-items:center;
+  overflow:hidden;
+  background:radial-gradient(circle at 52% 50%,#864d9c30,transparent 61%);
+}
+.tfw-wave-feature-halo{
+  position:absolute;left:50%;top:50%;
+  width:min(78%,340px);aspect-ratio:1;border-radius:50%;
+  transform:translate(-50%,-50%) scale(1.2);
+  background:radial-gradient(circle,#ae70dd36 0%,#6d3baf13 50%,transparent 75%);
+  filter:blur(18px);
+}
+.tfw-wave-feature-planet{
+  position:relative;z-index:1;
+  width:clamp(155px,25vw,315px);aspect-ratio:1;
+  max-width:72%;border-radius:50%;
+  overflow:hidden;isolation:isolate;
+  background:
+    radial-gradient(circle at 29% 24%,rgba(237,167,241,.42),transparent 39%),
+    radial-gradient(circle at 65% 65%,rgba(184,91,194,.22),transparent 45%),
+    url("https://cdn.jsdelivr.net/npm/three-globe@2.45.0/example/img/earth-night.jpg") center / 205% 100%,
+    linear-gradient(140deg,#493171,#151c48 56%,#080c24);
+  box-shadow:inset -36px -18px 43px #050713e8,inset 12px 12px 28px #f5bcff28,
+    0 0 0 1px #f4b8ec7d,0 0 37px #d66ab073,0 0 85px #7a46bc44;
+  animation:tfwWaveFeatureFloat 9s ease-in-out infinite;
+}
+.tfw-wave-feature-planet-lines{
+  position:absolute;inset:4%;border:1px solid #ddacf52b;border-radius:50%;
+  transform:rotate(-17deg);
+}
+.tfw-wave-feature-planet-shine{
+  position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(120deg,rgba(251,183,235,.13),transparent 32%,transparent 60%,rgba(4,7,20,.58));
+}
+.tfw-wave-feature-equator{
+  position:absolute;z-index:2;left:50%;top:50%;
+  width:clamp(195px,30vw,380px);max-width:91%;
+  aspect-ratio:2.5;border:1px solid rgba(239,149,231,.42);border-radius:50%;
+  transform:translate(-50%,-50%) rotate(-19deg);pointer-events:none;
+}
+.tfw-wave-feature-star{position:absolute;width:3px;height:3px;border-radius:50%;background:#f1c9fb;box-shadow:0 0 10px #e3a3f4}
+.tfw-wave-feature-star.one{left:14%;top:22%}
+.tfw-wave-feature-star.two{right:18%;top:19%}
+.tfw-wave-feature-star.three{right:12%;bottom:17%}
+@keyframes tfwWaveFeatureFloat{50%{transform:translateY(-8px) rotate(1.5deg)}}
+@media(max-width:800px){
+ .tfw-wave-section{width:min(92vw,760px);padding:96px 0}
+ .tfw-wave-section .section-head{padding-bottom:33px}
+ .tfw-wave-feature{grid-template-columns:1fr}
+ .tfw-wave-feature-copy{padding:30px 30px 6px}
+ .tfw-wave-feature-art{min-height:260px;max-height:305px}
+ .tfw-wave-feature-planet{width:min(54vw,230px);max-width:80%}
+ .tfw-wave-feature-equator{width:min(64vw,275px)}
+}
+@media(max-width:560px){
+ .tfw-wave-section{width:92vw;padding:78px 0 88px}
+ .tfw-wave-section .section-head h2{font-size:clamp(32px,9vw,49px)}
+ .tfw-wave-feature{border-radius:19px}
+ .tfw-wave-feature-copy{padding:27px 22px 0}
+ .tfw-wave-feature-copy h3{font-size:clamp(27px,8vw,38px)}
+ .tfw-wave-feature-copy>p{font-size:12px;margin-bottom:21px}
+ .tfw-wave-feature-cta{width:100%;font-size:9px}
+ .tfw-wave-feature-art{min-height:225px}
+ .tfw-wave-feature-planet{width:min(48vw,200px)}
+ .tfw-wave-feature-equator{width:min(62vw,255px)}
+}
+@media(prefers-reduced-motion:reduce){.tfw-wave-feature-planet{animation:none}}
