@@ -131,7 +131,7 @@ test('Homepage CTA, seamless navigation and Cloudflare publication are connected
  const home=read('index.html'),nav=read('js/seamless-navigation.js'),build=read('tools/build-cloudflare-pages.mjs');
  assert.match(home,/id="tfwWaveTeaserHeading">THE GLOBAL MIDNIGHT WAVE/);
  assert.match(home,/href="global-wave\.html"/);
- assert.match(home,/css\/global-wave-teaser\.css\?v=3/);
+ assert.match(home,/css\/global-wave-teaser\.css\?v=4/);
  assert.match(nav,/'global-wave\.html'/);
  assert.match(build,/'global-wave\.html'/);
  for(const page of ['index.html','today.html','timeline.html','intel.html',
@@ -206,5 +206,16 @@ test('All four homepage chapters have full-width scenic backdrops without boxed 
  assert.match(style,/width:min\(1240px,90vw\)/);
  assert.match(style,/@media\(max-width:900px\)/);
  assert.match(style,/@media\(max-width:560px\)/);
- assert.match(home,/css\/global-wave-teaser\.css\?v=3/);
+ assert.match(home,/css\/global-wave-teaser\.css\?v=4/);
+});
+
+test('All four homepage sections share the same full-bleed base color grade',()=>{
+ const css=read('css/global-wave-teaser.css');
+ const home=read('index.html');
+ const shared=/\.home-page main > #globalWavePreview,\s*\.home-page main > #today,\s*\.home-page main > #timeline,\s*\.home-page main > #intel\s*\{\s*background:linear-gradient\(180deg,rgba\(255,255,255,\.018\),transparent 18%\),var\(--bg\);/;
+ assert.match(css,shared);
+ assert.match(home,/css\/global-wave-teaser\.css\?v=4/);
+ for(const [id,backdrop] of [['globalWavePreview','tfw-wave-backdrop'],['today','today-backdrop'],['timeline','timeline-backdrop'],['intel','intel-backdrop']]){
+  assert.match(home,new RegExp('id="'+id+'"[^>]*>[\\s\\S]*?class="section-backdrop '+backdrop+'"'));
+ }
 });

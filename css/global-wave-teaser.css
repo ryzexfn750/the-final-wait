@@ -168,3 +168,16 @@
   width:92vw;
  }
 }
+
+
+/* Homepage chapter backgrounds — one shared color grade for 01–04.
+   Previously chapter 04 had its own translucent light gradient while the
+   other scenes inherited the page background, producing a visible tone shift.
+   Keep each chapter's photographic/animated backdrop, but give the underlying
+   full-bleed sections the exact same base gradient and color. */
+.home-page main > #globalWavePreview,
+.home-page main > #today,
+.home-page main > #timeline,
+.home-page main > #intel {
+ background:linear-gradient(180deg,rgba(255,255,255,.018),transparent 18%),var(--bg);
+}
