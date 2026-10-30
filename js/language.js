@@ -118,6 +118,9 @@
       const select=control.parentElement?.querySelector('select');
       if(select)syncControl(control,select);
     });
+    // Use hand-reviewed site copy wherever available. The translation widget
+    // remains a fallback for editorial content not yet manually localized.
+    window.__tfwReviewedI18nApply?.(current);
   }
   function onCountryDetected(event){
     if(manual)return;
