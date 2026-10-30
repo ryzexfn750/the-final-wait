@@ -38,7 +38,7 @@ test('Coffee popup is discreet and the reminder offers persistent choice',()=>{
   assert.doesNotMatch(page,/class="tfw-support-project"/);
   assert.doesNotMatch(page,/class="tfw-experience-advisory"/);
   for(const p of ['index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html']){
-    assert.match(read(p),/js\/support-experience\.js\?v=1/);
+    assert.match(read(p),/js\/support-experience\.js\?v=2/);
   }
   assert.match(support,/https:\/\/buymeacoffee\.com\/ryzegtavi/);
   assert.match(support,/tfw-footer-coffee-button/);

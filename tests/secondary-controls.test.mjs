@@ -25,7 +25,7 @@ test('Secondary pages share centered navigation, volume, Share modal and dark la
    assert.ok(html.includes('gtranslate_wrapper language-widget'));
    assert.doesNotMatch(html,/id="(?:topbarZoneButton|zoneButton)"/);
    assert.match(html,/class="tfw-footer-creator-actions"/);
-   assert.match(html,/class="tfw-footer-logo"/);
+   assert.match(html,/class="footer-ryze-logo"/);
    assert.match(html,/CREATED BY<\/small><strong>RYZEGTAVI<\/strong>/);
    assert.match(html,/tfw-page-booting/);
    assert.doesNotMatch(html,/>TIME ZONE<\/a>/);
