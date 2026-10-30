@@ -335,7 +335,7 @@ test('Login text trimmed and reaction positions avoid countdown controls',()=>{
   assert.match(client,/getBoundingClientRect\(\)/);
   assert.match(client,/const bar=meter\?\.getBoundingClientRect\(\)/);
   assert.match(client,/MAX_VISIBLE_REACTIONS=26/);
-  assert.match(client,/finale-last-10/);
+  assert.match(client,/reactionLayerAvailable\(\)/);
   assert.match(client,/duration\+12/);
   assert.match(client,/fill\.style\.height/);
 });
