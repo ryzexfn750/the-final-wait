@@ -7,7 +7,7 @@ test('All site routes use v48 assets and the Russian translator is removed',()=>
  const home=read('index.html');
  for(const asset of ['js/clock.js?v=48','js/milestones.js?v=51',
    'js/language.js?v=49','js/final-call-locales.js?v=48',
-   'js/seamless-navigation.js?v=58','js/inpage-scroll.js?v=48',
+   'js/seamless-navigation.js?v=59','js/inpage-scroll.js?v=48',
    'css/site-polish.css?v=54']){
     assert.ok(home.includes(asset),asset);
  }
