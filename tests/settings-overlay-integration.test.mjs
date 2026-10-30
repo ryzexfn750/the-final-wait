@@ -25,7 +25,7 @@ test('Settings hub is accessible through seamless navigation and links to a live
  assert.match(settings,/CUSTOMIZE OVERLAY/);
  assert.match(settings,/js\/community-header\.js\?v=4/);
  assert.match(builder,/id="builderPreview"/);
- assert.match(builder,/src="stream-overlay\.html\?tz=Europe%2FRome"/);
+ assert.match(builder,/src="stream-overlay\.html\?v=3&amp;tz=Europe%2FRome"/);
  assert.match(css,/tfw-settings-feature/);
 });
 test('Every new HTML page is packaged into the Cloudflare Pages output',()=>{
