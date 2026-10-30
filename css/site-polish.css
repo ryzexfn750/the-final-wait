@@ -480,20 +480,37 @@ html.tfw-global-cursor-ready .timeline-viewport::-webkit-scrollbar{
   touch-action:none;
 }
 
-/* Creator support: contribution card, never an obstructive popup. */
-.tfw-support-project{position:relative;width:min(1160px,92vw);margin:40px auto 10px;padding:clamp(20px,3vw,34px);border-radius:22px;border:1px solid rgba(241,157,215,.26);background:linear-gradient(125deg,rgba(71,28,66,.42),rgba(20,13,36,.87));box-shadow:0 18px 45px rgba(4,3,13,.22);color:#f7eafa;isolation:isolate}
-.tfw-support-project-inner{display:flex;align-items:center;justify-content:space-between;gap:28px}
-.tfw-support-project-copy{max-width:710px;min-width:0}
-.tfw-support-project-eyebrow{display:block;font:800 10px/1.4 Arial,sans-serif;letter-spacing:.16em;color:#efafd7;margin-bottom:12px}
-.tfw-support-project h2{font:900 clamp(22px,3.3vw,39px)/1.05 Arial Black,Arial,sans-serif;letter-spacing:-.02em;margin:0 0 12px}
-.tfw-support-project-copy p{color:#cfc2d7;font-size:clamp(12px,1.3vw,15px);line-height:1.6;margin:0}
-.tfw-coffee-link{flex:0 0 auto;display:inline-flex;align-items:center;gap:12px;padding:16px 21px;border-radius:12px;background:#f4badc;color:#29142c!important;border:1px solid #fff7;text-decoration:none!important;font:900 12px/1.2 Arial,sans-serif;letter-spacing:.08em;transition:transform .2s,filter .2s}
-.tfw-coffee-link span{font-size:21px}
-.tfw-coffee-link:hover{transform:translateY(-2px);filter:brightness(1.08)}
-.tfw-coffee-link:focus-visible{outline:2px solid white;outline-offset:4px}
-.tfw-experience-advisory{display:flex;align-items:flex-start;flex-wrap:wrap;gap:7px;margin:25px 0 0!important;padding-top:17px;border-top:1px solid rgba(255,255,255,.1);font:400 12px/1.6 Arial,sans-serif!important;color:#baafc8!important}
-.tfw-experience-advisory strong{font-weight:900;letter-spacing:.05em;color:#e8c5dd}
-@media(max-width:750px){.tfw-support-project-inner{align-items:flex-start;flex-direction:column}.tfw-coffee-link{align-self:stretch;justify-content:center}.tfw-support-project{margin-top:22px}.tfw-experience-advisory{font-size:11px!important}}
+/* Small creator support control beside the existing footer X profile. */
+.tfw-footer-coffee-button{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:38px;padding:9px 13px;border-radius:999px;border:1px solid rgba(249,166,219,.4);background:rgba(48,24,55,.78);color:#ffe0f3;font:900 9px/1.3 Arial,sans-serif;letter-spacing:.065em;cursor:pointer;white-space:nowrap;transition:background .2s,border-color .2s}
+.tfw-footer-coffee-button span:first-child{font-size:17px}
+.tfw-footer-coffee-button:hover{background:rgba(243,92,184,.2);border-color:#e8a9d0}
+.tfw-footer-coffee-button:focus-visible{outline:2px solid #ffc2e8;outline-offset:3px}
+footer .footer-socials,footer .tfw-footer-creator{gap:12px;flex-wrap:wrap}
+.tfw-ui-overlay[hidden]{display:none!important}
+.tfw-ui-overlay{position:fixed;inset:0;z-index:2147483150;display:grid;place-items:center;padding:18px;background:rgba(5,3,13,.84);backdrop-filter:blur(16px);overflow-y:auto;overscroll-behavior:contain}
+.tfw-ui-dialog{position:relative;width:min(560px,100%);max-height:min(92dvh,780px);overflow-y:auto;overflow-x:hidden;padding:clamp(23px,4vw,40px);border-radius:21px;border:1px solid rgba(245,147,212,.38);background:linear-gradient(140deg,#29172f,#130e20 80%);box-shadow:0 25px 75px rgba(0,0,0,.58);color:#f8f2fa;text-align:center}
+.tfw-ui-dialog .tfw-ui-eyebrow{display:block;font:900 10px/1.4 Arial,sans-serif;letter-spacing:.17em;color:#eab4d7;margin:3px 0 14px}
+.tfw-ui-dialog h2{font:900 clamp(26px,4.4vw,39px)/1.06 Arial Black,Arial,sans-serif;letter-spacing:-.02em;margin:0 0 18px;color:#fff}
+.tfw-ui-dialog p{font:400 14px/1.7 Arial,sans-serif;color:#cfc2d4;margin:12px auto;max-width:48ch}
+.tfw-ui-coffee-mark{font-size:38px;margin:0 auto 14px}
+.tfw-ui-close{position:absolute;top:15px;right:15px;width:36px;height:36px;border-radius:10px;border:1px solid #ffffff32;background:#ffffff0d;color:#fff;font:26px/1 Arial;cursor:pointer}
+.tfw-ui-action,.tfw-ui-secondary{display:inline-flex;align-items:center;justify-content:center;width:100%;min-height:49px;padding:12px 20px;text-align:center;text-decoration:none!important;border-radius:11px;font:900 11px/1.35 Arial,sans-serif;letter-spacing:.075em;cursor:pointer;transition:filter .18s,transform .18s}
+.tfw-ui-action{margin-top:19px;background:linear-gradient(100deg,#ef80c5,#b084f5);color:#180e1f!important;border:1px solid #fff6}
+.tfw-ui-secondary{background:rgba(255,255,255,.065);border:1px solid rgba(255,255,255,.28);color:#ffe2f3}
+.tfw-ui-action:hover,.tfw-ui-secondary:hover{filter:brightness(1.09);transform:translateY(-1px)}
+.tfw-ui-action:focus-visible,.tfw-ui-secondary:focus-visible,.tfw-ui-close:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.tfw-experience-mark{display:block;font-size:34px;color:#f5b0e0;margin-bottom:17px}
+.tfw-ui-dialog .tfw-experience-choice-hint{font-weight:700;color:#fff2fa;margin-top:23px}
+.tfw-experience-choices{display:grid;gap:10px;margin-top:14px}
+.tfw-experience-choices .tfw-ui-action{margin-top:0}
+html.tfw-ui-modal-open{overflow:hidden!important}
+@media(max-width:570px){.tfw-footer-coffee-button{font-size:8px;padding:9px 11px}.tfw-ui-dialog p{font-size:13px}.tfw-ui-overlay{padding:12px}}
+@media(any-hover:hover) and (any-pointer:fine){
+ html.tfw-global-cursor-ready .tfw-ui-overlay,
+ html.tfw-global-cursor-ready .tfw-ui-overlay *{cursor:default!important}
+ html.tfw-global-cursor-ready .tfw-ui-overlay button,
+ html.tfw-global-cursor-ready .tfw-ui-overlay a{cursor:pointer!important}
+}
 
 /* Middle-click is handled by the custom autoscroll controller, never OS art. */
 #tfwGlobalCursor.autoscroll .tfw-global-cursor-reticle,
