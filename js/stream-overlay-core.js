@@ -2,15 +2,16 @@
 export const RELEASE={year:2026,month:11,day:19,hour:0,minute:0,second:0};
 export const DEFAULTS=Object.freeze({
  tz:'Europe/Rome',theme:'glass',position:'bottom-left',size:'medium',
- brand:true,progress:true,ms:false
+ brand:true,progress:true,x:38,y:862,w:460
 });
 export const OPTIONS=Object.freeze({
  theme:['glass','neon','minimal'],
- position:['top-left','top-right','bottom-left','bottom-right','bottom-center'],
- size:['small','medium','large']
+ position:['top-left','top-right','bottom-left','bottom-right','bottom-center','custom'],
+ size:['small','medium','large','custom']
 });
 export const WAIT_START=new Date('2025-11-06T00:00:00+01:00').getTime();
 const validChoice=(key,value)=>OPTIONS[key].includes(value)?value:DEFAULTS[key];
+const bound=(v,min,max,fallback)=>{const n=Number(v);return v!==null&&v!==undefined&&v!==''&&Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback};
 export function isValidZone(zone){
  if(typeof zone!=='string'||zone.length>100||!(/^[A-Za-z0-9_+\-/]+$/.test(zone)))return false;
  try{new Intl.DateTimeFormat('en-US',{timeZone:zone});return true}catch{return false}
@@ -23,14 +24,14 @@ export function normalizeOptions(input={}){
   size:validChoice('size',input.size),
   brand:input.brand===false||input.brand==='0'?false:true,
   progress:input.progress===false||input.progress==='0'?false:true,
-  ms:input.ms===true||input.ms==='1'
+  x:bound(input.x,0,1920-220,38),y:bound(input.y,0,1080-85,862),w:bound(input.w,220,850,460)
  };
 }
 export function parseOptions(search){
  const p=search instanceof URLSearchParams?search:new URLSearchParams(search||'');
  return normalizeOptions({
   tz:p.get('tz'),theme:p.get('theme'),position:p.get('position'),size:p.get('size'),
-  brand:p.get('brand'),progress:p.get('progress'),ms:p.get('ms')
+  brand:p.get('brand'),progress:p.get('progress'),x:p.get('x'),y:p.get('y'),w:p.get('w')
  });
 }
 export function buildOverlayUrl(base,options){
@@ -38,7 +39,9 @@ export function buildOverlayUrl(base,options){
  const url=new URL('stream-overlay.html',base);
  url.search=new URLSearchParams({
   tz:o.tz,theme:o.theme,position:o.position,size:o.size,
-  brand:o.brand?'1':'0',progress:o.progress?'1':'0',ms:o.ms?'1':'0'
+  brand:o.brand?'1':'0',progress:o.progress?'1':'0',
+  ...(o.position==='custom'?{x:String(Math.round(o.x)),y:String(Math.round(o.y))}:{}),
+  ...(o.size==='custom'?{w:String(Math.round(o.w))}:{})
  }).toString();
  url.hash='';
  return url.href;
@@ -75,4 +78,24 @@ export function remaining(epoch,now){
 }
 export function waitProgress(epoch,now){
  return Math.min(1,Math.max(0,(now-WAIT_START)/Math.max(1,epoch-WAIT_START)));
+}
+
+export const CANVAS={width:1920,height:1080,widgetWidth:460,widgetHeight:184};
+export const PRESET_WIDTH=Object.freeze({small:322,medium:460,large:598});
+export function overlayGeometry(input={}){
+ const o=normalizeOptions(input);
+ const w=o.size==='custom'?o.w:PRESET_WIDTH[o.size];
+ const h=CANVAS.widgetHeight*w/CANVAS.widgetWidth;
+ const margin=40;
+ let x=margin,y=CANVAS.height-margin-h;
+ if(o.position==='bottom-right')x=CANVAS.width-margin-w;
+ if(o.position==='top-left'){x=margin;y=margin}
+ if(o.position==='top-right'){x=CANVAS.width-margin-w;y=margin}
+ if(o.position==='bottom-center')x=(CANVAS.width-w)/2;
+ if(o.position==='custom'){x=o.x;y=o.y}
+ return {
+  x:Math.max(0,Math.min(CANVAS.width-w,Math.round(x))),
+  y:Math.max(0,Math.min(CANVAS.height-h,Math.round(y))),
+  w:Math.round(w),h:Math.round(h)
+ };
 }
