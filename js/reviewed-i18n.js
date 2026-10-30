@@ -75,14 +75,24 @@
     saved.delete(node);return;
    }
   }
-  const translated=maps[locale]?.get(info.source)||info.source;
+  const reviewed=maps[locale]?.get(info.source);
+  const translated=reviewed||info.source;
   const replacement=info.leading+translated+info.trailing;
   if(node.nodeValue!==replacement)node.nodeValue=replacement;
   info.last=replacement;
-  // GTranslate must not machine-retranslate curated copy.
-  if(parent.childElementCount===0&&parent.getAttribute('translate')!=='no'){
-   parent.setAttribute('translate','no');
-   parent.classList.add('notranslate');
+  // Block automatic translation only where this language has a complete
+  // reviewed string. Otherwise restore GTranslate fallback for missing copy.
+  if(parent.childElementCount===0){
+   const protect=locale==='en'||!!reviewed;
+   if(protect&&parent.getAttribute('translate')!=='no'){
+    parent.setAttribute('translate','no');
+    parent.classList.add('notranslate');
+    parent.dataset.tfwReviewedNative='1';
+   }else if(!protect&&parent.dataset.tfwReviewedNative==='1'){
+    parent.removeAttribute('translate');
+    parent.classList.remove('notranslate');
+    delete parent.dataset.tfwReviewedNative;
+   }
   }
  }
  function apply(nextLocale=locale){
