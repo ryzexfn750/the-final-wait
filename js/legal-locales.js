@@ -700,5 +700,215 @@ window.__tfwLegalLocales={
         "التواصل"
       ]
     }
+  },
+  "tr": {
+    "privacy": {
+      "title": "Topluluk Gizlilik Bildirimi",
+      "stamp": "Taslak güncelleme: 29 Ekim 2026 · Sürüm 2026-10-29",
+      "notice": [
+        "Taslak — topluluğa kayıt henüz açık değil.",
+        "The Final Wait, bu bağımsız hayran projesinin kamuya açık adıdır. Hesaplar açılmadan önce kişisel verilerin işlenmesinden sorumlu kişi veya kuruluşun hukuki kimliği GDPR Madde 13 uyarınca doğrulanıp açıklanmalı, bildirim de gerçek hizmet sağlayıcı sözleşmeleri ve saklama ayarları kapsamında yeniden incelenmelidir."
+      ],
+      "heads": [
+        "1. Proje ve iletişim",
+        "2. İşlediğimiz bilgiler",
+        "3. İşleme amaçları",
+        "4. Kullanılan hizmetler",
+        "5. Bülten ve onayın geri çekilmesi",
+        "6. Veri saklama",
+        "7. Haklarınız",
+        "8. Site analizi ve değişiklikler"
+      ],
+      "body": [
+        "Projenin kamuya açık adı: {site}. Gizlilik, veri talepleri veya hesap desteği için {mail} adresine yazın. Bu adres bir iletişim kanalıdır; proje adı tek başına veri sorumlusunun doğrulanmış hukuki kimliğini göstermez.",
+        "Topluluğa katılırsanız Google ile doğrulanmış e-posta adresiniz, kimlik doğrulama tanımlayıcınız, seçtiğiniz herkese açık takma ad, topluluk şartlarını kabul ettiğiniz sürüm ve zaman, isteğe bağlı bülten tercihi ve onay zamanı, seçtiğiniz saat dilimi ve canlı tepkiler için gereken geçici bilgiler işlenebilir. Google ile barındırma ve güvenlik sağlayıcıları teknik bağlantı ve güvenlik bilgilerini kendi politikaları uyarınca ayrıca işleyebilir.",
+        "Üyelerden gerçek adlarını yayımlamalarını istemiyoruz. E-postanız diğer üyelere gösterilmez; takma adınız ve canlı emoji tepkileriniz aynı saat dilimi odasındaki katılımcılara görünebilir. Her kayıtlı hesap ayrıca herkese açık takma ad, baskı, bilet numarası ve ilk kayıt tarihini gösteren koleksiyonluk bir biniş kartı alır. Tahmin edilmesi zor herkese açık doğrulama bağlantınıza sahip herkes bu bilgileri görebilir. Bağlantı dizine eklenmek için tasarlanmamıştır ve hesap silindiğinde çalışmayı bırakır. Bu bilgileri alıcılara göstermek istemiyorsanız bağlantıyı paylaşmayın.",
+        "Kimlik doğrulama, hesap yönetimi ve canlı tepkiler talep ettiğiniz topluluk hizmetini sunmak için işlenir (uygunsa GDPR Madde 6(1)(b)). Güvenlik ve kötüye kullanımın önlenmesi, gerekli menfaat dengelemesi yapılarak meşru menfaate (Madde 6(1)(f)) dayanabilir. İsteğe bağlı duyuru e-postaları ayrı ve açık bir onay gerektirir (Madde 6(1)(a)). Bülteni reddetmek topluluğa erişimi engellemez.",
+        "Supabase Google girişini entegre etmek ve hesaplarla profilleri saklamak; Google kimlik doğrulamak; Cloudflare siteyi barındırmak, güvenlik kontrollerini ve canlı tepki altyapısını sağlamak; Sender isteğe bağlı duyuru listesini yönetmek için kullanılır. Bu hizmetler görevleri kapsamında kişisel veri işleyebilir. Kamuya açılmadan önce sözleşmeleri, işleme konumları, saklama süreleri ve olası uluslararası aktarım güvenceleri incelenmelidir. Bu taslak belirli bir saklama bölgesi veya aktarım yöntemi garantilemez.",
+        "E-posta listesine katılmak isteğe bağlıdır. Onay verirseniz adresiniz The Final Wait duyuruları için Sender'a iletilir. Bültenlerdeki abonelikten çıkma bağlantısı veya {mail} aracılığıyla onayınızı geri çekebilirsiniz. Bunun için topluluk hesabını silmeniz gerekmez. E-posta sağlayıcısıyla eşitlenmeyen talepler, adrese yeni ileti gönderilmeden önce elle çözülmelidir.",
+        "Hesap ve profil verileri normalde hesap aktifken saklanır ve silindiğinde gerekli güvenlik, yasal ve yedekleme yükümlülüklerine tabi olarak kaldırılması amaçlanır. Canlı tepki verileri kısa süreli olacak şekilde tasarlanmıştır. Bülten bilgileri abonelik boyunca ve onayı belgelemek veya çıkış taleplerine uymak için gereken süre saklanır. Sağlayıcıların yedekleme, günlük ve silme süreleri lansmandan önce hâlâ doğrulanmalıdır.",
+        "Geçerli koşullara bağlı olarak erişim, düzeltme, silme, işlemeyi kısıtlama, veri taşınabilirliği talep edebilir veya belirli işlemlere itiraz edebilirsiniz; bülten onayınızı istediğiniz zaman geri çekebilirsiniz. {mail} adresine yazın. Gerektiğinde {agency} dahil yetkili veri koruma makamına da şikâyette bulunabilirsiniz.",
+        "İsteğe bağlı Google Analytics çerezleri yalnızca ayrı KABUL ET/REDDET düğmeleriyle açıkça onay verildikten sonra kullanılır. Hesap açmak, şartları kabul etmek veya bültene katılmak için zorunlu değildir. Reddetmek site erişimini kısıtlamaz. Bu bildirim herkese açık kayıttan önce ve işleme süreçlerinde önemli değişiklik olduğunda güncellenecektir."
+      ],
+      "button": "ANALİTİK ÇEREZ TERCİHLERİNİ DEĞİŞTİR",
+      "footer": [
+        "THE FINAL WAIT · BAĞIMSIZ HAYRAN PROJESİ",
+        "Topluluk şartları",
+        "İletişim"
+      ],
+      "agency": "İtalya Veri Koruma Kurumu",
+      "privacyLabel": "Topluluk Gizlilik Bildirimi"
+    },
+    "terms": {
+      "title": "Topluluk Hizmet Şartları",
+      "stamp": "Taslak güncelleme: 29 Ekim 2026 · Sürüm 2026-10-29",
+      "notice": [
+        "Taslak — henüz herkese açık kayıtlar için geçerli değil.",
+        "The Final Wait projenin kamuya açık adıdır. Hesaplar herkese açılmadan önce hukuken sorumlu işletmeci belirlenmeli ve şartlar incelenmelidir."
+      ],
+      "heads": [
+        "1. Bağımsız hayran projesi",
+        "2. Topluluğa erişim",
+        "3. Canlı tepkiler",
+        "4. İsteğe bağlı duyuru e-postaları",
+        "5. Hesap ve gizlilik kontrolleri",
+        "6. İşleyiş ve değişiklikler",
+        "7. İletişim"
+      ],
+      "body": [
+        "The Final Wait bağımsız ve resmî olmayan bir hayran sitesidir. Rockstar Games veya Take-Two Interactive ile bağlantılı, bu şirketlerce onaylanmış ya da işletilen bir site değildir. Grand Theft Auto ile ilgili ad, marka ve resmî görseller kendi hak sahiplerine aittir.",
+        "Mevcut topluluk ön izlemesinde siteye girmek için Google ile oturum açıp herkese açık bir takma ad seçmelisiniz. E-postanız diğer katılımcılara yayımlanmaz. Başka birini, moderatörü, Rockstar Games'i ya da site işletmecisini taklit eden adlar kullanmayın; kimlik doğrulama ve güvenlik kontrollerini aşmaya çalışmayın. Her kayıtlı hesaba The Final Wait Airways'e ait süs amaçlı, devredilemez koleksiyon ürünü verilir. Bu gerçek bir biniş kartı, seyahat rezervasyonu, Rockstar ürünü veya kimlik belgesi değildir. Paylaşılan doğrulama bağlantısı takma adınızı ve kayıt tarihinizi gösterir. Hesabı silmek bilet bağlantısını da geçersiz kılar.",
+        "Live Hype, saat dilimi odalarına emoji tepkileri göndermeyi sağlar. Tepkilerin yanında takma ad görünebilir. Otomatik trafik, spam, taciz, güvenliği kötüye kullanma ve hizmeti aşırı yükleme ya da aksatma girişimleri yasaktır. Yoğunlukta tepkilere hız sınırı getirilebilir, gecikme yaşanabilir veya hizmet kullanılamayabilir.",
+        "Bülten e-postaları tamamen isteğe bağlıdır ve ayrı bir açık onay gerektirir. Hesabınızı kaybetmeden abonelikten çıkma bağlantısıyla veya {mail} üzerinden onayınızı geri çekebilirsiniz.",
+        "Seçilen takma ad kayıttan sonra değiştirilemez. Profilinizi görüntüleyebilir, isteğe bağlı e-posta tercihlerini yönetebilir ve mevcut hesap kontrollerinden silme talep edebilirsiniz. Bağlı posta listesinden çıkarma başarısız olursa hesabı güvenli biçimde silmek için ek destek gerekebilir. Ayrıntılar için {privacy} belgesine bakın.",
+        "Güvenlik ve hizmet güvenilirliği gerektiğinde topluluk denetlenebilir, geçici olarak kısıtlanabilir veya askıya alınabilir. Canlı tepkilerin kesintisiz çalışması garanti edilmez. Ana geri sayım ve müzik topluluk özelliğinden ayrıdır. Önemli şart değişiklikleri gerektiği yerde bildirilecektir.",
+        "Projenin kamuya açık adı: <strong>The Final Wait</strong>. İletişim: {mail}. Kamuya açık kayıt öncesinde işletmecinin yasal kimlik bilgileri tamamlanmalıdır."
+      ],
+      "footer": [
+        "THE FINAL WAIT · BAĞIMSIZ VE RESMÎ OLMAYAN HAYRAN PROJESİ ·",
+        "Gizlilik bildirimi",
+        "İletişim"
+      ]
+    }
+  },
+  "nl": {
+    "privacy": {
+      "title": "Privacyverklaring van de community",
+      "stamp": "Concept bijgewerkt op 29 oktober 2026 · Versie 2026-10-29",
+      "notice": [
+        "Concept — registratie voor de community is nog niet beschikbaar.",
+        "The Final Wait is de openbare naam van dit onafhankelijke fanproject. Voordat accounts beschikbaar komen, moet de juridische identiteit van de persoon of organisatie die verantwoordelijk is voor persoonsgegevens worden vastgesteld en bekendgemaakt volgens artikel 13 AVG. De verklaring moet daarnaast worden gecontroleerd aan de hand van de werkelijke overeenkomsten met dienstverleners en bewaartermijnen."
+      ],
+      "heads": [
+        "1. Project en contact",
+        "2. Welke gegevens we verwerken",
+        "3. Waarvoor de gegevens worden gebruikt",
+        "4. Betrokken diensten",
+        "5. Nieuwsbrief en toestemming intrekken",
+        "6. Bewaartermijnen",
+        "7. Je rechten",
+        "8. Websiteanalyse en wijzigingen"
+      ],
+      "body": [
+        "Openbare projectnaam: {site}. Voor privacyvragen, gegevensverzoeken en hulp met je account kun je mailen naar {mail}. Dit e-mailadres is een contactkanaal; de projectnaam alleen is geen bevestigde juridische identiteit van de verwerkingsverantwoordelijke.",
+        "Als je lid wordt, kan de dienst je via Google geverifieerde e-mailadres, authenticatie-id, gekozen openbare nickname, versie en tijdstip van instemming met de communityvoorwaarden, optionele nieuwsbriefkeuze en toestemmingstijdstip, geselecteerde tijdzone en tijdelijke gegevens voor live reacties verwerken. Google en hosting- en beveiligingsproviders kunnen technische verbindings- en beveiligingsgegevens afzonderlijk verwerken volgens hun eigen beleid.",
+        "We vragen leden niet hun echte naam te publiceren. Je e-mailadres is niet zichtbaar voor andere leden; je nickname en live emoji-reacties kunnen zichtbaar zijn voor deelnemers in dezelfde tijdzonekamer. Elk account krijgt ook een verzamelbare instapkaart met openbare nickname, editie, ticketnummer en oorspronkelijke registratiedatum. Iedereen met je moeilijk te raden openbare verificatielink kan die gegevens zien. De link is niet bedoeld voor indexering en werkt niet meer na accountverwijdering. Deel hem niet als je deze informatie niet aan ontvangers wilt tonen.",
+        "Authenticatie, accountbeheer en live reacties worden verwerkt om de gevraagde communitydienst te leveren (artikel 6 lid 1 onder b AVG, waar van toepassing). Beveiliging en misbruikpreventie kunnen steunen op gerechtvaardigde belangen (artikel 6 lid 1 onder f), na de vereiste belangenafweging. Optionele aankondigingsmails vereisen een afzonderlijke uitdrukkelijke keuze (toestemming, artikel 6 lid 1 onder a). Weigeren heeft geen gevolgen voor de toegang tot de community.",
+        "Supabase wordt gebruikt voor Google-login en opslag van accounts en profielen; Google verzorgt authenticatie; Cloudflare verzorgt hosting, beveiligingscontroles en infrastructuur voor live reacties; Sender beheert de optionele mailinglijst. Deze partijen kunnen persoonsgegevens verwerken voor hun taken. Contracten, verwerkingslocaties, bewaartermijnen en eventuele waarborgen voor internationale doorgifte moeten vóór de publieke lancering worden gecontroleerd. Dit concept garandeert geen bepaalde opslagregio of doorgiftemethode.",
+        "De mailinglijst is optioneel. Na toestemming wordt je e-mailadres aan Sender gegeven voor mededelingen van The Final Wait. Je kunt toestemming intrekken via de afmeldlink in nieuwsbrieven of via {mail}. Afmelden vereist geen verwijdering van het communityaccount. Verzoeken die niet met de mailprovider worden gesynchroniseerd moeten handmatig worden opgelost voordat nieuwe mail naar dat adres wordt verzonden.",
+        "Account- en profielgegevens blijven doorgaans bewaard zolang het account actief is en zijn bedoeld om na verwijdering van het account te worden gewist, behoudens noodzakelijke beveiligings-, wettelijke en back-upverplichtingen. Live reactiegegevens zijn kortstondig. Nieuwsbriefgegevens worden bewaard tijdens het abonnement en waar nodig om toestemming aan te tonen of afmeldingen te respecteren. Exacte termijnen voor back-ups, logs en verwijdering bij providers moeten vóór de start nog worden vastgesteld.",
+        "Onder toepasselijke voorwaarden kun je inzage, correctie, verwijdering, beperking en overdraagbaarheid aanvragen of bezwaar maken tegen bepaalde verwerkingen; nieuwsbrieftoestemming kun je altijd intrekken. Mail naar {mail}. Je kunt ook een klacht indienen bij de bevoegde gegevensbeschermingsautoriteit, eventueel bij de {agency}.",
+        "Optionele Google Analytics-cookies worden alleen gebruikt na uitdrukkelijke toestemming via afzonderlijke ACCEPTEREN/WEIGEREN-knoppen. Ze zijn niet nodig om een account aan te maken, voorwaarden te accepteren of je op de nieuwsbrief te abonneren. Weigeren beperkt je toegang niet. Deze verklaring wordt bijgewerkt vóór publieke registratie en bij belangrijke wijzigingen in de verwerking."
+      ],
+      "button": "VOORKEUREN VOOR ANALYTISCHE COOKIES WIJZIGEN",
+      "footer": [
+        "THE FINAL WAIT · ONAFHANKELIJK FANPROJECT",
+        "Communityvoorwaarden",
+        "Contact"
+      ],
+      "agency": "Italiaanse autoriteit voor gegevensbescherming",
+      "privacyLabel": "Privacyverklaring van de community"
+    },
+    "terms": {
+      "title": "Servicevoorwaarden van de community",
+      "stamp": "Concept bijgewerkt op 29 oktober 2026 · Versie 2026-10-29",
+      "notice": [
+        "Concept — nog niet geldig voor openbare registraties.",
+        "The Final Wait is de openbare projectnaam. De juridisch verantwoordelijke exploitant moet worden geïdentificeerd en de voorwaarden moeten worden gecontroleerd voordat accounts openbaar beschikbaar zijn."
+      ],
+      "heads": [
+        "1. Onafhankelijk fanproject",
+        "2. Toegang tot de community",
+        "3. Live reacties",
+        "4. Optionele aankondigingsmails",
+        "5. Accountbeheer en privacy",
+        "6. Werking en wijzigingen",
+        "7. Contact"
+      ],
+      "body": [
+        "The Final Wait is een onafhankelijke, onofficiële fansite. De site is niet verbonden met, goedgekeurd door of beheerd door Rockstar Games of Take-Two Interactive. Grand Theft Auto en gerelateerde namen, merken en officiële afbeeldingen behoren toe aan hun rechthebbenden.",
+        "In de huidige communitypreview moet je inloggen met Google en een openbare nickname kiezen om de website te gebruiken. Je e-mailadres wordt niet gepubliceerd. Gebruik geen nickname waarmee je je voordoet als iemand anders, een moderator, Rockstar Games of de sitebeheerder. Probeer authenticatie- of beveiligingscontroles niet te omzeilen. Elk account krijgt een decoratief, niet-overdraagbaar verzamelobject van The Final Wait Airways. Dit is geen echte instapkaart, reisboeking, Rockstar-product of identiteitsbewijs. Een gedeelde verificatielink toont nickname en registratiedatum; bij verwijdering van het account vervalt ook de ticketlink.",
+        "Live Hype laat deelnemers emoji-reacties sturen naar een tijdzonekamer. Reacties kunnen met een nickname worden getoond. Geautomatiseerd verkeer, spam, intimidatie, beveiligingsmisbruik en pogingen de dienst te overbelasten of verstoren zijn verboden. Reacties kunnen worden beperkt, vertraagd of tijdelijk niet beschikbaar zijn bij hoge drukte.",
+        "Nieuwsbriefmails zijn volledig optioneel en vragen een afzonderlijke actieve toestemming. Je kunt die toestemming intrekken zonder je account kwijt te raken, via de afmeldlink of door te mailen naar {mail}.",
+        "Je gekozen nickname is na registratie permanent. Je kunt je profiel bekijken, optionele e-mailvoorkeuren beheren en via de accountfuncties om verwijdering vragen. Als verwijdering uit een gekoppelde mailinglijst mislukt, kan extra hulp nodig zijn om je account veilig te wissen. Lees de {privacy} voor informatie over gegevensverwerking en je rechten.",
+        "De community kan worden gemodereerd, tijdelijk beperkt of opgeschort vanwege veiligheid en betrouwbaarheid. Ononderbroken beschikbaarheid van live reacties is niet gegarandeerd. De hoofdaftelling en muziek staan los van de communityfunctie. Belangrijke wijzigingen in deze voorwaarden worden gemeld waar dat vereist is.",
+        "Openbare projectnaam: <strong>The Final Wait</strong>. Contact: {mail}. De wettelijk vereiste identificatiegegevens van de exploitant moeten nog worden afgerond vóór de openbare registratie."
+      ],
+      "footer": [
+        "THE FINAL WAIT · ONAFHANKELIJK, ONOFFICIEEL FANPROJECT ·",
+        "Privacyverklaring",
+        "Contact"
+      ]
+    }
+  },
+  "ko": {
+    "privacy": {
+      "title": "커뮤니티 개인정보 처리 안내",
+      "stamp": "초안 수정: 2026년 10월 29일 · 버전 2026-10-29",
+      "notice": [
+        "초안 — 커뮤니티 등록은 아직 제공되지 않습니다.",
+        "The Final Wait는 독립 팬 프로젝트의 공개 명칭입니다. 계정을 제공하기 전에 GDPR 제13조에 따라 개인정보 처리 책임자의 법적 신원을 확인하고 공개해야 하며, 실제 서비스 제공업체 계약과 보관 설정에 맞춰 본 안내를 검토해야 합니다."
+      ],
+      "heads": [
+        "1. 프로젝트 및 문의",
+        "2. 처리하는 정보",
+        "3. 개인정보 이용 목적",
+        "4. 관련 서비스",
+        "5. 뉴스레터 및 동의 철회",
+        "6. 보관 기간",
+        "7. 이용자 권리",
+        "8. 사이트 분석 및 변경"
+      ],
+      "body": [
+        "프로젝트의 공개 명칭: {site}. 개인정보 문의, 데이터 요청 또는 계정 관련 지원은 {mail}로 연락해 주세요. 이 이메일은 연락 수단일 뿐이며 프로젝트 이름만으로 개인정보 처리자의 검증된 법적 신원을 나타내지는 않습니다.",
+        "커뮤니티에 가입하면 Google 인증 이메일 주소, 인증 식별자, 선택한 공개 닉네임, 커뮤니티 약관 동의 버전과 시각, 선택적인 뉴스레터 수신 여부와 동의 시각, 선택한 시간대 및 실시간 반응에 필요한 임시 정보를 처리할 수 있습니다. Google과 호스팅·보안 업체는 각자의 정책에 따라 기술적 연결·보안 정보를 별도로 처리할 수 있습니다.",
+        "실명 공개를 요구하지 않습니다. 이메일 주소는 다른 회원에게 공개되지 않지만 닉네임과 실시간 이모지 반응은 같은 시간대 채팅방 참가자에게 표시될 수 있습니다. 모든 가입 계정에는 공개 닉네임, 에디션, 티켓 번호, 최초 가입 날짜가 표시된 수집용 탑승권이 제공됩니다. 추측하기 어려운 공개 확인 링크를 가진 사람은 누구나 이 정보를 볼 수 있습니다. 링크는 검색 엔진 색인을 위한 것이 아니며 계정을 삭제하면 작동하지 않습니다. 수신자에게 정보를 보여 주고 싶지 않다면 공유하지 마세요.",
+        "인증, 계정 관리 및 실시간 반응은 요청하신 커뮤니티 서비스를 제공하기 위해 처리됩니다(해당하는 경우 GDPR 제6조 제1항 (b)). 보안 및 남용 방지는 필요한 이익 형량을 거쳐 정당한 이익(동항 (f))에 근거할 수 있습니다. 선택적인 공지 이메일은 별도의 명시적 동의(동항 (a))가 필요합니다. 뉴스레터를 거절해도 커뮤니티 이용에는 영향이 없습니다.",
+        "Supabase는 Google 로그인 연동 및 계정·프로필 저장, Google은 인증, Cloudflare는 사이트 호스팅·보안 확인·실시간 반응 인프라, Sender는 선택적 공지 메일 목록 관리에 사용됩니다. 해당 업체는 업무 수행을 위해 개인정보를 처리할 수 있습니다. 공개 출시 전에 계약, 처리 위치, 보관 기간 및 국제 이전 보호조치를 검토해야 합니다. 이 초안은 특정 저장 지역이나 이전 방식을 보장하지 않습니다.",
+        "이메일 목록 구독은 선택 사항입니다. 동의하면 The Final Wait의 공지를 위해 이메일 주소가 Sender에 전달됩니다. 메일 내 구독 취소 링크 또는 {mail}을 통해 동의를 철회할 수 있습니다. 커뮤니티 계정을 삭제할 필요는 없습니다. 메일 제공업체에 동기화되지 않은 요청은 해당 주소로 추가 이메일을 보내기 전에 수동으로 해결해야 합니다.",
+        "계정·프로필 기록은 보통 계정이 활성화된 동안 보관되며, 계정 삭제 후에는 필요한 보안·법적 의무 및 백업 보관 요건에 따라 제거될 예정입니다. 실시간 반응 데이터는 단기간 보관하도록 설계되었습니다. 뉴스레터 정보는 구독 기간과 동의 기록 또는 구독 취소 이행에 필요한 기간 동안 보관됩니다. 제공업체의 백업·로그·삭제와 관련한 정확한 기간은 출시 전에 확인해야 합니다.",
+        "적용 요건에 따라 열람, 정정, 삭제, 처리 제한, 데이터 이동을 요청하거나 특정 처리에 반대할 수 있고, 뉴스레터 동의는 언제든 철회할 수 있습니다. 연락처: {mail}. 필요한 경우 {agency}를 포함한 관할 개인정보 보호 감독기관에 불만을 제기할 수도 있습니다.",
+        "선택적 Google Analytics 쿠키는 동의/거부 버튼을 통해 명시적으로 동의한 경우에만 사용됩니다. 계정 등록, 약관 동의 또는 뉴스레터 구독에 필요하지 않습니다. 거부해도 사이트 이용이 제한되지 않습니다. 본 안내는 공개 등록 시작 전과 중요한 처리 변경이 있을 때 업데이트됩니다."
+      ],
+      "button": "분석 COOKIE 설정 변경",
+      "footer": [
+        "THE FINAL WAIT · 독립 팬 프로젝트",
+        "커뮤니티 약관",
+        "문의"
+      ],
+      "agency": "이탈리아 개인정보 보호 감독기관",
+      "privacyLabel": "커뮤니티 개인정보 처리 안내"
+    },
+    "terms": {
+      "title": "커뮤니티 서비스 약관",
+      "stamp": "초안 수정: 2026년 10월 29일 · 버전 2026-10-29",
+      "notice": [
+        "초안 — 아직 공개 등록에 적용되지 않습니다.",
+        "The Final Wait는 프로젝트의 공개 명칭입니다. 공개 계정을 제공하기 전에 법적 책임이 있는 운영자를 확인하고 약관을 검토해야 합니다."
+      ],
+      "heads": [
+        "1. 독립 팬 프로젝트",
+        "2. 커뮤니티 접근",
+        "3. 실시간 반응",
+        "4. 선택적 공지 이메일",
+        "5. 계정 관리 및 개인정보",
+        "6. 운영 및 변경",
+        "7. 문의"
+      ],
+      "body": [
+        "The Final Wait는 독립적인 비공식 팬 사이트입니다. Rockstar Games나 Take-Two Interactive와 제휴하지 않았으며 이들 회사의 승인이나 운영을 받지 않습니다. Grand Theft Auto 및 관련 명칭, 상표, 공식 이미지는 각 권리자에게 귀속됩니다.",
+        "현재 커뮤니티 미리보기에서는 Google로 로그인하고 공개 닉네임을 정해야 사이트에 접근할 수 있습니다. 이메일은 다른 참가자에게 공개되지 않습니다. 다른 사람, 운영자, Rockstar Games 또는 사이트 관리자 행세를 하는 닉네임을 사용하거나 인증 및 보안 확인을 우회하지 마세요. 모든 계정에는 양도할 수 없는 장식용 The Final Wait Airways 수집품이 제공됩니다. 실제 탑승권, 여행 예약, Rockstar 제품 또는 신분증이 아닙니다. 공유 확인 링크에는 닉네임과 가입 날짜가 표시되며 계정을 삭제하면 티켓 링크도 무효화됩니다.",
+        "Live Hype에서는 시간대별 방에 이모지 반응을 보낼 수 있습니다. 반응은 닉네임과 함께 표시될 수 있습니다. 자동화된 트래픽, 스팸, 괴롭힘, 보안 악용, 서비스 과부하나 방해 시도는 금지됩니다. 이용자가 많을 때 반응이 제한되거나 지연되거나 일시적으로 중단될 수 있습니다.",
+        "뉴스레터는 전적으로 선택 사항이며 별도의 명시적 동의가 필요합니다. 메일 내 구독 취소 링크 또는 {mail}을 통해 계정을 유지하면서 동의를 철회할 수 있습니다.",
+        "등록 후 닉네임은 변경할 수 없습니다. 제공된 계정 도구로 프로필을 보고 선택적 메일 설정을 관리하고 계정 삭제를 요청할 수 있습니다. 연동된 메일 목록에서 삭제가 실패하면 안전한 계정 삭제를 위해 추가 지원이 필요할 수 있습니다. 개인정보 처리 및 권리는 {privacy}에서 확인하세요.",
+        "보안과 서비스 안정성을 위해 커뮤니티를 관리하거나 일시적으로 제한·중단할 수 있습니다. 실시간 반응의 중단 없는 이용은 보장하지 않습니다. 기본 카운트다운과 음악은 커뮤니티 기능과 별개입니다. 약관의 중요한 변경은 필요한 경우 안내합니다.",
+        "프로젝트의 공개 명칭: <strong>The Final Wait</strong>. 문의: {mail}. 공개 등록 전까지 법률상 요구되는 운영자 신원 정보를 확정해야 합니다."
+      ],
+      "footer": [
+        "THE FINAL WAIT · 독립적인 비공식 팬 프로젝트 ·",
+        "개인정보 안내",
+        "문의"
+      ]
+    }
   }
 };
