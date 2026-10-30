@@ -123,7 +123,7 @@ test('Profile-only placement, no public sign-in and Cloudflare routing all work 
  const build=read('tools/build-cloudflare-pages.mjs');
  assert.match(profile,/id="profileTicketCanvas"/);
  assert.match(profile,/id="profileTicketActions"/);
- assert.match(profile,/css\/boarding-pass\.css\?v=1/);
+ assert.match(profile,/css\/boarding-pass\.css\?v=2/);
  assert.match(client,/fetch\('\/api\/community\/boarding-pass'/);
  assert.match(client,/mountBoardingPass\(/);
  assert.match(client,/attachBoardingPassActions\(/);
