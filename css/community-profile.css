@@ -104,3 +104,18 @@
 .tfw-support-card>div{max-width:100%;min-width:0}
 .tfw-support-card strong{overflow-wrap:anywhere;font-size:clamp(20px,3vw,32px)}
 .tfw-support-card .tfw-profile-button{margin-top:16px}
+
+/* Profile: compact device-local Streamer Mode switch. */
+.tfw-streamer-card{justify-content:space-between;gap:24px;align-items:center}
+.tfw-streamer-description{flex:1 1 330px;min-width:0}
+.tfw-streamer-description h2{margin:6px 0 8px;font:900 clamp(19px,3vw,27px)/1.1 Arial Black,Arial,sans-serif;color:#fff}
+.tfw-profile-card .tfw-streamer-description p{margin:8px 0;color:#d8c9e0;line-height:1.55}
+.tfw-profile-card .tfw-streamer-description .tfw-streamer-footnote{color:#a99bb5;font-size:11px}
+.tfw-streamer-control{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none}
+.tfw-streamer-control input{position:absolute;width:1px;height:1px;opacity:0}
+.tfw-streamer-track{display:flex;align-items:center;width:57px;height:31px;padding:3px;border:1px solid #ca91c3;border-radius:999px;background:#32243e;transition:background .18s}
+.tfw-streamer-track span{display:block;width:23px;height:23px;border-radius:50%;background:#d8c8e3;transition:transform .18s,background .18s}
+.tfw-streamer-control input:checked+.tfw-streamer-track{background:linear-gradient(120deg,#e466b5,#a57cda)}
+.tfw-streamer-control input:checked+.tfw-streamer-track span{transform:translateX(25px);background:#fff}
+.tfw-streamer-control input:focus-visible+.tfw-streamer-track{outline:2px solid white;outline-offset:4px}
+.tfw-streamer-control strong{min-width:27px;text-align:right;font:900 11px/1 Arial;color:#f5d5ee}

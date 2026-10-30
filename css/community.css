@@ -580,3 +580,6 @@ body>footer:has(>.tfw-community-footer-links)>.tfw-community-footer-links a:hove
 #tfwGateLegal .tfw-gate-legal-body footer .tfw-legal-credit{font-weight:600}
 #tfwGateLegal .tfw-gate-legal-body footer .tfw-legal-links{display:flex;align-items:center;gap:10px;white-space:nowrap;flex-wrap:wrap}
 @media(max-width:570px){#tfwGateLegal .tfw-gate-legal-body footer{justify-content:center;text-align:center}#tfwGateLegal .tfw-gate-legal-body footer .tfw-legal-links{justify-content:center}}
+
+/* Streamer-safe display: no nicknames next to live reactions. */
+html.tfw-streamer-mode .tfw-hype-float-name{display:none!important}

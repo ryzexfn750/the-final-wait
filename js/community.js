@@ -11,6 +11,18 @@ const active=!embedded&&(PUBLIC_COMMUNITY_ENABLED||communityPreview);
 const EMOJIS=['🔥','🚀','🥳','🎉','🌴','🩷','💜'];
 // Older deployed Workers may still accept only the original four reactions.
 const LEGACY_EMOJIS=['🔥','🚀','🎉','💜'];
+// Streamer Mode is device-local: suppress nickname rendering on livestreams.
+const STREAMER_MODE_KEY='tfw_streamer_mode_v1';
+function updateStreamerMode(){
+  let enabled=false;
+  try{enabled=localStorage.getItem(STREAMER_MODE_KEY)==='on'}catch{}
+  document.documentElement.classList.toggle('tfw-streamer-mode',enabled);
+}
+updateStreamerMode();
+window.addEventListener('storage',event=>{
+  if(event.key===STREAMER_MODE_KEY)updateStreamerMode();
+});
+window.addEventListener('tfw:streamer-mode-change',updateStreamerMode);
 if(active)void initCommunity().catch(error=>{
   console.error('Community boot failed',error);
   document.documentElement.classList.add('tfw-auth-pending');
@@ -326,7 +338,10 @@ async function initCommunity(){
       const e=document.createElement('span');e.className='tfw-hype-float-emoji';
       e.textContent=item.emoji;
       const name=document.createElement('span');name.className='tfw-hype-float-name';
-      name.textContent=item.nickname;node.append(e,name);layer.appendChild(node);
+      name.textContent=item.nickname;
+      node.appendChild(e);
+      if(!document.documentElement.classList.contains('tfw-streamer-mode'))node.appendChild(name);
+      layer.appendChild(node);
       while(layer.children.length>14)layer.firstElementChild.remove();
       setTimeout(()=>node.remove(),1150);
     }

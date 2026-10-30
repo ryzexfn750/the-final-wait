@@ -531,3 +531,30 @@ html.tfw-ui-modal-open{overflow:hidden!important}
 
 /* An embedded route draws its own cursor. Hide the frozen host cursor. */
 html.tfw-route-overlay-open #tfwGlobalCursor{opacity:0!important;visibility:hidden!important}
+
+/* True site-styled I-beam while hovering selectable copy or dragging a selection. */
+#tfwGlobalCursor .tfw-global-cursor-reticle svg.tfw-global-cursor-ibeam{display:none}
+#tfwGlobalCursor.text-input .tfw-global-cursor-reticle,
+#tfwGlobalCursor.text-caret .tfw-global-cursor-reticle,
+#tfwGlobalCursor.text-selecting .tfw-global-cursor-reticle{opacity:1!important}
+#tfwGlobalCursor.text-input .tfw-global-cursor-reticle svg:not(.tfw-global-cursor-ibeam),
+#tfwGlobalCursor.text-caret .tfw-global-cursor-reticle svg:not(.tfw-global-cursor-ibeam),
+#tfwGlobalCursor.text-selecting .tfw-global-cursor-reticle svg:not(.tfw-global-cursor-ibeam){display:none!important}
+#tfwGlobalCursor.text-input .tfw-global-cursor-reticle svg.tfw-global-cursor-ibeam,
+#tfwGlobalCursor.text-caret .tfw-global-cursor-reticle svg.tfw-global-cursor-ibeam,
+#tfwGlobalCursor.text-selecting .tfw-global-cursor-reticle svg.tfw-global-cursor-ibeam{
+ display:block!important;width:18px!important;height:32px!important;
+ transform:translate(-7px,-4px)!important;
+ filter:drop-shadow(0 1px 2px #08030e) drop-shadow(0 0 3px rgba(246,145,215,.35))
+}
+#tfwGlobalCursor.text-selecting .tfw-global-cursor-glow{opacity:0!important}
+@media(any-hover:hover) and (any-pointer:fine){
+ html.tfw-global-cursor-ready.tfw-text-selection-active body,
+ html.tfw-global-cursor-ready.tfw-text-selection-active body *,
+ html.tfw-global-cursor-ready.tfw-text-selection-active a,
+ html.tfw-global-cursor-ready.tfw-text-selection-active button,
+ html.tfw-global-cursor-ready input:not([type="range"]),
+ html.tfw-global-cursor-ready textarea,
+ html.tfw-global-cursor-ready select,
+ html.tfw-global-cursor-ready [contenteditable="true"]{cursor:none!important}
+}

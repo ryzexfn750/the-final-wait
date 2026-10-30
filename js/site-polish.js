@@ -26,6 +26,10 @@
       '<path d="M2 1.5 L2 27 L8.5 21 L14.2 33 L19.7 30.4 L14.1 19 L25.2 18.3 Z" fill="none" stroke="#130d1e" stroke-width="3.2" stroke-linejoin="round"/>'+
       '<path d="M2 1.5 L2 27 L8.5 21 L14.2 33 L19.7 30.4 L14.1 19 L25.2 18.3 Z" fill="url(#tfwArrowGradient)" stroke="rgba(255,255,255,.92)" stroke-width="1.15" stroke-linejoin="round"/>'+
       '</svg>';
+    // Render a matching I-beam inside the same custom cursor when selecting text.
+    reticle.innerHTML+='<svg class="tfw-global-cursor-ibeam" viewBox="0 0 18 32" aria-hidden="true" focusable="false">'+
+      '<path d="M3 3H15M9 3V29M3 29H15" fill="none" stroke="#130d1e" stroke-width="4.3" stroke-linecap="round"/>'+
+      '<path d="M3 3H15M9 3V29M3 29H15" fill="none" stroke="#f8b4e7" stroke-width="2" stroke-linecap="round"/></svg>';
     layer.appendChild(halo);
     layer.appendChild(reticle);
     document.body.appendChild(layer);
@@ -127,7 +131,10 @@
       const interactive=Boolean(target?.closest?.('a,button,summary,[role="button"],[role="link"],input[type="range"],label'));
       const textInput=Boolean(target?.closest?.('input:not([type="range"]),textarea,select,[contenteditable="true"]'));
       layer.classList.toggle('interactive',interactive&&!textInput);
+      const textCaret=Boolean(!interactive&&!textInput&&target?.closest?.(
+        'p,h1,h2,h3,h4,h5,h6,blockquote,li,dt,dd,figcaption,.legal-copy,.tfw-hype-float-name'));
       layer.classList.toggle('text-input',textInput);
+      layer.classList.toggle('text-caret',textCaret);
       reveal();
       if(!frame)frame=requestAnimationFrame(paint);
     }
