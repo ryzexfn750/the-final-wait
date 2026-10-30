@@ -1,3 +1,4 @@
+import {mountTicketQR} from './ticket-qr.js?v=1';
 /* THE FINAL WAIT AIRWAYS — collectible digital boarding pass.
  * Ticket metadata is always sourced from the authenticated/public API.
  * Screenshot paths are a fixed allowlist from this repository.
@@ -40,6 +41,7 @@ export function mountBoardingPass(host,pass){
  const card=document.createElement('article');
  card.className='tfw-ticket tfw-ticket--'+pass.edition;
  card.setAttribute('aria-label',e.name+' for '+pass.nickname);
+ card.dataset.ticketId=pass.publicId;
  card.innerHTML=
   '<div class="tfw-ticket-noise" aria-hidden="true"></div>'+
   '<div class="tfw-ticket-layout">'+
@@ -57,7 +59,7 @@ export function mountBoardingPass(host,pass){
       '<span class="tfw-ticket-destination">LEONIDA</span>'+
       '<span class="tfw-ticket-flight"></span>'+
       '<div class="tfw-ticket-mini"><span>GATE <b>VI</b></span><span>SEAT <b>06A</b></span></div>'+
-      '<div class="tfw-ticket-barcode" aria-hidden="true"></div>'+
+      '<div class="tfw-ticket-qr" aria-label="QR code for The Final Wait"></div>'+
       '<span class="tfw-ticket-code"></span>'+
       '<span class="tfw-ticket-verified">✓ VERIFIED PASSENGER</span>'+
     '</div>'+
@@ -72,188 +74,54 @@ export function mountBoardingPass(host,pass){
   const strong=document.createElement('strong');strong.textContent=value;
   cell.append(caption,strong);grid.appendChild(cell);
  }
- renderBarcode(card.querySelector('.tfw-ticket-barcode'),pass.ticketCode);
+ mountTicketQR(card.querySelector('.tfw-ticket-qr'));
  host.appendChild(card);
  return card;
 }
-function barcodePattern(code){
- // Deterministic decorative code inspired by traditional aviation BCBP strips.
- let seed=2166136261;
- for(const ch of code)seed=Math.imul(seed^ch.charCodeAt(0),16777619)>>>0;
- const bars=[3,1,2,1,3];
- for(let i=0;i<78;i++){
-  seed=(Math.imul(seed,1664525)+1013904223)>>>0;
-  bars.push((seed>>>30)+1);
+// Exact screenshot export: rasterize the same DOM, CSS, official screenshot,
+// font metrics and QR code that the user sees, rather than redrawing a second
+// approximation via independent Canvas text positions.
+let htmlImageModule;
+async function captureLibrary(){
+ if(!htmlImageModule){
+  htmlImageModule=import('https://cdn.jsdelivr.net/npm/html-to-image@1.11.13/+esm')
+    .catch(error=>{htmlImageModule=null;throw Error('Image exporter could not load. Check your connection.')});
  }
- return [...bars,3,1,2,1,3];
-}
-function renderBarcode(host,code){
- host.replaceChildren();
- const ns='http://www.w3.org/2000/svg';
- const svg=document.createElementNS(ns,'svg');
- svg.setAttribute('viewBox','0 0 320 96');
- svg.setAttribute('preserveAspectRatio','none');
- svg.setAttribute('aria-hidden','true');
- const rect=(x,y,w,h,fill)=>{
-  const r=document.createElementNS(ns,'rect');
-  r.setAttribute('x',x);r.setAttribute('y',y);
-  r.setAttribute('width',w);r.setAttribute('height',h);
-  r.setAttribute('fill',fill);svg.appendChild(r);
- };
- rect(0,0,320,96,'#140b2180');
- rect(12,9,296,1,'#ffd4ee55');
- rect(12,86,296,1,'#ffd4ee55');
- const bars=barcodePattern(code),units=bars.reduce((a,b)=>a+b+1,0),u=282/units;
- let x=19;
- for(let i=0;i<bars.length;i++){
-  const guard=i<5||i>=bars.length-5;
-  const height=guard?65:(i%7===0?61:57);
-  rect(x,16+(65-height)/2,bars[i]*u,height,guard?'#fff8ff':'#fbd5ed');
-  x+=(bars[i]+1)*u;
- }
- host.appendChild(svg);
-}
-function drawCover(ctx,img,w,h){
- const scale=Math.max(w/img.width,h/img.height);
- const sw=w/scale,sh=h/scale;
- ctx.drawImage(img,(img.width-sw)/2,(img.height-sh)/2,sw,sh,0,0,w,h);
-}
-async function loadScene(src){
- return new Promise(resolve=>{
-  const img=new Image();
-  img.onload=()=>resolve(img);
-  img.onerror=()=>resolve(null);
-  img.src=src;
- });
-}
-function roundRect(ctx,x,y,w,h,r,fill){
- ctx.beginPath();ctx.roundRect(x,y,w,h,r);
- if(fill)ctx.fill();else ctx.stroke();
-}
-function text(ctx,str,x,y,size,color='#fff',weight=700,maxWidth=Infinity){
- ctx.fillStyle=color;
- ctx.font=weight+' '+size+'px "Arial Black",Arial,sans-serif';
- ctx.textBaseline='alphabetic';
- if(Number.isFinite(maxWidth))ctx.fillText(String(str),x,y,maxWidth);
- else ctx.fillText(String(str),x,y);
-}
-function textBlock(ctx,label,value,x,y,width,scale=1){
- text(ctx,label,x,y,15*scale,'#f8c7e6',800);
- text(ctx,value,x,y+43*scale,33*scale,'#fffafc',900,width);
-}
-function drawBarcode(ctx,code,x,y,width,height){
- // Matching high-contrast barcode with breathing room, guard bars and
- // subtle scan-line framing. Decorative only, not a real travel barcode.
- ctx.fillStyle='#140b21cc';roundRect(ctx,x,y,width,height,14,true);
- ctx.fillStyle='#eeb5dd66';
- ctx.fillRect(x+16,y+12,width-32,2);
- ctx.fillRect(x+16,y+height-15,width-32,2);
- const bars=barcodePattern(code);
- const units=bars.reduce((sum,n)=>sum+n+1,0),u=(width-52)/units;
- let px=x+26;
- for(let i=0;i<bars.length;i++){
-  const guard=i<5||i>=bars.length-5;
-  const h=(height-41)*(guard?1:i%7===0?.95:.86);
-  ctx.fillStyle=guard?'#fff8ff':'#fbd6ec';
-  ctx.fillRect(px,y+19+((height-41)-h)/2,bars[i]*u,h);
-  px+=(bars[i]+1)*u;
- }
-}
-function ticketFrame(ctx,w,h,e,portrait){
- // Keep the actual GTA VI screenshot visible in both exported formats.
- ctx.save();ctx.globalAlpha=.42;
- const x=ctx.createRadialGradient(w*.65,h*.22,5,w*.65,h*.22,w*.8);
- x.addColorStop(0,e.accent2+'a1');x.addColorStop(1,'#100a2100');
- ctx.fillStyle=x;ctx.fillRect(0,0,w,h);
- ctx.restore();
- const m=portrait?45:44;
- ctx.strokeStyle=e.accent+'99';ctx.lineWidth=3;
- roundRect(ctx,m,m,w-m*2,h-m*2,portrait?38:38,false);
- const inner=portrait?65:72;
- const grad=ctx.createLinearGradient(inner,inner,w-inner,h-inner);
- grad.addColorStop(0,'#170e28a1');grad.addColorStop(.66,'#110b2085');
- grad.addColorStop(1,'#290f319e');
- ctx.fillStyle=grad;roundRect(ctx,inner,inner,w-2*inner,h-2*inner,29,true);
-}
-function drawTicketWide(ctx,pass,e){
- const pad=117;
- text(ctx,'THE FINAL WAIT',pad,149,31,'#fff',900);
- text(ctx,'AIRWAYS',pad+310,149,25,e.accent,900);
- text(ctx,'✦ LEONIDA INTERNATIONAL ✦',pad,188,16,'#f0c5dd',800);
- text(ctx,'YOUR TICKET',pad,279,75,'#fff3fc',900,930);
- text(ctx,'TO LEONIDA.',pad,361,82,e.accent,900,970);
- ctx.fillStyle=e.accent2+'80';roundRect(ctx,pad,388,410,43,20,true);
- text(ctx,e.name,pad+17,417,22,'#fffafc',900,380);
- // Airport route motif fills the central whitespace with a flight line.
- ctx.lineWidth=2;ctx.strokeStyle=e.accent+'a9';ctx.beginPath();
- ctx.moveTo(155,473);ctx.lineTo(948,473);ctx.stroke();
- ctx.fillStyle=e.accent;roundRect(ctx,150,467,12,12,6,true);roundRect(ctx,942,467,12,12,6,true);
- text(ctx,'✈',540,462,29,e.accent,900);
- ctx.lineWidth=2;ctx.strokeStyle=e.accent2+'a0';ctx.beginPath();
- ctx.moveTo(1105,123);ctx.lineTo(1105,783);ctx.stroke();
- textBlock(ctx,'PASSENGER',pass.nickname,pad,547,465,1.05);
- textBlock(ctx,'DESTINATION','LEONIDA',615,547,425,1.05);
- textBlock(ctx,'DEPARTURE','19 NOV 2026',pad,671,475,1.02);
- textBlock(ctx,'REGISTERED ON',dateString(pass.registeredAt),615,671,428,1.02);
- text(ctx,'ONE WAY · NO RETURN',pad,775,17,'#e9bcd9',800);
- text(ctx,'19 NOVEMBER 2026',705,775,15,e.accent,800);
- text(ctx,'BOARDING PASS',1150,189,20,'#ffe2f3',900);
- text(ctx,'LEONIDA',1150,249,34,e.accent,900);
- text(ctx,e.flight+'  ·  GATE VI',1150,292,20,'#fff',900);
- text(ctx,'SEAT 06A',1150,343,19,'#f3c6e5',900);
- drawBarcode(ctx,pass.ticketCode,1137,420,345,167);
- text(ctx,pass.ticketCode,1150,643,31,'#fff',900);
- text(ctx,'✓ VERIFIED PASSENGER',1150,696,16,e.accent,900);
-}
-function drawTicketTall(ctx,pass,e){
- const pad=107;
- text(ctx,'THE FINAL WAIT',pad,181,36,'#fff',900);
- text(ctx,'AIRWAYS',pad,227,30,e.accent,900);
- text(ctx,'✦ LEONIDA INTERNATIONAL ✦',pad,280,19,'#f0c5dd',800);
- text(ctx,'YOUR TICKET',pad,407,82,'#fff3fc',900,875);
- text(ctx,'TO LEONIDA.',pad,506,90,e.accent,900,875);
- ctx.fillStyle=e.accent2+'80';roundRect(ctx,pad,551,675,57,25,true);
- text(ctx,e.name,pad+22,589,26,'#fffafc',900,636);
- ctx.lineWidth=3;ctx.strokeStyle=e.accent+'a9';ctx.beginPath();
- ctx.moveTo(pad,666);ctx.lineTo(1080-pad,666);ctx.stroke();
- text(ctx,'✈',500,652,39,e.accent,900);
- textBlock(ctx,'PASSENGER',pass.nickname,pad,751,850,1.38);
- textBlock(ctx,'DESTINATION','LEONIDA',pad,915,850,1.38);
- textBlock(ctx,'DEPARTURE','19 NOV 2026',pad,1078,850,1.31);
- textBlock(ctx,'REGISTERED ON',dateString(pass.registeredAt),pad,1241,850,1.31);
- ctx.strokeStyle=e.accent+'77';ctx.beginPath();
- ctx.moveTo(pad,1341);ctx.lineTo(1080-pad,1341);ctx.stroke();
- text(ctx,'FLIGHT '+e.flight+'   ·   GATE VI   ·   SEAT 06A',pad,1428,26,e.accent,900,870);
- text(ctx,'ONE WAY · NO RETURN',pad,1476,21,'#f3c4df',800);
- drawBarcode(ctx,pass.ticketCode,pad,1524,866,182);
- text(ctx,pass.ticketCode,pad,1766,37,'#fff',900);
- text(ctx,'✓ VERIFIED PASSENGER',510,1762,19,e.accent,900,460);
+ return htmlImageModule;
 }
 export async function renderBoardingPassPNG(pass,portrait=false){
  if(!validBoardingPass(pass))throw Error('Invalid boarding pass');
- const w=portrait?1080:1600,h=portrait?1920:900;
- const canvas=document.createElement('canvas');
- canvas.width=w;canvas.height=h;
- const ctx=canvas.getContext('2d',{alpha:false});
- if(!ctx)throw Error('Canvas unavailable');
- const edition=EDITIONS[pass.edition];
- // Keep the actual repository screenshot in the exported image, not a
- // CSS-only background or external hotlink. Export remains fully offline.
- const shot=await loadScene(edition.image);
- if(shot)drawCover(ctx,shot,w,h);
- const overlay=ctx.createLinearGradient(0,0,w,h);
- overlay.addColorStop(0,'#160b24b4');
- overlay.addColorStop(.52,'#160b2560');
- overlay.addColorStop(1,'#140b20b0');
- ctx.fillStyle=overlay;ctx.fillRect(0,0,w,h);
- ticketFrame(ctx,w,h,edition,portrait);
- if(portrait)drawTicketTall(ctx,pass,edition);
- else drawTicketWide(ctx,pass,edition);
- text(ctx,'UNOFFICIAL FAN PROJECT · NOT AFFILIATED WITH ROCKSTAR GAMES',
-  portrait?107:116,portrait?1860:839,portrait?12:13,'#e6cbdf',700,w-220);
- return new Promise((resolve,reject)=>canvas.toBlob(blob=>{
-  if(blob)resolve(blob);else reject(Error('PNG export unavailable'));
- },'image/png'));
+ if(typeof document==='undefined')throw Error('Browser required for PNG export');
+ const {toBlob}=await captureLibrary();
+ const selector='.tfw-ticket[data-ticket-id="'+pass.publicId+'"]';
+ const visible=document.querySelector(selector);
+ let source=visible,stage=null;
+ try{
+  if(portrait){
+   stage=document.createElement('div');
+   stage.className='tfw-ticket-story-stage';
+   stage.style.cssText='position:fixed;left:-20000px;top:0;width:540px;height:960px;pointer-events:none;z-index:-1';
+   mountBoardingPass(stage,pass);
+   stage.querySelector('.tfw-ticket').classList.add('tfw-ticket--portrait');
+   document.body.appendChild(stage);
+   source=stage;
+  }else if(!visible){
+   throw Error('Open your boarding pass page to download the identical image.');
+  }
+  await document.fonts?.ready;
+  const rect=source.getBoundingClientRect();
+  if(rect.width<=0||rect.height<=0)throw Error('Boarding pass is not ready to export');
+  // Pixel ratio 1 for the standard ticket: native visual dimensions, not 1920x1080.
+  // Story: 540x960 CSS canvas upscaled twice = 1080x1920 PNG.
+  const blob=await toBlob(source,{
+   pixelRatio:portrait?2:1,
+   backgroundColor:portrait?'#130d20':'#130d20',
+   cacheBust:true,
+   skipAutoScale:true
+  });
+  if(!blob||blob.type!=='image/png')throw Error('Unable to capture the ticket');
+  return blob;
+ }finally{stage?.remove()}
 }
 function saveBoardingPassBlob(blob,pass,portrait){
  const href=URL.createObjectURL(blob);
@@ -268,83 +136,125 @@ export async function downloadBoardingPass(pass,portrait=false){
  saveBoardingPassBlob(blob,pass,portrait);
 }
 export function attachBoardingPassActions(host,pass){
- if(!validBoardingPass(pass))throw Error('Invalid boarding pass');
+ if(!validBoardingPass(pass)||!host)throw Error('Invalid boarding pass');
  const url=publicTicketUrl(pass);
  host.replaceChildren();
- host.classList.add('tfw-ticket-actions');
- const makePanel=(name,description)=>{
-  const panel=document.createElement('section');
-  panel.className='tfw-ticket-action-panel';
-  const title=document.createElement('h2');title.textContent=name;
-  const detail=document.createElement('p');detail.textContent=description;
-  const contents=document.createElement('div');
-  panel.append(title,detail,contents);
-  host.appendChild(panel);
-  return contents;
+ host.className='tfw-ticket-quick-actions';
+ // Two actions only, like the site's existing Share modal.
+ const download=document.createElement('button');
+ download.type='button';download.className='tfw-ticket-quick-button';
+ download.textContent='↓ DOWNLOAD';
+ const share=document.createElement('button');
+ share.type='button';share.className='tfw-ticket-quick-button';
+ share.textContent='↗ SHARE';
+ host.append(download,share);
+
+ const backdrop=document.createElement('div');
+ backdrop.className='modal-backdrop tfw-ticket-modal-backdrop';backdrop.hidden=true;
+ const modal=document.createElement('section');
+ modal.className='share-modal glass tfw-ticket-modal';modal.hidden=true;
+ modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');
+ modal.setAttribute('aria-labelledby','tfwTicketModalTitle');
+ modal.innerHTML='<button type="button" class="modal-close" aria-label="Close dialog">×</button>'+
+  '<p class="eyebrow bright">THE FINAL WAIT AIRWAYS</p>'+
+  '<h2 id="tfwTicketModalTitle"></h2>'+
+  '<p class="tfw-ticket-modal-description"></p>'+
+  '<div class="tfw-ticket-modal-actions"></div>'+
+  '<p class="tfw-ticket-action-status" role="status" aria-live="polite"></p>';
+ document.body.append(backdrop,modal);
+ const title=modal.querySelector('h2'),description=modal.querySelector('.tfw-ticket-modal-description');
+ const actions=modal.querySelector('.tfw-ticket-modal-actions');
+ const status=modal.querySelector('.tfw-ticket-action-status');
+ let prevFocus=null,open=false;
+ const close=()=>{
+  if(!open)return;
+  open=false;modal.hidden=true;backdrop.hidden=true;
+  document.body.classList.remove('tfw-ticket-modal-open');
+  prevFocus?.focus({preventScroll:true});
  };
- const downloads=makePanel('DOWNLOAD YOUR TICKET',
-  'Save your collectible in full resolution or as a vertical Story.');
- const socials=makePanel('SHARE THE EXPERIENCE',
-  'Show your boarding pass to friends and the community.');
- let destination=downloads;
- const status=document.createElement('p');
- status.className='tfw-ticket-action-status';status.setAttribute('role','status');
- const button=(label,callback)=>{
-  const btn=document.createElement('button');btn.type='button';btn.textContent=label;
-  btn.className='tfw-ticket-action';btn.addEventListener('click',async()=>{
-   if(btn.disabled)return;
-   btn.disabled=true;
-   try{await callback()}catch(error){status.textContent=error.message||'Action unavailable'}
-   finally{btn.disabled=false}
-  });destination.appendChild(btn);
-  return btn;
- };
- const link=(label,href)=>{
-  const a=document.createElement('a');a.className='tfw-ticket-action';
-  a.textContent=label;a.href=href;a.target='_blank';a.rel='noopener noreferrer';
-  destination.appendChild(a);
- };
- button('↓ DOWNLOAD TICKET PNG',()=>downloadBoardingPass(pass,false));
- button('↓ DOWNLOAD STORY PNG',()=>downloadBoardingPass(pass,true));
- destination=socials;
- link('𝕏 SHARE ON X','https://twitter.com/intent/tweet?'+new URLSearchParams({
-   text:'My boarding pass to Leonida is ready. '+EDITIONS[pass.edition].name+' · '+pass.ticketCode,
-   url
- }).toString());
- link('↗ SHARE ON REDDIT','https://www.reddit.com/submit?'+new URLSearchParams({
-   url,title:'My ticket to Leonida | The Final Wait'
- }).toString());
- // No trustworthy web endpoint can force-upload an image into Instagram or
- // TikTok. Share the actual PNG via OS sheet where supported; otherwise save
- // the Story PNG so the visitor can attach it manually in either app.
- const shareStory=async platform=>{
-  const blob=await renderBoardingPassPNG(pass,true);
-  if(typeof File==='function'&&navigator.share&&navigator.canShare){
-   const file=new File([blob],'The-Final-Wait-'+pass.ticketCode+'-story.png',
-    {type:'image/png'});
-   if(navigator.canShare({files:[file]})){
-    try{
-     await navigator.share({files:[file],title:'My Ticket to Leonida',
-       text:'My The Final Wait Airways boarding pass · '+url});
-     return;
-    }catch(error){if(error?.name==='AbortError')return}
-   }
+ const openModal=kind=>{
+  prevFocus=document.activeElement;open=true;
+  status.textContent='';actions.replaceChildren();
+  const isDownload=kind==='download';
+  title.textContent=isDownload?'DOWNLOAD YOUR TICKET.':'SHARE YOUR BOARDING PASS.';
+  description.textContent=isDownload?
+   'Choose the version you want to save. The standard PNG matches the ticket above.':
+   'Show your unique boarding pass to the Leonida community.';
+  const button=(label,fn)=>{
+   const b=document.createElement('button');
+   b.type='button';b.className='fx-button';b.textContent=label;
+   b.addEventListener('click',async()=>{
+    if(b.disabled)return;
+    b.disabled=true;status.textContent='';
+    try{await fn()}
+    catch(e){status.textContent=e?.message||'Action unavailable'}
+    finally{b.disabled=false}
+   });
+   actions.appendChild(b);
+  };
+  const link=(label,href)=>{
+   const a=document.createElement('a');
+   a.className='fx-button';a.textContent=label;
+   a.href=href;a.target='_blank';a.rel='noopener noreferrer';actions.appendChild(a);
+  };
+  if(isDownload){
+   button('↓ DOWNLOAD ORIGINAL PNG',async()=>{await downloadBoardingPass(pass,false);status.textContent='Original ticket PNG saved.'});
+   button('↓ DOWNLOAD STORY PNG',async()=>{await downloadBoardingPass(pass,true);status.textContent='Story PNG saved.'});
+  }else{
+   link('𝕏 SHARE ON X','https://twitter.com/intent/tweet?'+new URLSearchParams({
+     text:'My boarding pass to Leonida is ready. '+EDITIONS[pass.edition].name+' · '+pass.ticketCode,url
+   }));
+   link('↗ SHARE ON REDDIT','https://www.reddit.com/submit?'+new URLSearchParams({
+     url,title:'My ticket to Leonida | The Final Wait'
+   }));
+   const shareStory=async platform=>{
+    const blob=await renderBoardingPassPNG(pass,true);
+    if(typeof File==='function'&&navigator.share&&navigator.canShare){
+     const file=new File([blob],'The-Final-Wait-'+pass.ticketCode+'-story.png',{type:'image/png'});
+     if(navigator.canShare({files:[file]})){
+      try{await navigator.share({files:[file],title:'My Ticket to Leonida',text:url});return}
+      catch(e){if(e.name==='AbortError')return}
+     }
+    }
+    saveBoardingPassBlob(blob,pass,true);
+    status.textContent='Story PNG saved. Open '+platform+' to upload it.';
+   };
+   button('▣ INSTAGRAM',()=>shareStory('Instagram'));
+   button('♪ TIKTOK',()=>shareStory('TikTok'));
+   button('↗ COPY VERIFIED LINK',async()=>{
+    try{await navigator.clipboard.writeText(url)}
+    catch{
+     const area=document.createElement('textarea');area.value=url;
+     area.style.cssText='position:fixed;opacity:0';
+     document.body.appendChild(area);area.select();
+     const copied=document.execCommand('copy');area.remove();
+     if(!copied)throw Error('Copy failed');
+    }
+    status.textContent='Verified link copied.';
+   });
   }
-  saveBoardingPassBlob(blob,pass,true);
-  status.textContent='Story PNG saved. Post it using '+platform+'.';
+  backdrop.hidden=false;modal.hidden=false;
+  document.body.classList.add('tfw-ticket-modal-open');
+  modal.querySelector('.modal-close').focus({preventScroll:true});
  };
- button('▣ INSTAGRAM',()=>shareStory('Instagram'));
- button('♪ TIKTOK',()=>shareStory('TikTok'));
- button('↗ COPY VERIFIED LINK',async()=>{
-  try{await navigator.clipboard.writeText(url);status.textContent='Verified link copied'}
-  catch{
-   const selection=document.createElement('textarea');
-   selection.value=url;selection.style.position='fixed';selection.style.opacity='0';
-   document.body.appendChild(selection);selection.select();
-   const ok=document.execCommand('copy');selection.remove();
-   if(!ok)throw Error('Copy unavailable: '+url);
-   status.textContent='Verified link copied';
-  }
+ download.addEventListener('click',()=>openModal('download'));
+ share.addEventListener('click',()=>openModal('share'));
+ modal.querySelector('.modal-close').addEventListener('click',close);
+ backdrop.addEventListener('click',close);
+ modal.addEventListener('keydown',event=>{
+  if(event.key==='Escape'){event.preventDefault();close();return}
+  if(event.key!=='Tab')return;
+  const focusable=[...modal.querySelectorAll('button:not([disabled]),a[href]')];
+  if(!focusable.length)return;
+  const first=focusable[0],last=focusable.at(-1);
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
  });
- host.appendChild(status);
+ // Remove both auxiliary nodes when switching between ticket records.
+ const obs=new MutationObserver(()=>{
+  if(host.isConnected)return;
+  close();modal.remove();backdrop.remove();obs.disconnect();
+ });
+ obs.observe(document.body,{childList:true,subtree:true});
+ return {close};
 }
