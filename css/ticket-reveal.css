@@ -114,3 +114,26 @@ html.tfw-ticket-reveal-open,html.tfw-ticket-reveal-open body{
  .tfw-onboarding-audio-label{font-size:8px}
  .tfw-onboarding-mute{font-size:8px;padding:8px}
 }
+
+/* Audio dock: anchored to the actual viewport in both account steps. */
+#tfwCommunityGate > #tfwGateSound,
+#tfwTicketReveal > #tfwRevealSound{
+ position:fixed!important;inset:auto max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) auto!important;
+ z-index:25!important;display:block!important;flex:none!important;
+ width:min(370px,calc(100vw - 32px));max-width:calc(100vw - 32px);
+ margin:0!important;padding:0!important
+}
+#tfwCommunityGate > #tfwGateSound .tfw-onboarding-audio,
+#tfwTicketReveal > #tfwRevealSound .tfw-onboarding-audio{
+ width:100%!important;box-sizing:border-box
+}
+@media(max-width:680px){
+ #tfwCommunityGate > #tfwGateSound,
+ #tfwTicketReveal > #tfwRevealSound{
+  right:max(12px,env(safe-area-inset-right))!important;
+  bottom:max(12px,env(safe-area-inset-bottom))!important;
+  width:min(340px,calc(100vw - 24px))
+ }
+ #tfwTicketReveal .tfw-reveal-inner{padding-bottom:90px}
+ #tfwCommunityGate{padding-bottom:max(110px,env(safe-area-inset-bottom))!important}
+}

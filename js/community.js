@@ -73,6 +73,7 @@ async function initCommunity(){
     </div>
    </div>`;
   document.body.appendChild(gate);
+   gate.appendChild(gate.querySelector('#tfwGateSound'));
   gate.insertAdjacentHTML('beforeend',
     '<div id="tfwGateLegal" class="tfw-gate-legal" role="dialog" aria-modal="true" aria-label="Information" hidden>'+
     '<section class="tfw-gate-legal-panel"><div class="tfw-gate-legal-top">'+
@@ -646,7 +647,7 @@ async function initCommunity(){
       // ceremony. Keep the gate up until the dialog has been mounted.
       if(firstRegistration){
         try{
-          const {showTicketReveal}=await import('./ticket-reveal.js?v=4');
+          const {showTicketReveal}=await import('./ticket-reveal.js?v=5');
           const ceremony=showTicketReveal(async()=>{
             const issued=await api('GET','boarding-pass');
             return issued.ticket;
