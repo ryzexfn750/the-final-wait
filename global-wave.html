@@ -18,7 +18,7 @@
  <link rel="stylesheet" href="css/community.css?v=11">
  <link rel="stylesheet" href="css/ticket-reveal.css?v=5">
  <link rel="stylesheet" href="css/community-profile.css?v=4">
- <link rel="stylesheet" href="css/global-wave.css?v=1">
+ <link rel="stylesheet" href="css/global-wave.css?v=2">
  <script>try{if(localStorage.getItem('tfw_community_preview')==='yes'&&!((()=>{if(!new URLSearchParams(location.search).has('tfw_embed')||window.self===window.top)return false;try{return window.parent.location.origin===location.origin&&!!window.parent.__tfwSeamlessNavigation}catch{return false}})()))document.documentElement.classList.add('tfw-auth-pending')}catch{}</script>
 </head>
 <body class="article-page tfw-profile-page tfw-global-wave-page">
@@ -56,18 +56,16 @@
  <main class="wave-main" id="waveMain">
   <section class="wave-intro" aria-labelledby="waveHeading">
    <div>
-    <p class="wave-eyebrow"><span class="wave-live-dot"></span> THE FINAL WAIT · GLOBAL EXPERIENCE</p>
     <h1 id="waveHeading">THE GLOBAL<br><em>MIDNIGHT WAVE.</em></h1>
-    <p>ONE WORLD. MANY MIDNIGHTS. ONE FINAL WAIT.</p>
-    <span class="wave-context">Explore how November 19 reaches every time zone. Rotate the Earth, select a region and travel through the global midnight wave.</span>
+    <span class="wave-context">Follow the midnight wave across the world.</span>
    </div>
-   <div class="wave-header-live"><span class="wave-status-dot"></span><strong id="waveModeLabel">LIVE WORLD CLOCK</strong><small id="waveHeaderUTC">UTC —</small></div>
+   <span id="waveModeLabel" hidden></span><span id="waveHeaderUTC" hidden></span>
   </section>
   <section class="wave-dashboard" aria-label="World release visualization">
    <div class="wave-visual-column">
     <div class="wave-globe-panel" id="waveGlobePanel">
      <div class="wave-globe-topline">
-      <div><span class="wave-panel-kicker">GLOBAL MIDNIGHT TRACKING</span><strong>THE WORLD IS WATCHING.</strong></div>
+      <div><strong>WORLD MIDNIGHT MAP</strong></div>
       <div class="wave-view-toggle" role="group" aria-label="Map rendering mode">
        <button type="button" id="waveView3D" class="active" aria-pressed="true">3D GLOBE</button>
        <button type="button" id="waveView2D" aria-pressed="false">2D MAP</button>
@@ -84,47 +82,41 @@
        <span><i class="approaching"></i> APPROACHING</span>
        <span><i class="reached"></i> MIDNIGHT REACHED</span>
       </div>
+      <div class="wave-timeline-panel" aria-label="Explore world midnight times">
+       <div class="wave-timeline-top">
+        <div class="wave-clock-modes" role="group" aria-label="Timeline mode">
+         <button type="button" id="waveModeLive" class="active" aria-pressed="true"><span class="wave-status-dot"></span> LIVE</button>
+         <button type="button" id="waveModeSim" aria-pressed="false">SIMULATION</button>
+        </div>
+        <strong id="waveMoment">—</strong><span id="waveProgressText" class="wave-progress-text">—</span>
+       </div>
+       <div class="wave-slider-line">
+        <span>FIRST<br><small>UTC+14</small></span>
+        <input type="range" id="waveTimeline" min="0" max="1000" step="1" value="0" aria-label="Simulate the global wave through all time zones">
+        <span>LAST<br><small>UTC−12</small></span>
+       </div>
+       <div class="wave-timeline-actions">
+        <button type="button" class="wave-primary-button" id="wavePlay">▶ PLAY</button>
+        <button type="button" class="wave-plain-button" id="waveReset">BACK TO LIVE</button>
+        <p id="waveTimelineInfo" hidden></p>
+       </div>
+      </div>
      </div>
      <div class="wave-globe-bottom">
-      <span id="waveGestureHint">DRAG TO ROTATE · SCROLL TO ZOOM · CLICK A TERRITORY</span>
+      <span id="waveGestureHint" hidden></span>
       <button type="button" id="waveSpin" aria-pressed="true" class="wave-text-action">AUTO ROTATE: ON</button>
      </div>
     </div>
-    <div class="wave-timeline-panel">
-     <div class="wave-timeline-head">
-      <div><p class="wave-panel-kicker">WORLD RELEASE TIMELINE</p><h2>TRAVEL THROUGH MIDNIGHT.</h2></div>
-      <div class="wave-clock-modes" role="group" aria-label="Timeline mode">
-       <button type="button" id="waveModeLive" class="active" aria-pressed="true"><span class="wave-status-dot"></span> LIVE</button>
-       <button type="button" id="waveModeSim" aria-pressed="false">SIMULATION</button>
-      </div>
-     </div>
-     <div class="wave-time-readouts">
-      <div><small>CURRENT WORLD MOMENT</small><strong id="waveMoment">—</strong></div>
-      <div><small>WAVE PROGRESS · ZONES</small><strong id="waveProgressText">—</strong></div>
-     </div>
-     <div class="wave-slider-line">
-      <span>FIRST MIDNIGHT<br><small>UTC+14</small></span>
-      <input type="range" id="waveTimeline" min="0" max="1000" step="1" value="0" aria-label="Simulate the global wave through all time zones">
-      <span>LAST MIDNIGHT<br><small>UTC−12</small></span>
-     </div>
-     <div class="wave-timeline-actions">
-      <button type="button" class="wave-primary-button" id="wavePlay">▶ PLAY THE WAVE</button>
-      <button type="button" class="wave-plain-button" id="waveReset">↺ BACK TO LIVE</button>
-      <p id="waveTimelineInfo">Select SIMULATION or move the timeline to explore other moments.</p>
-     </div>
-    </div>
+
    </div>
    <aside class="wave-info-panel" aria-label="Timezone and city information">
     <div class="wave-info-head">
      <p class="wave-panel-kicker">GLOBAL STATUS</p>
-     <h2>THE MIDNIGHT<br>FRONTIER.</h2>
+     <h2>WORLD STATUS.</h2>
     </div>
-    <div class="wave-stat-duo">
-     <div><span>MIDNIGHT REACHED</span><strong id="waveReached">—</strong></div>
-     <div><span>STILL WAITING</span><strong id="waveWaiting">—</strong></div>
-    </div>
+    <div class="wave-summary"><span>MIDNIGHT REACHED</span><strong id="waveReached">—</strong><span id="waveWaiting" hidden></span></div>
     <div class="wave-ratio-track" aria-hidden="true"><i id="waveRatioFill"></i></div>
-    <p class="wave-stat-foot" id="waveZoneTotal">Loading IANA time zone regions…</p>
+    <p class="wave-stat-foot" id="waveZoneTotal">Loading time zones…</p>
     <div class="wave-info-divider"></div>
     <div class="wave-next-card">
      <p class="wave-panel-kicker">NEXT MIDNIGHT</p>
@@ -138,9 +130,9 @@
      <h3 id="waveSelectedName">MIAMI</h3>
      <p id="waveSelectedRegion">United States</p>
      <div class="wave-selected-rows">
-      <div><span>TIME ZONE</span><strong id="waveSelectedZone">America/New_York</strong></div>
-      <div><span>LOCAL CLOCK</span><strong id="waveSelectedClock">—</strong></div>
-      <div><span>MIDNIGHT COUNTDOWN</span><strong id="waveSelectedCountdown">—</strong></div>
+      <div hidden><span>TIME ZONE</span><strong id="waveSelectedZone">America/New_York</strong></div>
+      <div><span>LOCAL TIME</span><strong id="waveSelectedClock">—</strong></div>
+      <div><span>COUNTDOWN</span><strong id="waveSelectedCountdown">—</strong></div>
      </div>
     </div>
     <div class="wave-info-divider"></div>
@@ -150,10 +142,6 @@
      <div id="waveCityList" class="wave-city-list" aria-label="World city list"></div>
     </div>
    </aside>
-  </section>
-  <section class="wave-disclaimer">
-   <p><strong>THE MIDNIGHT WAVE</strong> visualizes November 19, 2026 at 00:00 in each IANA region, as used by this fan-made countdown. It does not verify Rockstar Games' official platform unlock schedule. Zone boundaries are approximate, heavily simplified, and may omit small islands.</p>
-   <p>Geographic data: <a href="https://github.com/dejurin/simplified-timezone-boundaries" target="_blank" rel="noopener noreferrer">Simplified Timezone Boundaries</a>, derived from <a href="https://github.com/evansiroky/timezone-boundary-builder" target="_blank" rel="noopener noreferrer">Timezone Boundary Builder</a> and OpenStreetMap contributors. ODbL 1.0. Visualization powered by <a href="https://globe.gl/" target="_blank" rel="noopener noreferrer">Globe.GL</a> (MIT).</p>
   </section>
  </main>
  <footer>
@@ -172,6 +160,7 @@
     <a href="community-terms.html">TERMS & CONDITIONS</a>
     <a href="newsletter.html">UNSUBSCRIBE FROM NEWSLETTER</a>
     <a href="support.html">SUPPORT</a>
+    <a href="content/geo/README.md" aria-label="Geographic data credits and licensing">MAP DATA & CREDITS</a>
   </div>
 </footer>
  <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -186,6 +175,6 @@
  <script type="module" src="js/community.js?v=17"></script>
  <script defer src="js/community-header.js?v=4"></script>
  <script defer src="js/support-experience.js?v=5"></script>
- <script type="module" src="js/global-wave.js?v=1"></script>
+ <script type="module" src="js/global-wave.js?v=2"></script>
 </body>
 </html>

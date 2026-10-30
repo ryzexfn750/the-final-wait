@@ -179,3 +179,69 @@
 @media(prefers-reduced-motion:reduce){
  .wave-ratio-track i,.wave-globe-panel *, .wave-timeline-panel *{animation:none!important;transition:none!important}
 }
+
+/* V2: live/simulation controls float over the map instead of below it. */
+.wave-intro{margin-bottom:18px}
+.wave-intro h1{font-size:clamp(39px,5.2vw,71px);margin-bottom:10px}
+.wave-context{font-size:12px}
+.wave-dashboard{grid-template-columns:minmax(0,1fr) minmax(280px,320px);gap:14px}
+.wave-globe-topline{padding:14px 19px;align-items:center}
+.wave-globe-topline strong{font-size:14px;letter-spacing:.07em}
+.wave-map-stage{height:clamp(490px,62vh,670px);min-height:490px;aspect-ratio:auto}
+.wave-map-stage:after{z-index:3}
+.wave-legend{top:10px;bottom:auto;left:15px;z-index:5;padding:7px 10px;gap:10px}
+.wave-timeline-panel{position:absolute;z-index:9;bottom:15px;left:15px;right:15px;
+ width:auto;margin:0;border-radius:13px;
+ background:linear-gradient(130deg,rgba(25,14,39,.94),rgba(10,9,24,.95));border-color:#cc91c85c;
+ box-shadow:0 12px 40px #070410b8;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+ padding:12px 16px}
+.wave-timeline-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.wave-timeline-top strong{color:#fff3fc;font:800 11px ui-monospace,Consolas,monospace}
+.wave-timeline-top .wave-progress-text{color:#d7a6cb;font:900 9px Arial;white-space:nowrap}
+.wave-clock-modes{padding:2px}
+.wave-clock-modes button{padding:8px 10px}
+.wave-slider-line{margin-top:8px;grid-template-columns:48px minmax(0,1fr) 48px;gap:10px}
+.wave-slider-line>span{font-size:8px}
+.wave-timeline-actions{margin:7px 0 0;gap:8px}
+.wave-primary-button,.wave-plain-button{padding:8px 13px;font-size:9px}
+.wave-timeline-actions p[hidden]{display:none!important}
+.wave-globe-bottom{padding:10px 16px;justify-content:flex-end}
+.wave-globe-bottom>span[hidden]{display:none!important}
+.wave-info-panel{padding:19px;min-height:0}
+.wave-info-head h2{font-size:23px;margin-bottom:16px}
+.wave-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;
+ background:#ffffff08;border:1px solid #ffffff1f;border-radius:11px;padding:11px 15px}
+.wave-summary>span{font:900 10px Arial;letter-spacing:.1em;color:#b4a2c2}
+.wave-summary>strong{font:900 27px "Arial Black",Arial;color:#f8a8dd}
+.wave-stat-foot{font-size:9px}
+.wave-info-divider{margin:15px 0}
+.wave-next-card{padding:14px}
+.wave-next-card h3{font-size:15px}
+.wave-next-card>strong{font-size:21px}
+.wave-selected h3{font-size:19px;margin-top:11px}
+.wave-selected-rows{grid-template-columns:1fr 1fr;gap:8px}
+.wave-selected-rows strong{font-size:11px}
+.wave-city-list{max-height:190px}
+.wave-city-list button{padding:9px}
+.wave-city-list button strong{font-size:11px}
+@media(max-width:1170px){
+ .wave-dashboard{grid-template-columns:1fr}
+ .wave-info-panel{display:block}
+ .wave-info-divider{display:block}
+ .wave-map-stage{height:clamp(420px,58vh,570px);min-height:420px}
+}
+@media(max-width:720px){
+ .wave-map-stage{height:clamp(370px,54vh,550px);min-height:370px;aspect-ratio:auto}
+ .wave-globe-topline{padding:13px 12px}
+ .wave-globe-topline strong{font-size:12px}
+ .wave-timeline-panel{bottom:8px;left:8px;right:8px;padding:9px 10px}
+ .wave-timeline-top{gap:5px;flex-wrap:wrap}
+ .wave-timeline-top strong{font-size:10px}
+ .wave-timeline-top .wave-progress-text{font-size:8px}
+ .wave-slider-line{grid-template-columns:36px 1fr 36px;gap:5px}
+ .wave-slider-line>span{font-size:7px}
+ .wave-primary-button,.wave-plain-button{font-size:8px;padding:8px}
+ .wave-legend{left:8px;right:8px;top:8px;justify-content:center}
+ .wave-legend span{font-size:7px}
+ .wave-info-panel{padding:16px}
+}
