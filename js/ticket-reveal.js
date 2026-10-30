@@ -1,17 +1,37 @@
-/* One-time post-registration boarding pass ceremony.
-   Loaded only after a first successful community registration. */
+/* One-time post-registration ceremony. No skip: the first account ticket must
+   visibly assemble before the visitor can continue into the countdown. */
 import {mountBoardingPass,validBoardingPass} from './boarding-pass.js?v=5';
-function injectStyles(){
- for(const path of ['css/boarding-pass.css?v=5','css/ticket-reveal.css?v=3']){
-  if(document.querySelector('link[data-tfw-ticket-reveal="'+path+'"]'))continue;
+import {printBoardingPass} from './ticket-assembly-motion.js?v=1';
+import {mountRegistrationSoundControls} from './registration-sound.js?v=1';
+function loadStyles(){
+ for(const path of ['css/boarding-pass.css?v=5','css/ticket-reveal.css?v=4']){
+  if(document.querySelector('link[href="'+path+'"]')||
+     document.querySelector('link[data-tfw-ticket-reveal="'+path+'"]'))continue;
   const link=document.createElement('link');
-  link.rel='stylesheet';link.href=path;
-  link.dataset.tfwTicketReveal=path;document.head.appendChild(link);
+  link.rel='stylesheet';link.href=path;link.dataset.tfwTicketReveal=path;
+  document.head.appendChild(link);
  }
+}
+function nextFrame(){
+ return new Promise(resolve=>requestAnimationFrame(()=>resolve()));
+}
+async function waitForArtwork(card){
+ await document.fonts?.ready;
+ const pictures=[...card.querySelectorAll('img')];
+ await Promise.all(pictures.map(async image=>{
+  if(!image.complete){
+   await new Promise(resolve=>{
+    image.addEventListener('load',resolve,{once:true});
+    image.addEventListener('error',resolve,{once:true});
+   });
+  }
+  if(image.complete&&image.naturalWidth>0&&image.decode)
+   await image.decode().catch(()=>{});
+ }));
 }
 export async function showTicketReveal(loadTicket){
  if(typeof loadTicket!=='function')return;
- injectStyles();
+ loadStyles();
  const overlay=document.createElement('section');
  overlay.id='tfwTicketReveal';
  overlay.className='tfw-ticket-reveal';
@@ -23,6 +43,7 @@ export async function showTicketReveal(loadTicket){
   '<div class="tfw-reveal-grid" aria-hidden="true"></div>'+
   '<div class="tfw-reveal-beam" aria-hidden="true"></div>'+
   '<div class="tfw-reveal-inner">'+
+   '<div id="tfwRevealSound" class="tfw-reveal-sound"></div>'+
    '<div class="tfw-reveal-heading">'+
     '<p class="tfw-reveal-eyebrow">THE FINAL WAIT AIRWAYS</p>'+
     '<h2>WELCOME ABOARD<span>.</span></h2>'+
@@ -33,116 +54,129 @@ export async function showTicketReveal(loadTicket){
    '<div class="tfw-reveal-ticket" id="tfwRevealTicket" aria-live="off">'+
     '<div class="tfw-reveal-placeholder" aria-hidden="true"><span>✦</span><strong>TFW AIRWAYS</strong></div>'+
    '</div>'+
-
    '<div class="tfw-reveal-choices" hidden>'+
     '<button type="button" class="tfw-reveal-continue">EXPLORE THE COUNTDOWN</button>'+
-
    '</div>'+
-   '<button type="button" class="tfw-reveal-skip">SKIP INTRO ↗</button>'+
   '</div>';
  document.body.appendChild(overlay);
  document.documentElement.classList.add('tfw-ticket-reveal-open');
  window.__tfwTicketRevealActive=true;
- const focusBefore=document.activeElement;
+ const stopSound=mountRegistrationSoundControls(overlay.querySelector('#tfwRevealSound'));
+ const previousFocus=document.activeElement;
  const track=overlay.querySelector('.tfw-reveal-track');
  const status=overlay.querySelector('.tfw-reveal-status');
  const choices=overlay.querySelector('.tfw-reveal-choices');
  const holder=overlay.querySelector('#tfwRevealTicket');
- const skip=overlay.querySelector('.tfw-reveal-skip');
- let pass=null,closed=false;
- let release;
- const completed=new Promise(resolve=>release=resolve);
- // The homepage has wheel-based section navigation: intercept wheel/touch and
- // scroll keys in the capture phase until the ceremony has truly finished.
+ const continueButton=overlay.querySelector('.tfw-reveal-continue');
+ let closed=false;
+ let finish;
+ const done=new Promise(resolve=>{finish=resolve});
  const blockScroll=event=>{
   if(closed)return;
-  event.preventDefault();
-  event.stopImmediatePropagation();
+  event.preventDefault();event.stopImmediatePropagation();
  };
  const blockKeys=event=>{
-  if(!['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key))return;
-  if(event.target?.matches?.('input,textarea,[contenteditable="true"]'))return;
-  blockScroll(event);
+  if(['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key)){
+   if(event.target?.matches?.('input,textarea,[contenteditable="true"]'))return;
+   blockScroll(event);
+  }
  };
+ // Wheel-driven section navigation is installed on the window: capture it first.
  window.addEventListener('wheel',blockScroll,{capture:true,passive:false});
  window.addEventListener('touchmove',blockScroll,{capture:true,passive:false});
  window.addEventListener('keydown',blockKeys,{capture:true});
- function close(){
-  if(closed)return;
+ function onKeydown(event){
+  // Escape must not dismiss this first-registration sequence.
+  if(event.key==='Escape'){event.preventDefault();event.stopPropagation();return}
+  if(event.key!=='Tab')return;
+  const elements=[...overlay.querySelectorAll('button:not([disabled]),input:not([disabled])')]
+    .filter(el=>!el.hidden&&el.getClientRects().length>0);
+  if(!elements.length)return;
+  if(event.shiftKey&&document.activeElement===elements[0]){
+   event.preventDefault();elements.at(-1).focus();
+  }else if(!event.shiftKey&&document.activeElement===elements.at(-1)){
+   event.preventDefault();elements[0].focus();
+  }
+ }
+ document.addEventListener('keydown',onKeydown,true);
+ const close=()=>{
+  if(closed||choices.hidden)return;
   closed=true;
   document.removeEventListener('keydown',onKeydown,true);
   overlay.classList.add('tfw-reveal-leaving');
-  const reduced=window.matchMedia?.('(prefers-reduced-motion:reduce)').matches;
+  const reduced=window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   setTimeout(()=>{
    overlay.remove();
+   stopSound();
    document.documentElement.classList.remove('tfw-ticket-reveal-open');
    window.removeEventListener('wheel',blockScroll,true);
    window.removeEventListener('touchmove',blockScroll,true);
    window.removeEventListener('keydown',blockKeys,true);
    window.__tfwTicketRevealActive=false;
-   window.__tfwTicketRevealFinished=true;
-   if(focusBefore?.isConnected)focusBefore.focus({preventScroll:true});
-   // The desktop-experience dialog should open only after the ticket disappears.
-   window.dispatchEvent(new Event('tfw:ticket-reveal-closed'));
-   release();
+   if(previousFocus?.isConnected)previousFocus.focus({preventScroll:true});
+   // Purpose-specific event, after teardown. A new registration always gets
+   // the device notice even if an earlier account used this browser session.
+   window.dispatchEvent(new CustomEvent('tfw:ticket-reveal-closed',{
+    detail:{postRegistration:true}
+   }));
+   finish();
   },reduced?0:260);
- }
- function onKeydown(event){
-  if(event.key==='Escape'){event.preventDefault();close()}
-  if(event.key==='Tab'){
-   const elements=[...overlay.querySelectorAll('button:not([disabled])')].filter(el=>!el.hidden&&el.getClientRects().length>0);
-   if(!elements.length)return;
-   const first=elements[0],last=elements.at(-1);
-   if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
-   else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
-  }
- }
- document.addEventListener('keydown',onKeydown,true);
- skip.addEventListener('click',close);
- overlay.querySelector('.tfw-reveal-continue').addEventListener('click',close);
- skip.focus({preventScroll:true});
- const update=(step,label)=>{
+ };
+ continueButton.addEventListener('click',close);
+ const update=(step,message)=>{
   if(closed)return;
   overlay.dataset.step=String(step);
   track.setAttribute('aria-valuenow',String(Math.min(step*25,100)));
-  status.textContent=label;
+  status.textContent=message;
  };
- const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
- (async()=>{
+ overlay.querySelector('.tfw-onboarding-mute')?.focus({preventScroll:true});
+ void (async()=>{
   try{
    update(1,'CONFIRMING YOUR SEAT');
-   const result=await loadTicket();
+   const pass=await loadTicket();
    if(closed)return;
-   if(!validBoardingPass(result))throw Error('Ticket cannot be verified');
-   pass=result;
-   await pause(1150);if(closed)return;
+   if(!validBoardingPass(pass))throw Error('Invalid ticket');
+   await new Promise(resolve=>setTimeout(resolve,850));
    update(2,'ASSIGNING YOUR FLIGHT TO LEONIDA');
-   await pause(1250);if(closed)return;
-   mountBoardingPass(holder,pass);
-   // The scan line advances the real rendered ticket width, not a viewport
-   // estimate or a percentage of its own 5px pseudo-element.
-   const updateScanWidth=()=>holder.style.setProperty('--tfw-scan-distance',
-     Math.max(0,holder.getBoundingClientRect().width-5)+'px');
-   updateScanWidth();
+   await new Promise(resolve=>setTimeout(resolve,850));
+   if(closed)return;
+   // Build with the IDENTICAL public-ticket DOM component, but start with a
+   // full inset mask: the final ticket must never be visible before printing.
+   const clip=document.createElement('div');
+   clip.className='tfw-reveal-print-window';
+   clip.style.clipPath='inset(0 0 0 100%)';
+   const card=mountBoardingPass(clip,pass);
+   const scanner=document.createElement('div');
+   scanner.className='tfw-reveal-scanner';
+   scanner.setAttribute('aria-hidden','true');
+   scanner.style.opacity='0';
+   holder.replaceChildren(clip,scanner);
+   await waitForArtwork(card);
+   await nextFrame();
+   if(closed)return;
    update(3,'PRINTING YOUR PERSONAL BOARDING PASS');
    overlay.classList.add('tfw-reveal-printing');
-   await pause(6400);if(closed)return;
+   await printBoardingPass({
+    clip,scanner,card,
+    reducedMotion:window.matchMedia?.('(prefers-reduced-motion: reduce)').matches||false
+   });
+   if(closed)return;
    update(4,'BOARDING PASS ISSUED');
    overlay.classList.add('tfw-reveal-complete');
-   choices.hidden=false;skip.hidden=true;
-   overlay.querySelector('.tfw-reveal-continue').focus({preventScroll:true});
+   choices.hidden=false;
+   continueButton.focus({preventScroll:true});
   }catch(error){
    if(closed)return;
-   status.textContent='YOUR PASS WILL BE AVAILABLE IN YOUR PROFILE';
+   console.warn('Ticket onboarding display unavailable:',error);
+   status.textContent='YOUR PASS IS AVAILABLE IN YOUR PROFILE';
    holder.replaceChildren();
-   const message=document.createElement('p');
-   message.className='tfw-reveal-error';
-   message.textContent='The boarding pass could not be loaded. Your account is ready.';
-   holder.appendChild(message);
+   const note=document.createElement('p');
+   note.className='tfw-reveal-error';
+   note.textContent='The boarding pass could not be displayed, but your account is ready.';
+   holder.appendChild(note);
    choices.hidden=false;
-   skip.hidden=true;
-   overlay.querySelector('.tfw-reveal-continue').focus({preventScroll:true});
+   continueButton.focus({preventScroll:true});
   }
  })();
- return completed;
+ return done;
 }
