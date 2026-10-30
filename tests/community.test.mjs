@@ -334,9 +334,9 @@ test('Login text trimmed and reaction positions avoid countdown controls',()=>{
   assert.match(client,/function randomSafePosition\(\)/);
   assert.match(client,/getBoundingClientRect\(\)/);
   assert.match(client,/const bar=meter\?\.getBoundingClientRect\(\)/);
-  assert.match(client,/MAX_VISIBLE_REACTIONS=2/);
+  assert.match(client,/MAX_VISIBLE_REACTIONS=26/);
   assert.match(client,/finale-last-10/);
-  assert.match(client,/REACTION_DURATION\+20/);
+  assert.match(client,/duration\+12/);
   assert.match(client,/fill\.style\.height/);
 });
 
@@ -420,21 +420,43 @@ test('Analytics consent is optional and separate; duplicate Privacy button remov
  assert.doesNotMatch(read('support.html'),/If clicking an email link doesn't open anything/);
 });
 
-test('Hype animations stay quiet and bounded even during massive local bursts',()=>{
- const client=read('js/community.js'),css=read('css/community.css');
- assert.match(client,/const REACTION_DURATION=780/);
- assert.match(client,/const REACTION_THROTTLE=145/);
- assert.match(client,/const MAX_VISIBLE_REACTIONS=2/);
- assert.match(client,/now-lastReactionShownAt<REACTION_THROTTLE/);
- assert.match(client,/layer\.childElementCount>MAX_VISIBLE_REACTIONS/);
- assert.match(client,/function randomSafePosition\(\)/);
- assert.match(client,/const bar=meter\?\.getBoundingClientRect\(\)/);
- assert.match(client,/document\.body\.classList\.contains\('finale-last-10'\)/);
- assert.match(client,/document\.documentElement\.classList\.contains\('tfw-ticket-reveal-open'\)/);
- assert.match(client,/window\.__tfwStressTestHype=\(total=200\)=>/);
+test('HYPE animation shows every server-accepted emoji, never truncating incoming batches',()=>{
+ const client=read('js/community.js'),css=read('css/community.css'),
+  worker=read('workers/hype-worker/src/index.js');
+ assert.match(client,/const REACTION_NORMAL_MS=340/);
+ assert.match(client,/const REACTION_BURST_MS=165/);
+ assert.match(client,/const MAX_VISIBLE_REACTIONS=26/);
+ assert.match(client,/const MAX_REACTIONS_PER_FRAME=5/);
+ assert.match(client,/reactionQueue\.push\(\{emoji:item\.emoji,nickname:item\.nickname\}\)/);
+ assert.match(client,/reactionQueue\.shift\(\)/);
+ assert.match(client,/window\.__tfwStressTestHype=\(total=300\)=>/);
+ assert.match(client,/window\.__tfwHypeStats=\(\)=>/);
  assert.match(client,/No network traffic/);
- assert.doesNotMatch(client,/node\.animate\(frames|glyph\.animate\(reactionMotionFrames/);
- assert.match(css,/tfwHypeQuietRise 780ms/);
- assert.match(css,/opacity:\.42/);
- assert.match(css,/tfw-hype-float-quiet::before/);
+ assert.match(client,/msg\.type==='hype_reactions'/);
+ assert.doesNotMatch(client,/REACTION_THROTTLE|lastReactionShownAt|entries\.slice\(-8\)/);
+ assert.match(css,/tfwHypeStreamFlight var\(--reaction-duration,340ms\)/);
+ assert.match(css,/tfwHypeStreamTurn var\(--reaction-duration,340ms\)/);
+ assert.match(css,/opacity:\.24/);
+ assert.match(worker,/type:'hype_reactions'/);
+ assert.doesNotMatch(worker,/this\.latest\.length>6|this\.latest\.slice\(-6\)/);
+});
+test('HYPE server broadcasts more than six reactions without dropping any',()=>{
+ const src=read('workers/hype-worker/src/index.js')
+  .replace(/^import .+?;\s*/,'')
+  .replace('export default {','const entrypoint = {')
+  .replace('export class HypeRoom','class HypeRoom');
+ const Base=class{constructor(ctx,env){this.ctx=ctx;this.env=env}};
+ const HypeRoom=new Function('DurableObject',src+'\nreturn HypeRoom')(Base);
+ const packets=[],client={send:p=>packets.push(JSON.parse(p))};
+ const ctx={getWebSockets:()=>[client],storage:{getAlarm:async()=>null}};
+ const room=new HypeRoom(ctx,{});
+ room.pending.set('🔥',265);
+ for(let i=0;i<265;i++)room.latest.push({emoji:'🔥',nickname:'Tester'});
+ room.flush();
+ assert.equal(packets[0].type,'hype');
+ assert.equal(packets[0].counts['🔥'],265);
+ assert.ok(packets.length>=3);
+ assert.ok(packets.slice(1).every(p=>p.type==='hype_reactions'));
+ assert.equal(packets.flatMap(p=>p.latest).length,265);
+ assert.equal(room.latest.length,0);
 });

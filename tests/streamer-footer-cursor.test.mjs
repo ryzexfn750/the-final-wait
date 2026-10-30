@@ -62,14 +62,16 @@ test('Compact custom I-beam persists after selection and profile text is concise
  assert.match(css,/tfw-text-selection-active body \*\{cursor:none!important\}/);
  assert.doesNotMatch(read('profile.html'),/Saved on this device\. Other visitors can still see nicknames normally/);
 });
-test('Live HYPE reactions are subtle, limited and use an accessible reduced-motion fallback',()=>{
+test('Live HYPE reactions are fast, animated and remain in a controlled side lane',()=>{
  const js=read('js/community.js'),css=read('css/community.css');
- assert.match(js,/const REACTION_DURATION=780/);
- assert.match(js,/const MAX_VISIBLE_REACTIONS=2/);
- assert.match(js,/const REACTION_THROTTLE=145/);
- assert.match(js,/setTimeout\(\(\)=>node\.remove\(\),REACTION_DURATION\+20\)/);
- assert.match(js,/function animatedLayerAvailable\(\)/);
- assert.match(css,/tfwHypeQuietRise 780ms/);
+ assert.match(js,/const REACTION_BURST_MS=165/);
+ assert.match(js,/const MAX_VISIBLE_REACTIONS=26/);
+ assert.match(js,/const MAX_REACTIONS_PER_FRAME=5/);
+ assert.match(js,/function reactionLayerAvailable\(\)/);
+ assert.match(js,/function safeLanePosition\(\)/);
+ assert.match(js,/duration\+12/);
+ assert.match(css,/tfwHypeStreamFlight/);
+ assert.match(css,/tfwHypeStreamTurn/);
  assert.match(css,/prefers-reduced-motion:reduce/);
- assert.match(css,/tfwHypeQuietReduced 780ms/);
+ assert.match(css,/tfwHypeStreamReduced/);
 });
