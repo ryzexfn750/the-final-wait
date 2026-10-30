@@ -82,7 +82,7 @@ test('Protected creator uses the site header/footer, timezone dialog and live dr
  assert.match(page,/class="legal-copy"/);
  assert.match(page,/id="timezoneModal"/);
  assert.match(page,/id="builderPreview"/);
- assert.match(page,/js\/streamer-overlay-auth\.js\?v=5/);
+ assert.match(page,/js\/streamer-overlay-auth\.js\?v=6/);
  assert.match(page,/id="builderDragBox"/);
  assert.match(page,/data-corner="nw"/);
  assert.match(page,/data-corner="se"/);
@@ -172,6 +172,6 @@ test('Visual choreography preserves 3D transform stages without full-screen flas
  assert.match(html,/class="stream-subtitle">ROAD TO LEONIDA/);
  assert.doesNotMatch(html,/stream-vfx-scan|stream-vfx-shimmer|stream-release-halo/);
  assert.doesNotMatch(css,/streamWhiteFlash|stream-final-one\s+\.stream-widget:after/);
- assert.match(builder,/stream-overlay\.html\?v=5/);
+ assert.match(builder,/stream-overlay\.html\?v=6/);
  assert.match(builder,/js\/stream-overlay\.js\?v=5/);
 });

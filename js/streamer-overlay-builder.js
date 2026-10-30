@@ -159,7 +159,7 @@ refs.download.addEventListener('click',()=>{
 });
 async function loadSourceTemplates(){
  try{
-  const names=['stream-overlay.html?v=5','css/stream-overlay.css?v=5',
+  const names=['stream-overlay.html?v=6','css/stream-overlay.css?v=6',
    'js/stream-overlay-core.js?v=5','js/stream-overlay.js?v=5'];
   const texts=await Promise.all(names.map(async name=>{
    const response=await fetch(new URL(name,location.href),{cache:'force-cache'});
