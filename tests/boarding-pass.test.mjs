@@ -139,6 +139,6 @@ test('Profile-only placement, no public sign-in and Cloudflare routing all work 
  assert.match(read('community-privacy.html'),/collectible boarding pass/);
  assert.match(read('community-terms.html'),/decorative, non-transferable/);
  const js=read('js/boarding-pass.js');
- for(const name of ['DOWNLOAD TICKET PNG','DOWNLOAD STORY PNG','SHARE ON X','SHARE ON REDDIT','INSTAGRAM \/ TIKTOK','COPY VERIFIED LINK'])
+ for(const name of ['DOWNLOAD TICKET PNG','DOWNLOAD STORY PNG','SHARE ON X','SHARE ON REDDIT','INSTAGRAM','TIKTOK','COPY VERIFIED LINK'])
   assert.ok(js.includes(name),name);
 });

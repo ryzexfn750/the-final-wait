@@ -223,14 +223,17 @@ export async function renderBoardingPassPNG(pass,portrait=false){
   if(blob)resolve(blob);else reject(Error('PNG export unavailable'));
  },'image/png'));
 }
-export async function downloadBoardingPass(pass,portrait=false){
- const blob=await renderBoardingPassPNG(pass,portrait);
+function saveBoardingPassBlob(blob,pass,portrait){
  const href=URL.createObjectURL(blob);
  const a=document.createElement('a');
  a.href=href;
  a.download='The-Final-Wait-'+pass.ticketCode+(portrait?'-story':'-boarding-pass')+'.png';
  document.body.appendChild(a);a.click();a.remove();
  setTimeout(()=>URL.revokeObjectURL(href),1500);
+}
+export async function downloadBoardingPass(pass,portrait=false){
+ const blob=await renderBoardingPassPNG(pass,portrait);
+ saveBoardingPassBlob(blob,pass,portrait);
 }
 export function attachBoardingPassActions(host,pass){
  if(!validBoardingPass(pass))throw Error('Invalid boarding pass');
@@ -263,18 +266,27 @@ export function attachBoardingPassActions(host,pass){
  link('↗ SHARE ON REDDIT','https://www.reddit.com/submit?'+new URLSearchParams({
    url,title:'My ticket to Leonida | The Final Wait'
  }).toString());
- // Instagram/TikTok do not offer reliable third-party web photo upload intents.
- // Native share sheet is supported on eligible phones, otherwise give the
- // user a ready-to-post PNG instead of pretending a direct upload happened.
- button('▣ INSTAGRAM / TIKTOK',async()=>{
-  if(navigator.share){
-   try{await navigator.share({title:'My Ticket to Leonida',
-    text:'My The Final Wait Airways boarding pass',url});return}
-   catch(e){if(e.name==='AbortError')return}
+ // No trustworthy web endpoint can force-upload an image into Instagram or
+ // TikTok. Share the actual PNG via OS sheet where supported; otherwise save
+ // the Story PNG so the visitor can attach it manually in either app.
+ const shareStory=async platform=>{
+  const blob=await renderBoardingPassPNG(pass,true);
+  if(typeof File==='function'&&navigator.share&&navigator.canShare){
+   const file=new File([blob],'The-Final-Wait-'+pass.ticketCode+'-story.png',
+    {type:'image/png'});
+   if(navigator.canShare({files:[file]})){
+    try{
+     await navigator.share({files:[file],title:'My Ticket to Leonida',
+       text:'My The Final Wait Airways boarding pass · '+url});
+     return;
+    }catch(error){if(error?.name==='AbortError')return}
+   }
   }
-  await downloadBoardingPass(pass,true);
-  status.textContent='Story PNG saved. Upload it in Instagram or TikTok.';
- });
+  saveBoardingPassBlob(blob,pass,true);
+  status.textContent='Story PNG saved. Post it using '+platform+'.';
+ };
+ button('▣ INSTAGRAM',()=>shareStory('Instagram'));
+ button('♪ TIKTOK',()=>shareStory('TikTok'));
  button('↗ COPY VERIFIED LINK',async()=>{
   try{await navigator.clipboard.writeText(url);status.textContent='Verified link copied'}
   catch{

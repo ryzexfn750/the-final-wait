@@ -130,3 +130,7 @@
  .tfw-ticket,.tfw-ticket-action{transition:none!important;transform:none!important}
  .tfw-ticket:after{animation:none!important;opacity:0}
 }
+
+/* Public verification top overline even when profile-only CSS is absent. */
+.tfw-ticket-public-header .tfw-profile-overline{font:900 10px/1.3 Arial,sans-serif;
+ letter-spacing:.2em;color:#f6a8d8}
