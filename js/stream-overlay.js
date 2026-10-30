@@ -1,5 +1,5 @@
 import {parseOptions,normalizeOptions,overlayGeometry,releaseInstant,remaining,waitProgress,formatWaitPercent}
- from './stream-overlay-core.js?v=3';
+ from './stream-overlay-core.js?v=4';
 let config=parseOptions(location.search);
 const surface=document.getElementById('streamSurface');
 const widget=document.getElementById('streamWidget');
@@ -8,12 +8,13 @@ const nodes={
  minutes:document.getElementById('streamMinutes'),seconds:document.getElementById('streamSeconds'),
  percent:document.getElementById('streamPercent'),fill:document.getElementById('streamProgressFill')
 };
-const logo=document.getElementById('streamBrand');
 const progressBar=document.getElementById('streamProgress');
 const numbers=document.getElementById('streamNumbers');
 const released=document.getElementById('streamReleased');
+const celebration=document.getElementById('streamCelebration');
 const zone=document.getElementById('streamZone');
 let target=0,demoStarted=-1,wasReleased=false,lastSecond=null;
+let celebrationAt=0;
 const pad=n=>String(n).padStart(2,'0');
 const write=(node,value)=>{if(node.textContent!==value)node.textContent=value};
 function applyOptions(options){
@@ -26,8 +27,6 @@ function applyOptions(options){
  widget.style.left=g.x+'px';
  widget.style.top=g.y+'px';
  widget.style.setProperty('--overlay-scale',String(g.w/420));
- // Only the logo can be hidden: the hostname stays in the permanent header.
- logo.hidden=!config.brand;
  zone.textContent=config.tz.replaceAll('_',' ').toUpperCase();
  tick();
 }
@@ -42,7 +41,10 @@ function tick(){
   wasReleased=isOut;
   numbers.hidden=isOut;
   released.hidden=!isOut;
+  celebration.hidden=!isOut;
   surface.classList.toggle('stream-finished',isOut);
+  if(isOut){celebrationAt=now;celebration.classList.remove('burst');void celebration.offsetWidth;celebration.classList.add('burst')}
+  else celebration.classList.remove('burst');
   if(isOut){
    widget.classList.remove('stream-release-hit');void widget.offsetWidth;
    widget.classList.add('stream-release-hit');
@@ -69,7 +71,11 @@ function tick(){
    write(nodes.percent,formatWaitPercent(target,simulatedTime));
   }
  }
- surface.classList.toggle('stream-final-five',demonstration&&demoRemaining>0);
+ const left=demonstration?demoRemaining:target-now;
+ surface.classList.toggle('stream-final-ten',left>0&&left<=10000);
+ surface.classList.toggle('stream-final-five',left>0&&left<=5000);
+ surface.classList.toggle('stream-final-one',left>0&&left<=1000);
+ if(isOut&&now-celebrationAt>4800)celebration.classList.remove('burst');
 }
 applyOptions(config);
 // Preview messages are accepted only from the same-origin parent builder.

@@ -15,8 +15,9 @@ body{font-family:Inter,"Segoe UI",Arial,Helvetica,sans-serif;color:#fff;-webkit-
  backdrop-filter:blur(11px);-webkit-backdrop-filter:blur(11px)}
 .stream-widget:before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
  background:radial-gradient(ellipse at 80% -10%,rgba(227,88,175,.12),transparent 64%)}
-.stream-header{position:relative;display:flex;align-items:center;gap:9px;width:100%;height:21px;min-height:21px}
-.stream-logo{display:block;width:58px;height:21px;object-fit:contain;flex:none;filter:drop-shadow(0 0 7px #f17ab84d)}
+.stream-header{position:relative;z-index:2;display:flex;align-items:center;gap:9px;width:100%;height:21px;min-height:21px}
+.stream-identity{display:flex;flex-direction:column;gap:3px;flex:none;min-width:128px}
+.stream-subtitle{font:900 7px/1 Arial,sans-serif;letter-spacing:.15em;color:#f1aad7;white-space:nowrap}
 .stream-domain{color:#ffdeef;font:900 10px/1 Arial,sans-serif;letter-spacing:.02em;white-space:nowrap}
 .stream-zone{margin-left:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;
  color:#bcb0cd;font:800 8px/1.2 Arial,sans-serif;letter-spacing:.06em;white-space:nowrap;text-align:right}
@@ -55,3 +56,82 @@ body{font-family:Inter,"Segoe UI",Arial,Helvetica,sans-serif;color:#fff;-webkit-
 @keyframes streamBeat{40%{filter:brightness(1.45)}}
 @keyframes streamRelease{from{transform:scale(.84);filter:blur(5px);opacity:0}to{transform:scale(1);filter:none;opacity:1}}
 @media(prefers-reduced-motion:reduce){.stream-widget *{animation:none!important}}
+
+
+/* Cinematic effects: compositor-friendly motion, clipped to the compact HUD. */
+.stream-widget{isolation:isolate;transition:border-color .5s ease,box-shadow .5s ease}
+.stream-widget:before{animation:streamAmbientTint 8s ease-in-out infinite alternate}
+.stream-vfx{position:absolute;inset:0;border-radius:inherit;overflow:hidden;pointer-events:none;z-index:1}
+.stream-vfx-wave{position:absolute;inset:-110% -35%;opacity:.55;
+ background:conic-gradient(from 35deg at 50% 50%,transparent 0deg,rgba(236,82,179,.1) 80deg,
+ transparent 125deg,rgba(120,83,233,.13) 220deg,transparent 285deg);
+ animation:streamAtmosphereTurn 15s linear infinite}
+.stream-vfx-scan{position:absolute;left:-45%;top:-90%;width:55%;height:280%;
+ background:linear-gradient(90deg,transparent,rgba(255,180,230,.085),transparent);
+ transform:rotate(18deg);animation:streamSlowScan 10s ease-in-out infinite}
+.stream-vfx-shimmer{position:absolute;left:0;top:0;width:100%;height:1px;
+ background:linear-gradient(90deg,transparent,#f9a4e2 40%,#a997ff 65%,transparent);
+ opacity:.4;animation:streamShimmer 5s ease-in-out infinite}
+.stream-vfx-mote{position:absolute;left:calc(8% + var(--mx,10%));top:calc(12% + var(--my,18%));
+ width:2px;height:2px;border-radius:50%;background:#ffc2e6;opacity:0;box-shadow:0 0 7px #f7acdd;
+ animation:streamMote 5s ease-in-out infinite;animation-delay:var(--delay,0s)}
+.stream-vfx-mote.m1{--mx:5%;--my:25%;--delay:.2s}
+.stream-vfx-mote.m2{--mx:33%;--my:65%;--delay:1.4s}
+.stream-vfx-mote.m3{--mx:72%;--my:10%;--delay:2.8s}
+.stream-vfx-mote.m4{--mx:54%;--my:38%;--delay:3.3s}
+.stream-vfx-mote.m5{--mx:88%;--my:69%;--delay:4.1s}
+.stream-progress-track{position:relative;overflow:hidden}
+.stream-progress-track:after{content:"";position:absolute;inset:0 auto 0 -35%;width:36%;
+ background:linear-gradient(90deg,transparent,#fff9,transparent);
+ animation:streamProgressGlint 4s linear infinite}
+.stream-numbers{z-index:2}
+.stream-progress{z-index:2}
+.stream-surface.stream-final-ten .stream-widget{border-color:#f7a3d9;
+ box-shadow:0 0 19px #e96bba58,0 0 38px #925fe53b,0 14px 36px #0008}
+.stream-surface.stream-final-ten .stream-vfx-scan{animation-duration:2.1s;opacity:.85}
+.stream-surface.stream-final-ten .stream-vfx-shimmer{animation-duration:1.2s}
+.stream-surface.stream-final-five .stream-widget{animation:streamFinalBreath 1s ease-in-out infinite}
+.stream-surface.stream-final-five .stream-progress-track{box-shadow:0 0 9px #fb70cd99}
+.stream-surface.stream-final-one .stream-widget:after{content:"";position:absolute;inset:0;pointer-events:none;
+ background:radial-gradient(circle at center,#fff7,transparent 75%);
+ z-index:3;animation:streamWhiteFlash .16s ease-in-out infinite alternate}
+.stream-second-hit .stream-unit strong{animation:streamBeat .32s cubic-bezier(.17,.85,.23,1) both}
+.stream-second-hit .stream-colon{animation:streamColonPulse .32s ease-out}
+.stream-released{z-index:4;isolation:isolate}
+.stream-release-halo{position:absolute;inset:-45px -30px;border-radius:50%;z-index:-1;
+ background:radial-gradient(ellipse,#f9a1d05c,rgba(155,78,235,.27) 35%,transparent 70%);
+ animation:streamHaloPulse 2.3s ease-in-out infinite}
+.stream-surface.stream-finished .stream-widget{animation:streamReleaseEdge 2.8s ease-in-out infinite}
+.stream-surface.stream-finished .stream-released strong{animation:streamRelease .85s cubic-bezier(.14,.85,.26,1) both,streamHeadlineGlow 3s ease-in-out 1s infinite}
+.stream-surface.stream-finished .stream-released span{animation:streamSubReveal .95s .35s ease-out both}
+.stream-celebration{position:absolute;inset:0;z-index:5;overflow:hidden;pointer-events:none}
+.stream-celebration i{position:absolute;left:50%;top:53%;width:4px;height:11px;opacity:0;
+ background:hsl(calc(300 + var(--i) * 11),85%,74%);border-radius:2px;
+ --angle:calc(var(--i) * 22.5deg);
+ animation:streamBurst 1.5s cubic-bezier(.18,.64,.2,1) both;
+ animation-delay:calc(var(--i) * 26ms)}
+.stream-celebration:not(.burst){display:none!important}
+.stream-celebration:not(.burst) i{animation:none}
+@keyframes streamAmbientTint{to{opacity:.32;transform:translate3d(4px,-3px,0)}}
+@keyframes streamAtmosphereTurn{to{transform:rotate(360deg)}}
+@keyframes streamSlowScan{0%,16%{translate:0 0;opacity:0}45%{translate:230% 0;opacity:.85}65%,100%{translate:330% 0;opacity:0}}
+@keyframes streamShimmer{0%,100%{opacity:.2}50%{opacity:.8}}
+@keyframes streamMote{0%,100%{opacity:0;transform:translate3d(0,5px,0) scale(.4)}45%{opacity:.7}75%{opacity:0;transform:translate3d(0,-12px,0) scale(1.4)}}
+@keyframes streamProgressGlint{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(400%,0,0)}}
+@keyframes streamFinalBreath{50%{filter:brightness(1.15)}}
+@keyframes streamWhiteFlash{to{opacity:.15}}
+@keyframes streamColonPulse{50%{color:#fff;text-shadow:0 0 15px #ff94d8;transform:scale(1.2)}}
+@keyframes streamHaloPulse{50%{opacity:.55;transform:scale(1.08)}}
+@keyframes streamReleaseEdge{50%{box-shadow:0 0 32px #f680d879,0 0 65px #9464ed32,0 14px 40px #0008}}
+@keyframes streamHeadlineGlow{50%{filter:brightness(1.15);text-shadow:0 0 33px #ee68c799,0 2px 14px #000}}
+@keyframes streamSubReveal{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes streamBurst{
+  0%{opacity:0;transform:rotate(var(--angle)) translateX(0) scale(.7)}
+  18%{opacity:1}
+  74%{opacity:.9}
+  100%{opacity:0;transform:rotate(var(--angle)) translateX(200px) rotate(240deg) scale(.4)}
+}
+@media(prefers-reduced-motion:reduce){
+ .stream-widget,.stream-widget:before,.stream-vfx *, .stream-progress-track:after,
+ .stream-released *, .stream-celebration *{animation:none!important;transition:none!important}
+}

@@ -7,14 +7,21 @@
  <meta name="referrer" content="no-referrer">
  <meta name="color-scheme" content="dark">
  <title>The Final Wait — Stream Overlay</title>
- <link rel="stylesheet" href="css/stream-overlay.css?v=3">
+ <link rel="stylesheet" href="css/stream-overlay.css?v=4">
 </head>
 <body>
  <main id="streamSurface" class="stream-surface" aria-label="GTA VI live countdown overlay">
   <section id="streamWidget" class="stream-widget">
+   <div class="stream-vfx" aria-hidden="true">
+    <i class="stream-vfx-wave"></i><i class="stream-vfx-scan"></i><i class="stream-vfx-shimmer"></i>
+    <i class="stream-vfx-mote m1"></i><i class="stream-vfx-mote m2"></i><i class="stream-vfx-mote m3"></i>
+    <i class="stream-vfx-mote m4"></i><i class="stream-vfx-mote m5"></i>
+   </div>
    <div class="stream-header">
-    <img id="streamBrand" class="stream-logo" src="assets/ryze-gtavi-logo-lockup.png" alt="RyzeGTAVI">
-    <strong class="stream-domain">thefinalwait.com</strong>
+    <div class="stream-identity">
+     <span class="stream-subtitle">ROAD TO LEONIDA</span>
+     <strong class="stream-domain">thefinalwait.com</strong>
+    </div>
     <span id="streamZone" class="stream-zone">EUROPE/ROME</span>
    </div>
    <div id="streamNumbers" class="stream-numbers">
@@ -31,10 +38,17 @@
     <span id="streamPercent">0.00%</span>
    </div>
    <div id="streamReleased" class="stream-released" hidden>
+    <div class="stream-release-halo" aria-hidden="true"></div>
     <strong>GTA VI IS OUT!</strong><span>THE WAIT IS OVER.</span>
+   </div>
+   <div id="streamCelebration" class="stream-celebration" aria-hidden="true" hidden>
+    <i style="--i:0"></i><i style="--i:1"></i><i style="--i:2"></i><i style="--i:3"></i>
+    <i style="--i:4"></i><i style="--i:5"></i><i style="--i:6"></i><i style="--i:7"></i>
+    <i style="--i:8"></i><i style="--i:9"></i><i style="--i:10"></i><i style="--i:11"></i>
+    <i style="--i:12"></i><i style="--i:13"></i><i style="--i:14"></i><i style="--i:15"></i>
    </div>
   </section>
  </main>
- <script type="module" src="js/stream-overlay.js?v=3"></script>
+ <script type="module" src="js/stream-overlay.js?v=4"></script>
 </body>
 </html>

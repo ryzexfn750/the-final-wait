@@ -1,10 +1,10 @@
 import {DEFAULTS,isValidZone,normalizeOptions,buildOverlayUrl,
- overlayGeometry,releaseInstant,CANVAS} from './stream-overlay-core.js?v=3';
+ overlayGeometry,releaseInstant,CANVAS} from './stream-overlay-core.js?v=4';
 const $=id=>document.getElementById(id);
 const refs={
  form:$('overlaySettings'),theme:$('overlayTheme'),position:$('overlayPosition'),
  size:$('overlaySize'),tzButton:$('overlayTimezoneOpen'),tzValue:$('overlayTimezoneValue'),
- brand:$('overlayBrand'),progress:$('overlayProgress'),
+ progress:$('overlayProgress'),
  stage:$('builderPreviewStage'),frame:$('builderPreview'),box:$('builderDragBox'),
  url:$('overlayUrl'),open:$('overlayOpen'),copy:$('overlayCopy'),
  reset:$('overlayReset'),demo:$('overlayDemo'),feedback:$('overlayFeedback'),
@@ -24,7 +24,7 @@ let pointer=null,modalReturnFocus=null,zoneCache=new Map(),generation=0;
 function syncInputs(){
  refs.theme.value=state.theme;refs.position.value=state.position;
  refs.size.value=state.size;refs.tzValue.textContent=state.tz.replaceAll('_',' ');
- refs.brand.checked=state.brand;refs.progress.checked=state.progress;
+ refs.progress.checked=state.progress;
 }
 function syncFrame(){
  if(refs.frame.contentWindow)
@@ -64,7 +64,7 @@ function updateControls(event){
   if(next==='custom'&&state.size!=='custom')state.w=geometry.w;
   state.size=next;
  }else{
-  state.theme=refs.theme.value;state.brand=refs.brand.checked;state.progress=refs.progress.checked;
+  state.theme=refs.theme.value;state.progress=refs.progress.checked;
  }
  render();
 }
@@ -143,7 +143,7 @@ refs.reset.addEventListener('click',()=>{state=normalizeOptions({...DEFAULTS,tz:
 refs.demo.addEventListener('click',()=>{
  if(!refs.frame.contentWindow)return;
  refs.frame.contentWindow.postMessage({type:'tfw:overlay-demo'},location.origin);
- refs.demo.textContent='↻ REPLAY LAST 5 SECONDS';
+ refs.demo.textContent='REPLAY LAST 5 SECONDS';
 });
 function allZones(){
  let zones=['Europe/Rome','UTC','Europe/London','America/New_York','America/Los_Angeles',

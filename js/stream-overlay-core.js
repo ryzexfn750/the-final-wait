@@ -2,7 +2,7 @@
 export const RELEASE={year:2026,month:11,day:19,hour:0,minute:0,second:0};
 export const DEFAULTS=Object.freeze({
  tz:'Europe/Rome',theme:'glass',position:'bottom-left',size:'medium',
- brand:true,progress:true,x:38,y:920,w:420
+ progress:true,x:38,y:920,w:420
 });
 export const OPTIONS=Object.freeze({
  theme:['glass','neon','minimal'],
@@ -22,7 +22,6 @@ export function normalizeOptions(input={}){
   theme:validChoice('theme',input.theme),
   position:validChoice('position',input.position),
   size:validChoice('size',input.size),
-  brand:input.brand===false||input.brand==='0'?false:true,
   progress:input.progress===false||input.progress==='0'?false:true,
   x:bound(input.x,0,1920-220,38),y:bound(input.y,0,1080-69,920),w:bound(input.w,220,850,420)
  };
@@ -31,15 +30,15 @@ export function parseOptions(search){
  const p=search instanceof URLSearchParams?search:new URLSearchParams(search||'');
  return normalizeOptions({
   tz:p.get('tz'),theme:p.get('theme'),position:p.get('position'),size:p.get('size'),
-  brand:p.get('brand'),progress:p.get('progress'),x:p.get('x'),y:p.get('y'),w:p.get('w')
+  progress:p.get('progress'),x:p.get('x'),y:p.get('y'),w:p.get('w')
  });
 }
 export function buildOverlayUrl(base,options){
  const o=normalizeOptions(options);
  const url=new URL('stream-overlay.html',base);
  url.search=new URLSearchParams({
-  v:'3',tz:o.tz,theme:o.theme,position:o.position,size:o.size,
-  brand:o.brand?'1':'0',progress:o.progress?'1':'0',
+  v:'4',tz:o.tz,theme:o.theme,position:o.position,size:o.size,
+  progress:o.progress?'1':'0',
   ...(o.position==='custom'?{x:String(Math.round(o.x)),y:String(Math.round(o.y))}:{}),
   ...(o.size==='custom'?{w:String(Math.round(o.w))}:{})
  }).toString();

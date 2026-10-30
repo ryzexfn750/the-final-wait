@@ -16,7 +16,7 @@
  <link rel="stylesheet" href="css/secondary-controls.css?v=48">
  <link rel="stylesheet" href="css/community.css?v=11">
  <link rel="stylesheet" href="css/community-profile.css?v=4">
- <link rel="stylesheet" href="css/streamer-overlay-builder.css?v=3">
+ <link rel="stylesheet" href="css/streamer-overlay-builder.css?v=4">
 </head>
 <body class="article-page tfw-profile-page tfw-streamer-builder-page">
  <div class="page-noise" aria-hidden="true"></div>
@@ -86,7 +86,6 @@
      <button id="overlayTimezoneOpen" class="builder-zone-button" type="button" aria-haspopup="dialog" aria-controls="timezoneModal"><span id="overlayTimezoneValue">Europe/Rome</span><span aria-hidden="true">CHANGE ↗</span></button>
      <small class="builder-tip">The timer ends at midnight on November 19 in your selected time zone.</small>
      <fieldset class="builder-toggles"><legend>DISPLAY OPTIONS</legend>
-      <label><input type="checkbox" id="overlayBrand" name="brand" checked> Show RyzeGTAVI logo</label>
       <label><input type="checkbox" id="overlayProgress" name="progress" checked> Show waiting progress</label>
      </fieldset>
     </form>
@@ -95,7 +94,7 @@
      <div class="builder-preview-wrap">
       <div id="builderPreviewStage" class="builder-preview-stage" aria-label="Interactive 1920 by 1080 stream preview">
        <div class="preview-safe" aria-hidden="true"></div>
-       <iframe id="builderPreview" title="Your live stream overlay preview" src="stream-overlay.html?v=3&amp;tz=Europe%2FRome" width="1920" height="1080" loading="eager"></iframe>
+       <iframe id="builderPreview" title="Your live stream overlay preview" src="stream-overlay.html?v=4&amp;tz=Europe%2FRome" width="1920" height="1080" loading="eager"></iframe>
        <div id="builderDragBox" class="builder-drag-box" role="group" aria-label="Drag overlay to reposition; drag a corner to resize">
         <span class="builder-drag-label" aria-hidden="true">MOVE · RESIZE</span>
         <span class="builder-resize-handle" data-corner="nw" title="Resize from top left"></span>
@@ -107,7 +106,7 @@
       <div class="preview-info"><span>16:9 · INTERACTIVE PREVIEW</span><span>1920 × 1080 · TRANSPARENT</span></div>
      </div>
      <div class="builder-preview-tools">
-      <button id="overlayDemo" class="builder-demo" type="button">▶ PLAY LAST 5 SECONDS</button>
+      <button id="overlayDemo" class="builder-demo" type="button">PLAY LAST 5 SECONDS</button>
      </div>
      <div class="builder-export">
       <div class="builder-export-label"><span>CONNECT YOUR STREAM</span></div>
@@ -167,6 +166,6 @@
  <script type="module" src="js/analytics-subpages.js?v=2"></script>
  <script defer src="js/community-header.js?v=4"></script>
  <script defer src="js/support-experience.js?v=5"></script>
- <script type="module" src="js/streamer-overlay-auth.js?v=2"></script>
+ <script type="module" src="js/streamer-overlay-auth.js?v=3"></script>
 </body>
 </html>
