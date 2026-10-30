@@ -24,7 +24,7 @@ test('The community assets are available on all standalone routes',()=>{
     assert.match(page,/css\/community\.css\?v=10/);
   }
   const build=read('tools/build-cloudflare-pages.mjs');
-  assert.match(build,/include:\['\/api\/timezone','\/api\/community\/\*'\]/);
+  assert.match(build,/include:\['\/api\/timezone','\/api\/community\/\*','\/ticket\/\*'\]/);
   assert.match(build,/community-privacy.html/);
   assert.match(build,/community-terms.html/);
   assert.match(build,/profile.html/);

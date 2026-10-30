@@ -1,3 +1,4 @@
+import {mountBoardingPass,attachBoardingPassActions} from './boarding-pass.js?v=1';
 /* Profile-only account actions. Confirmation dialogs are styled in-page,
    without browser-native confirmation popups or newsletter/CAPTCHA widgets. */
 const $=selector=>document.querySelector(selector);
@@ -125,6 +126,25 @@ async function initProfile(){
          day:'numeric',month:'long',year:'numeric',timeZone:'UTC'
        }).format(joined);
      }
+   }
+   // Ticket errors must not disable the user's account/profile actions.
+   try{
+     const passResponse=await fetch('/api/community/boarding-pass',{
+       method:'GET',cache:'no-store',
+       headers:{Authorization:'Bearer '+session.access_token}
+     });
+     const passData=await passResponse.json().catch(()=>({}));
+     if(!passResponse.ok)throw Error(passData.error||'Boarding pass unavailable');
+     mountBoardingPass($('#profileTicketCanvas'),passData.ticket);
+     attachBoardingPassActions($('#profileTicketActions'),passData.ticket);
+     $('#profileTicketFeedback').textContent='Issued to your account · Public verification available.';
+   }catch(error){
+     $('#profileTicketCanvas').replaceChildren();
+     const problem=document.createElement('p');
+     problem.className='tfw-ticket-loading';
+     problem.textContent='BOARDING PASS TEMPORARILY UNAVAILABLE';
+     $('#profileTicketCanvas').appendChild(problem);
+     $('#profileTicketFeedback').textContent=error.message;
    }
  }catch(error){feedback(error.message,true)}
 }
