@@ -436,7 +436,8 @@ test('HYPE animation shows every server-accepted emoji, never truncating incomin
  assert.doesNotMatch(client,/REACTION_THROTTLE|lastReactionShownAt|entries\.slice\(-8\)/);
  assert.match(css,/tfwHypeStreamFlight var\(--reaction-duration,340ms\)/);
  assert.match(css,/tfwHypeStreamTurn var\(--reaction-duration,340ms\)/);
- assert.match(css,/opacity:\.24/);
+ assert.match(css,/12%\{opacity:1/);
+ assert.match(css,/82%\{opacity:1/);
  assert.match(worker,/type:'hype_reactions'/);
  assert.doesNotMatch(worker,/this\.latest\.length>6|this\.latest\.slice\(-6\)/);
 });

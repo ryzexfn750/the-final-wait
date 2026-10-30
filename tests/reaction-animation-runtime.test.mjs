@@ -55,12 +55,13 @@ test('Every emoji in a 300-reaction burst eventually animates and DOM stays boun
  assert.ok(rendered.every(node=>node.children.some(child=>EMOJIS.includes(child.textContent))));
  assert.ok(rendered.some(node=>node.style.properties['--reaction-duration']==='165ms'));
 });
-test('CSS visibly moves and rotates emoji, with lower opacity and reduced-motion support',()=>{
+test('CSS visibly moves and rotates emoji, at full opacity and reduced-motion support',()=>{
  const css=read('css/community.css');
  assert.match(css,/tfwHypeStreamFlight var\(--reaction-duration,340ms\)/);
  assert.match(css,/tfwHypeStreamTurn var\(--reaction-duration,340ms\)/);
  assert.match(css,/translate3d\(var\(--stream-x\),var\(--stream-y\),0\)/);
- assert.match(css,/opacity:\.24/);
+ assert.match(css,/12%\{opacity:1/);
+ assert.match(css,/82%\{opacity:1/);
  assert.match(css,/tfwHypeStreamReduced/);
  assert.match(css,/prefers-reduced-motion:reduce/);
 });

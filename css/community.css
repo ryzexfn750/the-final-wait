@@ -726,7 +726,7 @@ html.tfw-auth-pending #hero>.tfw-hype-stage{visibility:hidden}
 
 /* HYPE V4 — actual travel INTO the HYPE meter. High-volume bursts retain
    EVERY accepted emoji in the animation queue, not as fullscreen overlays.
-   Subtle 24% opacity, fast vertical ascent and visible rotation. */
+   Fully opaque reactions, fast vertical ascent and visible rotation. */
 #hero .tfw-hype-float.tfw-hype-float-quiet.tfw-hype-float-stream{
  animation:tfwHypeStreamFlight var(--reaction-duration,340ms) cubic-bezier(.23,.2,.22,1) both!important;
  transform-origin:50% 65%;
@@ -743,14 +743,14 @@ html.tfw-auth-pending #hero>.tfw-hype-stage{visibility:hidden}
  font-size:16px!important;
 }
 #hero .tfw-hype-float.tfw-hype-float-stream .tfw-hype-float-name{
- color:rgba(255,232,250,.67);
+ color:#ffe8fa;
  font-size:7px;
- opacity:.7;
+ opacity:1;
 }
 @keyframes tfwHypeStreamFlight{
  0%{opacity:0;transform:translate3d(7px,17px,0) scale(.8) rotate(-10deg)}
- 17%{opacity:.24;transform:translate3d(0,0,0) scale(1) rotate(-3deg)}
- 62%{opacity:.19;transform:translate3d(calc(var(--stream-x)*.58),calc(var(--stream-y)*.65),0) scale(.85) rotate(11deg)}
+ 12%{opacity:1;transform:translate3d(0,0,0) scale(1) rotate(-3deg)}
+ 82%{opacity:1;transform:translate3d(calc(var(--stream-x)*.82),calc(var(--stream-y)*.82),0) scale(.7) rotate(11deg)}
  100%{opacity:0;transform:translate3d(var(--stream-x),var(--stream-y),0) scale(.54) rotate(var(--stream-spin))}
 }
 @keyframes tfwHypeStreamTurn{
@@ -771,5 +771,5 @@ html.tfw-auth-pending #hero>.tfw-hype-stage{visibility:hidden}
  #hero .tfw-hype-float.tfw-hype-float-stream .tfw-hype-float-emoji{
   animation:none!important
  }
- @keyframes tfwHypeStreamReduced{0%,100%{opacity:0}30%,70%{opacity:.17}}
+ @keyframes tfwHypeStreamReduced{0%,100%{opacity:0}18%,80%{opacity:1}}
 }
