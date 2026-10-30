@@ -1,48 +1,89 @@
-import {parseOptions,releaseInstant,remaining,waitProgress} from './stream-overlay-core.js?v=1';
-const config=parseOptions(location.search);
+import {parseOptions,normalizeOptions,overlayGeometry,releaseInstant,remaining,waitProgress}
+ from './stream-overlay-core.js?v=2';
+let config=parseOptions(location.search);
 const surface=document.getElementById('streamSurface');
-surface.dataset.theme=config.theme;
-surface.dataset.size=config.size;
-surface.dataset.position=config.position;
-document.getElementById('streamBrand').hidden=!config.brand;
-document.getElementById('streamProgress').hidden=!config.progress;
-document.getElementById('streamMillis').hidden=!config.ms;
-document.getElementById('streamZone').textContent=config.tz.replaceAll('_',' ').toUpperCase();
-const target=releaseInstant(config.tz);
+const widget=document.getElementById('streamWidget');
 const nodes={
  days:document.getElementById('streamDays'),hours:document.getElementById('streamHours'),
  minutes:document.getElementById('streamMinutes'),seconds:document.getElementById('streamSeconds'),
- ms:document.getElementById('streamMsValue'),percent:document.getElementById('streamPercent'),
- fill:document.getElementById('streamProgressFill')
+ percent:document.getElementById('streamPercent'),fill:document.getElementById('streamProgressFill')
 };
-const pad=(x,n=2)=>String(x).padStart(n,'0');
-const updateText=(node,text)=>{if(node.textContent!==text)node.textContent=text};
-let hadReleased=false;
+const brand=document.getElementById('streamBrand');
+const progressBar=document.getElementById('streamProgress');
+const numbers=document.getElementById('streamNumbers');
+const kicker=document.getElementById('streamKicker');
+const released=document.getElementById('streamReleased');
+const zone=document.getElementById('streamZone');
+let target=0,demoStarted=-1,wasReleased=false,lastSecond=null;
+const pad=(n)=>String(n).padStart(2,'0');
+const write=(node,text)=>{if(node.textContent!==text)node.textContent=text};
+function applyOptions(options){
+ config=normalizeOptions(options);
+ target=releaseInstant(config.tz);
+ surface.dataset.theme=config.theme;
+ surface.dataset.position=config.position;
+ surface.dataset.size=config.size;
+ const g=overlayGeometry(config);
+ widget.style.left=g.x+'px';
+ widget.style.top=g.y+'px';
+ widget.style.setProperty('--overlay-scale',String(g.w/460));
+ brand.hidden=!config.brand;
+ zone.textContent=config.tz.replaceAll('_',' ').toUpperCase();
+ tick();
+}
 function tick(){
  const now=Date.now();
- const t=remaining(target,now);
- if(t.released!==hadReleased){
-  hadReleased=t.released;
-  document.getElementById('streamNumbers').hidden=t.released;
-  document.getElementById('streamKicker').hidden=t.released;
-  document.getElementById('streamProgress').hidden=t.released||!config.progress;
-  document.getElementById('streamReleased').hidden=!t.released;
+ const demonstration=demoStarted>=0&&now-demoStarted<8200;
+ if(!demonstration&&demoStarted>=0)demoStarted=-1;
+ const demoRemaining=demonstration?Math.max(0,5000-(now-demoStarted)):null;
+ const r=demonstration?remaining(5000,demoRemaining===null?0:5000-demoRemaining):remaining(target,now);
+ const isOut=demonstration?demoRemaining<=0:r.released;
+ if(isOut!==wasReleased){
+  wasReleased=isOut;
+  numbers.hidden=isOut;
+  kicker.hidden=isOut;
+  released.hidden=!isOut;
+  surface.classList.toggle('stream-finished',isOut);
+  if(isOut){
+   widget.classList.remove('stream-release-hit');void widget.offsetWidth;
+   widget.classList.add('stream-release-hit');
+  }else widget.classList.remove('stream-release-hit');
  }
- if(!t.released){
-  updateText(nodes.days,String(t.days).padStart(2,'0'));
-  updateText(nodes.hours,pad(t.hours));
-  updateText(nodes.minutes,pad(t.minutes));
-  updateText(nodes.seconds,pad(t.seconds));
-  if(config.ms)updateText(nodes.ms,pad(t.milliseconds,3));
+ progressBar.hidden=isOut||!config.progress;
+ if(!isOut){
+  let second=r.seconds;
+  if(demonstration){
+   second=Math.ceil(demoRemaining/1000);
+  }
+  if(lastSecond!==second&&demonstration){
+   lastSecond=second;
+   widget.classList.remove('stream-second-hit');void widget.offsetWidth;
+   widget.classList.add('stream-second-hit');
+  }
+  write(nodes.days,pad(r.days));
+  write(nodes.hours,pad(r.hours));
+  write(nodes.minutes,pad(r.minutes));
+  write(nodes.seconds,pad(second));
   if(config.progress){
-   const percent=waitProgress(target,now)*100;
-   nodes.fill.style.width=percent.toFixed(3)+'%';
-   updateText(nodes.percent,percent.toFixed(2)+'%');
+   const value=demonstration?1:waitProgress(target,now);
+   nodes.fill.style.width=(value*100).toFixed(3)+'%';
+   write(nodes.percent,(value*100).toFixed(2)+'%');
   }
  }
+ surface.classList.toggle('stream-final-five',demonstration&&demoRemaining>0);
 }
-tick();
-// Absolute clock: browser-source suspension/reload cannot accumulate drift.
-setInterval(tick,config.ms?50:200);
+applyOptions(config);
+// Messages accepted only from a same-origin configurator frame parent;
+// this never trusts arbitrary cross-origin player pages.
+window.addEventListener('message',event=>{
+ if(event.origin!==location.origin||event.source!==window.parent||window===window.parent)return;
+ const data=event.data;
+ if(data?.type==='tfw:overlay-settings'&&data.options&&typeof data.options==='object'){
+  applyOptions(data.options);
+ }else if(data?.type==='tfw:overlay-demo'){
+  demoStarted=Date.now();lastSecond=null;wasReleased=false;tick();
+ }
+});
+setInterval(tick,100);
 window.addEventListener('pageshow',tick);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)tick()});
