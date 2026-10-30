@@ -269,3 +269,39 @@ body.tfw-ticket-modal-open{overflow:hidden!important}
 @media(prefers-reduced-motion:reduce){
  .tfw-ticket-quick-button{transition:none}
 }
+
+
+/* QA collectible export: actual screenshot element is present in the DOM and
+   therefore rasterized along with the ticket's type, details and QR. */
+.tfw-ticket:before{display:none!important}
+.tfw-ticket .tfw-ticket-scene{position:absolute;inset:0;width:100%;height:100%;
+ display:block;object-fit:cover;object-position:center;z-index:0;
+ filter:saturate(1.25);pointer-events:none}
+.tfw-ticket .tfw-ticket-scene-tint{position:absolute;inset:0;z-index:1;pointer-events:none;
+ background:linear-gradient(113deg,rgba(12,7,21,.94) 0%,
+ rgba(19,9,27,.74) 40%,rgba(15,8,28,.77) 68%,rgba(12,8,24,.97) 100%)}
+.tfw-ticket .tfw-ticket-noise{z-index:1}
+.tfw-ticket .tfw-ticket-layout{position:relative;z-index:2}
+.tfw-ticket:after{z-index:3}
+.tfw-ticket-quick-button,
+.tfw-ticket-modal-actions .fx-button{opacity:1!important;filter:none!important;
+ color:#fff!important;cursor:pointer}
+.tfw-ticket-quick-button{border-color:rgba(255,191,233,.8)!important;
+ background:linear-gradient(115deg,#ba439e,#6d49c3)!important;
+ box-shadow:inset 0 1px rgba(255,255,255,.2),0 11px 35px rgba(219,67,171,.24)!important}
+.tfw-ticket-quick-button:first-child{
+ background:linear-gradient(115deg,#7f3b87,#472d77)!important}
+.tfw-ticket-quick-button:hover{border-color:#fff1f8!important;
+ background:linear-gradient(115deg,#d65eaf,#8657df)!important;
+ box-shadow:0 12px 38px rgba(239,97,184,.35)!important}
+.tfw-ticket-modal-actions .fx-button{background:rgba(158,77,169,.22)!important;
+ border:1px solid rgba(255,194,239,.54)!important}
+.tfw-ticket-modal-actions .fx-button:hover{background:rgba(224,104,194,.36)!important}
+html.tfw-global-cursor-ready .tfw-ticket-modal,
+html.tfw-global-cursor-ready .tfw-ticket-modal *,
+html.tfw-global-cursor-ready .tfw-ticket-modal-backdrop{cursor:none!important}
+.tfw-ticket-modal-backdrop{z-index:2147482400!important}
+.tfw-ticket-modal{z-index:2147482450!important}
+#tfwGlobalCursor.tfw-global-cursor-layer{z-index:2147483000!important}
+.tfw-ticket--portrait .tfw-ticket-stub{flex-basis:238px!important}
+.tfw-ticket--portrait .tfw-ticket-code{grid-row:5}

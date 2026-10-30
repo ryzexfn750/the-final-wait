@@ -43,6 +43,8 @@ export function mountBoardingPass(host,pass){
  card.setAttribute('aria-label',e.name+' for '+pass.nickname);
  card.dataset.ticketId=pass.publicId;
  card.innerHTML=
+  '<img class="tfw-ticket-scene" alt="" aria-hidden="true" crossorigin="anonymous">'+
+  '<div class="tfw-ticket-scene-tint" aria-hidden="true"></div>'+
   '<div class="tfw-ticket-noise" aria-hidden="true"></div>'+
   '<div class="tfw-ticket-layout">'+
     '<div class="tfw-ticket-main">'+
@@ -61,9 +63,9 @@ export function mountBoardingPass(host,pass){
       '<div class="tfw-ticket-mini"><span>GATE <b>VI</b></span><span>SEAT <b>06A</b></span></div>'+
       '<div class="tfw-ticket-qr" aria-label="QR code for The Final Wait"></div>'+
       '<span class="tfw-ticket-code"></span>'+
-      '<span class="tfw-ticket-verified">✓ VERIFIED PASSENGER</span>'+
     '</div>'+
   '</div>';
+ card.querySelector('.tfw-ticket-scene').src=e.image;
  card.querySelector('.tfw-ticket-edition').textContent=e.name;
  card.querySelector('.tfw-ticket-flight').textContent=e.flight+'  ·  19 NOV 2026';
  card.querySelector('.tfw-ticket-code').textContent=pass.ticketCode;
@@ -89,6 +91,18 @@ async function captureLibrary(){
  }
  return htmlImageModule;
 }
+async function prepareTicketMedia(root){
+ await document.fonts?.ready;
+ const images=[...root.querySelectorAll('img')];
+ await Promise.all(images.map(async image=>{
+  if(!image.complete)await new Promise(resolve=>{
+   image.addEventListener('load',resolve,{once:true});
+   image.addEventListener('error',resolve,{once:true});
+  });
+  if(image.naturalWidth===0)throw Error('Official GTA VI artwork has not loaded');
+  if(image.decode)await image.decode();
+ }));
+}
 export async function renderBoardingPassPNG(pass,portrait=false){
  if(!validBoardingPass(pass))throw Error('Invalid boarding pass');
  if(typeof document==='undefined')throw Error('Browser required for PNG export');
@@ -101,23 +115,28 @@ export async function renderBoardingPassPNG(pass,portrait=false){
    stage=document.createElement('div');
    stage.className='tfw-ticket-story-stage';
    stage.style.cssText='position:fixed;left:-20000px;top:0;width:540px;height:960px;pointer-events:none;z-index:-1';
-   mountBoardingPass(stage,pass);
-   stage.querySelector('.tfw-ticket').classList.add('tfw-ticket--portrait');
    document.body.appendChild(stage);
-   source=stage;
+   // Reuse exactly the same ticket component, only with portrait layout.
+   source=mountBoardingPass(stage,pass);
+   source.classList.add('tfw-ticket--portrait');
   }else if(!visible){
-   throw Error('Open your boarding pass page to download the identical image.');
+   throw Error('Open your boarding pass page to download the original image.');
   }
-  await document.fonts?.ready;
+  await prepareTicketMedia(source);
   const rect=source.getBoundingClientRect();
   if(rect.width<=0||rect.height<=0)throw Error('Boarding pass is not ready to export');
-  // Pixel ratio 1 for the standard ticket: native visual dimensions, not 1920x1080.
-  // Story: 540x960 CSS canvas upscaled twice = 1080x1920 PNG.
+  // Capture the ticket element itself, not the story staging container.
+  // No opaque canvas fill: rounded corners retain real transparent pixels.
   const blob=await toBlob(source,{
    pixelRatio:portrait?2:1,
-   backgroundColor:portrait?'#130d20':'#130d20',
-   cacheBust:true,
-   skipAutoScale:true
+   cacheBust:false,
+   skipAutoScale:true,
+   style:{
+    boxShadow:'none',
+    transform:'none',
+    transition:'none',
+    animation:'none'
+   }
   });
   if(!blob||blob.type!=='image/png')throw Error('Unable to capture the ticket');
   return blob;
@@ -143,10 +162,10 @@ export function attachBoardingPassActions(host,pass){
  // Two actions only, like the site's existing Share modal.
  const download=document.createElement('button');
  download.type='button';download.className='tfw-ticket-quick-button';
- download.textContent='↓ DOWNLOAD';
+ download.textContent='DOWNLOAD';
  const share=document.createElement('button');
  share.type='button';share.className='tfw-ticket-quick-button';
- share.textContent='↗ SHARE';
+ share.textContent='SHARE';
  host.append(download,share);
 
  const backdrop=document.createElement('div');
@@ -178,8 +197,8 @@ export function attachBoardingPassActions(host,pass){
   const isDownload=kind==='download';
   title.textContent=isDownload?'DOWNLOAD YOUR TICKET.':'SHARE YOUR BOARDING PASS.';
   description.textContent=isDownload?
-   'Choose the version you want to save. The standard PNG matches the ticket above.':
-   'Show your unique boarding pass to the Leonida community.';
+   'Download your ticket in your preferred format.':
+   'Share your ticket with the Leonida community.';
   const button=(label,fn)=>{
    const b=document.createElement('button');
    b.type='button';b.className='fx-button';b.textContent=label;
@@ -198,13 +217,13 @@ export function attachBoardingPassActions(host,pass){
    a.href=href;a.target='_blank';a.rel='noopener noreferrer';actions.appendChild(a);
   };
   if(isDownload){
-   button('↓ DOWNLOAD ORIGINAL PNG',async()=>{await downloadBoardingPass(pass,false);status.textContent='Original ticket PNG saved.'});
-   button('↓ DOWNLOAD STORY PNG',async()=>{await downloadBoardingPass(pass,true);status.textContent='Story PNG saved.'});
+   button('DOWNLOAD TICKET',async()=>{await downloadBoardingPass(pass,false);status.textContent='Original ticket PNG saved.'});
+   button('DOWNLOAD STORY VERSION',async()=>{await downloadBoardingPass(pass,true);status.textContent='Story PNG saved.'});
   }else{
-   link('𝕏 SHARE ON X','https://twitter.com/intent/tweet?'+new URLSearchParams({
+   link('SHARE ON X','https://twitter.com/intent/tweet?'+new URLSearchParams({
      text:'My boarding pass to Leonida is ready. '+EDITIONS[pass.edition].name+' · '+pass.ticketCode,url
    }));
-   link('↗ SHARE ON REDDIT','https://www.reddit.com/submit?'+new URLSearchParams({
+   link('SHARE ON REDDIT','https://www.reddit.com/submit?'+new URLSearchParams({
      url,title:'My ticket to Leonida | The Final Wait'
    }));
    const shareStory=async platform=>{
@@ -219,9 +238,9 @@ export function attachBoardingPassActions(host,pass){
     saveBoardingPassBlob(blob,pass,true);
     status.textContent='Story PNG saved. Open '+platform+' to upload it.';
    };
-   button('▣ INSTAGRAM',()=>shareStory('Instagram'));
-   button('♪ TIKTOK',()=>shareStory('TikTok'));
-   button('↗ COPY VERIFIED LINK',async()=>{
+   button('INSTAGRAM',()=>shareStory('Instagram'));
+   button('TIKTOK',()=>shareStory('TikTok'));
+   button('COPY VERIFIED LINK',async()=>{
     try{await navigator.clipboard.writeText(url)}
     catch{
      const area=document.createElement('textarea');area.value=url;
