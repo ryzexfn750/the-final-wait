@@ -1,25 +1,67 @@
-/* THE FINAL WAIT / HOLOGRAPHIC SIGNAL
- * Designed for a transparent 1920x1080 OBS Browser Source.
- * A real CSS 3D gyroscope (three orbital planes and a six-face cube) turns
- * continuously; interface elements drift at different speeds for depth.
- * All motion is confined to a compact 420x120 frame. No flashing overlays.
- */
+/* GTA VI browser source: fixed, truly transparent 1920x1080 OBS canvas. */
 :root{color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent!important}
+html,body{width:100%;height:100%;margin:0;padding:0;background:transparent!important;overflow:hidden}
 body{font-family:Inter,"Segoe UI",Arial,Helvetica,sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
 [hidden]{display:none!important}
-.stream-surface{--pink:#ef87c3;--violet:#a588fa;--ice:#cae9ff;
- position:relative;width:100vw;height:100vh;overflow:hidden;background:transparent!important;pointer-events:none}
-.stream-widget{
- position:absolute;width:420px;height:120px;padding:9px 13px;overflow:hidden;isolation:isolate;
- transform:scale(var(--overlay-scale,1));transform-origin:top left;
- border:1px solid rgba(235,155,225,.52);border-radius:14px;
+.stream-surface{position:relative;width:100vw;height:100vh;background:transparent!important;
+ pointer-events:none;overflow:hidden;--pink:#ee91c8;--purple:#9476e9}
+ .stream-widget{position:absolute;isolation:isolate;width:420px;height:120px;padding:11px 13px 10px;overflow:hidden;
+ display:flex;flex-direction:column;gap:7px;justify-content:flex-start;
+ border:1px solid rgba(250,175,222,.39);border-radius:14px;
+ transform:scale(var(--overlay-scale,1));transform-origin:0 0;
  background:linear-gradient(120deg,rgba(31,17,47,.94),rgba(9,9,27,.91) 68%,rgba(23,13,44,.9));
- box-shadow:0 17px 34px #0008,inset 0 1px 0 #ffffff1d,0 0 22px #c969c32c;
- backdrop-filter:blur(11px);-webkit-backdrop-filter:blur(11px);
- transition:border-color .7s ease,box-shadow .7s ease
-}
+ box-shadow:0 14px 36px #0008,inset 0 1px 0 #ffffff1d,0 0 28px #d566b428;
+ backdrop-filter:blur(11px);-webkit-backdrop-filter:blur(11px)}
+.stream-widget:before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+ background:radial-gradient(ellipse at 80% -10%,rgba(227,88,175,.12),transparent 64%)}
+.stream-header{position:relative;z-index:2;display:flex;align-items:center;gap:9px;width:100%;height:21px;min-height:21px}
+.stream-identity{display:flex;flex-direction:column;gap:3px;flex:none;min-width:185px}
+.stream-subtitle{font:900 7px/1 Arial,sans-serif;letter-spacing:.15em;color:#f1aad7;white-space:nowrap}
+.stream-domain{color:#ffdeef;font:900 10px/1 Arial,sans-serif;letter-spacing:.02em;white-space:nowrap}
+.stream-zone{margin-left:auto;min-width:0;overflow:hidden;text-overflow:ellipsis;
+ color:#bcb0cd;font:800 8px/1.2 Arial,sans-serif;letter-spacing:.06em;white-space:nowrap;text-align:right}
+.stream-numbers{position:relative;z-index:2;display:flex;align-items:flex-start;gap:6px;width:100%;min-height:49px}
+.stream-unit{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;flex:1;gap:4px;min-width:0}
+.stream-unit strong{font:900 35px/.97 "Arial Black",Impact,Arial,sans-serif;letter-spacing:-.07em;
+ font-variant-numeric:tabular-nums;text-shadow:0 3px 14px #000b}
+.stream-unit small{font:900 7px/1 Arial,sans-serif;letter-spacing:.12em;color:#cdbbce}
+.stream-colon{align-self:flex-start;padding-top:8px;font:900 19px/.99 Arial,sans-serif;color:#ec98cf}
+.stream-progress{position:relative;z-index:2;display:flex;align-items:center;gap:9px;width:100%;height:9px;min-height:9px}
+.stream-progress-track{height:4px;flex:1;min-width:0;overflow:hidden;border-radius:99px;background:#ffffff29}
+.stream-progress-track i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--pink));box-shadow:0 0 9px var(--pink)}
+.stream-progress>span{flex:none;text-align:right;color:#f7cbeb;font:900 8px/1 Arial,sans-serif;
+ font-variant-numeric:tabular-nums;letter-spacing:0}
+.stream-released{position:absolute;top:42px;left:12px;right:12px;bottom:8px;display:flex;
+ flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;
+ background:radial-gradient(ellipse,#5c255184,transparent 77%)}
+.stream-released strong{font:900 30px/1 "Arial Black",Impact,Arial,sans-serif;letter-spacing:-.05em;
+ color:#ffe7f5;text-shadow:0 0 22px #ed64bb6a,0 4px 14px #000}
+.stream-released span{font:900 8px/1 Arial,sans-serif;letter-spacing:.17em;color:#f6b8dc}
+.stream-surface[data-theme="neon"] .stream-widget{border-color:#ff84d6;
+ background:linear-gradient(125deg,rgba(31,6,46,.92),rgba(10,5,26,.93));
+ box-shadow:0 0 18px #f663bc91,0 0 43px #a54dc638,inset 0 0 11px #a061df23}
+.stream-surface[data-theme="neon"] .stream-unit strong{color:#ffe9f9;text-shadow:0 0 13px #f478c08c,0 4px 14px #000}
+.stream-surface[data-theme="neon"] .stream-domain{color:#ffc4ec}
+.stream-surface[data-theme="minimal"] .stream-widget{border:0;box-shadow:none;
+ background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
+.stream-surface[data-theme="minimal"] .stream-widget:before{display:none}
+.stream-surface[data-theme="minimal"] .stream-unit strong,.stream-surface[data-theme="minimal"] .stream-released strong{
+ text-shadow:0 3px 12px #000,0 0 22px #000b}
+.stream-surface[data-theme="minimal"] .stream-progress-track{background:#0a0517a8}
+.stream-surface.stream-final-five .stream-unit strong{color:#ffe5f4;text-shadow:0 0 16px #f59cda83,0 0 24px #a471f158}
+.stream-second-hit .stream-unit strong{animation:streamBeat .32s ease-out}
+.stream-release-hit .stream-released strong{animation:streamRelease .8s cubic-bezier(.18,.9,.28,1) both}
+.stream-surface.stream-finished .stream-widget{border-color:#f8b4df;box-shadow:0 0 26px #eb7cc462,0 14px 34px #0008}
+@keyframes streamBeat{40%{filter:brightness(1.45)}}
+@keyframes streamRelease{from{transform:scale(.84);filter:blur(5px);opacity:0}to{transform:scale(1);filter:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){.stream-widget *{animation:none!important}}
+
+
+
+/* Unchanged animated depth background from the holographic version.
+ * The front-of-panel layout is intentionally restored to the earlier compact HUD. */
+.stream-atmosphere{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none}
 /* Distinct background depth layers - never sit above text. */
 .stream-atmosphere{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none}
 .stream-depth-grid{
@@ -41,136 +83,7 @@ body{font-family:Inter,"Segoe UI",Arial,Helvetica,sans-serif;color:#fff;-webkit-
  background:linear-gradient(90deg,transparent,#ef97d313,transparent);
  transform:rotate(23deg);animation:stream-light-pass 13s ease-in-out infinite}
 .stream-light-one{left:-27%}.stream-light-two{left:-40%;animation-delay:6.5s}
-/* Gyroscopic 3D object: three ring planes rotate independently in 3D,
- * while a six-faced translucent solid spins along both axes. */
-.stream-hologram{position:absolute;right:7px;top:5px;width:91px;height:86px;
- perspective:230px;z-index:1;pointer-events:none;filter:drop-shadow(0 0 8px #b674e467)}
-.stream-hologram-float{position:absolute;inset:0;transform-style:preserve-3d;
- animation:stream-holo-float 5.5s ease-in-out infinite}
-.stream-orbit{position:absolute;left:9px;top:6px;width:71px;height:71px;border:1.6px solid transparent;
- border-radius:50%;transform-style:preserve-3d;backface-visibility:visible}
-.stream-orbit:after{content:"";position:absolute;width:5px;height:5px;top:-3px;left:50%;
- border-radius:50%;background:#ffe5f6;box-shadow:0 0 7px 2px #f18ad4;transform:translateX(-50%)}
-.stream-orbit-a{border-top-color:#f09bdc;border-bottom-color:#a78efe;border-right-color:#e19be37b;
- box-shadow:inset 0 0 11px #c778f12a,0 0 7px #b783ec5b;
- animation:stream-orbit-a 8s linear infinite}
-.stream-orbit-b{border-left-color:#a4c4ff;border-right-color:#d47cff;border-top-color:#9dbaff88;
- box-shadow:0 0 10px #ac8cff44;animation:stream-orbit-b 10s linear infinite reverse}
-.stream-orbit-c{border-top-color:#ffaee2;border-bottom-color:#9f84ed;border-left-color:#a78df099;
- animation:stream-orbit-c 11s linear infinite}
-.stream-cube{position:absolute;left:32px;top:30px;width:26px;height:26px;
- transform-style:preserve-3d;animation:stream-cube-rotate 8s linear infinite}
-.stream-face{position:absolute;inset:0;display:block;backface-visibility:visible;
- border:1px solid #e9b7ffb8;
- background:linear-gradient(135deg,#f4a3df4d,#6c72e936 65%,#8bdcf31f);
- box-shadow:inset 0 0 12px #eab1f02c,0 0 7px #de8afd44}
-.stream-face.front{transform:translateZ(13px)}
-.stream-face.back{transform:rotateY(180deg) translateZ(13px)}
-.stream-face.right{transform:rotateY(90deg) translateZ(13px)}
-.stream-face.left{transform:rotateY(-90deg) translateZ(13px)}
-.stream-face.top{transform:rotateX(90deg) translateZ(13px)}
-.stream-face.bottom{transform:rotateX(-90deg) translateZ(13px)}
-.stream-orb-flare{position:absolute;left:34px;top:31px;width:21px;height:21px;
- border-radius:50%;background:#da8cfa50;filter:blur(14px);
- animation:stream-core-breathe 3.3s ease-in-out infinite}
-/* Foreground intentionally leaves physical space for the right-side 3D object. */
-.stream-content{position:relative;z-index:2;display:flex;flex-direction:column;gap:4px;
- height:100%;transform-style:preserve-3d;
- animation:stream-hud-levitate 6s ease-in-out infinite}
-.stream-header{display:flex;align-items:center;justify-content:space-between;gap:8px;
- padding-right:82px;min-height:31px}
-.stream-identity{display:grid;gap:4px;min-width:0}
-.stream-subtitle{position:relative;display:block;white-space:nowrap;color:#ffe1f3;
- font:900 14px/1 "Arial Black",Arial,sans-serif;letter-spacing:.075em;
- text-shadow:0 0 13px #e66ab66b}
-.stream-domain{display:block;font:800 8px/1 Arial,sans-serif;letter-spacing:.055em;
- color:#edb7dd;white-space:nowrap}
-.stream-zone{margin-left:auto;max-width:102px;min-width:0;overflow:hidden;text-overflow:ellipsis;
- white-space:nowrap;text-align:right;color:#c6b4d4;letter-spacing:.04em;
- font:800 7px/1.2 Arial,sans-serif}
-.stream-numbers{display:flex;align-items:flex-start;gap:5px;width:calc(100% - 75px);
- min-height:44px;perspective:340px;transform-style:preserve-3d}
-.stream-unit{display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;
- gap:4px;flex:1;min-width:0;transform-style:preserve-3d}
-.stream-unit strong{display:block;font:900 32px/.99 "Arial Black",Impact,Arial,sans-serif;
- font-variant-numeric:tabular-nums;letter-spacing:-.07em;
- transform-origin:center 62%;text-shadow:0 3px 14px #000c}
-.stream-unit small{font:900 7px/1 Arial,sans-serif;letter-spacing:.12em;color:#cdb9d7}
-.stream-colon{padding-top:6px;font:900 18px/1 Arial,sans-serif;color:#e598d6}
-.stream-number-swap .stream-unit strong{animation:stream-digit-turn .48s cubic-bezier(.15,.75,.2,1) both}
-.stream-number-swap .stream-unit:nth-child(3) strong{animation-delay:24ms}
-.stream-number-swap .stream-unit:nth-child(5) strong{animation-delay:45ms}
-.stream-number-swap .stream-unit:nth-child(7) strong{animation-delay:66ms}
-.stream-number-swap .stream-colon{animation:stream-colon-breathe .48s ease-out}
-.stream-progress{display:flex;align-items:center;gap:8px;margin-top:auto;
- width:100%;height:10px;min-height:10px}
-.stream-progress-track{position:relative;flex:1;min-width:0;overflow:hidden;
- height:4px;border-radius:99px;background:#ffffff24;box-shadow:inset 0 0 4px #0006}
-.stream-progress-track i{display:block;height:100%;width:0;
- background:linear-gradient(90deg,#805fd7,#ff78bd,#f0c5eb);
- box-shadow:0 0 11px #f496ddcc;transition:width .13s linear}
-.stream-progress-track i:after{content:"";position:absolute;right:0;top:-3px;width:5px;height:10px;
- border-radius:50%;background:#ffe1f4;box-shadow:0 0 9px 3px #fc87ca88}
-.stream-progress>span{flex:none;font:900 8px/1 Arial,sans-serif;letter-spacing:0;
- color:#fad6eb;font-variant-numeric:tabular-nums;text-shadow:0 0 8px #ef83bb35}
-/* THREE coherent modes: restrained glass, electric neon, clean transparent. */
-.stream-surface[data-theme="neon"]{--pink:#ff82d5;--violet:#7d96ff}
-.stream-surface[data-theme="neon"] .stream-widget{
- border-color:#ff91db;background:linear-gradient(130deg,#230a36ed,#080c25f0 66%,#260f36e8);
- box-shadow:0 0 18px #f473d36e,0 0 42px #8659db55,inset 0 0 20px #ae5af014}
-.stream-surface[data-theme="neon"] .stream-subtitle{text-shadow:0 0 12px #ff64c8,0 0 24px #e65ed96e}
-.stream-surface[data-theme="neon"] .stream-orbit{border-width:2px}
-.stream-surface[data-theme="neon"] .stream-cube{filter:drop-shadow(0 0 8px #e288ff)}
-.stream-surface[data-theme="minimal"] .stream-widget{border:0;box-shadow:none;
- background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
-.stream-surface[data-theme="minimal"] .stream-depth-grid,.stream-surface[data-theme="minimal"] .stream-light-stream{opacity:.15}
-.stream-surface[data-theme="minimal"] .stream-aurora{opacity:.16}
-.stream-surface[data-theme="minimal"] .stream-unit strong,.stream-surface[data-theme="minimal"] .stream-subtitle{
- text-shadow:0 4px 13px #000,0 0 15px #000c}
-.stream-surface[data-theme="minimal"] .stream-progress-track{background:#0c08169c}
-.stream-surface[data-theme="minimal"] .stream-hologram{opacity:.86}
-/* Release cue: accelerating gyroscope + stronger coordinated UI movements.
- * There is deliberately NO fullscreen white flash. */
-.stream-surface.stream-final-ten .stream-widget{border-color:#eea7e7;
- box-shadow:0 0 19px #d578bf6c,0 0 35px #ab77e055,0 13px 36px #0008}
-.stream-surface.stream-final-ten .stream-orbit-a{animation-duration:2.4s}
-.stream-surface.stream-final-ten .stream-orbit-b{animation-duration:3s}
-.stream-surface.stream-final-ten .stream-orbit-c{animation-duration:3.7s}
-.stream-surface.stream-final-ten .stream-cube{animation-duration:3s}
-.stream-surface.stream-final-five .stream-hologram-float{animation:stream-holo-charge .85s ease-in-out infinite alternate}
-.stream-surface.stream-final-five .stream-content{animation:stream-hud-urgency .85s ease-in-out infinite alternate}
-.stream-surface.stream-final-five .stream-unit strong{color:#ffe3f2;text-shadow:0 0 12px #f08ec68c,0 3px 15px #000b}
-.stream-surface.stream-final-one .stream-orbit-a,.stream-surface.stream-final-one .stream-orbit-b,
-.stream-surface.stream-final-one .stream-cube{animation-duration:.9s}
-.stream-surface.stream-final-one .stream-depth-grid{animation-duration:2s}
-/* Reveal lives below the permanent ROAD TO LEONIDA header and beside the orb. */
-.stream-released{position:absolute;z-index:4;left:13px;right:91px;top:41px;bottom:10px;
- display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:5px;
- perspective:500px}
-.stream-released strong{display:block;white-space:nowrap;font:900 27px/1 "Arial Black",Impact,Arial,sans-serif;
- letter-spacing:-.06em;color:#ffe9f6;text-shadow:0 0 22px #f290d49c,0 4px 12px #000;
- transform-origin:50% 50%}
-.stream-released>span{display:block;font:900 9px/1.1 Arial,sans-serif;letter-spacing:.15em;color:#f5b0dc}
-.stream-release-line{position:absolute;left:0;top:-4px;width:100%;height:2px;transform-origin:left center;
- background:linear-gradient(90deg,#ff93d8,#8da6ff,transparent);box-shadow:0 0 10px #f47cce}
-.stream-release-hit .stream-released strong{animation:stream-title-unfold 1s cubic-bezier(.12,.85,.2,1.15) both}
-.stream-release-hit .stream-released>span{animation:stream-caption-appear .7s .55s ease-out both}
-.stream-release-hit .stream-release-line{animation:stream-rule-draw .85s cubic-bezier(.12,.8,.2,1) both}
-.stream-surface.stream-finished .stream-orbit-a{animation-duration:5s}
-.stream-surface.stream-finished .stream-orbit-b{animation-duration:6.4s}
-.stream-surface.stream-finished .stream-cube{animation-duration:5.2s}
-.stream-surface.stream-finished .stream-released strong{text-shadow:0 0 24px #f47dcd95,0 3px 12px #000}
-.stream-surface.stream-finished .stream-content{animation:stream-hud-levitate 6s ease-in-out infinite}
-.stream-celebration{position:absolute;z-index:5;inset:0;overflow:hidden;pointer-events:none}
-.stream-celebration:not(.burst){display:none!important}
-.stream-celebration i{position:absolute;left:76%;top:48%;width:3px;height:13px;opacity:0;
- border-radius:2px;background:linear-gradient(180deg,#ffe7f5,#b4a3ff);
- box-shadow:0 0 8px #f5a1db88;
- --angle:calc(var(--i) * 30deg);
- animation:stream-prism-shards 1.65s cubic-bezier(.16,.58,.23,1) both;
- animation-delay:calc(var(--i) * 28ms)}
-.stream-celebration i:nth-child(3n){background:linear-gradient(180deg,#c2f1ff,#ad75f0)}
-/* Keyframes: all transforms, no re-layout or screen-wide flashes. */
+
 @keyframes stream-grid-drift{
  from{transform:perspective(310px) rotateX(64deg) rotateZ(-15deg) translate3d(-8px,3px,0) scale(1.3)}
  to{transform:perspective(310px) rotateX(64deg) rotateZ(-11deg) translate3d(9px,-5px,0) scale(1.4)}
@@ -178,44 +91,36 @@ body{font-family:Inter,"Segoe UI",Arial,Helvetica,sans-serif;color:#fff;-webkit-
 @keyframes stream-aurora-rotate{to{transform:rotate(360deg)}}
 @keyframes stream-edge-travel{0%,8%{translate:0 0;opacity:0}20%{opacity:.9}70%{translate:330% 0;opacity:.6}85%,100%{translate:390% 0;opacity:0}}
 @keyframes stream-light-pass{0%,15%{translate:0 0;opacity:0}40%{opacity:1}65%,100%{translate:3400% 0;opacity:0}}
-@keyframes stream-holo-float{0%,100%{transform:translate3d(0,0,0) rotateZ(-3deg)}50%{transform:translate3d(0,-3px,0) rotateZ(3deg)}}
-@keyframes stream-orbit-a{from{transform:rotateX(67deg) rotateZ(0deg)}to{transform:rotateX(67deg) rotateZ(360deg)}}
-@keyframes stream-orbit-b{from{transform:rotateY(68deg) rotateZ(0deg)}to{transform:rotateY(68deg) rotateZ(360deg)}}
-@keyframes stream-orbit-c{from{transform:rotateX(37deg) rotateY(55deg) rotateZ(0deg)}to{transform:rotateX(37deg) rotateY(55deg) rotateZ(360deg)}}
-@keyframes stream-cube-rotate{
- from{transform:rotateX(-30deg) rotateY(0deg) rotateZ(15deg)}
- to{transform:rotateX(330deg) rotateY(720deg) rotateZ(375deg)}
+
+.stream-released{z-index:4;isolation:isolate}
+.stream-release-halo{position:absolute;inset:-45px -30px;border-radius:50%;z-index:-1;
+ background:radial-gradient(ellipse,#f9a1d05c,rgba(155,78,235,.27) 35%,transparent 70%);
+ animation:streamHaloPulse 2.3s ease-in-out infinite}
+.stream-surface.stream-finished .stream-widget{animation:streamReleaseEdge 2.8s ease-in-out infinite}
+.stream-surface.stream-finished .stream-released strong{animation:streamRelease .85s cubic-bezier(.14,.85,.26,1) both,streamHeadlineGlow 3s ease-in-out 1s infinite}
+.stream-surface.stream-finished .stream-released span{animation:streamSubReveal .95s .35s ease-out both}
+.stream-celebration{position:absolute;inset:0;z-index:5;overflow:hidden;pointer-events:none}
+.stream-celebration i{position:absolute;left:50%;top:53%;width:4px;height:11px;opacity:0;
+ background:hsl(calc(300 + var(--i) * 11),85%,74%);border-radius:2px;
+ --angle:calc(var(--i) * 22.5deg);
+ animation:streamBurst 1.5s cubic-bezier(.18,.64,.2,1) both;
+ animation-delay:calc(var(--i) * 26ms)}
+.stream-celebration:not(.burst){display:none!important}
+.stream-celebration:not(.burst) i{animation:none}
+
+@keyframes streamColonPulse{50%{color:#fff;text-shadow:0 0 15px #ff94d8;transform:scale(1.2)}}
+@keyframes streamHaloPulse{50%{opacity:.55;transform:scale(1.08)}}
+@keyframes streamReleaseEdge{50%{box-shadow:0 0 32px #f680d879,0 0 65px #9464ed32,0 14px 40px #0008}}
+@keyframes streamHeadlineGlow{50%{filter:brightness(1.15);text-shadow:0 0 33px #ee68c799,0 2px 14px #000}}
+@keyframes streamSubReveal{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes streamBurst{
+  0%{opacity:0;transform:rotate(var(--angle)) translateX(0) scale(.7)}
+  18%{opacity:1}
+  74%{opacity:.9}
+  100%{opacity:0;transform:rotate(var(--angle)) translateX(200px) rotate(240deg) scale(.4)}
 }
-@keyframes stream-core-breathe{50%{opacity:.55;transform:scale(1.6)}}
-@keyframes stream-hud-levitate{
- 0%,100%{transform:translate3d(0,0,0) rotateX(0deg)}
- 50%{transform:translate3d(0,-1.5px,0) rotateX(1.2deg)}
-}
-@keyframes stream-hud-urgency{
- from{transform:translate3d(0,.4px,0) rotateX(-1deg)}
- to{transform:translate3d(0,-2px,0) rotateX(2deg)}
-}
-@keyframes stream-digit-turn{
- 0%{transform:rotateX(-16deg) translateY(-3px);filter:brightness(1.7)}
- 60%{transform:rotateX(6deg) translateY(1px);filter:brightness(1.2)}
- 100%{transform:rotateX(0deg) translateY(0);filter:brightness(1)}
-}
-@keyframes stream-colon-breathe{40%{color:#fff;transform:scale(1.12)}}
-@keyframes stream-holo-charge{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(-2px,-2px,0) scale(1.11)}}
-@keyframes stream-title-unfold{
- 0%{opacity:0;transform:perspective(400px) translateY(16px) rotateX(-85deg) scale(.8);filter:blur(4px)}
- 60%{opacity:1;transform:perspective(400px) translateY(-3px) rotateX(9deg) scale(1.04);filter:blur(0)}
- 100%{opacity:1;transform:perspective(400px) translateY(0) rotateX(0deg) scale(1);filter:blur(0)}
-}
-@keyframes stream-caption-appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes stream-rule-draw{from{opacity:0;transform:scaleX(0)}to{opacity:1;transform:scaleX(1)}}
-@keyframes stream-prism-shards{
- 0%{opacity:0;transform:rotate(var(--angle)) translateX(0) rotateY(0deg) scale(.5)}
- 13%{opacity:.95}
- 65%{opacity:.8}
- 100%{opacity:0;transform:rotate(var(--angle)) translateX(145px) rotateY(540deg) scale(.25)}
-}
+
 @media(prefers-reduced-motion:reduce){
- .stream-atmosphere *, .stream-hologram *, .stream-content, .stream-numbers *,
- .stream-released *, .stream-celebration *, .stream-widget{animation:none!important;transition:none!important}
+ .stream-atmosphere *, .stream-released *, .stream-celebration *,
+ .stream-widget *{animation:none!important;transition:none!important}
 }

@@ -57,14 +57,11 @@ test('Browser source is transparent, compact, audio-free, and ends with GTA VI I
  assert.doesNotMatch(page,/ryze-gtavi-logo|id="streamBrand"|<img|stream-live/);
  assert.doesNotMatch(js,/config\.brand|logo\.hidden/);
  assert.match(page,/id="streamCelebration"/);
- assert.match(css,/stream-orbit-a|stream-cube-rotate|stream-hud-levitate|stream-title-unfold/);
- assert.match(page,/stream-cube/);
- assert.match(page,/stream-orbit-a/);
- assert.match(page,/stream-orbit-b/);
- assert.match(page,/stream-orbit-c/);
- assert.match(page,/stream-face front/);
- assert.match(css,/font:900 14px\/1/);
- assert.doesNotMatch(css,/streamWhiteFlash|stream-final-one[^}]*:after/);
+ assert.match(page,/class="stream-atmosphere"/);
+ assert.match(css,/stream-grid-drift|stream-aurora-rotate|stream-edge-travel|stream-light-pass/);
+ assert.match(css,/font:900 13px\/1/);
+ assert.doesNotMatch(page,/stream-cube|stream-orbit|stream-hologram|stream-face|stream-vfx/);
+ assert.doesNotMatch(css,/stream-cube|stream-orbit|stream-hologram|streamWhiteFlash|stream-final-one[^}]*:after/);
  assert.doesNotMatch(page,/streamMs|MILLISECONDS|msValue|<audio|community\.js|analytics|iframe/);
  assert.doesNotMatch(js,/localStorage|fetch\(|Audio\(|eval\(/);
  assert.match(js,/tfw:overlay-settings/);
@@ -82,7 +79,7 @@ test('Protected creator uses the site header/footer, timezone dialog and live dr
  assert.match(page,/class="legal-copy"/);
  assert.match(page,/id="timezoneModal"/);
  assert.match(page,/id="builderPreview"/);
- assert.match(page,/js\/streamer-overlay-auth\.js\?v=6/);
+ assert.match(page,/js\/streamer-overlay-auth\.js\?v=7/);
  assert.match(page,/id="builderDragBox"/);
  assert.match(page,/data-corner="nw"/);
  assert.match(page,/data-corner="se"/);
@@ -143,9 +140,9 @@ test('Standalone OBS download embeds current configuration, scripts, CSS, and no
  assert.match(second,/"tz":"Asia\/Tokyo","theme":"minimal"/);
  assert.doesNotMatch(first,/src="(?:js\/|assets\/)|href="css\/|<script type="module"|cloudflare|ryze-gtavi-logo/i);
  assert.match(first,/ROAD TO LEONIDA/);
- assert.match(first,/stream-orbit-a/);
- assert.match(first,/stream-cube-rotate/);
- assert.match(first,/stream-title-unfold/);
+ assert.match(first,/stream-depth-grid/);
+ assert.match(first,/stream-aurora/);
+ assert.doesNotMatch(first,/stream-cube|stream-orbit|stream-hologram/);
  assert.match(first,/thefinalwait\.com/);
  const inline=first.match(/<script>\n([\s\S]*?)\n<\/script>/);
  assert.ok(inline,'Export should contain a standalone inline script');
@@ -156,22 +153,21 @@ test('Standalone OBS download embeds current configuration, scripts, CSS, and no
  assert.match(editor,/URL\.createObjectURL/);
 });
 
-test('Visual choreography preserves 3D transform stages without full-screen flashes',()=>{
- const css=read('css/stream-overlay.css'),html=read('stream-overlay.html'),
+test('The original compact layout is restored; the new animated background remains',()=>{
+ const css=read('css/stream-overlay.css'),page=read('stream-overlay.html'),
   runner=read('js/stream-overlay.js'),builder=read('js/streamer-overlay-builder.js');
- assert.match(css,/transform-style:preserve-3d/);
- assert.match(css,/transform:rotateY\(90deg\) translateZ\(13px\)/);
- assert.match(css,/animation:stream-orbit-a 8s linear infinite/);
- assert.match(css,/animation:stream-cube-rotate 8s linear infinite/);
- assert.match(css,/stream-title-unfold/);
- assert.match(css,/stream-prism-shards/);
- assert.match(css,/stream-digit-turn/);
- assert.match(runner,/stream-number-swap/);
- assert.match(runner,/stream-final-five/);
- assert.match(runner,/stream-final-one/);
- assert.match(html,/class="stream-subtitle">ROAD TO LEONIDA/);
- assert.doesNotMatch(html,/stream-vfx-scan|stream-vfx-shimmer|stream-release-halo/);
- assert.doesNotMatch(css,/streamWhiteFlash|stream-final-one\s+\.stream-widget:after/);
- assert.match(builder,/stream-overlay\.html\?v=6/);
- assert.match(builder,/js\/stream-overlay\.js\?v=5/);
+ assert.match(page,/stream-depth-grid/);
+ assert.match(page,/stream-aurora/);
+ assert.match(page,/stream-light-stream/);
+ assert.match(css,/perspective\(310px\) rotateX\(64deg\)/);
+ assert.match(css,/stream-grid-drift 16s ease-in-out infinite alternate/);
+ assert.match(css,/stream-aurora-rotate 23s linear infinite/);
+ assert.match(css,/stream-light-pass 13s ease-in-out infinite/);
+ assert.match(page,/stream-subtitle">ROAD TO LEONIDA/);
+ assert.match(page,/class="stream-numbers"/);
+ assert.doesNotMatch(page,/stream-cube|stream-orbit|stream-hologram/);
+ assert.doesNotMatch(css,/stream-cube|stream-orbit|stream-hologram|streamWhiteFlash/);
+ assert.match(runner,/stream-second-hit/);
+ assert.match(builder,/stream-overlay\.html\?v=7/);
+ assert.match(builder,/js\/stream-overlay\.js\?v=7/);
 });

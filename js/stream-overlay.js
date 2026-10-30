@@ -1,5 +1,5 @@
 import {parseOptions,normalizeOptions,overlayGeometry,releaseInstant,remaining,waitProgress,formatWaitPercent}
- from './stream-overlay-core.js?v=5';
+ from './stream-overlay-core.js?v=4';
 let config=parseOptions(location.search);
 const surface=document.getElementById('streamSurface');
 const widget=document.getElementById('streamWidget');
@@ -13,7 +13,8 @@ const numbers=document.getElementById('streamNumbers');
 const released=document.getElementById('streamReleased');
 const celebration=document.getElementById('streamCelebration');
 const zone=document.getElementById('streamZone');
-let target=0,demoStarted=-1,wasReleased=false,lastClock=null,celebrationAt=0;
+let target=0,demoStarted=-1,wasReleased=false,lastSecond=null;
+let celebrationAt=0;
 const pad=n=>String(n).padStart(2,'0');
 const write=(node,value)=>{if(node.textContent!==value)node.textContent=value};
 function applyOptions(options){
@@ -27,7 +28,6 @@ function applyOptions(options){
  widget.style.top=g.y+'px';
  widget.style.setProperty('--overlay-scale',String(g.w/420));
  zone.textContent=config.tz.replaceAll('_',' ').toUpperCase();
- lastClock=null;
  tick();
 }
 function tick(){
@@ -43,58 +43,49 @@ function tick(){
   released.hidden=!isOut;
   celebration.hidden=!isOut;
   surface.classList.toggle('stream-finished',isOut);
+  if(isOut){celebrationAt=now;celebration.classList.remove('burst');void celebration.offsetWidth;celebration.classList.add('burst')}
+  else celebration.classList.remove('burst');
   if(isOut){
-   celebrationAt=now;
-   celebration.classList.remove('burst');
-   void celebration.offsetWidth;
-   celebration.classList.add('burst');
-   widget.classList.remove('stream-release-hit');
-   void widget.offsetWidth;
+   widget.classList.remove('stream-release-hit');void widget.offsetWidth;
    widget.classList.add('stream-release-hit');
-  }else{
-   celebration.classList.remove('burst');
-   widget.classList.remove('stream-release-hit');
-  }
+  }else widget.classList.remove('stream-release-hit');
  }
  progressBar.hidden=isOut||!config.progress;
  if(!isOut){
-  const second=demonstration?Math.ceil(demoRemaining/1000):r.seconds;
-  const clockKey=r.days+':'+r.hours+':'+r.minutes+':'+second;
-  if(clockKey!==lastClock){
-   if(lastClock!==null){
-    numbers.classList.remove('stream-number-swap');
-    void numbers.offsetWidth;
-    numbers.classList.add('stream-number-swap');
-   }
-   lastClock=clockKey;
+  let second=r.seconds;
+  if(demonstration)second=Math.ceil(demoRemaining/1000);
+  if(lastSecond!==second&&demonstration){
+   lastSecond=second;
+   widget.classList.remove('stream-second-hit');void widget.offsetWidth;
+   widget.classList.add('stream-second-hit');
   }
   write(nodes.days,pad(r.days));
   write(nodes.hours,pad(r.hours));
   write(nodes.minutes,pad(r.minutes));
   write(nodes.seconds,pad(second));
   if(config.progress){
+   // Use the actual wait duration in preview instead of hard-coding 100%.
    const simulatedTime=demonstration?target-demoRemaining:now;
    const pct=100*waitProgress(target,simulatedTime);
    nodes.fill.style.width=pct.toFixed(6)+'%';
    write(nodes.percent,formatWaitPercent(target,simulatedTime));
   }
- }else lastClock=null;
+ }
  const left=demonstration?demoRemaining:target-now;
  surface.classList.toggle('stream-final-ten',left>0&&left<=10000);
  surface.classList.toggle('stream-final-five',left>0&&left<=5000);
  surface.classList.toggle('stream-final-one',left>0&&left<=1000);
- if(isOut&&now-celebrationAt>3600)celebration.classList.remove('burst');
+ if(isOut&&now-celebrationAt>4800)celebration.classList.remove('burst');
 }
 applyOptions(config);
-// The online builder can update its own same-origin preview. A locally exported
-// HTML file contains its own settings and does not need the network.
+// Preview messages are accepted only from the same-origin parent builder.
 window.addEventListener('message',event=>{
  if(event.origin!==location.origin||event.source!==window.parent||window===window.parent)return;
  const data=event.data;
  if(data?.type==='tfw:overlay-settings'&&data.options&&typeof data.options==='object'){
   applyOptions(data.options);
  }else if(data?.type==='tfw:overlay-demo'){
-  demoStarted=Date.now();lastClock=null;wasReleased=false;tick();
+  demoStarted=Date.now();lastSecond=null;wasReleased=false;tick();
  }
 });
 setInterval(tick,100);
