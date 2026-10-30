@@ -24,7 +24,7 @@ test('SQL migration makes each ticket unique, secure, automatically issued and d
   assert.ok(sql.includes(day));
  assert.doesNotMatch(sql,/grant\s+(?:select|execute).*\s+to\s+(?:anon|authenticated)\b/i);
 });
-test('Ticket's four editions use real repository screenshots and preserve a stable private code',async()=>{
+test('Four editions use real repository screenshots and preserve a stable private code',async()=>{
  const js=read('js/boarding-pass.js');
  const m=await import('data:text/javascript;charset=utf-8,'+encodeURIComponent(js));
  for(const [edition,prefix] of Object.entries({founders:'F',early:'E',final:'B',welcome:'W'})){
