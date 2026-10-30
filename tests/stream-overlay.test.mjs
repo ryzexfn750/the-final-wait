@@ -52,7 +52,7 @@ test('Absolute time and wait progress remain bounded',()=>{
 test('Browser source is transparent, compact, audio-free, and ends with GTA VI IS OUT',()=>{
  const page=read('stream-overlay.html'),js=read('js/stream-overlay.js'),css=read('css/stream-overlay.css');
  assert.match(page,/GTA VI IS OUT!/);
- assert.match(page,/class="stream-domain">thefinalwait\.com<\/span>/);
+ assert.match(page,/class="stream-domain">thefinalwait\.com<\/strong>/);
  assert.match(page,/ROAD TO LEONIDA/);
  assert.doesNotMatch(page,/ryze-gtavi-logo|id="streamBrand"|<img|stream-live/);
  assert.doesNotMatch(js,/config\.brand|logo\.hidden/);
