@@ -86,8 +86,16 @@
     if(/(?:\.\.\.|…)['"]?$/.test(word))result+=.85;
     return result;
   }
-  function buildPlan(text){
-    const words=text.trim().split(/\s+/).filter(Boolean);
+  function buildPlan(text,lang='en'){
+    // Japanese and Chinese do not normally separate words with spaces.
+    // Segment them for timed subtitles without inserting artificial spaces.
+    const unspaced=lang==='ja'||lang==='zh-CN';
+    const words=unspaced
+      ? (typeof Intl.Segmenter==='function'
+        ? [...new Intl.Segmenter(lang,{granularity:'word'}).segment(text.trim())]
+            .map(part=>part.segment).filter(part=>part.trim())
+        : [...text.replace(/\s+/g,'')])
+      : text.trim().split(/\s+/).filter(Boolean);
     const weights=words.map(weight);
     const total=weights.reduce((sum,n)=>sum+n,0)||1;
     let elapsed=0;
@@ -128,7 +136,7 @@
       chunks.push({from,to:end-1});
       from=end;
     }
-    return {words,begins,chunks};
+    return {words,begins,chunks,joiner:unspaced?'':' '};
   }
   function spokenIndex(plan,fraction){
     let left=0,right=plan.begins.length;
@@ -163,11 +171,12 @@
     for(let i=range.from;i<=range.to;i++){
       const span=document.createElement('span');
       span.className='tfw-caption-word';
-      span.textContent=plan.words[i]+(i===range.to?'':' ');
+      span.textContent=plan.words[i]+(i===range.to?'':plan.joiner);
       incoming.line.appendChild(span);
       incoming.wordNodes.push({index:i,el:span});
     }
-    incoming.card.setAttribute('aria-label',heading.textContent+': '+plan.words.slice(range.from,range.to+1).join(' '));
+    incoming.line.setAttribute('dir',locale==='ar'?'rtl':'auto');
+    incoming.card.setAttribute('aria-label',heading.textContent+': '+plan.words.slice(range.from,range.to+1).join(plan.joiner));
     incoming.card.setAttribute('aria-hidden','false');
     // Populate the incoming layer before crossfading out the previous one.
     incoming.card.classList.add('active');
@@ -191,7 +200,7 @@
     const lang=language();
     const localized=translations[lang]?.[cue.id]||cue.en;
     const cacheKey=cue.id+':'+lang+':'+localized;
-    if(!planCache.has(cacheKey))planCache.set(cacheKey,buildPlan(localized));
+    if(!planCache.has(cacheKey))planCache.set(cacheKey,buildPlan(localized,lang));
     const plan=planCache.get(cacheKey);
     // Hold the last spoken word in each micro-pause until the next cue starts.
     const effectiveMs=Math.max(ms,cue.end);
