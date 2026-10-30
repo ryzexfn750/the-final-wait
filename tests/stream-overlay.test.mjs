@@ -22,6 +22,7 @@ test('Only safe settings get into a URL; there is no millisecond option',()=>{
  const url=buildOverlayUrl('https://thefinalwait.com/streamer-overlay.html',parseOptions('?theme=minimal&ms=1'));
  assert.equal(new URL(url).pathname,'/stream-overlay.html');
  assert.equal(new URL(url).searchParams.has('ms'),false);
+ assert.equal(new URL(url).searchParams.get('v'),'3');
  const nested=buildOverlayUrl('https://example.com/the-final-wait/streamer-overlay.html',{tz:'Europe/Rome'});
  assert.equal(new URL(nested).pathname,'/the-final-wait/stream-overlay.html');
 });
@@ -69,6 +70,7 @@ test('Protected creator uses the site header/footer, timezone dialog and live dr
  assert.match(page,/class="legal-copy"/);
  assert.match(page,/id="timezoneModal"/);
  assert.match(page,/id="builderPreview"/);
+ assert.match(page,/js\/streamer-overlay-auth\.js\?v=2/);
  assert.match(page,/id="builderDragBox"/);
  assert.match(page,/data-corner="nw"/);
  assert.match(page,/data-corner="se"/);

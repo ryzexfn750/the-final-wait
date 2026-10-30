@@ -38,7 +38,7 @@ export function buildOverlayUrl(base,options){
  const o=normalizeOptions(options);
  const url=new URL('stream-overlay.html',base);
  url.search=new URLSearchParams({
-  tz:o.tz,theme:o.theme,position:o.position,size:o.size,
+  v:'3',tz:o.tz,theme:o.theme,position:o.position,size:o.size,
   brand:o.brand?'1':'0',progress:o.progress?'1':'0',
   ...(o.position==='custom'?{x:String(Math.round(o.x)),y:String(Math.round(o.y))}:{}),
   ...(o.size==='custom'?{w:String(Math.round(o.w))}:{})
