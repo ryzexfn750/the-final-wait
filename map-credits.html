@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <script src="js/timezone-init.js?v=3"></script>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+ <meta name="color-scheme" content="dark">
+ <meta name="theme-color" content="#09070e">
+ <meta name="robots" content="noindex,nofollow">
+ <meta name="description" content="Sources, attribution and licenses behind The Global Midnight Wave.">
+ <title>Map Data & Credits — The Final Wait</title>
+ <link rel="icon" href="assets/icon-192.png" sizes="192x192">
+ <link rel="stylesheet" href="css/base.css?v=32">
+ <link rel="stylesheet" href="css/analytics-consent.css?v=1">
+ <link rel="stylesheet" href="css/site-polish.css?v=54">
+ <link rel="stylesheet" href="css/audio-controls.css?v=39">
+ <link rel="stylesheet" href="css/secondary-controls.css?v=48">
+ <link rel="stylesheet" href="css/community.css?v=11">
+ <link rel="stylesheet" href="css/ticket-reveal.css?v=5">
+ <link rel="stylesheet" href="css/community-profile.css?v=4">
+ <link rel="stylesheet" href="css/map-credits.css?v=1">
+ <script>try{if(localStorage.getItem('tfw_community_preview')==='yes'&&!((()=>{if(!new URLSearchParams(location.search).has('tfw_embed')||window.self===window.top)return false;try{return window.parent.location.origin===location.origin&&!!window.parent.__tfwSeamlessNavigation}catch{return false}})()))document.documentElement.classList.add('tfw-auth-pending')}catch{}</script>
+</head>
+<body class="article-page tfw-profile-page tfw-map-credits-page">
+ <div class="page-noise" aria-hidden="true"></div>
+ <div class="page-grid" aria-hidden="true"></div>
+ <div class="cursor-glow" id="cursorGlow" aria-hidden="true"></div>
+ <header class="topbar article-topbar tfw-secondary-topbar" id="topbar">
+  <a class="brand magnetic" href="index.html" aria-label="The Final Wait homepage">
+   <img src="assets/ryze-gtavi-logo-lockup.png" class="brand-ryze-logo" alt="" width="102">
+   <span class="brand-copy"><strong>THE FINAL WAIT</strong><small>ROAD TO LEONIDA</small></span>
+  </a>
+  <nav class="nav desktop-nav tfw-secondary-nav" aria-label="Navigation">
+   <a href="index.html">HOME</a><a href="index.html#timeline">TIMELINE</a>
+   <a href="intel-archive.html">LEONIDA INTEL</a>
+   <button class="nav-button" id="tfwPageShare" type="button">SHARE</button>
+   <button class="nav-button fullscreen-button" id="tfwPageFullscreen" type="button">FULLSCREEN</button>
+   <button class="sound-button" id="soundButton" type="button" aria-pressed="true" title="Adjust soundtrack volume">
+    <span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <span class="sound-label">SOUND</span>
+   </button>
+  </nav>
+  <a class="tfw-account-link" href="profile.html" aria-label="Your profile"><svg class="tfw-account-person" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20v-1.6A6.4 6.4 0 0 1 11.4 12h1.2a6.4 6.4 0 0 1 6.4 6.4V20"/></svg> PROFILE</a>
+  <div class="gtranslate_wrapper language-widget" aria-label="Translate website"></div>
+  <div class="tfw-secondary-mobile">
+   <button class="sound-button compact" id="mobileSoundButton" type="button" aria-label="Adjust soundtrack volume"><span class="sound-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span></button>
+   <button class="menu-button" id="tfwPageMenu" type="button" aria-controls="tfwPageDrawer" aria-expanded="false">MENU</button>
+  </div>
+  <nav class="tfw-secondary-drawer" id="tfwPageDrawer" aria-label="Mobile navigation" hidden>
+   <a href="index.html">HOME</a><a href="index.html#timeline">TIMELINE</a>
+   <a href="intel-archive.html">LEONIDA INTEL</a><a href="profile.html">MY PROFILE</a>
+   <button type="button" id="tfwPageShareMobile" onclick="document.getElementById('tfwPageShare').click()">SHARE</button>
+   <button type="button" id="tfwPageFullscreenMobile" onclick="document.getElementById('tfwPageFullscreen').click()">FULLSCREEN</button>
+  </nav>
+ </header>
+
+ <main class="credits-main" id="creditsMain">
+  <a class="credits-back" href="global-wave.html">← BACK TO THE GLOBAL MIDNIGHT WAVE</a>
+  <header class="credits-title">
+   <p class="credits-kicker">THE GLOBAL MIDNIGHT WAVE · ATTRIBUTIONS</p>
+   <h1>MAP DATA <em>&</em><br>CREDITS.</h1>
+   <p>Open-source projects, geographic data and licenses behind the interactive world map.</p>
+  </header>
+  <div class="credits-grid">
+   <article class="credits-card">
+    <div class="credits-section-title"><span>01</span><h2>GEOGRAPHIC DATA</h2></div>
+    <p>Time zone polygons are sourced from <strong>Simplified Timezone Boundaries</strong>, derived from <strong>Timezone Boundary Builder</strong> and OpenStreetMap contributors. The site hosts a compact GeoJSON copy containing 406 simplified source regions. Small islands and boundary details may be omitted.</p>
+    <div class="credits-links">
+     <a href="https://github.com/dejurin/simplified-timezone-boundaries" target="_blank" rel="noopener noreferrer">SIMPLIFIED TIMEZONE BOUNDARIES ↗</a>
+     <a href="https://github.com/evansiroky/timezone-boundary-builder" target="_blank" rel="noopener noreferrer">TIMEZONE BOUNDARY BUILDER ↗</a>
+     <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OPENSTREETMAP CONTRIBUTORS ↗</a>
+    </div>
+    <div class="credits-license"><span>GEOGRAPHIC DATA LICENSE</span><strong>Open Database License (ODbL) 1.0</strong>
+     <a href="https://opendatacommons.org/licenses/odbl/1-0/" target="_blank" rel="noopener noreferrer">READ THE LICENSE ↗</a></div>
+   </article>
+   <article class="credits-card">
+    <div class="credits-section-title"><span>02</span><h2>3D GLOBE & RENDERING</h2></div>
+    <p>The interactive Earth is powered by <strong>Globe.GL</strong> and Three.js. The night-Earth image is loaded from the Three-Globe example assets. The colorful midnight wave, timeline, region interaction and 2D fallback are custom features of The Final Wait.</p>
+    <div class="credits-links">
+     <a href="https://globe.gl/" target="_blank" rel="noopener noreferrer">GLOBE.GL ↗</a>
+     <a href="https://github.com/vasturiano/three-globe" target="_blank" rel="noopener noreferrer">THREE-GLOBE & EARTH IMAGE ↗</a>
+     <a href="https://threejs.org/" target="_blank" rel="noopener noreferrer">THREE.JS ↗</a>
+    </div>
+    <div class="credits-license"><span>LIBRARY LICENSE</span><strong>MIT (open source)</strong></div>
+   </article>
+   <article class="credits-card credits-card-wide">
+    <div class="credits-section-title"><span>03</span><h2>LOCAL MIDNIGHT CALCULATIONS</h2></div>
+    <p>Each region is illuminated when its IANA time zone reaches <strong>00:00 on November 19, 2026</strong>. The website uses browser internationalization rules to calculate local midnight and account for applicable UTC offsets and daylight saving time.</p>
+    <p>This is a fan-made countdown visualization, <strong>not a statement of Rockstar Games' official release or platform unlock schedule</strong>. The map is illustrative, not a legally authoritative geographic or time zone reference.</p>
+    <div class="credits-links">
+     <a href="content/geo/timezones-simplified.geojson" target="_blank" rel="noopener noreferrer">VIEW THE GEOJSON DATA ↗</a>
+     <a href="https://github.com/ryzexfn750/the-final-wait" target="_blank" rel="noopener noreferrer">THE FINAL WAIT PROJECT ↗</a>
+    </div>
+   </article>
+  </div>
+  <a class="credits-return" href="global-wave.html">RETURN TO THE GLOBE ↗</a>
+ </main>
+ <footer>
+  <div class="footer-brand"><strong>THE FINAL WAIT</strong><span>ROAD TO LEONIDA</span></div>
+  <p class="legal-copy">This is not an official Rockstar Games project. Grand Theft Auto, Grand Theft Auto VI, Rockstar Games, related trademarks, names and official imagery belong to their respective owners. This fan-made website is not affiliated with or endorsed by Rockstar Games or Take-Two Interactive.</p>
+  <div class="footer-socials">
+    <div class="tfw-footer-creator-actions">
+      <a class="creator-chip magnetic" href="https://x.com/RyzeGTAVI" target="_blank" rel="noopener noreferrer" aria-label="Created by RyzeGTAVI on X">
+        <span class="x-icon" aria-hidden="true">𝕏</span><span><small>CREATED BY</small><strong>RYZEGTAVI</strong></span>
+      </a>
+    </div>
+    <img class="footer-ryze-logo" src="assets/ryze-gtavi-logo-lockup.png" alt="Ryze GTA VI" loading="lazy" decoding="async">
+  </div>
+  <div class="tfw-community-footer-links">
+    <a href="community-privacy.html">PRIVACY NOTICE</a>
+    <a href="community-terms.html">TERMS & CONDITIONS</a>
+    <a href="newsletter.html">UNSUBSCRIBE FROM NEWSLETTER</a>
+    <a href="support.html">SUPPORT</a>
+    <a href="map-credits.html" aria-label="Geographic data credits and licensing">MAP DATA & CREDITS</a>
+  </div>
+</footer>
+ <div class="toast" id="toast" role="status" aria-live="polite"></div>
+ <script defer src="js/motion.js?v=31"></script>
+ <script defer src="js/language.js?v=49"></script>
+ <script defer src="js/site-polish.js?v=48"></script>
+ <script defer src="js/audio-controls.js?v=46"></script>
+ <script defer src="js/secondary-controls.js?v=48"></script>
+ <script defer src="js/secondary-share.js?v=46"></script>
+ <script defer src="js/seamless-navigation.js?v=58"></script>
+ <script type="module" src="js/analytics-subpages.js?v=2"></script>
+ <script type="module" src="js/community.js?v=17"></script>
+ <script defer src="js/community-header.js?v=4"></script>
+ <script defer src="js/support-experience.js?v=5"></script>
+
+</body>
+</html>

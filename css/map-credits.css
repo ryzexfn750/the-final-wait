@@ -1,0 +1,31 @@
+/* The Final Wait — Map Data & Credits */
+.tfw-map-credits-page{background:#080710;overflow-x:hidden}
+.credits-main{isolation:isolate;position:relative;width:min(1120px,92vw);margin:auto;padding:clamp(116px,13vh,154px) 0 90px}
+.credits-main:before{content:"";position:absolute;z-index:-1;inset:0 -8%;pointer-events:none;background:radial-gradient(ellipse at 15% 20%,#8e428d2d,transparent 52%),radial-gradient(ellipse at 85% 70%,#6343a42a,transparent 48%)}
+.credits-main a:focus-visible{outline:2px solid #ffc6ea;outline-offset:4px}
+.credits-back{color:#d8aacc;text-decoration:none;font:900 10px/1.4 Arial,sans-serif;letter-spacing:.11em;display:inline-block;margin-bottom:30px}
+.credits-back:hover{color:#fff}
+.credits-title{margin-bottom:32px}
+.credits-kicker{color:#efa9d9;letter-spacing:.15em;font:900 10px/1.5 Arial,sans-serif;margin:0 0 14px}
+.credits-title h1{font:900 clamp(44px,7vw,84px)/.94 "Arial Black",Impact,Arial,sans-serif;color:#fff;letter-spacing:-.07em;margin:0 0 17px}
+.credits-title h1 em{color:#f2a2d8;font-style:normal}
+.credits-title>p:last-child{color:#b8acc6;font:14px/1.7 Arial,sans-serif;max-width:710px;margin:0}
+.credits-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.credits-card{padding:clamp(20px,3vw,32px);border:1px solid #e09bd445;border-radius:19px;background:linear-gradient(145deg,#27172fdf,#0b091ae9 80%);box-shadow:0 20px 50px #0004,inset 0 1px 0 #ffffff13}
+.credits-section-title{display:flex;align-items:baseline;gap:13px;margin-bottom:18px}
+.credits-section-title span{font:900 12px Arial,sans-serif;color:#ef93d2}
+.credits-section-title h2{font:900 clamp(17px,2vw,22px)/1.25 "Arial Black",Arial,sans-serif;color:#fff;margin:0;letter-spacing:-.03em}
+.credits-card p{font:13px/1.8 Arial,sans-serif;color:#baadca;margin:0 0 14px}
+.credits-card p strong{color:#f4d4ee}
+.credits-links{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}
+.credits-links a,.credits-return{display:inline-flex;align-items:center;min-height:39px;box-sizing:border-box;padding:10px 13px;border:1px solid #ee9ed264;border-radius:9px;background:#d278bd15;color:#f7c8e8;text-decoration:none;font:900 9px/1.4 Arial,sans-serif;letter-spacing:.06em;transition:background .2s,transform .2s}
+.credits-links a:hover,.credits-return:hover{background:#cc73b83d;transform:translateY(-1px)}
+.credits-license{display:flex;align-items:baseline;flex-wrap:wrap;gap:8px 14px;border-top:1px solid #ffffff21;padding-top:15px;margin-top:22px}
+.credits-license span{color:#ad97b8;letter-spacing:.09em;font:900 9px Arial,sans-serif}
+.credits-license strong{color:#fce0f2;font:900 11px Arial,sans-serif}
+.credits-license a{color:#efabd9;font:900 10px Arial,sans-serif;text-decoration:underline;text-underline-offset:3px}
+.credits-card-wide{grid-column:1/-1}
+.credits-return{margin-top:28px;padding:13px 18px}
+@media(max-width:800px){.credits-grid{grid-template-columns:1fr}.credits-card-wide{grid-column:auto}}
+@media(max-width:600px){.credits-main{padding-top:110px}.credits-title h1{font-size:clamp(42px,11vw,63px)}.credits-card{padding:20px}.credits-back{line-height:1.8}}
+@media(prefers-reduced-motion:reduce){.credits-links a,.credits-return{transition:none}}
