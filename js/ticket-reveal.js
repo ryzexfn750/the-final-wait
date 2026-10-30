@@ -41,6 +41,7 @@ export async function showTicketReveal(loadTicket){
    '<button type="button" class="tfw-reveal-skip">SKIP INTRO ↗</button>'+
   '</div>';
  document.body.appendChild(overlay);
+ document.documentElement.classList.add('tfw-ticket-reveal-open');
  window.__tfwTicketRevealActive=true;
  const focusBefore=document.activeElement;
  const track=overlay.querySelector('.tfw-reveal-track');
@@ -51,17 +52,40 @@ export async function showTicketReveal(loadTicket){
  let pass=null,closed=false;
  let release;
  const completed=new Promise(resolve=>release=resolve);
+ // The homepage has wheel-based section navigation: intercept wheel/touch and
+ // scroll keys in the capture phase until the ceremony has truly finished.
+ const blockScroll=event=>{
+  if(closed)return;
+  event.preventDefault();
+  event.stopImmediatePropagation();
+ };
+ const blockKeys=event=>{
+  if(!['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key))return;
+  if(event.target?.matches?.('input,textarea,[contenteditable="true"]'))return;
+  blockScroll(event);
+ };
+ window.addEventListener('wheel',blockScroll,{capture:true,passive:false});
+ window.addEventListener('touchmove',blockScroll,{capture:true,passive:false});
+ window.addEventListener('keydown',blockKeys,{capture:true});
  function close(){
   if(closed)return;
   closed=true;
-  window.__tfwTicketRevealActive=false;
-  window.__tfwTicketRevealFinished=true;
   document.removeEventListener('keydown',onKeydown,true);
   overlay.classList.add('tfw-reveal-leaving');
-  if(focusBefore?.isConnected)focusBefore.focus({preventScroll:true});
   const reduced=window.matchMedia?.('(prefers-reduced-motion:reduce)').matches;
-  setTimeout(()=>overlay.remove(),reduced?0:260);
-  release();
+  setTimeout(()=>{
+   overlay.remove();
+   document.documentElement.classList.remove('tfw-ticket-reveal-open');
+   window.removeEventListener('wheel',blockScroll,true);
+   window.removeEventListener('touchmove',blockScroll,true);
+   window.removeEventListener('keydown',blockKeys,true);
+   window.__tfwTicketRevealActive=false;
+   window.__tfwTicketRevealFinished=true;
+   if(focusBefore?.isConnected)focusBefore.focus({preventScroll:true});
+   // The desktop-experience dialog should open only after the ticket disappears.
+   window.dispatchEvent(new Event('tfw:ticket-reveal-closed'));
+   release();
+  },reduced?0:260);
  }
  function onKeydown(event){
   if(event.key==='Escape'){event.preventDefault();close()}
@@ -95,6 +119,11 @@ export async function showTicketReveal(loadTicket){
    update(2,'ASSIGNING YOUR FLIGHT TO LEONIDA');
    await pause(1250);if(closed)return;
    mountBoardingPass(holder,pass);
+   // The scan line advances the real rendered ticket width, not a viewport
+   // estimate or a percentage of its own 5px pseudo-element.
+   const updateScanWidth=()=>holder.style.setProperty('--tfw-scan-distance',
+     Math.max(0,holder.getBoundingClientRect().width-5)+'px');
+   updateScanWidth();
    update(3,'PRINTING YOUR PERSONAL BOARDING PASS');
    overlay.classList.add('tfw-reveal-printing');
    await pause(6400);if(closed)return;

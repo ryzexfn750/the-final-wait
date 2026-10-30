@@ -305,3 +305,7 @@ html.tfw-global-cursor-ready .tfw-ticket-modal-backdrop{cursor:none!important}
 #tfwGlobalCursor.tfw-global-cursor-layer{z-index:2147483000!important}
 .tfw-ticket--portrait .tfw-ticket-stub{flex-basis:238px!important}
 .tfw-ticket--portrait .tfw-ticket-code{grid-row:5}
+
+/* No shimmer frame or external canvas fill during pixel-perfect PNG capture. */
+.tfw-ticket.tfw-ticket-exporting:after{display:none!important}
+.tfw-ticket.tfw-ticket-exporting{transform:none!important;box-shadow:none!important}

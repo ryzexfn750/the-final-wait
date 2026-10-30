@@ -123,6 +123,7 @@ export async function renderBoardingPassPNG(pass,portrait=false){
    throw Error('Open your boarding pass page to download the original image.');
   }
   await prepareTicketMedia(source);
+  source.classList.add('tfw-ticket-exporting');
   const rect=source.getBoundingClientRect();
   if(rect.width<=0||rect.height<=0)throw Error('Boarding pass is not ready to export');
   // Capture the ticket element itself, not the story staging container.
@@ -140,7 +141,10 @@ export async function renderBoardingPassPNG(pass,portrait=false){
   });
   if(!blob||blob.type!=='image/png')throw Error('Unable to capture the ticket');
   return blob;
- }finally{stage?.remove()}
+ }finally{
+  source?.classList?.remove('tfw-ticket-exporting');
+  stage?.remove();
+ }
 }
 function saveBoardingPassBlob(blob,pass,portrait){
  const href=URL.createObjectURL(blob);

@@ -129,3 +129,28 @@
  .tfw-reveal-printing .tfw-ticket-bottomline,
  .tfw-reveal-printing .tfw-reveal-ticket:after{animation:none!important;opacity:1!important;filter:none!important;transform:none!important}
 }
+
+
+/* Full viewport interception keeps wheel-driven hash navigation inactive
+   for the entire onboarding sequence, including its closing transition. */
+html.tfw-ticket-reveal-open,
+html.tfw-ticket-reveal-open body{overflow:hidden!important;overscroll-behavior:none!important}
+#tfwTicketReveal{overscroll-behavior:contain;touch-action:none}
+.tfw-reveal-inner{width:min(1160px,100%)}
+.tfw-reveal-ticket{width:min(1080px,94vw);max-width:1080px;margin:0 auto;min-width:0}
+.tfw-reveal-ticket>.tfw-ticket{width:100%;max-width:1080px;box-sizing:border-box}
+.tfw-reveal-printing .tfw-reveal-ticket:after{
+ top:0;bottom:0;left:0;right:auto;width:5px;
+ animation:tfwRevealScanMove 6.4s linear both!important;
+ transform:translate3d(0,0,0);will-change:transform,opacity;
+}
+@keyframes tfwRevealScanMove{
+ 0%,9%{opacity:0;transform:translate3d(var(--tfw-scan-distance,900px),0,0)}
+ 12%{opacity:1}
+ 87%{opacity:.95}
+ 97%{opacity:.75;transform:translate3d(0,0,0)}
+ 100%{opacity:0;transform:translate3d(0,0,0)}
+}
+@media(max-width:680px){
+ .tfw-reveal-ticket{width:min(100%,94vw)}
+}

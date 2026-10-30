@@ -92,12 +92,9 @@
     },true);
     const embedded=window.self!==window.top&&new URLSearchParams(location.search).has('tfw_embed');
     function offerExperience(){
-      if(window.__tfwTicketRevealFinished){
-        window.__tfwTicketRevealFinished=false;
-        setTimeout(offerExperience,400);
-        return;
-      }
-      if(window.__tfwTicketRevealActive)return;
+      if(window.__tfwTicketRevealActive||
+         document.getElementById('tfwTicketReveal')||
+         document.documentElement.classList.contains('tfw-ticket-reveal-open'))return;
       if(embedded||shown||document.body.classList.contains('tfw-route-overlay-open')||
          document.documentElement.classList.contains('tfw-auth-pending'))return;
       try{
@@ -106,6 +103,7 @@
       openModal(experienceModal);
     }
     window.addEventListener('tfw:community-ready',offerExperience);
+    window.addEventListener('tfw:ticket-reveal-closed',offerExperience);
     window.addEventListener('tfw:seamless-return',()=>{
       if(!embedded)requestAnimationFrame(offerExperience);
     });
