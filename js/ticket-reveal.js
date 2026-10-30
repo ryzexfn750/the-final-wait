@@ -62,6 +62,7 @@ export async function showTicketReveal(loadTicket){
  overlay.appendChild(overlay.querySelector('#tfwRevealSound'));
  document.documentElement.classList.add('tfw-ticket-reveal-open');
  window.__tfwTicketRevealActive=true;
+ window.__tfwSetAmbientOnly?.('ticket-reveal',true);
  const stopSound=mountRegistrationSoundControls(overlay.querySelector('#tfwRevealSound'));
  const previousFocus=document.activeElement;
  const track=overlay.querySelector('.tfw-reveal-track');
@@ -110,6 +111,7 @@ export async function showTicketReveal(loadTicket){
    overlay.remove();
    stopSound();
    document.documentElement.classList.remove('tfw-ticket-reveal-open');
+   window.__tfwSetAmbientOnly?.('ticket-reveal',false);
    window.removeEventListener('wheel',blockScroll,true);
    window.removeEventListener('touchmove',blockScroll,true);
    window.removeEventListener('keydown',blockKeys,true);

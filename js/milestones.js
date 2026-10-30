@@ -80,7 +80,8 @@
     }
   });
 
-  function soundEnabled(){return !new URLSearchParams(location.search).has('tfw_embed')&&storage.get('tfw_sound')!=='off'}
+  function soundEnabled(){return !new URLSearchParams(location.search).has('tfw_embed')&&
+    !document.documentElement.classList.contains('tfw-ambient-only')&&storage.get('tfw_sound')!=='off'}
   function masterVolume(){return window.__tfwMasterVolume?.()??1}
   function clamp(v,min,max){return Math.min(max,Math.max(min,v))}
   function pad(n,len=2){return String(Math.max(0,Math.floor(n))).padStart(len,'0')}
@@ -1025,6 +1026,12 @@
     startVisualizer();
     const remaining=finalePreview?Number(window.__tfwPreviewRemainingMs):lastRemaining;
     if(Number.isFinite(remaining)&&remaining<=FINAL_FIVE){startVisualizer();syncFinalSong(remaining);syncVoiceSong(remaining);syncSequenceSong(remaining)}
+  });
+  window.addEventListener('tfw:ambient-context-change',()=>{
+    if(!soundEnabled())pauseFinaleAudio(false);
+    else if(Number.isFinite(lastRemaining)&&lastRemaining<=FINAL_FIVE){
+      syncFinalSong(lastRemaining);syncVoiceSong(lastRemaining);syncSequenceSong(lastRemaining);
+    }
   });
   window.addEventListener('tfw:finale-audio-enable',()=>{
     const remaining=finalePreview?Number(window.__tfwPreviewRemainingMs):lastRemaining;

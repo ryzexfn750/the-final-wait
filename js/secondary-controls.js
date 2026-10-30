@@ -110,13 +110,9 @@
  }
  window.addEventListener('pagehide',persistAmbient);
  function selection(){
-   const remaining=releaseEpoch()-Date.now();
-   if(remaining<=0)return null;
-   if(remaining<=5*MINUTE)return {
-     id:'finale',at:(5*MINUTE-remaining)/1000
-   };
-   const callStart=29*MINUTE+55500;
-   if(remaining<=callStart)return {id:'call',at:(callStart-remaining)/1000};
+   // Standalone secondary pages have no finale: background music is always
+   // independent of the countdown stage, including the last five minutes
+   // and after local midnight.
    return {id:'ambient',at:(Date.now()-(releaseEpoch()-30*MINUTE))/1000};
  }
  function seek(where){

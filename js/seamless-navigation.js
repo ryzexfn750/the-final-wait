@@ -68,6 +68,7 @@
    shell.hidden=true;
    document.body.classList.remove('tfw-route-overlay-open');
    document.documentElement.classList.remove('tfw-route-overlay-open');
+   window.__tfwSetAmbientOnly?.('secondary-panel',false);
    document.title=rememberedTitle;
    window.dispatchEvent(new Event('tfw:seamless-return'));
  }
@@ -199,6 +200,7 @@
    loading=true;pendingRoute=route;shell.hidden=false;
    document.body.classList.add('tfw-route-overlay-open');
    document.documentElement.classList.add('tfw-route-overlay-open');
+   window.__tfwSetAmbientOnly?.('secondary-panel',true);
    status.hidden=false;
    direct.hidden=true;label.textContent='LOADING';
    setLoadingProgress(5);

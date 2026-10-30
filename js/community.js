@@ -215,6 +215,7 @@ async function initCommunity(){
     state.profile.terms_version===settings.termsVersion);
   const showGate=which=>{
     gate.hidden=false;document.documentElement.classList.add('tfw-auth-pending');
+    window.__tfwSetAmbientOnly?.('registration',true);
     $('#tfwGateGuest').hidden=which!=='guest';
     $('#tfwGateRegister').hidden=which!=='register';
     $('#tfwGateHeading').textContent=which==='register'?'ONE LAST STEP.':'WELCOME TO LEONIDA.';
@@ -226,6 +227,7 @@ async function initCommunity(){
   const hideGate=()=>{
     closeLegal();window.__tfwAnalyticsConsent?.mount();
     gate.hidden=true;document.documentElement.classList.remove('tfw-auth-pending');
+    window.__tfwSetAmbientOnly?.('registration',false);
   };
   async function ensureTurnstile(){
     if(state.challengeId!==null)return;

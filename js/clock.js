@@ -222,8 +222,30 @@
     return bgAudio;
   }
   function soundButtons(){return [byId('soundButton'),byId('mobileSoundButton')].filter(Boolean)}
+  const ambientContexts=new Set();
+  const ambientOnly=()=>ambientContexts.size>0;
+  // Registration, ticket reveal and all secondary panels deliberately retain
+  // the normal background track, regardless of the countdown phase.
+  window.__tfwSetAmbientOnly=(reason,enabled)=>{
+    if(typeof reason!=='string'||!reason)return;
+    const was=ambientOnly();
+    if(enabled)ambientContexts.add(reason);else ambientContexts.delete(reason);
+    const next=ambientOnly();
+    document.documentElement.classList.toggle('tfw-ambient-only',next);
+    if(next!==was){
+      dispatchEvent(new Event('tfw:ambient-context-change'));
+      if(next){
+        if(milestoneAudio){try{milestoneAudio.pause()}catch{}}
+        if(bgWanted){audioGestureArmed=false;void playBackground({hardSync:false})}
+      }else{
+        if(!backgroundAllowed())pauseBackground();
+        else if(bgWanted)setBgVolume(desiredBgVolume(),180);
+      }
+    }
+  };
   function backgroundAllowed(){
     if(new URLSearchParams(location.search).has('tfw_embed'))return false;
+    if(ambientOnly())return true;
     if(document.body.classList.contains('final-five-active')||document.body.classList.contains('finale-released'))return false;
     return remainingForAudio()>BG_CUTOFF&&!previewFinalFive;
   }
@@ -240,6 +262,7 @@
     return p*p*(3-2*p);
   }
   function desiredBgVolume(){
+    if(ambientOnly())return BG_VOLUME;
     return (currentMilestone?BG_DUCK_VOLUME:BG_VOLUME)*bgFadeFactor();
   }
   function setBgVolume(value,duration=240){
@@ -337,13 +360,13 @@
     if(Number.isFinite(remaining)&&remaining<=5*MINUTE){
 
       previewFinalFive=true;
-      pauseBackground();
+      if(!ambientOnly())pauseBackground();
     }
   });
   addEventListener('tfw:finale-release',()=>{
 
     previewFinalFive=true;
-    pauseBackground();
+    if(!ambientOnly())pauseBackground();
   });
 
   /* ----- synchronized in-layout milestones ----------------------------- */
@@ -367,7 +390,7 @@
     return milestones.find(m=>remaining<=m.at&&remaining>m.at-MILESTONE_WINDOW)||null;
   }
   async function playMilestoneSfx(m,elapsedMs){
-    if(new URLSearchParams(location.search).has('tfw_embed')||!bgWanted||!m)return;
+    if(new URLSearchParams(location.search).has('tfw_embed')||!bgWanted||!m||ambientOnly())return;
     if(milestoneAudio){try{milestoneAudio.pause()}catch{}}
     const audio=new Audio(`assets/audio/milestones/${m.sfx}`);
     milestoneAudio=audio;
@@ -487,7 +510,7 @@
       previewFinalFive=remaining<=5*MINUTE&&remaining>0;
       if(previewFinalFive){
 
-        pauseBackground();
+        if(!ambientOnly())pauseBackground();
       }else if(bgWanted&&backgroundAllowed()&&(!bgAudio||bgAudio.paused)){
         playBackground({hardSync:true});
       }
@@ -495,13 +518,14 @@
       previewFinalFive=false;
       if(remaining<=5*MINUTE&&remaining>0){
 
-        pauseBackground();
+        if(!ambientOnly())pauseBackground();
       }else if(remaining>BG_CUTOFF&&bgWanted&&backgroundAllowed()&&(!bgAudio||bgAudio.paused)){
         playBackground({hardSync:true});
       }
     }
     updateLiveMilestone(remaining,preview);
     if(!backgroundAllowed())pauseBackground();
+    else if(ambientOnly())setBgVolume(BG_VOLUME,130);
     else if(!currentMilestone){
       const fadeActive=remaining<=BG_CUTOFF+BG_FADE_WINDOW;
       // A deterministic cutoff-tied envelope, without restarting the
