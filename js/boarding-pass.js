@@ -46,12 +46,11 @@ export function mountBoardingPass(host,pass){
     '<div class="tfw-ticket-main">'+
       '<div class="tfw-ticket-topline"><span class="tfw-ticket-brand">THE FINAL WAIT <b>AIRWAYS</b></span>'+
       '<span class="tfw-ticket-top-mark">✦ LEONIDA INTERNATIONAL ✦</span></div>'+
-      '<div class="tfw-ticket-intro"><span class="tfw-ticket-kicker">EXCLUSIVE COMMUNITY COLLECTIBLE</span>'+
-      '<h3>YOUR TICKET <em>TO LEONIDA.</em></h3>'+
+      '<div class="tfw-ticket-intro"><h3>YOUR TICKET <em>TO LEONIDA.</em></h3>'+
       '<span class="tfw-ticket-edition"></span></div>'+
       '<div class="tfw-ticket-fields"></div>'+
-      '<div class="tfw-ticket-bottomline"><span>✦ VERIFIED PASSENGER</span>'+
-        '<span>ONE WAY · NO RETURN</span></div>'+
+      '<div class="tfw-ticket-bottomline"><span>ONE WAY · NO RETURN</span>'+
+        '<span>19 NOVEMBER 2026</span></div>'+
     '</div>'+
     '<div class="tfw-ticket-stub">'+
       '<span class="tfw-ticket-stub-label">BOARDING PASS</span>'+
@@ -78,21 +77,41 @@ export function mountBoardingPass(host,pass){
  return card;
 }
 function barcodePattern(code){
+ // Deterministic decorative code inspired by traditional aviation BCBP strips.
  let seed=2166136261;
- for(const char of code)seed=Math.imul(seed^char.charCodeAt(0),16777619)>>>0;
- const bars=[];
- for(let i=0;i<86;i++){
+ for(const ch of code)seed=Math.imul(seed^ch.charCodeAt(0),16777619)>>>0;
+ const bars=[3,1,2,1,3];
+ for(let i=0;i<78;i++){
   seed=(Math.imul(seed,1664525)+1013904223)>>>0;
   bars.push((seed>>>30)+1);
  }
- return bars;
+ return [...bars,3,1,2,1,3];
 }
 function renderBarcode(host,code){
  host.replaceChildren();
- for(const width of barcodePattern(code)){
-  const bar=document.createElement('i');
-  bar.style.width=width+'px';host.appendChild(bar);
+ const ns='http://www.w3.org/2000/svg';
+ const svg=document.createElementNS(ns,'svg');
+ svg.setAttribute('viewBox','0 0 320 96');
+ svg.setAttribute('preserveAspectRatio','none');
+ svg.setAttribute('aria-hidden','true');
+ const rect=(x,y,w,h,fill)=>{
+  const r=document.createElementNS(ns,'rect');
+  r.setAttribute('x',x);r.setAttribute('y',y);
+  r.setAttribute('width',w);r.setAttribute('height',h);
+  r.setAttribute('fill',fill);svg.appendChild(r);
+ };
+ rect(0,0,320,96,'#140b2180');
+ rect(12,9,296,1,'#ffd4ee55');
+ rect(12,86,296,1,'#ffd4ee55');
+ const bars=barcodePattern(code),units=bars.reduce((a,b)=>a+b+1,0),u=282/units;
+ let x=19;
+ for(let i=0;i<bars.length;i++){
+  const guard=i<5||i>=bars.length-5;
+  const height=guard?65:(i%7===0?61:57);
+  rect(x,16+(65-height)/2,bars[i]*u,height,guard?'#fff8ff':'#fbd5ed');
+  x+=(bars[i]+1)*u;
  }
+ host.appendChild(svg);
 }
 function drawCover(ctx,img,w,h){
  const scale=Math.max(w/img.width,h/img.height);
@@ -123,14 +142,21 @@ function textBlock(ctx,label,value,x,y,width,scale=1){
  text(ctx,value,x,y+43*scale,33*scale,'#fffafc',900,width);
 }
 function drawBarcode(ctx,code,x,y,width,height){
+ // Matching high-contrast barcode with breathing room, guard bars and
+ // subtle scan-line framing. Decorative only, not a real travel barcode.
+ ctx.fillStyle='#140b21cc';roundRect(ctx,x,y,width,height,14,true);
+ ctx.fillStyle='#eeb5dd66';
+ ctx.fillRect(x+16,y+12,width-32,2);
+ ctx.fillRect(x+16,y+height-15,width-32,2);
  const bars=barcodePattern(code);
- const units=bars.reduce((a,b)=>a+b+1,0);
- const u=width/units;
- ctx.fillStyle='#ffe9f5';
- let px=x;
- for(const b of bars){
-  ctx.fillRect(px,y,b*u,height*(b===4?.92:1));
-  px+=(b+1)*u;
+ const units=bars.reduce((sum,n)=>sum+n+1,0),u=(width-52)/units;
+ let px=x+26;
+ for(let i=0;i<bars.length;i++){
+  const guard=i<5||i>=bars.length-5;
+  const h=(height-41)*(guard?1:i%7===0?.95:.86);
+  ctx.fillStyle=guard?'#fff8ff':'#fbd6ec';
+  ctx.fillRect(px,y+19+((height-41)-h)/2,bars[i]*u,h);
+  px+=(bars[i]+1)*u;
  }
 }
 function ticketFrame(ctx,w,h,e,portrait){
@@ -150,52 +176,58 @@ function ticketFrame(ctx,w,h,e,portrait){
  ctx.fillStyle=grad;roundRect(ctx,inner,inner,w-2*inner,h-2*inner,29,true);
 }
 function drawTicketWide(ctx,pass,e){
- const w=1600,h=900;
- const pad=116;
- text(ctx,'THE FINAL WAIT',pad,153,28,'#ffffff',900);
- text(ctx,'AIRWAYS',pad+292,153,23,e.accent,900);
- text(ctx,'✦ LEONIDA INTERNATIONAL ✦',pad,195,15,'#e2b3d9',800);
- text(ctx,'YOUR TICKET',pad,304,82,'#fff3fc',900,940);
- text(ctx,'TO LEONIDA.',pad,389,82,e.accent,900,960);
- ctx.fillStyle=e.accent2+'5c';roundRect(ctx,pad,422,320,38,19,true);
- text(ctx,e.name,pad+18,447,18,'#fff4fd',900,300);
- ctx.strokeStyle=e.accent2+'8b';ctx.lineWidth=2;
- ctx.beginPath();ctx.moveTo(1102,125);ctx.lineTo(1102,780);ctx.stroke();
- textBlock(ctx,'PASSENGER',pass.nickname,pad,537,480);
- textBlock(ctx,'DESTINATION','LEONIDA',590,537,420);
- textBlock(ctx,'DEPARTURE','19 NOV 2026',pad,663,480,.92);
- textBlock(ctx,'REGISTERED ON',dateString(pass.registeredAt),590,663,425,.92);
- text(ctx,'✓ VERIFIED PASSENGER',pad,785,18,e.accent,900);
- text(ctx,'ONE WAY · NO RETURN',592,785,16,'#dbc2da',800);
- text(ctx,'BOARDING PASS',1162,206,19,'#ffe2f3',900);
- text(ctx,e.flight,1162,275,26,'#ffffff',900);
- text(ctx,'GATE VI     SEAT 06A',1162,330,18,e.accent,900);
- drawBarcode(ctx,pass.ticketCode,1162,450,308,160);
- text(ctx,pass.ticketCode,1162,658,34,'#fff',900);
- text(ctx,'TFW COMMUNITY',1162,708,16,'#e0bad6',800);
+ const pad=117;
+ text(ctx,'THE FINAL WAIT',pad,149,31,'#fff',900);
+ text(ctx,'AIRWAYS',pad+310,149,25,e.accent,900);
+ text(ctx,'✦ LEONIDA INTERNATIONAL ✦',pad,188,16,'#f0c5dd',800);
+ text(ctx,'YOUR TICKET',pad,279,75,'#fff3fc',900,930);
+ text(ctx,'TO LEONIDA.',pad,361,82,e.accent,900,970);
+ ctx.fillStyle=e.accent2+'80';roundRect(ctx,pad,388,410,43,20,true);
+ text(ctx,e.name,pad+17,417,22,'#fffafc',900,380);
+ // Airport route motif fills the central whitespace with a flight line.
+ ctx.lineWidth=2;ctx.strokeStyle=e.accent+'a9';ctx.beginPath();
+ ctx.moveTo(155,473);ctx.lineTo(948,473);ctx.stroke();
+ ctx.fillStyle=e.accent;roundRect(ctx,150,467,12,12,6,true);roundRect(ctx,942,467,12,12,6,true);
+ text(ctx,'✈',540,462,29,e.accent,900);
+ ctx.lineWidth=2;ctx.strokeStyle=e.accent2+'a0';ctx.beginPath();
+ ctx.moveTo(1105,123);ctx.lineTo(1105,783);ctx.stroke();
+ textBlock(ctx,'PASSENGER',pass.nickname,pad,547,465,1.05);
+ textBlock(ctx,'DESTINATION','LEONIDA',615,547,425,1.05);
+ textBlock(ctx,'DEPARTURE','19 NOV 2026',pad,671,475,1.02);
+ textBlock(ctx,'REGISTERED ON',dateString(pass.registeredAt),615,671,428,1.02);
+ text(ctx,'ONE WAY · NO RETURN',pad,775,17,'#e9bcd9',800);
+ text(ctx,'19 NOVEMBER 2026',705,775,15,e.accent,800);
+ text(ctx,'BOARDING PASS',1150,189,20,'#ffe2f3',900);
+ text(ctx,'LEONIDA',1150,249,34,e.accent,900);
+ text(ctx,e.flight+'  ·  GATE VI',1150,292,20,'#fff',900);
+ text(ctx,'SEAT 06A',1150,343,19,'#f3c6e5',900);
+ drawBarcode(ctx,pass.ticketCode,1137,420,345,167);
+ text(ctx,pass.ticketCode,1150,643,31,'#fff',900);
+ text(ctx,'✓ VERIFIED PASSENGER',1150,696,16,e.accent,900);
 }
 function drawTicketTall(ctx,pass,e){
- const w=1080,pad=107;
- text(ctx,'THE FINAL WAIT',pad,189,34,'#fff',900);
- text(ctx,'AIRWAYS',pad,237,28,e.accent,900);
- text(ctx,'✦ LEONIDA INTERNATIONAL ✦',pad,286,17,'#f0c8df',800);
- text(ctx,'YOUR TICKET',pad,458,80,'#fff3fa',900,890);
- text(ctx,'TO LEONIDA.',pad,549,86,e.accent,900,890);
- ctx.fillStyle=e.accent2+'68';roundRect(ctx,pad,598,590,52,25,true);
- text(ctx,e.name,pad+22,631,24,'#fff',900,560);
- ctx.strokeStyle=e.accent+'55';ctx.lineWidth=2;
- ctx.beginPath();ctx.moveTo(pad,701);ctx.lineTo(1080-pad,701);ctx.stroke();
- textBlock(ctx,'PASSENGER',pass.nickname,pad,779,850,1.38);
- textBlock(ctx,'DESTINATION','LEONIDA',pad,948,850,1.38);
- textBlock(ctx,'DEPARTURE','19 NOV 2026',pad,1117,850,1.3);
- textBlock(ctx,'REGISTERED ON',dateString(pass.registeredAt),pad,1286,850,1.3);
- ctx.strokeStyle=e.accent+'66';ctx.beginPath();
- ctx.moveTo(pad,1401);ctx.lineTo(1080-pad,1401);ctx.stroke();
- text(ctx,e.flight+'    ·    GATE VI',pad,1480,27,e.accent,900,850);
- text(ctx,'BOARDING PASS · VERIFIED PASSENGER',pad,1555,21,'#ffe1f2',900,870);
- drawBarcode(ctx,pass.ticketCode,pad,1602,865,118);
- text(ctx,pass.ticketCode,pad,1777,38,'#ffffff',900);
- text(ctx,'ONE WAY · NO RETURN',pad,1815,17,'#d7bbd2',800);
+ const pad=107;
+ text(ctx,'THE FINAL WAIT',pad,181,36,'#fff',900);
+ text(ctx,'AIRWAYS',pad,227,30,e.accent,900);
+ text(ctx,'✦ LEONIDA INTERNATIONAL ✦',pad,280,19,'#f0c5dd',800);
+ text(ctx,'YOUR TICKET',pad,407,82,'#fff3fc',900,875);
+ text(ctx,'TO LEONIDA.',pad,506,90,e.accent,900,875);
+ ctx.fillStyle=e.accent2+'80';roundRect(ctx,pad,551,675,57,25,true);
+ text(ctx,e.name,pad+22,589,26,'#fffafc',900,636);
+ ctx.lineWidth=3;ctx.strokeStyle=e.accent+'a9';ctx.beginPath();
+ ctx.moveTo(pad,666);ctx.lineTo(1080-pad,666);ctx.stroke();
+ text(ctx,'✈',500,652,39,e.accent,900);
+ textBlock(ctx,'PASSENGER',pass.nickname,pad,751,850,1.38);
+ textBlock(ctx,'DESTINATION','LEONIDA',pad,915,850,1.38);
+ textBlock(ctx,'DEPARTURE','19 NOV 2026',pad,1078,850,1.31);
+ textBlock(ctx,'REGISTERED ON',dateString(pass.registeredAt),pad,1241,850,1.31);
+ ctx.strokeStyle=e.accent+'77';ctx.beginPath();
+ ctx.moveTo(pad,1341);ctx.lineTo(1080-pad,1341);ctx.stroke();
+ text(ctx,'FLIGHT '+e.flight+'   ·   GATE VI   ·   SEAT 06A',pad,1428,26,e.accent,900,870);
+ text(ctx,'ONE WAY · NO RETURN',pad,1476,21,'#f3c4df',800);
+ drawBarcode(ctx,pass.ticketCode,pad,1524,866,182);
+ text(ctx,pass.ticketCode,pad,1766,37,'#fff',900);
+ text(ctx,'✓ VERIFIED PASSENGER',510,1762,19,e.accent,900,460);
 }
 export async function renderBoardingPassPNG(pass,portrait=false){
  if(!validBoardingPass(pass))throw Error('Invalid boarding pass');
@@ -240,6 +272,21 @@ export function attachBoardingPassActions(host,pass){
  const url=publicTicketUrl(pass);
  host.replaceChildren();
  host.classList.add('tfw-ticket-actions');
+ const makePanel=(name,description)=>{
+  const panel=document.createElement('section');
+  panel.className='tfw-ticket-action-panel';
+  const title=document.createElement('h2');title.textContent=name;
+  const detail=document.createElement('p');detail.textContent=description;
+  const contents=document.createElement('div');
+  panel.append(title,detail,contents);
+  host.appendChild(panel);
+  return contents;
+ };
+ const downloads=makePanel('DOWNLOAD YOUR TICKET',
+  'Save your collectible in full resolution or as a vertical Story.');
+ const socials=makePanel('SHARE THE EXPERIENCE',
+  'Show your boarding pass to friends and the community.');
+ let destination=downloads;
  const status=document.createElement('p');
  status.className='tfw-ticket-action-status';status.setAttribute('role','status');
  const button=(label,callback)=>{
@@ -249,16 +296,17 @@ export function attachBoardingPassActions(host,pass){
    btn.disabled=true;
    try{await callback()}catch(error){status.textContent=error.message||'Action unavailable'}
    finally{btn.disabled=false}
-  });host.appendChild(btn);
+  });destination.appendChild(btn);
   return btn;
  };
  const link=(label,href)=>{
   const a=document.createElement('a');a.className='tfw-ticket-action';
   a.textContent=label;a.href=href;a.target='_blank';a.rel='noopener noreferrer';
-  host.appendChild(a);
+  destination.appendChild(a);
  };
  button('↓ DOWNLOAD TICKET PNG',()=>downloadBoardingPass(pass,false));
  button('↓ DOWNLOAD STORY PNG',()=>downloadBoardingPass(pass,true));
+ destination=socials;
  link('𝕏 SHARE ON X','https://twitter.com/intent/tweet?'+new URLSearchParams({
    text:'My boarding pass to Leonida is ready. '+EDITIONS[pass.edition].name+' · '+pass.ticketCode,
    url

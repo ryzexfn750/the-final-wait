@@ -157,3 +157,28 @@
 .tfw-ticket-actions-layout .tfw-ticket-action-status{grid-column:1/-1;margin:0;padding:3px}
 .tfw-ticket-public-header{margin-bottom:24px}
 @media(max-width:750px){.tfw-ticket-actions-layout{grid-template-columns:1fr;gap:12px}.tfw-ticket-action-panel{padding:18px}.tfw-ticket-public-main{padding-inline:15px}}
+
+/* Tighter ticket with more purposeful density and a crisp scan-strip. */
+.tfw-ticket-layout{min-height:350px!important;grid-template-columns:minmax(0,2fr) minmax(190px,.84fr)}
+.tfw-ticket-main{padding:25px 30px 22px}
+.tfw-ticket-intro{padding:17px 0 18px}
+.tfw-ticket-intro h3{font-size:clamp(27px,3.6vw,43px);line-height:.96;margin:6px 0 11px}
+.tfw-ticket-fields{gap:14px 13px}
+.tfw-ticket-field span{margin-bottom:5px}
+.tfw-ticket-bottomline{margin-top:18px;padding-top:14px;border-top:1px solid #ffd6ee45}
+.tfw-ticket-stub{gap:10px;padding:25px 22px}
+.tfw-ticket-barcode{display:block!important;height:96px;max-width:100%;width:100%;margin:10px 0 0;overflow:hidden}
+.tfw-ticket-barcode svg{width:100%;height:100%;display:block;border:1px solid #f6c3e444;border-radius:9px;box-sizing:border-box}
+.tfw-ticket-code{font-size:16px;letter-spacing:.13em}
+@media(max-width:900px){
+ .tfw-ticket-layout{grid-template-columns:1fr}
+ .tfw-ticket-stub{padding:20px 28px}
+ .tfw-ticket-barcode{width:210px;max-width:45%;height:64px;margin-left:auto}
+}
+@media(max-width:560px){
+ .tfw-ticket-main{padding:22px 19px}
+ .tfw-ticket-intro{padding:19px 0 20px}
+ .tfw-ticket-stub{padding:18px 19px}
+ .tfw-ticket-barcode{width:100%;max-width:100%;height:74px;margin:5px 0}
+ .tfw-ticket-layout{min-height:0!important}
+}
