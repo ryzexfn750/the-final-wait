@@ -1,5 +1,6 @@
 import {DEFAULTS,isValidZone,normalizeOptions,buildOverlayUrl,
  overlayGeometry,releaseInstant,CANVAS} from './stream-overlay-core.js?v=4';
+import {bundleOverlayHtml} from './stream-overlay-export.js?v=1';
 const $=id=>document.getElementById(id);
 const refs={
  form:$('overlaySettings'),theme:$('overlayTheme'),position:$('overlayPosition'),
@@ -7,6 +8,7 @@ const refs={
  progress:$('overlayProgress'),
  stage:$('builderPreviewStage'),frame:$('builderPreview'),box:$('builderDragBox'),
  url:$('overlayUrl'),open:$('overlayOpen'),copy:$('overlayCopy'),
+ code:$('overlayCode'),download:$('overlayDownload'),
  reset:$('overlayReset'),demo:$('overlayDemo'),feedback:$('overlayFeedback'),
  modal:$('timezoneModal'),backdrop:$('modalBackdrop'),search:$('timezoneSearch'),
  list:$('timezoneList'),auto:$('timezoneAuto')
@@ -21,6 +23,7 @@ function inferZone(){
 let state=normalizeOptions({...DEFAULTS,tz:inferZone(),...getSaved()});
 let geometry=overlayGeometry(state);
 let pointer=null,modalReturnFocus=null,zoneCache=new Map(),generation=0;
+let templates=null;
 function syncInputs(){
  refs.theme.value=state.theme;refs.position.value=state.position;
  refs.size.value=state.size;refs.tzValue.textContent=state.tz.replaceAll('_',' ');
@@ -48,6 +51,7 @@ function render(){
  geometry=overlayGeometry(state);
  const url=buildOverlayUrl(location.href,state);
  refs.url.value=url;refs.open.href=url;
+ if(templates)refs.code.value=bundleOverlayHtml({...templates,options:state});
  syncInputs();drawBox();syncFrame();
  try{localStorage.setItem(KEY,JSON.stringify(state))}catch{}
  refs.feedback.textContent='';
@@ -128,17 +132,48 @@ refs.box.addEventListener('keydown',event=>{
  state.y=clamp(geometry.y+delta[1],0,CANVAS.height-geometry.h);
  render();
 });
-async function copyLink(){
- try{await navigator.clipboard.writeText(refs.url.value);
-  refs.feedback.textContent='LINK COPIED — PASTE IT AS A BROWSER SOURCE.';
+async function copyHtml(){
+ if(!templates)return;
+ try{
+  await navigator.clipboard.writeText(refs.code.value);
+  refs.feedback.textContent='HTML CODE COPIED.';
  }catch{
-  refs.url.focus();refs.url.select();
-  try{document.execCommand('copy');
-   refs.feedback.textContent='LINK SELECTED — COPY AND PASTE IT INTO YOUR STREAMING SOFTWARE.';
-  }catch{refs.feedback.textContent='SELECT THE URL ABOVE TO COPY IT MANUALLY.'}
+  refs.code.focus();refs.code.select();
+  try{
+   if(!document.execCommand('copy'))throw Error('Clipboard unavailable');
+   refs.feedback.textContent='HTML CODE COPIED.';
+  }catch{refs.feedback.textContent='SELECT THE GENERATED HTML ABOVE AND COPY IT MANUALLY.'}
  }
 }
-refs.copy.addEventListener('click',copyLink);
+refs.copy.addEventListener('click',copyHtml);
+refs.download.addEventListener('click',()=>{
+ if(!templates)return;
+ const html=bundleOverlayHtml({...templates,options:state});
+ const object=URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
+ try{
+  const anchor=document.createElement('a');
+  anchor.href=object;anchor.download='TheFinalWait-OBS-Overlay.html';
+  document.body.append(anchor);anchor.click();anchor.remove();
+  refs.feedback.textContent='OBS HTML DOWNLOADED. SELECT IT AS A LOCAL BROWSER SOURCE.';
+ }finally{setTimeout(()=>URL.revokeObjectURL(object),30000)}
+});
+async function loadSourceTemplates(){
+ try{
+  const names=['stream-overlay.html?v=4','css/stream-overlay.css?v=4',
+   'js/stream-overlay-core.js?v=4','js/stream-overlay.js?v=4'];
+  const texts=await Promise.all(names.map(async name=>{
+   const response=await fetch(new URL(name,location.href),{cache:'force-cache'});
+   if(!response.ok)throw Error('Overlay source unavailable ('+response.status+')');
+   return response.text();
+  }));
+  templates={template:texts[0],css:texts[1],core:texts[2],runner:texts[3]};
+  refs.download.disabled=false;refs.copy.disabled=false;
+  render();
+ }catch(error){
+  refs.feedback.textContent='COULD NOT PREPARE THE OBS FILE: '+(error?.message||'Please reload.');
+ }
+}
+void loadSourceTemplates();
 refs.reset.addEventListener('click',()=>{state=normalizeOptions({...DEFAULTS,tz:inferZone()});render()});
 refs.demo.addEventListener('click',()=>{
  if(!refs.frame.contentWindow)return;

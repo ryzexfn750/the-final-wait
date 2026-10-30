@@ -16,7 +16,7 @@
  <link rel="stylesheet" href="css/secondary-controls.css?v=48">
  <link rel="stylesheet" href="css/community.css?v=11">
  <link rel="stylesheet" href="css/community-profile.css?v=4">
- <link rel="stylesheet" href="css/streamer-overlay-builder.css?v=4">
+ <link rel="stylesheet" href="css/streamer-overlay-builder.css?v=5">
 </head>
 <body class="article-page tfw-profile-page tfw-streamer-builder-page">
  <div class="page-noise" aria-hidden="true"></div>
@@ -109,19 +109,29 @@
       <button id="overlayDemo" class="builder-demo" type="button">PLAY LAST 5 SECONDS</button>
      </div>
      <div class="builder-export">
-      <div class="builder-export-label"><span>CONNECT YOUR STREAM</span></div>
-      <label for="overlayUrl">BROWSER SOURCE URL</label>
-      <div class="builder-link"><input type="text" id="overlayUrl" readonly spellcheck="false" aria-label="Stream overlay browser source URL"><button type="button" id="overlayCopy">COPY LINK</button></div>
-      <div class="builder-export-actions"><a href="#" id="overlayOpen" target="_blank" rel="noopener noreferrer">OPEN OVERLAY ↗</a><button type="button" id="overlayReset">RESET SETTINGS</button></div>
+      <div class="builder-export-label"><span>OBS · STREAMLABS LOCAL SOURCE</span></div>
+      <button type="button" id="overlayDownload" class="builder-download" disabled>DOWNLOAD OBS OVERLAY (.HTML)</button>
+      <p class="builder-local-hint">This version runs as a standalone local HTML file, without Cloudflare authentication. In OBS or Streamlabs, choose Browser Source → Local file → select the downloaded file.</p>
+      <details class="builder-source-code">
+       <summary>VIEW GENERATED HTML CODE</summary>
+       <label for="overlayCode">YOUR CURRENT OVERLAY CODE</label>
+       <textarea id="overlayCode" rows="6" readonly spellcheck="false" aria-label="Generated OBS overlay HTML code"></textarea>
+       <button type="button" id="overlayCopy" class="builder-copy-code" disabled>COPY HTML CODE</button>
+      </details>
+      <input type="hidden" id="overlayUrl" value="">
+      <div class="builder-export-actions">
+       <a href="#" id="overlayOpen" target="_blank" rel="noopener noreferrer">OPEN WEB PREVIEW ↗</a>
+       <button type="button" id="overlayReset">RESET SETTINGS</button>
+      </div>
       <p role="status" aria-live="polite" id="overlayFeedback"></p>
      </div>
     </section>
    </div>
    <section class="builder-howto"><h2>ADD IT TO YOUR STREAM</h2>
     <ol>
-     <li><strong>Copy the link</strong><span>Customize the timer and copy your Browser Source URL.</span></li>
-     <li><strong>Create a Browser Source</strong><span>In OBS Studio or Streamlabs Desktop, add a browser source and paste the URL.</span></li>
-     <li><strong>Set 1920 × 1080</strong><span>Use a 1920×1080 canvas to preserve the chosen layout and transparency.</span></li>
+     <li><strong>Export your overlay</strong><span>Customize your countdown and download the standalone .html file.</span></li>
+     <li><strong>Add a local Browser Source</strong><span>In OBS Studio or Streamlabs Desktop, choose Browser Source, turn on Local file and select your HTML file.</span></li>
+     <li><strong>Set 1920 × 1080</strong><span>Use 1920×1080 for transparent placement. After editing settings, download the HTML again, replace the existing file and refresh the source.</span></li>
     </ol>
    </section>
   </div>
@@ -166,6 +176,6 @@
  <script type="module" src="js/analytics-subpages.js?v=2"></script>
  <script defer src="js/community-header.js?v=4"></script>
  <script defer src="js/support-experience.js?v=5"></script>
- <script type="module" src="js/streamer-overlay-auth.js?v=3"></script>
+ <script type="module" src="js/streamer-overlay-auth.js?v=4"></script>
 </body>
 </html>
