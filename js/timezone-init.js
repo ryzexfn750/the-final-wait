@@ -46,6 +46,7 @@
   let mode=priorMode==='manual'&&valid(saved)?'manual':
     priorMode==='auto'?'auto':legacyManual?'manual':'auto';
   let networkZone=null;
+  let networkCountry=null;
   let lookupFinished=false;
   let lookupPromise=null;
   const selected=()=>deviceZone()||networkZone||DEFAULT;
@@ -73,7 +74,7 @@
       (matches===true?'matched':matches===false?'different':'unverified'):
       device?(lookupFinished?'device-only':'checking'):
       network?'network-only':lookupFinished?'default':'checking';
-    return {device,network,matches,status,selected:selected()};
+    return {device,network,matches,status,selected:selected(),country:networkCountry};
   };
   setMode(mode);
   setZone(mode==='manual'?saved:selected());
@@ -103,6 +104,10 @@
       })
       .then(data=>{
         if(valid(data?.timezone))networkZone=data.timezone;
+        if(typeof data?.country==='string'&&/^[A-Z]{2}$/.test(data.country)){
+          networkCountry=data.country;
+          window.__tfwGeoCountry=networkCountry;
+        }
         lookupFinished=true;
         if(mode==='auto'&&get(MODE)==='auto')setZone(selected(),true);
         window.dispatchEvent(new CustomEvent('tfw:timezone-detected',{

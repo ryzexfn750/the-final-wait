@@ -773,3 +773,23 @@ html.tfw-auth-pending #hero>.tfw-hype-stage{visibility:hidden}
  }
  @keyframes tfwHypeStreamReduced{0%,100%{opacity:0}18%,80%{opacity:1}}
 }
+
+
+/* Registration selector uses the exact header language-dropdown component. */
+.tfw-gate-card #tfwGateLanguage.tfw-gate-language-widget{
+ position:absolute;z-index:90;right:clamp(12px,3vw,19px);top:12px;
+ width:80px;min-width:80px;max-width:80px;
+ display:block;text-align:left;
+}
+#tfwGateLanguage select.tfw-lang-native{
+ position:absolute!important;width:1px!important;height:1px!important;
+ min-width:1px!important;max-width:1px!important;opacity:0!important;
+ pointer-events:none!important;overflow:hidden!important;
+}
+#tfwGateLanguage .tfw-lang-control{z-index:91}
+#tfwGateLanguage .tfw-lang-menu{right:0;left:auto;z-index:92}
+@media(max-width:600px){
+ .tfw-gate-card #tfwGateLanguage.tfw-gate-language-widget{
+  right:10px;top:9px;width:74px;min-width:74px;max-width:74px
+ }
+}

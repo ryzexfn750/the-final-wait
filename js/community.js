@@ -39,6 +39,13 @@ async function initCommunity(){
   gate.innerHTML=`
    <div class="tfw-gate-aurora" aria-hidden="true"></div>
    <div class="tfw-gate-card">
+    <div id="tfwGateLanguage" class="language-widget tfw-gate-language-widget" aria-label="Registration language">
+      <select class="tfw-lang-native" aria-label="Registration language">
+       <option value="en">English</option><option value="fr">Français</option>
+       <option value="es">Español</option><option value="de">Deutsch</option>
+       <option value="it">Italiano</option>
+      </select>
+    </div>
     <img class="tfw-gate-logo" src="assets/gta-vi-logo.webp" alt="Grand Theft Auto VI">
     <p class="tfw-gate-kicker">THE FINAL WAIT</p>
     <h1 id="tfwGateHeading">WELCOME TO LEONIDA.</h1>
@@ -73,6 +80,7 @@ async function initCommunity(){
     </div>
    </div>`;
   document.body.appendChild(gate);
+  window.dispatchEvent(new Event('tfw:registration-gate-mounted'));
    gate.appendChild(gate.querySelector('#tfwGateSound'));
   gate.insertAdjacentHTML('beforeend',
     '<div id="tfwGateLegal" class="tfw-gate-legal" role="dialog" aria-modal="true" aria-label="Information" hidden>'+
