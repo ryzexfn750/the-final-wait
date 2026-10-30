@@ -118,6 +118,8 @@ test('The site exposes a dedicated route with working 3D and 2D interactions',()
  const painter=read('js/global-wave-texture.js');
  assert.match(painter,/1024/);
  assert.match(painter,/fill\(path,'evenodd'\)/);
+ assert.match(painter,/selectedZone/);
+ assert.match(js,/waveSnapshot\(features,at,orderedMilestones\)/);
  assert.match(painter,/crossOrigin='anonymous'/);
  assert.doesNotMatch(painter,/WebGLRenderer|ExtrudeGeometry/);
 });

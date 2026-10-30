@@ -33,13 +33,13 @@ export function milestones(zones){
  }
  return [...groups.values()].sort((a,b)=>a.instant-b.instant);
 }
-export function waveSnapshot(zones,at){
+export function waveSnapshot(zones,at,groups=milestones(zones)){
  let reached=0,approaching=0;
  for(const z of zones){
   if(at>=z.release)reached++;
   else if(z.release-at<=3600000)approaching++;
  }
- const next=milestones(zones).find(m=>m.instant>at)||null;
+ const next=groups.find(m=>m.instant>at)||null;
  return {at,reached,waiting:zones.length-reached,approaching,total:zones.length,next,
   percent:zones.length?100*reached/zones.length:0};
 }

@@ -6,7 +6,7 @@ export function createPlanetPainter(mapPaths){
  canvas.width=1024;canvas.height=512;
  const ctx=canvas.getContext('2d',{alpha:false});
  let night=null,lastAt=Date.now(),onNight=null;
- function paint(at){
+ function paint(at,selectedZone=''){
   lastAt=at;
   const w=canvas.width,h=canvas.height;
   ctx.resetTransform();
@@ -22,9 +22,11 @@ export function createPlanetPainter(mapPaths){
   ctx.save();ctx.setTransform(w/960,0,0,h/480,0,0);
   for(const {feature:f,path} of mapPaths){
    const released=at>=f.release,soon=!released&&f.release-at<=3600000;
-   ctx.fillStyle=released?'rgba(241,101,184,.65)':soon?'rgba(239,175,111,.65)':'rgba(127,96,189,.20)';
-   ctx.strokeStyle=released?'rgba(255,179,229,.46)':'rgba(173,145,220,.25)';
-   ctx.lineWidth=.45;
+   ctx.fillStyle=f.tzid===selectedZone?'rgba(255,194,237,.74)':
+    released?'rgba(241,101,184,.65)':soon?'rgba(239,175,111,.65)':'rgba(127,96,189,.20)';
+   ctx.strokeStyle=f.tzid===selectedZone?'rgba(255,228,249,.95)':
+    released?'rgba(255,179,229,.46)':'rgba(173,145,220,.25)';
+   ctx.lineWidth=f.tzid===selectedZone?1.45:.45;
    ctx.fill(path,'evenodd');ctx.stroke(path);
   }
   ctx.restore();

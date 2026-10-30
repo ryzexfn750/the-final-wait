@@ -66,7 +66,7 @@ function setLive(){
  mode='live';playing=false;ui.play.textContent='▶ PLAY THE WAVE';update();
 }
 function drawSnapshot(at){
- const snap=waveSnapshot(features,at);
+ const snap=waveSnapshot(features,at,orderedMilestones);
  ui.reached.textContent=String(snap.reached).padStart(2,'0');
  ui.waiting.textContent=String(snap.waiting).padStart(2,'0');
  ui.total.textContent='OF '+snap.total+' TIME ZONES';
@@ -224,10 +224,10 @@ function refreshSpinLabel(){
 function refreshGlobe(at){
  if(!globe||!painter)return;
  const milestone=orderedMilestones.findIndex(m=>m.instant>at);
- const key=(milestone<0?orderedMilestones.length:milestone);
+ const key=(milestone<0?orderedMilestones.length:milestone)+'/'+selected.tz;
  if(paintedState!==String(key)){
   paintedState=String(key);
-  const canvas=painter.paint(at);
+  const canvas=painter.paint(at,selected.tz);
   const material=globe.globeMaterial();
   if(material?.map?.isTexture){
    material.map.image=canvas;
@@ -292,7 +292,7 @@ async function initialize3D(force=false){
   const create=window.Globe;
   // A single canvas texture handles all IANA region colors; never extrude
   // giant timezone polygons into 3D triangle meshes.
-  const initial=painter.paint(sampleAt());
+  const initial=painter.paint(sampleAt(),selected.tz);
   globe=new create(ui.globe,{rendererConfig:{antialias:false,alpha:true,
    powerPreference:'low-power'},animateIn:false,waitForGlobeReady:false})
    .backgroundColor('rgba(0,0,0,0)')
