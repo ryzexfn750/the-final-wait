@@ -68,6 +68,25 @@
   let current=manual?(supported.has(saved)?saved:legacy):
     mode==='auto'&&supported.has(saved)?saved:'en';
   let preferredAppliedTo='';
+  // GTranslate may set dir="rtl" on the entire page for Arabic. Keep the
+  // original physical layout; only individual text runs should be RTL.
+  function preserveLayoutDirection(){
+    const root=document.documentElement;
+    if(root.lang!==current)root.lang=current;
+    if(current!=='ar')return;
+    if(root.dir!=='ltr')root.dir='ltr';
+    if(document.body&&document.body.dir!=='ltr')document.body.dir='ltr';
+  }
+  preserveLayoutDirection();
+  if(typeof MutationObserver!=='undefined'){
+    const directionObserver=new MutationObserver(preserveLayoutDirection);
+    directionObserver.observe(document.documentElement,{
+      attributes:true,attributeFilter:['lang','dir']
+    });
+    if(document.body)directionObserver.observe(document.body,{
+      attributes:true,attributeFilter:['dir']
+    });
+  }
   window.__tfwPreferredSiteLanguage=()=>current;
   window.__tfwDetectedSiteLanguage=countryLanguage;
   function updateLanguage(code,userChoice=false){
@@ -76,7 +95,7 @@
     else if(!manual){save(STORE_MODE,'auto');save(STORE_LANG,code)}
     if(current!==code)preferredAppliedTo='';
     current=code;
-    document.documentElement.lang=code;
+    preserveLayoutDirection();
     applyPreferred();
   }
   function applyPreferred(){
@@ -270,7 +289,7 @@
     const code=read(STORE_LANG);
     if(supported.has(code)){
       manual=read(STORE_MODE)==='manual';
-      current=code;applyPreferred();
+      current=code;preserveLayoutDirection();applyPreferred();
     }
   });
   document.addEventListener('tfw:content-ready',boot,{once:true});

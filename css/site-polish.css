@@ -652,3 +652,22 @@ html body .gtranslate_wrapper select.tfw-lang-native{
  .language-widget .tfw-lang-trigger,.language-widget .tfw-lang-option,
  .language-widget .tfw-lang-chevron{transition:none!important}
 }
+
+
+/* Arabic text reads RTL, while the established site layout stays LTR.
+   GTranslate may set document-level dir=rtl, which would otherwise mirror
+   nav links, buttons, countdown controls, timelines and media. */
+html:lang(ar),
+html:lang(ar) body,
+html:lang(ar) body *{
+ direction:ltr!important;
+}
+/* Only childless text nodes become RTL; never mirror flex/grid containers. */
+html:lang(ar) :is(h1,h2,h3,h4,h5,h6,p,li,label,small,strong,em,span,a,button,option,
+ summary,figcaption,blockquote,td,th,time):not(:has(*)){
+ direction:rtl!important;
+ unicode-bidi:plaintext;
+}
+html:lang(ar) textarea{direction:rtl!important;unicode-bidi:plaintext}
+html:lang(ar) :is(input[type="text"],input[type="email"],input[type="url"],
+ input[type="number"],input[type="search"],input:not([type])){direction:ltr!important}
