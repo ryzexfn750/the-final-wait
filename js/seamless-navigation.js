@@ -164,6 +164,12 @@
  function navigate(url,push){
    if(document.documentElement.classList.contains('tfw-auth-pending'))return;
    if(!isOurs(url)){location.href=url.href;return}
+   // Standalone secondary pages cannot initialize Hype inside a home iframe.
+   // Full navigation lets the homepage initialize authentication, rails and meter.
+   const targetIsHome=url.pathname===rootPrefix||url.pathname===rootPrefix+'index.html';
+   if(targetIsHome&&!document.body.classList.contains('home-page')){
+     location.assign(url.href);return;
+   }
    const route=url.pathname+url.search+url.hash;
    const shown=activeFrame
      ? canonical(new URL(activeFrame.dataset.tfwRoute,origin.origin))

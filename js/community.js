@@ -573,7 +573,8 @@ async function initCommunity(){
     updateStatus();tick();
   };
   window.addEventListener('tfw:seamless-return',()=>{
-    restoreHype();if(member()&&!state.ws)void connectSocket();
+    restoreHype();requestAnimationFrame(restoreHype);
+    if(member()&&!state.ws)void connectSocket();
   });
   window.addEventListener('pageshow',restoreHype);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)restoreHype()});

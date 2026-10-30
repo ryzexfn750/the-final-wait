@@ -498,9 +498,9 @@ html.tfw-global-cursor-ready .timeline-viewport::-webkit-scrollbar{
 /* Middle-click is handled by the custom autoscroll controller, never OS art. */
 #tfwGlobalCursor.autoscroll .tfw-global-cursor-reticle,
 #tfwGlobalCursor.autoscroll .tfw-global-cursor-glow{opacity:0!important}
-#tfwGlobalCursor .tfw-autoscroll-indicator{position:fixed;left:0;top:0;width:64px;height:64px;z-index:5;pointer-events:none;filter:drop-shadow(0 2px 9px rgba(4,2,11,.7))}
+#tfwGlobalCursor .tfw-autoscroll-indicator{position:fixed;left:0;top:0;width:40px;height:40px;z-index:5;pointer-events:none;filter:drop-shadow(0 2px 7px rgba(4,2,11,.7))}
 #tfwGlobalCursor .tfw-autoscroll-indicator[hidden]{display:none!important}
-#tfwGlobalCursor .tfw-autoscroll-indicator svg{display:block;width:64px;height:64px}
+#tfwGlobalCursor .tfw-autoscroll-indicator svg{display:block;width:40px;height:40px}
 #tfwGlobalCursor.text-selecting .tfw-global-cursor-reticle,
 #tfwGlobalCursor.text-selecting .tfw-global-cursor-glow{opacity:0!important}
 @media(any-hover:hover) and (any-pointer:fine){

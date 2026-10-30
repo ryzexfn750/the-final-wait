@@ -36,10 +36,10 @@
     const autoIcon=document.createElement('div');
     autoIcon.className='tfw-autoscroll-indicator';
     autoIcon.hidden=true;
-    autoIcon.innerHTML='<svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">'+
-      '<circle cx="32" cy="32" r="20" fill="#150d23" stroke="#ed8bca" stroke-width="2"/>'+
-      '<path d="M32 13l-8 11h16zM32 51l8-11H24z" fill="#f7b0d9"/>'+
-      '<circle cx="32" cy="32" r="4" fill="#f1e5ff"/></svg>';
+    autoIcon.innerHTML='<svg viewBox="0 0 40 40" aria-hidden="true" focusable="false">'+
+      '<circle cx="20" cy="20" r="15" fill="#150d23" stroke="#ed8bca" stroke-width="1.5"/>'+
+      '<path d="M20 7l-6 8h12zM20 33l6-8H14z" fill="#f7b0d9"/>'+
+      '<circle cx="20" cy="20" r="3" fill="#f1e5ff"/></svg>';
     layer.appendChild(autoIcon);
     const scrollingParent=target=>{
       for(let el=target;el&&el!==document.body;el=el.parentElement){
@@ -54,6 +54,9 @@
       autoScroll=null;autoIcon.hidden=true;
       layer.classList.remove('autoscroll');
       if(autoScrollFrame){cancelAnimationFrame(autoScrollFrame);autoScrollFrame=0}
+    }
+    function positionAutoIcon(pointerX,pointerY){
+      autoIcon.style.transform='translate3d('+(pointerX-20)+'px,'+(pointerY-20)+'px,0)';
     }
     function autoScrollTick(){
       autoScrollFrame=0;
@@ -80,7 +83,7 @@
       event.preventDefault();event.stopPropagation();
       autoScroll={container,anchorY:event.clientY,pointerY:event.clientY};
       autoIcon.hidden=false;
-      autoIcon.style.transform='translate3d('+(event.clientX-32)+'px,'+(event.clientY-32)+'px,0)';
+      positionAutoIcon(event.clientX,event.clientY);
       layer.classList.add('autoscroll');
       reveal();autoScrollFrame=requestAnimationFrame(autoScrollTick);
     }
@@ -119,7 +122,7 @@
       if(Date.now()-lastTouch<900)return;
       if(!Number.isFinite(event.clientX)||!Number.isFinite(event.clientY))return;
       x=event.clientX;y=event.clientY;
-      if(autoScroll)autoScroll.pointerY=y;
+      if(autoScroll){autoScroll.pointerY=y;positionAutoIcon(x,y)}
       const target=event.target;
       const interactive=Boolean(target?.closest?.('a,button,summary,[role="button"],[role="link"],input[type="range"],label'));
       const textInput=Boolean(target?.closest?.('input:not([type="range"]),textarea,select,[contenteditable="true"]'));
