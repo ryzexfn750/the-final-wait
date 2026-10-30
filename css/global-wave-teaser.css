@@ -1,0 +1,38 @@
+/* Global Midnight Wave homepage gateway, styled to remain fast and dependency-free. */
+.tfw-wave-teaser{position:relative;isolation:isolate;min-height:450px;overflow:hidden;
+ background:linear-gradient(120deg,#0b0916ee,#170d2c 56%,#0a0919)}
+.tfw-wave-teaser-glow{position:absolute;inset:-10%;z-index:-1;pointer-events:none;
+ background:radial-gradient(ellipse at 73% 55%,rgba(169,77,174,.20),transparent 46%),
+ radial-gradient(ellipse at 22% 48%,rgba(89,58,164,.19),transparent 55%)}
+.tfw-wave-teaser-inner{width:min(1280px,90vw);min-height:450px;display:grid;
+ grid-template-columns:1.1fr .9fr;align-items:center;gap:30px;margin:auto;padding:60px 0}
+.tfw-wave-teaser-copy{position:relative;z-index:2}
+.tfw-wave-teaser-copy h2{font:900 clamp(37px,5vw,70px)/.95 "Arial Black",Impact,Arial,sans-serif;
+ color:#fff;margin:16px 0 19px;letter-spacing:-.065em}
+.tfw-wave-teaser-copy h2 em{font-style:normal;color:#f6a0d9;text-shadow:0 0 25px #d75da83b}
+.tfw-wave-teaser-copy>p:not(.eyebrow){max-width:510px;font:14px/1.75 Arial,sans-serif;color:#c1afd1;margin-bottom:24px}
+.tfw-wave-teaser-copy .fx-button{display:inline-flex;align-items:center;justify-content:center;max-width:100%;
+ text-decoration:none;padding:15px 20px;font:900 11px/1.4 Arial;letter-spacing:.07em}
+.tfw-wave-teaser-scene{position:relative;min-width:0;min-height:345px;display:grid;place-items:center;
+ perspective:750px;pointer-events:none}
+.tfw-wave-teaser-orb{position:relative;width:min(290px,28vw);height:min(290px,28vw);border-radius:50%;
+ background:radial-gradient(circle at 34% 31%,#e8b5ef77 0%,#935ab87d 18%,#2c235e 43%,#090b2e 72%);
+ box-shadow:inset -18px -11px 45px #05051ed9,inset 12px 12px 22px #f1a7e329,
+ 0 0 55px #b76fdd5b,0 0 90px #8453a23b;
+ transform:rotate(-11deg);animation:tfwWaveTeaserDrift 11s ease-in-out infinite}
+.tfw-wave-teaser-orb:before{content:"";position:absolute;inset:8%;border-radius:50%;
+ border:1px solid #cdb0ff43;box-shadow:inset 0 0 24px #f19fda26}
+.tfw-wave-teaser-latitude{position:absolute;inset:20% -1%;border:1px solid #d6a2e564;border-radius:50%;transform:rotate(-16deg)}
+.tfw-wave-teaser-meridian{position:absolute;inset:-2% 29%;border:1px solid #e0acf162;border-radius:50%;transform:rotate(22deg)}
+.tfw-wave-teaser-orbit{position:absolute;width:380px;height:380px;max-width:90%;border-radius:50%;
+ border:1px solid #bd76c133;transform:rotateX(68deg) rotate(-30deg)}
+.tfw-wave-teaser-orbit.orbit-two{transform:rotateY(65deg) rotate(19deg);border-color:#9968da44}
+@keyframes tfwWaveTeaserDrift{50%{transform:translateY(-13px) rotate(6deg)}}
+@media(max-width:750px){.tfw-wave-teaser-inner{display:flex;flex-direction:column;text-align:center;gap:5px;padding:65px 0}
+ .tfw-wave-teaser-copy h2{font-size:clamp(34px,9vw,50px)}
+ .tfw-wave-teaser-copy>p:not(.eyebrow){font-size:12px}
+ .tfw-wave-teaser-scene{min-height:215px;width:100%}
+ .tfw-wave-teaser-orb{width:185px;height:185px}
+ .tfw-wave-teaser-orbit{width:220px;height:220px}
+}
+@media(prefers-reduced-motion:reduce){.tfw-wave-teaser-orb{animation:none}}

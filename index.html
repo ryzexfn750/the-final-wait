@@ -35,6 +35,7 @@
   <link rel="stylesheet" href="css/site-polish.css?v=54">
     <link rel="stylesheet" href="css/secondary-controls.css?v=48">
   <link rel="stylesheet" href="css/community.css?v=11">
+  <link rel="stylesheet" href="css/global-wave-teaser.css?v=1">
  <link rel="stylesheet" href="css/boarding-pass.css?v=5">
  <link rel="stylesheet" href="css/ticket-reveal.css?v=5">
  <script>try{if(localStorage.getItem('tfw_community_preview')==='yes'&&!((()=>{if(!new URLSearchParams(location.search).has('tfw_embed')||window.self===window.top)return false;try{return window.parent.location.origin===location.origin&&!!window.parent.__tfwSeamlessNavigation}catch{return false}})()))document.documentElement.classList.add('tfw-auth-pending')}catch{}</script>
@@ -207,7 +208,24 @@
       </div>
     </section>
 
-    <section class="share-section" id="share">
+    
+  <section class="tfw-wave-teaser section" id="globalWavePreview" aria-labelledby="tfwWaveTeaserHeading">
+   <div class="tfw-wave-teaser-glow" aria-hidden="true"></div>
+   <div class="tfw-wave-teaser-inner">
+    <div class="tfw-wave-teaser-copy">
+     <p class="eyebrow bright">ONE WORLD · MANY MIDNIGHTS</p>
+     <h2 id="tfwWaveTeaserHeading">THE GLOBAL<br><em>MIDNIGHT WAVE.</em></h2>
+     <p>Follow midnight as it travels around the world. Explore an interactive 3D Earth, watch regions come alive, and travel through every time zone.</p>
+     <a class="fx-button primary magnetic" href="global-wave.html">EXPLORE THE GLOBAL MIDNIGHT WAVE ↗</a>
+    </div>
+    <div class="tfw-wave-teaser-scene" aria-hidden="true">
+     <div class="tfw-wave-teaser-orb"><div class="tfw-wave-teaser-latitude"></div><div class="tfw-wave-teaser-meridian"></div></div>
+     <span class="tfw-wave-teaser-orbit orbit-one"></span><span class="tfw-wave-teaser-orbit orbit-two"></span>
+    </div>
+   </div>
+  </section>
+
+  <section class="share-section" id="share">
       <div class="share-backdrop" aria-hidden="true"></div>
       <div class="share-inner reveal">
         <img src="assets/gta-vi-logo.webp" alt="" class="share-logo" loading="lazy" decoding="async" />
@@ -300,7 +318,7 @@
   <script defer src="js/site-polish.js?v=48"></script>
   <script defer src="js/language.js?v=49"></script>
   <script defer src="js/inpage-scroll.js?v=48"></script>
-<script defer src="js/seamless-navigation.js?v=57"></script>
+<script defer src="js/seamless-navigation.js?v=58"></script>
   <script type="module" src="js/community.js?v=18"></script>
   <script defer src="js/community-header.js?v=4"></script>
   <script defer src="js/support-experience.js?v=5"></script>

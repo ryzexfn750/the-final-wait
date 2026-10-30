@@ -14,7 +14,7 @@ test('The QA site exposes Profile, Settings and Language in the correct order',(
   const html=read(path);
   assert.match(html,/js\/community-header\.js\?v=4/,path);
   assert.match(html,/css\/community\.css\?v=11/,path);
-  assert.match(html,/js\/seamless-navigation\.js\?v=57/,path);
+  assert.match(html,/js\/seamless-navigation\.js\?v=58/,path);
  }
 });
 test('Settings hub is accessible through seamless navigation and links to a live editor',()=>{
