@@ -27,7 +27,14 @@
   if(map&&Array.isArray(values)&&values.length===todayEnglish.length)
    todayEnglish.forEach((key,i)=>map.set(key,values[i]));
  }
- const sourceKeys=new Set([...english,...extraEnglish,...longEnglish,...todayEnglish]);
+ const archiveEnglish=Array.isArray(window.__tfwArchiveHeadlineSource)?window.__tfwArchiveHeadlineSource:[];
+ const archiveLocales=window.__tfwArchiveHeadlineLocales||{};
+ for(const [code,values] of Object.entries(archiveLocales)){
+  const map=maps[code];
+  if(map&&Array.isArray(values)&&values.length===archiveEnglish.length)
+   archiveEnglish.forEach((key,i)=>map.set(key,values[i]));
+ }
+ const sourceKeys=new Set([...english,...extraEnglish,...longEnglish,...todayEnglish,...archiveEnglish]);
  const saved=new WeakMap();
  let locale='en',observer=null,scheduled=false,applying=false;
  const ignored='script,style,noscript,textarea,pre,code,svg,option,[contenteditable="true"],.gtranslate_wrapper,.tfw-gate-language-widget';
