@@ -558,3 +558,25 @@ html.tfw-route-overlay-open #tfwGlobalCursor{opacity:0!important;visibility:hidd
  html.tfw-global-cursor-ready select,
  html.tfw-global-cursor-ready [contenteditable="true"]{cursor:none!important}
 }
+
+/* One shared footer layout everywhere. Creator support is stacked beneath X. */
+body>footer:has(>.tfw-community-footer-links)>.footer-socials{
+ display:flex!important;flex-direction:row!important;gap:15px!important;
+ align-items:center!important;justify-self:end;min-width:0;flex-wrap:nowrap!important
+}
+body>footer .tfw-footer-creator-actions{
+ display:flex;flex:0 0 auto;min-width:0;flex-direction:column;align-items:stretch;gap:8px
+}
+body>footer .tfw-footer-creator-actions .creator-chip{width:100%;min-width:0}
+body>footer .tfw-footer-creator-actions .tfw-footer-coffee-button{
+ align-self:stretch;max-width:100%;width:100%;min-height:34px;
+ padding:8px 11px;font-size:8px;justify-content:center
+}
+body>footer .footer-ryze-logo{flex:0 0 auto;max-width:min(140px,24vw);object-fit:contain}
+@media(max-width:950px){
+ body>footer:has(>.tfw-community-footer-links)>.footer-socials{justify-self:start!important}
+}
+@media(max-width:560px){
+ body>footer:has(>.tfw-community-footer-links)>.footer-socials{gap:10px!important}
+ body>footer .footer-ryze-logo{max-width:min(120px,28vw)}
+}

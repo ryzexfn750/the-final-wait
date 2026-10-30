@@ -5,7 +5,7 @@
   const sessionKey='tfw_experience_prompt_seen_v1';
   function init(){
     if(document.getElementById('tfwCoffeeModal'))return;
-    const footer=document.querySelector('footer .footer-socials, footer .tfw-footer-creator');
+    const footer=document.querySelector('footer .tfw-footer-creator-actions');
     const coffeeModal=document.createElement('div');
     coffeeModal.id='tfwCoffeeModal';
     coffeeModal.className='tfw-ui-overlay';
