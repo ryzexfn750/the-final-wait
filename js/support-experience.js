@@ -91,19 +91,27 @@
       else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
     },true);
     const embedded=window.self!==window.top&&new URLSearchParams(location.search).has('tfw_embed');
-    function offerExperience(){
+    function offerExperience(options){
+      const afterSignup=Boolean(options?.postRegistration);
       if(window.__tfwTicketRevealActive||
          document.getElementById('tfwTicketReveal')||
          document.documentElement.classList.contains('tfw-ticket-reveal-open'))return;
       if(embedded||shown||document.body.classList.contains('tfw-route-overlay-open')||
          document.documentElement.classList.contains('tfw-auth-pending'))return;
-      try{
-        if(localStorage.getItem(choiceKey)==='never'||sessionStorage.getItem(sessionKey)==='yes')return;
-      }catch{return}
+      // The initial boarding ceremony is a distinct onboarding milestone, not
+      // an ordinary repeat visit. Earlier session dismissals must not suppress
+      // the one-time notice after the new user presses Explore the Countdown.
+      if(!afterSignup){
+        try{
+          if(localStorage.getItem(choiceKey)==='never'||sessionStorage.getItem(sessionKey)==='yes')return;
+        }catch{return}
+      }
       openModal(experienceModal);
     }
-    window.addEventListener('tfw:community-ready',offerExperience);
-    window.addEventListener('tfw:ticket-reveal-closed',offerExperience);
+    window.addEventListener('tfw:community-ready',()=>offerExperience());
+    window.addEventListener('tfw:ticket-reveal-closed',event=>{
+      if(event.detail?.postRegistration)offerExperience({postRegistration:true});
+    });
     window.addEventListener('tfw:seamless-return',()=>{
       if(!embedded)requestAnimationFrame(offerExperience);
     });

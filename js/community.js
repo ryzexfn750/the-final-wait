@@ -1,4 +1,5 @@
 import {nicknameVerdict} from './nickname-policy.js?v=2';
+import {mountRegistrationSoundControls} from './registration-sound.js?v=1';
 /* LIVE HYPE v2 — private QA identity gate, countdown reactions.
    Protected API routes remain enforced server-side. */
 const PUBLIC_COMMUNITY_ENABLED=false;
@@ -64,6 +65,7 @@ async function initCommunity(){
       <button id="hypeSubmit" class="tfw-gate-primary" type="submit">CREATE MY ACCOUNT</button>
       <button id="hypeSignOut" class="tfw-gate-secondary" type="button">USE ANOTHER GOOGLE ACCOUNT</button>
     </form>
+    <div id="tfwGateSound" aria-label="Registration soundtrack controls"></div>
     <div class="tfw-gate-bottom">
       
       <a href="community-terms.html">TERMS</a>
@@ -78,6 +80,7 @@ async function initCommunity(){
     '<div id="tfwGateLegalBody" class="tfw-gate-legal-body" tabindex="-1"></div></section></div>');
 
   const $=selector=>gate.querySelector(selector);
+  mountRegistrationSoundControls($('#tfwGateSound'));
   const status=(message,error=false)=>{
     const el=$('#tfwGateStatus');
     el.textContent=message;el.classList.toggle('error',error);
