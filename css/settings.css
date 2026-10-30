@@ -39,3 +39,10 @@
  .tfw-settings-feature-graphic svg{width:39px;height:39px}.tfw-settings-launch{grid-column:1;justify-self:stretch}
  .tfw-settings-section-head{font-size:8px}.tfw-settings-upcoming{padding:20px;gap:12px}
 }
+
+/* Settings-specific Streamer Mode preferences, moved from Profile. */
+.tfw-settings-shell>.tfw-streamer-card{display:flex;justify-content:space-between;align-items:center;gap:26px;margin-top:20px}
+.tfw-settings-shell>.tfw-streamer-card .tfw-streamer-description{min-width:0;flex:1 1 330px}
+.tfw-settings-shell>.tfw-streamer-card .tfw-streamer-description h2{margin:7px 0 9px}
+.tfw-settings-shell>.tfw-streamer-card .tfw-streamer-description p:last-child{max-width:620px}
+@media(max-width:600px){.tfw-settings-shell>.tfw-streamer-card{flex-wrap:wrap;align-items:flex-start;gap:14px}}

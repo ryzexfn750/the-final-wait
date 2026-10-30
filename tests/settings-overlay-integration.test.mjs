@@ -35,3 +35,16 @@ test('Every new HTML page is packaged into the Cloudflare Pages output',()=>{
   assert.ok(read(path).startsWith('<!doctype html>'),path+' HTML missing');
  }
 });
+
+test('Streamer Mode preference is in Settings rather than Profile',()=>{
+ const settings=read('settings.html'),profile=read('profile.html');
+ const js=read('js/streamer-mode-settings.js'),profileJs=read('js/community-profile.js');
+ assert.match(settings,/id="settingsStreamerMode"/);
+ assert.match(settings,/id="settingsStreamerModeState"/);
+ assert.match(settings,/js\/streamer-mode-settings\.js\?v=1/);
+ assert.match(settings,/css\/settings\.css\?v=2/);
+ assert.doesNotMatch(profile,/tfwStreamerTitle|profileStreamerMode/);
+ assert.doesNotMatch(profileJs,/profileStreamerMode|tfw_streamer_mode_v1/);
+ assert.match(js,/tfw_streamer_mode_v1/);
+ assert.match(js,/window\.parent\.dispatchEvent\(new Event\('tfw:streamer-mode-change'\)\)/);
+});

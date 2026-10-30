@@ -14,27 +14,6 @@ async function initProfile(){
  const accept=$('#profileConfirmAccept');
  const cancel=$('#profileConfirmCancel');
  const modalStatus=$('#profileConfirmStatus');
- const streamerToggle=$('#profileStreamerMode');
- const streamerStatus=$('#profileStreamerModeState');
- const streamerKey='tfw_streamer_mode_v1';
- function syncStreamerMode(){
-   let enabled=false;
-   try{enabled=localStorage.getItem(streamerKey)==='on'}catch{}
-   streamerToggle.checked=enabled;
-   streamerStatus.textContent=enabled?'ON':'OFF';
-   document.documentElement.classList.toggle('tfw-streamer-mode',enabled);
- }
- streamerToggle.addEventListener('change',()=>{
-   try{localStorage.setItem(streamerKey,streamerToggle.checked?'on':'off')}
-   catch{feedback('Your device could not save this preference.',true)}
-   syncStreamerMode();
-   // A profile inside the seamless-navigation iframe has a separate document.
-   try{if(window.parent!==window)window.parent.dispatchEvent(new Event('tfw:streamer-mode-change'))}catch{}
- });
- window.addEventListener('storage',event=>{
-   if(event.key===streamerKey)syncStreamerMode();
- });
- syncStreamerMode();
  let client=null,profile=null,action=null,busy=false;
  function closeDialog(){
    if(busy)return;
