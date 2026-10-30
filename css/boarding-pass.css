@@ -1,0 +1,132 @@
+/* THE FINAL WAIT AIRWAYS — collectible cinematic boarding pass. */
+.tfw-ticket--founders{--ticket-scene:url('/assets/screenshots/desktop/scene-17.webp');--ticket-ink:#ffdda9;--ticket-glow:#d892cf;--ticket-halo:#efb56b}
+.tfw-ticket--early{--ticket-scene:url('/assets/screenshots/desktop/scene-19.webp');--ticket-ink:#ffceaf;--ticket-glow:#f88fbf;--ticket-halo:#f878bd}
+.tfw-ticket--final{--ticket-scene:url('/assets/screenshots/desktop/scene-03.webp');--ticket-ink:#d6bcff;--ticket-glow:#ae72f0;--ticket-halo:#9174fa}
+.tfw-ticket--welcome{--ticket-scene:url('/assets/screenshots/desktop/scene-06.webp');--ticket-ink:#ffdfbb;--ticket-glow:#ef95c7;--ticket-halo:#ffa7ce}
+.tfw-ticket-holder{width:100%;min-width:0}
+.tfw-ticket{
+ position:relative;isolation:isolate;width:100%;min-width:0;overflow:hidden;
+ border-radius:25px;border:1px solid color-mix(in srgb,var(--ticket-ink) 53%,transparent);
+ background:#130d20;box-shadow:0 38px 110px rgba(0,0,0,.54),0 0 64px color-mix(in srgb,var(--ticket-glow) 12%,transparent);
+ color:#fff;text-align:left;transition:box-shadow .4s,transform .35s;
+}
+.tfw-ticket:before{
+ content:"";position:absolute;inset:0;z-index:-2;
+ background-image:linear-gradient(113deg,rgba(12,7,21,.94) 0%,rgba(19,9,27,.74) 40%,rgba(15,8,28,.77) 68%,rgba(12,8,24,.97) 100%),var(--ticket-scene);
+ background-size:cover;background-position:center;filter:saturate(1.25);
+}
+.tfw-ticket:after{
+ content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+ background:linear-gradient(107deg,transparent 20%,rgba(255,255,255,.075) 47%,transparent 51%);
+ background-size:220% 100%;background-position:110% 0;
+ animation:tfwTicketShimmer 9s ease-in-out infinite;
+}
+.tfw-ticket-noise{position:absolute;inset:0;z-index:-1;pointer-events:none;
+ background:radial-gradient(ellipse at 12% 5%,color-mix(in srgb,var(--ticket-glow) 27%,transparent),transparent 46%),
+ radial-gradient(ellipse at 85% 100%,color-mix(in srgb,var(--ticket-halo) 15%,transparent),transparent 50%),
+ repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.017) 3px 4px)}
+.tfw-ticket-layout{display:grid;grid-template-columns:minmax(0,1.95fr) minmax(180px,.88fr);min-height:440px}
+.tfw-ticket-main{display:flex;flex-direction:column;min-width:0;padding:clamp(24px,3vw,38px)}
+.tfw-ticket-topline{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;
+ font:900 9px/1.3 Arial,sans-serif;letter-spacing:.14em}
+.tfw-ticket-brand b{color:var(--ticket-ink)}
+.tfw-ticket-top-mark{font-size:8px;color:#ebc2dd;letter-spacing:.09em}
+.tfw-ticket-intro{padding:30px 0 25px}
+.tfw-ticket-kicker{color:#eab6dd;letter-spacing:.2em;font:800 8px/1 Arial}
+.tfw-ticket-intro h3{font:900 clamp(27px,4vw,48px)/.95 "Arial Black",Impact,Arial,sans-serif;
+ letter-spacing:-.065em;margin:12px 0 14px;text-shadow:0 4px 25px rgba(0,0,0,.5)}
+.tfw-ticket-intro h3 em{display:block;font-style:normal;color:var(--ticket-ink)}
+.tfw-ticket-edition{display:inline-block;font:900 9px/1.2 Arial,sans-serif;
+ padding:8px 15px;letter-spacing:.1em;border:1px solid var(--ticket-ink);
+ border-radius:999px;background:color-mix(in srgb,var(--ticket-glow) 24%,transparent);color:#fff}
+.tfw-ticket-fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:21px 15px}
+.tfw-ticket-field{min-width:0}
+.tfw-ticket-field:nth-child(1),.tfw-ticket-field:nth-child(2){grid-column:span 2}
+.tfw-ticket-field span{display:block;margin-bottom:7px;font:900 8px/1.2 Arial;
+ letter-spacing:.12em;color:#edc5df}
+.tfw-ticket-field strong{display:block;min-width:0;overflow-wrap:anywhere;
+ font:900 clamp(11px,1.5vw,19px)/1.2 "Arial Black",Arial,sans-serif;color:#fff}
+.tfw-ticket-field:first-child strong{font-size:clamp(15px,2.3vw,26px);color:#ffe3f6}
+.tfw-ticket-field:nth-child(2) strong{color:var(--ticket-ink)}
+.tfw-ticket-bottomline{display:flex;gap:15px;justify-content:space-between;flex-wrap:wrap;
+ margin-top:auto;padding-top:28px;font:900 8px/1.4 Arial;letter-spacing:.1em;color:var(--ticket-ink)}
+.tfw-ticket-bottomline span+span{color:#dec0dc}
+.tfw-ticket-stub{display:flex;flex-direction:column;align-items:flex-start;
+ gap:15px;padding:clamp(24px,2.8vw,37px);min-width:0;border-left:2px dashed rgba(255,229,247,.35);
+ background:linear-gradient(155deg,rgba(24,13,37,.33),rgba(12,8,25,.5))}
+.tfw-ticket-stub-label{font:900 9px/1 Arial;letter-spacing:.19em;color:#f4c3de}
+.tfw-ticket-destination{font:900 clamp(20px,2.7vw,33px)/1 Arial Black,Arial,sans-serif;
+ letter-spacing:-.05em;color:var(--ticket-ink)}
+.tfw-ticket-flight{font:900 10px/1.4 Arial;letter-spacing:.075em;color:#f8e7f4}
+.tfw-ticket-mini{display:flex;gap:26px;padding-top:5px}
+.tfw-ticket-mini span{font:900 9px/1.5 Arial;color:#ddb9d1}
+.tfw-ticket-mini b{display:block;color:#fff;font-size:20px}
+.tfw-ticket-barcode{display:flex;align-items:stretch;gap:2px;height:77px;max-width:100%;
+ margin-top:auto;overflow:hidden}
+.tfw-ticket-barcode i{background:#ffe5f4;min-width:1px;flex-shrink:0;opacity:.92}
+.tfw-ticket-code{font:900 14px/1.3 "Arial Black",Arial,sans-serif;letter-spacing:.11em}
+.tfw-ticket-verified{font:900 9px/1.35 Arial;letter-spacing:.075em;color:var(--ticket-ink)}
+@keyframes tfwTicketShimmer{
+ 0%,44%{background-position:115% 0;opacity:0}
+ 50%{opacity:1}72%,100%{background-position:-115% 0;opacity:0}
+}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){
+ .tfw-ticket:hover{transform:translateY(-4px);box-shadow:0 44px 130px rgba(0,0,0,.62),0 0 85px color-mix(in srgb,var(--ticket-glow) 20%,transparent)}
+}
+.tfw-ticket-actions{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:18px}
+.tfw-ticket-action{display:inline-flex;align-items:center;justify-content:center;
+ border:1px solid rgba(244,148,213,.4);border-radius:12px;min-height:43px;
+ padding:12px 14px;background:rgba(46,25,57,.72);color:#ffe4f6;
+ text-decoration:none;font:900 9px/1.2 Arial,sans-serif;letter-spacing:.07em;
+ cursor:pointer;transition:transform .2s,border-color .2s,background .2s}
+.tfw-ticket-action:hover{border-color:#ffcae7;background:rgba(126,59,125,.46);transform:translateY(-2px)}
+.tfw-ticket-action:disabled{opacity:.58;cursor:wait}
+.tfw-ticket-action-status{width:100%;text-align:center;font:700 11px/1.5 Arial;color:#f6c6e3;min-height:15px}
+.tfw-profile-ticket-section{display:block;position:relative;padding:clamp(20px,3vw,34px)!important}
+.tfw-profile-ticket-header{text-align:center;margin-bottom:24px}
+.tfw-profile-ticket-header h2{margin:7px 0 6px;font:900 clamp(25px,4vw,39px)/1 "Arial Black",Arial,sans-serif;letter-spacing:-.05em}
+.tfw-profile-ticket-header p{margin:0!important;font:400 12px/1.6 Arial;color:#d8c7df}
+.tfw-ticket-loading{text-align:center;font:900 11px/1.5 Arial;letter-spacing:.1em;color:#eecce4}
+.tfw-ticket-public-main{min-height:calc(100vh - 150px);padding:130px 4vw 75px;
+ background:radial-gradient(ellipse at 14% 12%,rgba(233,93,182,.18),transparent 44%),
+ linear-gradient(155deg,#100b18,#08070d)}
+.tfw-ticket-public-shell{width:min(1160px,100%);margin:auto}
+.tfw-ticket-public-header{text-align:center;margin-bottom:32px}
+.tfw-ticket-public-header h1{font:900 clamp(34px,6vw,70px)/1 "Arial Black",Arial,sans-serif;letter-spacing:-.05em;margin:9px 0}
+.tfw-ticket-public-header p{font:400 13px/1.6 Arial;color:#d6c1d5}
+.tfw-ticket-public-verified{display:flex;align-items:center;justify-content:center;gap:9px;
+ border:1px solid rgba(173,250,196,.24);border-radius:999px;
+ padding:10px 17px;width:fit-content;margin:18px auto 0;
+ color:#c4fad9;background:rgba(37,108,76,.12);
+ font:800 10px/1.2 Arial;letter-spacing:.08em}
+.tfw-ticket-legal{max-width:940px;margin:35px auto 0;text-align:center;color:#b7a6bb;font:400 11px/1.7 Arial}
+@media(max-width:900px){
+ .tfw-ticket-layout{grid-template-columns:minmax(0,1fr)}
+ .tfw-ticket-stub{border-left:0;border-top:2px dashed rgba(255,229,247,.35);
+  flex-direction:row;align-items:center;flex-wrap:wrap;gap:14px 22px}
+ .tfw-ticket-barcode{margin:0 0 0 auto;max-width:42%;height:48px}
+ .tfw-ticket-main{gap:0}
+ .tfw-ticket-intro h3{font-size:clamp(26px,5vw,45px)}
+}
+@media(max-width:560px){
+ .tfw-ticket-layout{min-height:0}
+ .tfw-ticket-main{padding:22px 19px}
+ .tfw-ticket-topline{font-size:8px}
+ .tfw-ticket-top-mark{font-size:7px}
+ .tfw-ticket-intro{padding:25px 0 22px}
+ .tfw-ticket-intro h3{font-size:clamp(26px,8vw,40px)}
+ .tfw-ticket-fields{grid-template-columns:repeat(2,minmax(0,1fr));gap:19px 10px}
+ .tfw-ticket-field:nth-child(1),.tfw-ticket-field:nth-child(2){grid-column:span 1}
+ .tfw-ticket-field span{font-size:7px}
+ .tfw-ticket-field strong,.tfw-ticket-field:first-child strong{font-size:clamp(10px,3vw,17px)}
+ .tfw-ticket-stub{padding:18px 19px}
+ .tfw-ticket-barcode{order:6;width:100%;max-width:100%;height:41px;margin:4px 0}
+ .tfw-ticket-destination{font-size:24px}
+ .tfw-ticket-public-main{padding-top:110px}
+ .tfw-ticket-public-header h1{font-size:clamp(28px,8vw,45px)}
+ .tfw-ticket-action{flex:1 1 calc(50% - 10px);padding:10px 9px}
+}
+@media(prefers-reduced-motion:reduce){
+ .tfw-ticket,.tfw-ticket-action{transition:none!important;transform:none!important}
+ .tfw-ticket:after{animation:none!important;opacity:0}
+}
