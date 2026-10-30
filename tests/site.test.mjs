@@ -50,7 +50,7 @@ test('ambient soundtrack stops precisely at -30 minutes',()=>{
   const end=clock.indexOf('function syncSoundUi()',start);
   assert.ok(start>=0&&end>start);
   const factory=new Function('remainingForAudio','document','BG_CUTOFF','previewFinalFive','location',
-    clock.slice(start,end)+'\nreturn backgroundAllowed;');
+    'const ambientOnly=()=>false;\n'+clock.slice(start,end)+'\nreturn backgroundAllowed;');
   const document={body:{classList:{contains:()=>false}}};
   assert.equal(factory(()=>30*60000+1,document,30*60000,false,{search:''})(),true);
   assert.equal(factory(()=>30*60000,document,30*60000,false,{search:''})(),false);
@@ -245,8 +245,8 @@ test('V27 audio bars are rendered from FFT and release layout uses real dimensio
   assert.match(css,/transform:none!important/);
   assert.match(css,/max-height 1200ms/);
   assert.match(html,/css\/experience\.css\?v=33/);
-  assert.match(html,/js\/clock\.js\?v=48/);
-  assert.match(html,/js\/milestones\.js\?v=51/);
+  assert.match(html,/js\/clock\.js\?v=49/);
+  assert.match(html,/js\/milestones\.js\?v=52/);
 });
 
 test('V28 starts the release clock without waiting for the next polling cycle',()=>{
@@ -310,8 +310,8 @@ test('V28 release message and secondary-scale elapsed layout are present',()=>{
   assert.match(css,/width:min\(740px,77vw\)!important/);
   assert.match(css,/height:clamp\(72px,7\.8vw,105px\)!important/);
   assert.match(html,/css\/experience\.css\?v=33/);
-  assert.match(html,/js\/clock\.js\?v=48/);
-  assert.match(html,/js\/milestones\.js\?v=51/);
+  assert.match(html,/js\/clock\.js\?v=49/);
+  assert.match(html,/js\/milestones\.js\?v=52/);
 });
 
 
@@ -376,7 +376,7 @@ test('V29 ambient fade is slow before -30m and reaches zero at cutoff',()=>{
   assert.ok(a>=0&&b>a);
   const make=new Function('BG_CUTOFF','BG_FADE_WINDOW','remainingForAudio',
     'BG_VOLUME','BG_DUCK_VOLUME','currentMilestone',
-    js.slice(a,b)+'\nreturn {bgFadeFactor,desiredBgVolume};');
+    'const ambientOnly=()=>false;\n'+js.slice(a,b)+'\nreturn {bgFadeFactor,desiredBgVolume};');
   const cutoff=1800000,fade=20000;
   const obj=make(cutoff,fade,()=>cutoff+fade,.22,.095,null);
   const levels=[cutoff+fade+1,cutoff+fade,cutoff+fade*.75,cutoff+fade*.5,cutoff+fade*.25,cutoff+1,cutoff].map(obj.bgFadeFactor);
@@ -456,8 +456,8 @@ test('V29 phase-two typography uses one fixed title footprint',()=>{
   assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/css\/experience\.css\?v=33/);
   assert.match(html,/js\/app\.js\?v=53/);
-  assert.match(html,/js\/clock\.js\?v=48/);
-  assert.match(html,/js\/milestones\.js\?v=51/);
+  assert.match(html,/js\/clock\.js\?v=49/);
+  assert.match(html,/js\/milestones\.js\?v=52/);
   assert.match(js,/if\(pill&&remaining>0&&remaining<=FINAL_FIVE\)/);
 });
 

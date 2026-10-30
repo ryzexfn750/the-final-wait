@@ -136,7 +136,7 @@ test('Homepage CTA, seamless navigation and Cloudflare publication are connected
  assert.match(build,/'global-wave\.html'/);
  for(const page of ['index.html','today.html','timeline.html','intel.html',
   'intel-archive.html','profile.html','newsletter.html','support.html','settings.html','streamer-overlay.html']){
-  assert.match(read(page),new RegExp('js/seamless-navigation\\.js\\?v='+(page==='index.html'?59:58)),page);
+  assert.match(read(page),new RegExp('js/seamless-navigation\\.js\\?v='+(60)),page);
  }
 });
 
@@ -161,7 +161,7 @@ test('Geographic credits open a styled page and keep all dataset attributions',(
  assert.match(navigation,/'map-credits\.html'/);
  assert.match(deploy,/'map-credits\.html'/);
  for(const path of ['index.html','global-wave.html'])
-  assert.match(read(path),/js\/seamless-navigation\.js\?v=59/,path);
+  assert.match(read(path),/js\/seamless-navigation\.js\?v=60/,path);
  assert.doesNotMatch(credits,/seamless-navigation|tfw-secondary-topbar|soundButton/);
 });
 

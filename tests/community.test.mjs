@@ -20,8 +20,8 @@ test('The hype UI is independent of the countdown and load-gated',()=>{
 test('The community assets are available on all standalone routes',()=>{
   for(const path of ['index.html','today.html','timeline.html','intel.html','intel-archive.html','profile.html','newsletter.html']){
     const page=read(path);
-    assert.match(page,/js\/community\.js\?v=(?:17|18)/);
-    assert.match(page,/css\/community\.css\?v=11/);
+    assert.match(page,/js\/community\.js\?v=(?:17|18|19)/);
+    assert.match(page,/css\/community\.css\?v=12/);
   }
   const build=read('tools/build-cloudflare-pages.mjs');
   assert.match(build,/include:\['\/api\/timezone','\/api\/community\/\*','\/ticket\/\*'\]/);
@@ -333,9 +333,9 @@ test('Login text trimmed and reaction positions avoid countdown controls',()=>{
   assert.doesNotMatch(client,/COMMUNITY ACCESS|Your email is private|Sign in with Google to enter the site/);
   assert.match(client,/function randomSafePosition\(\)/);
   assert.match(client,/getBoundingClientRect\(\)/);
-  assert.match(client,/\.hero-title-wrap/);
-  assert.match(client,/\.release-hud/);
-  assert.match(client,/\.finale-release/);
+  assert.match(client,/const bar=meter\?\.getBoundingClientRect\(\)/);
+  assert.match(client,/MAX_VISIBLE_REACTIONS=2/);
+  assert.match(client,/finale-last-10/);
   assert.match(client,/REACTION_DURATION\+20/);
   assert.match(client,/fill\.style\.height/);
 });

@@ -5,9 +5,9 @@ const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 
 test('All site routes use v48 assets and the Russian translator is removed',()=>{
  const home=read('index.html');
- for(const asset of ['js/clock.js?v=48','js/milestones.js?v=51',
+ for(const asset of ['js/clock.js?v=49','js/milestones.js?v=52',
    'js/language.js?v=49','js/final-call-locales.js?v=48',
-   'js/seamless-navigation.js?v=59','js/inpage-scroll.js?v=48',
+   'js/seamless-navigation.js?v=60','js/inpage-scroll.js?v=48',
    'css/site-polish.css?v=54']){
     assert.ok(home.includes(asset),asset);
  }
@@ -19,7 +19,7 @@ test('All site routes use v48 assets and the Russian translator is removed',()=>
  for(const page of ['today.html','timeline.html','intel.html','intel-archive.html']){
    const html=read(page);
    assert.ok(html.includes('js/language.js?v=49'),page);
-   assert.ok(html.includes('js/secondary-controls.js?v=48'),page);
+   assert.ok(html.includes('js/secondary-controls.js?v=49'),page);
    assert.ok(html.includes('css/site-polish.css?v=54'),page);
  }
 });
