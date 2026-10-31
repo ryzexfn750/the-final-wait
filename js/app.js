@@ -501,6 +501,7 @@ function scheduleSceneRotation(){
 }
 window.addEventListener('tfw:performance-change',()=>{stopSceneRotation();scheduleSceneRotation()});
 window.addEventListener('tfw:seamless-return',scheduleSceneRotation);
+window.addEventListener('tfw:seamless-return',safeCountdownTick);
 function stopSceneRotation(){ if(sceneTimer) clearTimeout(sceneTimer); sceneTimer=null; }
 
 function primeFinaleSceneDeck(){
