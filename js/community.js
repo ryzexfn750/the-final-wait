@@ -664,7 +664,7 @@ async function initCommunity(){
         // Account-specific tour runs only after the device reminder choice.
         try{sessionStorage.setItem('tfw_tour_pending_user_v1',String(state.user.id))}catch{}
         try{
-          const {showTicketReveal}=await import('./ticket-reveal.js?v=5');
+          const {showTicketReveal}=await import('./ticket-reveal.js?v=6');
           const ceremony=showTicketReveal(async()=>{
             const issued=await api('GET','boarding-pass');
             return issued.ticket;

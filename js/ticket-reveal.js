@@ -1,10 +1,10 @@
 /* One-time post-registration ceremony. No skip: the first account ticket must
    visibly assemble before the visitor can continue into the countdown. */
-import {mountBoardingPass,validBoardingPass} from './boarding-pass.js?v=5';
+import {mountBoardingPass,validBoardingPass} from './boarding-pass.js?v=6';
 import {printBoardingPass} from './ticket-assembly-motion.js?v=2';
 import {mountRegistrationSoundControls} from './registration-sound.js?v=1';
 function loadStyles(){
- for(const path of ['css/boarding-pass.css?v=5','css/ticket-reveal.css?v=5']){
+ for(const path of ['css/boarding-pass.css?v=6','css/ticket-reveal.css?v=5']){
   if(document.querySelector('link[href="'+path+'"]')||
      document.querySelector('link[data-tfw-ticket-reveal="'+path+'"]'))continue;
   const link=document.createElement('link');
