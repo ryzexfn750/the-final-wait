@@ -39,7 +39,7 @@
  for(const drawer of [document.querySelector('#mobileMenu'),document.querySelector('#tfwPageDrawer')])
   drawer?.querySelectorAll('a[href="settings.html"]').forEach(link=>link.remove());
  const mobileHost=header.querySelector('.mobile-controls,.tfw-secondary-mobile');
- const compactAt=header.classList.contains('tfw-secondary-topbar')?1250:1360;
+ const compactAt=1360;
  let compactLayout=null;
  function placeTools(){
    const compact=innerWidth<=compactAt;

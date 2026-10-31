@@ -328,3 +328,10 @@ body.tfw-route-overlay-open > .cursor-glow{
  .tfw-secondary-drawer{top:calc(100% + 2px);max-height:calc(100dvh - 76px)!important;padding:6px!important}
  .tfw-secondary-drawer>a,.tfw-secondary-drawer button{padding:9px 12px!important;min-height:34px}
 }
+
+/* Landscape tablets use the compact navigation at the same threshold on
+   home and secondary pages; never squeeze full desktop links into 1280px. */
+@media(max-width:1360px){
+ .tfw-secondary-topbar .tfw-secondary-nav{display:none!important}
+ .tfw-secondary-topbar .tfw-secondary-mobile{display:flex!important}
+}
