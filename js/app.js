@@ -53,7 +53,13 @@ let shareContext = 'site';
 let todayData = null;
 let countdownRaf = 0;
 let countdownBackup = 0;
-let lastClockFrame = 0;
+let lastClockFrame=0,heroClockVisible=true;
+if(els.hero&&'IntersectionObserver' in window){
+ new IntersectionObserver(entries=>{
+   heroClockVisible=entries[0]?.isIntersecting??true;
+   if(!heroClockVisible)stopSceneRotation();else scheduleSceneRotation();
+ },{threshold:0}).observe(els.hero);
+}
 
 const pad = (n, len = 2) => String(Math.max(0, n)).padStart(len, '0');
 const isMobile = () => matchMedia('(max-width:700px)').matches;
@@ -211,23 +217,24 @@ function safeCountdownTick(){
 window.__tfwRefreshCountdown = safeCountdownTick;
 
 function startCountdownClock(){
-  if (countdownRaf) cancelAnimationFrame(countdownRaf);
-  if (countdownBackup) clearInterval(countdownBackup);
-  if (window.__tfwTimer) clearInterval(window.__tfwTimer);
-  const loop = timestamp => {
-    const frameBudget = Number(window.__tfwLastRemaining ?? Infinity) <= 1000 ? 14 : 32;
-    if (!document.hidden && (!lastClockFrame || timestamp - lastClockFrame >= frameBudget)) {
-      safeCountdownTick();
-      lastClockFrame = timestamp;
-    }
-    countdownRaf = requestAnimationFrame(loop);
-  };
-  safeCountdownTick();
-  countdownRaf = requestAnimationFrame(loop);
-  // Backup pulse keeps the clock alive if animation frames are throttled or interrupted.
-  countdownBackup = setInterval(()=>{if(!document.hidden && Date.now()-Number(window.__tfwClockHeartbeat||0)>250)safeCountdownTick()}, 300);
-  window.__tfwTimer = countdownBackup;
-  window.__tfwClockHealthy = true;
+ if(countdownRaf)clearTimeout(countdownRaf);
+ if(countdownBackup)clearInterval(countdownBackup);
+ if(window.__tfwTimer)clearInterval(window.__tfwTimer);
+ const loop=()=>{
+   const foreground=!document.hidden&&heroClockVisible&&!document.body.classList.contains('tfw-route-overlay-open');
+   if(!document.hidden)safeCountdownTick();
+   const remaining=Number(window.__tfwLastRemaining??Infinity);
+   const low=window.__tfwPerformancePrefs?.().mode!=='cinematic';
+   const delay=foreground?(remaining<=6000?(low?32:16):(low?170:50)):1150;
+   countdownRaf=setTimeout(loop,document.hidden?1400:delay);
+ };
+ safeCountdownTick();
+ countdownRaf=setTimeout(loop,120);
+ countdownBackup=setInterval(()=>{
+  if(!document.hidden&&Date.now()-Number(window.__tfwClockHeartbeat||0)>2200)safeCountdownTick();
+ },2900);
+ window.__tfwTimer=countdownBackup;
+ window.__tfwClockHealthy=true;
 }
 
 
@@ -490,9 +497,10 @@ async function changeSceneFromButton(){
 function scheduleSceneRotation(){
   const mode=window.__tfwPerformancePrefs?.().mode||'cinematic';
   if(mode==='lite'||sceneTimer||!scenes.length||['final-minute','released'].includes(currentPhase))return;
-  sceneTimer=setTimeout(function rotate(){sceneTimer=null;if(!document.hidden)changeScene();scheduleSceneRotation();},SITE_CONFIG.backgroundIntervalMs*(mode==='balanced'?2:1));
+  sceneTimer=setTimeout(function rotate(){sceneTimer=null;if(!document.hidden&&heroClockVisible&&!document.body.classList.contains('tfw-route-overlay-open'))changeScene();scheduleSceneRotation();},SITE_CONFIG.backgroundIntervalMs*(mode==='balanced'?2:1));
 }
 window.addEventListener('tfw:performance-change',()=>{stopSceneRotation();scheduleSceneRotation()});
+window.addEventListener('tfw:seamless-return',scheduleSceneRotation);
 function stopSceneRotation(){ if(sceneTimer) clearTimeout(sceneTimer); sceneTimer=null; }
 
 function primeFinaleSceneDeck(){
