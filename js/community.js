@@ -156,11 +156,6 @@ async function initCommunity(){
     }catch(error){if(ticket===legalTicket)legalBody.textContent=error.message}
   }
   window.addEventListener('tfw:site-language-changed',()=>{if(!legalModal.hidden&&legalCurrentPage&&legalCurrentPage!=='support.html')void openLegal(legalCurrentPage)});
-  window.addEventListener('change',event=>{
-    if(!legalModal.hidden&&legalCurrentPage&&legalCurrentPage!=='support.html'&&
-       event.target?.matches?.('.gtranslate_wrapper select,.tfw-gate-language-widget select'))
-      setTimeout(()=>void openLegal(legalCurrentPage),0);
-  });
   $('#tfwGateLegalClose').addEventListener('click',closeLegal);
   gate.addEventListener('keydown',event=>{
     if(legalModal.hidden)return;
