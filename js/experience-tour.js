@@ -183,7 +183,7 @@
   return !document.documentElement.classList.contains('tfw-auth-pending')&&
    !document.documentElement.classList.contains('tfw-ticket-reveal-open')&&
    !document.body.classList.contains('tfw-route-overlay-open')&&
-   !document.getElementById('tfwExperienceModal:not([hidden])')&&
+   !document.querySelector('#tfwExperienceModal:not([hidden])')&&
    !document.getElementById('tfwTicketReveal');
  }
  function shades(rect){
@@ -278,6 +278,7 @@
   account=pending;step=0;
   layer=document.createElement('section');layer.id='tfwSiteTour';layer.className='tfw-site-tour';
   layer.setAttribute('role','dialog');layer.setAttribute('aria-modal','true');
+  layer.setAttribute('translate','no');layer.classList.add('notranslate');
   layer.setAttribute('aria-label','Website guided tour');
   layer.innerHTML='<div class="tfw-tour-shade"></div><div class="tfw-tour-shade"></div><div class="tfw-tour-shade"></div><div class="tfw-tour-shade"></div>'+
    '<div class="tfw-tour-target" aria-hidden="true"></div>'+

@@ -726,3 +726,14 @@ html.tfw-disable-custom-cursor body,html.tfw-disable-custom-cursor body *{cursor
 html.tfw-disable-custom-cursor body a,html.tfw-disable-custom-cursor body button,
 html.tfw-disable-custom-cursor body select,html.tfw-disable-custom-cursor body label{cursor:pointer!important}
 html.tfw-disable-custom-cursor body input,html.tfw-disable-custom-cursor body textarea{cursor:text!important}
+
+/* Keep the extra desktop navigation destination readable without pushing
+   the account and locale controls outside the viewport. */
+@media(min-width:901px) and (max-width:1360px){
+ .topbar{padding-left:clamp(12px,1.5vw,22px);padding-right:clamp(12px,1.5vw,22px);gap:9px}
+ .topbar .desktop-nav{gap:clamp(6px,.7vw,12px)}
+ .topbar .desktop-nav>a,.topbar .desktop-nav>.nav-button{font-size:clamp(6px,.5vw,8px);letter-spacing:.055em}
+ .topbar .brand{gap:8px}
+ .topbar .brand-copy strong{font-size:9px}
+ .topbar .brand-copy small{font-size:5px}
+}
