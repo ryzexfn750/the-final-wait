@@ -159,12 +159,15 @@
       layer.classList.add('autoscroll');
       reveal();autoScrollFrame=requestAnimationFrame(autoScrollTick);
     }
-    let selectingText=false;
+    let selectingText=false,textDragActive=false;
     const syncSelection=()=>{
       const selection=document.getSelection?.();
       selectingText=Boolean(selection&&selection.rangeCount>0&&!selection.isCollapsed&&String(selection).trim());
       layer.classList.toggle('text-selecting',selectingText);
       document.documentElement.classList.toggle('tfw-text-selection-active',selectingText);
+      const nativeSelection=selectingText||textDragActive;
+      layer.classList.toggle('tfw-native-selection-cursor',nativeSelection);
+      document.documentElement.classList.toggle('tfw-native-selection-cursor',nativeSelection);
     };
     function paint(){
       frame=0;
@@ -209,6 +212,12 @@
     }
 
     document.addEventListener('pointerdown',event=>{
+      if(event.button===0&&(!event.pointerType||event.pointerType==='mouse')){
+        const selectedTextTarget=event.target?.closest?.(
+          'p,h1,h2,h3,h4,h5,h6,blockquote,li,dt,dd,figcaption,.legal-copy,textarea,input,[contenteditable="true"]');
+        textDragActive=Boolean(selectedTextTarget&&!event.target?.closest?.('button,a,select,[role="button"]'));
+        syncSelection();
+      }
       if(event.pointerType==='touch'){lastTouch=Date.now();stopAutoScroll();hide();return}
       if(autoScroll&&event.button!==1){stopAutoScroll();event.preventDefault();return}
       if(event.button===1&&autoScroll){
@@ -228,12 +237,12 @@
     document.addEventListener('selectionchange',syncSelection);
     document.addEventListener('mouseup',event=>{
       if(event.button===1)skipMiddleMouseDown=false;
-      if(event.button===0){move(event);syncSelection()}
+      if(event.button===0){textDragActive=false;syncSelection();move(event)}
     },{capture:true,passive:true});
     // DOM selection and Windows pointer state can settle after mouseup.
     // Synchronize immediately in the capture phase, without a delayed timeout.
     window.addEventListener('pointerup',event=>{
-      if(event.button===0){move(event);syncSelection()}
+      if(event.button===0){textDragActive=false;syncSelection();move(event)}
     },{capture:true,passive:true});
     window.addEventListener('keydown',event=>{
       if(event.key==='Escape')stopAutoScroll();
@@ -249,7 +258,7 @@
     document.addEventListener('visibilitychange',()=>{
       if(document.hidden){stopAutoScroll();hide()}
     });
-    window.addEventListener('blur',()=>{stopAutoScroll();hide()});
+    window.addEventListener('blur',()=>{textDragActive=false;syncSelection();stopAutoScroll();hide()});
 
     // Expose a read-only diagnostic for regression and user verification.
     window.__tfwGlobalCursorStatus=()=>({

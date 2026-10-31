@@ -8,12 +8,16 @@
   null,'#hero .countdown-shell','#globalWavePreview .tfw-wave-feature-cta',
   '#today .section-head','#timeline .timeline-controls',
   '#intel .intel-archive-cta','#share .share-actions',
-  '.tfw-account-link',null
+  '#hero > .tfw-hype-rail','#hero > .tfw-hype-intensity',
+  '.tfw-account-link:not(.tfw-settings-link)',
+  '.tfw-settings-link','.tfw-settings-link',null
  ];
  const titles=[
   'WELCOME TO THE FINAL WAIT','LIVE COUNTDOWN','GLOBAL MIDNIGHT WAVE',
   'TODAY IN LEONIDA','ROAD TO LEONIDA','LEONIDA INTEL',
-  'SHARE & HYPE','PROFILE & SETTINGS','READY TO EXPLORE'
+  'SHARE THE WAIT','EMOJI REACTIONS','LIVE HYPE LEVEL',
+  'YOUR PROFILE','SETTINGS & PERFORMANCE','STREAMER OVERLAY',
+  'READY TO EXPLORE'
  ];
  const translations={
   en:{texts:[
@@ -171,6 +175,101 @@
    'أنت جاهز! يمكنك إعادة تشغيل هذا الدليل في أي وقت من الإعدادات.'
   ],controls:['تخطي الدليل','السابق','التالي','إنهاء','الخطوة']}
  };
+
+ // Keep the explanatory copy reviewed in every supported language.
+ // The legacy step 8 combined two separate buttons; they now have their
+ // own independently highlighted stops.
+ const additional={
+  en:['Share the site and invite your friends to follow the final countdown.',
+   'Use the emoji buttons at the side of the countdown to send live reactions. Other fans will see animated emojis too.',
+   'The Hype Level meter reflects the community\'s live excitement as reactions arrive.',
+   'Your profile contains your account details and collectible boarding pass.',
+   'Open the separate Settings button next to Profile to select graphics quality, disable effects and control streamer privacy.',
+   'In Settings, choose Streamer Overlay to customize a live countdown for OBS. Copy the Browser Source URL into OBS Studio.'],
+  it:['Condividi il sito e invita gli amici a seguire il conto alla rovescia.',
+   'Usa le emoji sul lato del countdown per inviare reazioni in diretta: anche gli altri fan vedranno le emoji animate.',
+   'La barra Hype Level mostra l\'entusiasmo della community in base alle reazioni che arrivano.',
+   'Nel Profilo trovi i dati dell\'account e il tuo biglietto da collezione.',
+   'Il pulsante Impostazioni, accanto al Profilo, permette di scegliere la qualità grafica, disattivare effetti e proteggere la privacy durante le dirette.',
+   'Dalle Impostazioni apri Streamer Overlay: personalizza il countdown per OBS e copia l\'URL della sorgente browser in OBS Studio.'],
+  fr:['Partagez le site et invitez vos amis à suivre le compte à rebours.',
+   'Utilisez les émojis à côté du compte à rebours pour envoyer des réactions en direct, visibles par les autres fans.',
+   'La jauge Hype Level reflète l\'enthousiasme de la communauté à mesure que les réactions arrivent.',
+   'Votre profil contient les détails de votre compte et votre billet souvenir.',
+   'Le bouton Paramètres, à côté du profil, permet de choisir la qualité graphique, de désactiver des effets et de protéger votre confidentialité en direct.',
+   'Dans Paramètres, ouvrez Streamer Overlay pour personnaliser le compte à rebours dans OBS et copier l\'URL de la source navigateur.'],
+  es:['Comparte el sitio e invita a tus amigos a seguir la cuenta atrás.',
+   'Usa los emojis junto a la cuenta atrás para enviar reacciones en directo que también verán otros fans.',
+   'El indicador Hype Level refleja la emoción de la comunidad a medida que llegan las reacciones.',
+   'En tu perfil están los datos de tu cuenta y el billete de colección.',
+   'El botón Ajustes, junto a Perfil, permite elegir la calidad gráfica, reducir los efectos y proteger la privacidad en las retransmisiones.',
+   'En Ajustes, abre Streamer Overlay para personalizar la cuenta atrás de OBS y copiar la URL de la fuente de navegador.'],
+  de:['Teile die Website und lade Freunde ein, den Countdown zu verfolgen.',
+   'Mit den Emoji-Schaltflächen am Countdown sendest du Live-Reaktionen, die auch andere Fans sehen.',
+   'Die Hype-Level-Anzeige spiegelt die Begeisterung der Community anhand der Reaktionen wider.',
+   'Dein Profil enthält deine Kontodaten und dein Sammelticket.',
+   'Über Einstellungen neben Profil kannst du die Grafikqualität wählen, Effekte reduzieren und die Privatsphäre bei Streams schützen.',
+   'Öffne Streamer Overlay in den Einstellungen, passe den OBS-Countdown an und kopiere die Browser-Quell-URL in OBS Studio.'],
+  pt:['Compartilhe o site e convide seus amigos a acompanhar a contagem regressiva.',
+   'Use os botões de emoji ao lado do contador para enviar reações ao vivo que outros fãs também verão.',
+   'A barra Hype Level mostra a empolgação da comunidade conforme as reações chegam.',
+   'Seu perfil reúne os dados da conta e o bilhete colecionável.',
+   'Em Configurações, ao lado do Perfil, escolha a qualidade gráfica, reduza efeitos e proteja a privacidade em transmissões.',
+   'Abra Streamer Overlay nas Configurações, personalize o contador para o OBS e copie a URL da Fonte de Navegador.'],
+  ru:['Поделитесь сайтом и пригласите друзей следить за обратным отсчётом.',
+   'Нажимайте на эмодзи рядом с отсчётом, чтобы отправлять реакции в реальном времени другим фанатам.',
+   'Индикатор Hype Level показывает настроение сообщества по мере поступления реакций.',
+   'В профиле находятся данные аккаунта и ваш коллекционный билет.',
+   'В Настройках рядом с профилем можно выбрать качество графики, отключить эффекты и защитить конфиденциальность при трансляции.',
+   'В Настройках откройте Streamer Overlay, настройте таймер для OBS Studio и скопируйте адрес источника браузера.'],
+  pl:['Udostępnij stronę i zaproś znajomych do śledzenia odliczania.',
+   'Przyciski emoji obok licznika pozwalają wysyłać reakcje na żywo, widoczne także dla innych fanów.',
+   'Pasek Hype Level pokazuje emocje społeczności na podstawie nadchodzących reakcji.',
+   'W profilu znajdziesz dane konta i swój bilet kolekcjonerski.',
+   'W Ustawieniach obok Profilu zmienisz jakość grafiki, wyłączysz efekty i zadbasz o prywatność transmisji.',
+   'W Ustawieniach otwórz Streamer Overlay, dostosuj licznik do OBS Studio i skopiuj adres źródła przeglądarkowego.'],
+  ja:['サイトを共有して、友達をカウントダウンに招待しましょう。',
+   'カウントダウン横の絵文字ボタンでリアルタイムのリアクションを送り、ほかのファンと盛り上がれます。',
+   'Hype Level メーターには、届いたリアクションからコミュニティの盛り上がりが表示されます。',
+   'プロフィールではアカウント情報や記念チケットを確認できます。',
+   'プロフィール横の設定ボタンで画質や演出を調整し、配信時のプライバシーを保護できます。',
+   '設定から Streamer Overlay を開いて OBS 用のカウントダウンをカスタマイズし、ブラウザーソースの URL をコピーできます。'],
+  tr:['Siteyi paylaşın ve arkadaşlarınızı geri sayımı izlemeye davet edin.',
+   'Geri sayımın yanındaki emoji düğmeleriyle diğer hayranların da göreceği canlı tepkiler gönderin.',
+   'Hype Level göstergesi, gelen tepkilere göre topluluğun heyecanını yansıtır.',
+   'Profilinizde hesap bilgileriniz ve koleksiyon biletiniz bulunur.',
+   'Profilin yanındaki Ayarlar düğmesinden grafik kalitesini seçebilir, efektleri kapatabilir ve yayın gizliliğini koruyabilirsiniz.',
+   'Ayarlardaki Streamer Overlay bölümünde OBS geri sayımını özelleştirip Tarayıcı Kaynağı URL\'sini OBS Studio\'ya kopyalayabilirsiniz.'],
+  nl:['Deel de website en nodig vrienden uit om samen af te tellen.',
+   'Met de emoji-knoppen naast de countdown stuur je live reacties die andere fans ook zien.',
+   'De Hype Level-meter weerspiegelt het enthousiasme van de community op basis van de reacties.',
+   'In je profiel vind je je accountgegevens en je verzamelticket.',
+   'Via Instellingen naast Profiel pas je de beeldkwaliteit aan, schakel je effecten uit en bescherm je je privacy tijdens streams.',
+   'Open Streamer Overlay onder Instellingen, pas de OBS-countdown aan en kopieer de URL voor de browserbron.'],
+  ko:['사이트를 공유하고 친구들을 카운트다운에 초대하세요.',
+   '카운트다운 옆의 이모지 버튼으로 실시간 반응을 보내면 다른 팬들도 볼 수 있습니다.',
+   'Hype Level 표시줄은 실시간 반응에 따라 커뮤니티의 열기를 보여 줍니다.',
+   '프로필에서 계정 정보와 기념 티켓을 확인할 수 있습니다.',
+   '프로필 옆의 설정 버튼에서 화질과 효과를 조정하고 방송 중 개인정보를 보호하세요.',
+   '설정에서 Streamer Overlay를 열어 OBS용 카운트다운을 꾸미고 브라우저 소스 URL을 복사할 수 있습니다.'],
+  'zh-CN':['分享网站，邀请朋友一起关注倒计时。',
+   '点击倒计时旁的表情按钮发送实时互动，其他粉丝也能看到这些动态表情。',
+   'Hype Level 热度条会根据实时互动展示社区的热情。',
+   '个人资料中包含账户信息和你的纪念收藏票。',
+   '点击个人资料旁的设置按钮，调整画质、关闭特效并保护直播隐私。',
+   '在设置中打开 Streamer Overlay，为 OBS 定制倒计时，并复制浏览器来源 URL。'],
+  ar:['شارك الموقع مع أصدقائك وتابعوا العد التنازلي معًا.',
+   'استخدم أزرار الرموز التعبيرية بجانب العد التنازلي لإرسال تفاعلات مباشرة يراها بقية المعجبين.',
+   'يعرض مؤشر Hype Level حماس المجتمع بناءً على التفاعلات المباشرة.',
+   'يضم ملفك الشخصي تفاصيل الحساب وتذكرتك التذكارية.',
+   'اضغط زر الإعدادات بجانب الملف الشخصي لاختيار جودة الرسوم وإيقاف المؤثرات وحماية الخصوصية أثناء البث.',
+   'افتح Streamer Overlay من الإعدادات لتخصيص العد التنازلي في OBS ونسخ رابط مصدر المتصفح.']
+ };
+ for(const [locale,pack] of Object.entries(translations)){
+  const old=pack.texts,extra=additional[locale]||additional.en;
+  pack.texts=[...old.slice(0,6),extra[0],extra[1],extra[2],extra[3],extra[4],extra[5],old[8]];
+ }
+
  let layer=null,step=0,account=null,retry=0;
  const read=k=>{try{return sessionStorage.getItem(k)}catch{return null}};
  const lang=()=>{
@@ -210,7 +309,8 @@
  let mark=null;
  function position(){
   if(!layer)return;
-  const selector=targets[step],target=selector?document.querySelector(selector):null;
+  const selector=targets[step],candidate=selector?document.querySelector(selector):null;
+  const target=candidate?.getBoundingClientRect().width>1?candidate:null;
   if(target){
    const rect=target.getBoundingClientRect(),pad=7;
    if(rect.bottom<0||rect.top>innerHeight){
@@ -233,7 +333,8 @@
   layer.querySelector('[data-tour=back]').disabled=step===0;
   layer.querySelector('.tfw-tour-meter span').style.width=((step+1)/titles.length*100)+'%';
   if(mark)clearTimeout(mark);
-  const selector=targets[step],target=selector?document.querySelector(selector):null;
+  const selector=targets[step],candidate=selector?document.querySelector(selector):null;
+  const target=candidate?.getBoundingClientRect().width>1?candidate:null;
   if(target){
    target.scrollIntoView({block:'center',behavior:'instant'});
    mark=setTimeout(position,70);

@@ -737,3 +737,38 @@ html.tfw-disable-custom-cursor body input,html.tfw-disable-custom-cursor body te
  .topbar .brand-copy strong{font-size:9px}
  .topbar .brand-copy small{font-size:5px}
 }
+
+
+/* FIX: tour and device recommendation are separate fixed overlays.
+   The cursor itself must be the topmost, pointer-events:none layer. */
+#tfwGlobalCursor.tfw-global-cursor-layer{z-index:2147483646!important}
+html.tfw-auth-pending #tfwGlobalCursor{visibility:hidden!important;opacity:0!important}
+/* Windows may retain the OS I-beam while native drag selection is settling.
+   In that state deliberately display ONLY the native I-beam; resume the GTA
+   pointer when the selection is cleared. Never paint both pointers. */
+html.tfw-native-selection-cursor #tfwGlobalCursor .tfw-global-cursor-reticle,
+html.tfw-native-selection-cursor #tfwGlobalCursor .tfw-global-cursor-glow{opacity:0!important;visibility:hidden!important}
+@media(any-hover:hover) and (any-pointer:fine){
+ html.tfw-global-cursor-ready.tfw-native-selection-cursor body,
+ html.tfw-global-cursor-ready.tfw-native-selection-cursor body *{cursor:text!important}
+ html.tfw-global-cursor-ready.tfw-native-selection-cursor body a,
+ html.tfw-global-cursor-ready.tfw-native-selection-cursor body button,
+ html.tfw-global-cursor-ready.tfw-native-selection-cursor body [role="button"]{cursor:pointer!important}
+}
+/* Adaptive timeline geometry: measure translated intrinsic copy in JS.
+   An inverted article (especially no. 04) must not overflow above its
+   1st-row cell into the viewport's overflow:hidden clipping boundary. */
+.timeline-viewport .timeline-item{
+ grid-template-rows:var(--tfw-timeline-top-row,400px) var(--tfw-timeline-mid-row,94px) var(--tfw-timeline-bottom-row,400px)!important;
+ height:var(--tfw-timeline-total,894px)!important;
+}
+.timeline-viewport .timeline:before{top:var(--tfw-timeline-line,447px)!important}
+.timeline-viewport .timeline-item .timeline-copy{
+ min-height:0!important;height:auto!important;
+ overflow:visible!important;box-sizing:border-box!important;
+}
+.timeline-viewport .timeline-item .timeline-copy h3{
+ height:auto!important;min-height:0!important;
+ white-space:normal!important;overflow:visible!important;
+ overflow-wrap:anywhere!important;line-height:1.16!important;
+}

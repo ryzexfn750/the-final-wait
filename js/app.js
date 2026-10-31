@@ -544,6 +544,49 @@ async function loadToday(){
 
 function escapeHtml(v){ return String(v).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 
+
+let timelineFitFrame=0,timelineFitObserver=null;
+function scheduleTimelineCopyFit(){
+ if(timelineFitFrame)return;
+ timelineFitFrame=requestAnimationFrame(()=>{
+  timelineFitFrame=0;
+  const viewport=document.getElementById('timelineViewport');
+  const cards=viewport?.querySelectorAll('.timeline-item');
+  if(!cards?.length)return;
+  let top=340,bottom=340;
+  cards.forEach((card,i)=>{
+   const copy=card.querySelector('.timeline-copy');
+   if(!copy)return;
+   // scrollHeight includes the full, untruncated translated title, paragraph
+   // and source buttons even when an inverted card overflows its grid row.
+   const required=Math.ceil(Math.max(copy.scrollHeight,copy.getBoundingClientRect().height)+36);
+   if(i%2)top=Math.max(top,required);
+   else bottom=Math.max(bottom,required);
+  });
+  const node=window.innerWidth<=700?88:94;
+  const line=top+node/2;
+  viewport.style.setProperty('--tfw-timeline-top-row',top+'px');
+  viewport.style.setProperty('--tfw-timeline-bottom-row',bottom+'px');
+  viewport.style.setProperty('--tfw-timeline-mid-row',node+'px');
+  viewport.style.setProperty('--tfw-timeline-total',top+node+bottom+'px');
+  viewport.style.setProperty('--tfw-timeline-line',line+'px');
+ });
+}
+function observeTimelineCopy(){
+ timelineFitObserver?.disconnect();
+ const list=document.getElementById('timelineList');
+ if(!list)return;
+ timelineFitObserver=new MutationObserver(scheduleTimelineCopyFit);
+ timelineFitObserver.observe(list,{subtree:true,characterData:true,childList:true});
+ scheduleTimelineCopyFit();
+ document.fonts?.ready?.then(scheduleTimelineCopyFit);
+}
+window.addEventListener('tfw:site-language-changed',()=>{
+ scheduleTimelineCopyFit();
+ setTimeout(scheduleTimelineCopyFit,250);
+});
+window.addEventListener('resize',scheduleTimelineCopyFit,{passive:true});
+
 function renderTimeline(){
   $('#timelineList').innerHTML = TIMELINE.map((item,i)=>{
     const scene = sceneById(item.sceneId);
@@ -558,6 +601,7 @@ function renderTimeline(){
       <div class="timeline-copy reveal"><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.text)}</p><div class="timeline-actions"><a class="timeline-link magnetic" href="${articleHref}">READ STORY <span>↗</span></a>${sourceLinks}</div></div>
     </article>`;
   }).join('');
+  observeTimelineCopy();
 }
 
 let intelImageObserver=null;

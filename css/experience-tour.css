@@ -28,3 +28,9 @@ html.tfw-tour-open{overflow:hidden!important;overscroll-behavior:none!important}
 @media(prefers-reduced-motion:reduce){
  #tfwSiteTour .tfw-tour-meter span{transition:none}
 }
+/* The site-wide GTA cursor is rendered above the tour, and no native pointer
+   is painted underneath it. Native fallback remains when effects are off. */
+@media(any-hover:hover) and (any-pointer:fine){
+ html.tfw-global-cursor-ready:not(.tfw-disable-custom-cursor) #tfwSiteTour,
+ html.tfw-global-cursor-ready:not(.tfw-disable-custom-cursor) #tfwSiteTour *{cursor:none!important}
+}
