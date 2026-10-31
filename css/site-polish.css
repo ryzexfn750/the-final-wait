@@ -833,3 +833,12 @@ html.tfw-native-selection-cursor #tfwGlobalCursor .tfw-global-cursor-glow{opacit
  #shareModal .share-actions,#tfwSecondaryShareModal .share-actions{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px!important}
  #shareModal .fx-button,#tfwSecondaryShareModal .fx-button{font-size:8px!important;padding:9px 5px!important;min-width:0}
 }
+
+/* Performance on low-end tablets and phones. */
+html.tfw-performance-lite .page-noise,html.tfw-performance-lite .scene-sweep,
+html.tfw-performance-lite .hero-orbit,html.tfw-performance-lite .tfw-wave-feature-halo{display:none!important}
+html.tfw-performance-lite .tfw-profile-card,html.tfw-performance-lite .tfw-settings-feature,
+html.tfw-performance-lite .tfw-secondary-topbar,html.tfw-performance-lite .tfw-secondary-drawer,
+html.tfw-performance-lite .tfw-ui-dialog,html.tfw-performance-lite .newspaper-card,
+html.tfw-performance-lite .tfw-wave-feature,html.tfw-performance-lite .share-modal{
+backdrop-filter:none!important;-webkit-backdrop-filter:none!important}

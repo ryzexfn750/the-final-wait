@@ -8,13 +8,17 @@
 
   // Per-device graphics preferences, shared across regular and seamless pages.
   const perfKey='tfw_visual_preferences_v1';
-  const perfDefaults={mode:'cinematic',reactions:true,cursor:true};
+  const coarse=matchMedia('(pointer:coarse)').matches;
+  const cpu=navigator.hardwareConcurrency||8;
+  const memory=navigator.deviceMemory||8;
+  const automaticMode=memory<=3||(coarse&&cpu<=4)?'lite':coarse?'balanced':'cinematic';
+  const perfDefaults={mode:automaticMode,reactions:true,cursor:true};
   let perfPrefs={...perfDefaults};
   function loadPerf(){
     try{
       const value=JSON.parse(localStorage.getItem(perfKey)||'{}');
       return {
-        mode:['cinematic','balanced','lite'].includes(value.mode)?value.mode:'cinematic',
+        mode:['cinematic','balanced','lite'].includes(value.mode)?value.mode:perfDefaults.mode,
         reactions:value.reactions!==false,cursor:value.cursor!==false
       };
     }catch{return {...perfDefaults}}
