@@ -106,7 +106,14 @@
     info.source=trim;info.leading=value.slice(0,value.indexOf(trim));
     info.trailing=value.slice(value.indexOf(trim)+trim.length);
    }else if(trim!==info.source){
-    saved.delete(node);return;
+    saved.delete(node);
+    // New unreviewed status: do not leave an obsolete no-translate marker
+    // that would silently disable the GTranslate fallback.
+    if(parent.dataset.tfwReviewedNative==='1'){
+     parent.removeAttribute('translate');parent.classList.remove('notranslate');
+     delete parent.dataset.tfwReviewedNative;
+    }
+    return;
    }
   }
   const reviewed=maps[locale]?.get(info.source);
