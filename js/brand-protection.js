@@ -4,7 +4,8 @@
  const fixed=new Set([
   'THE FINAL WAIT','ROAD TO LEONIDA','THE ROAD TO LEONIDA',
   'THE END OF AN ERA.','Every story has an ending.',
-  'THE FINAL WAIT ARCHIVE'
+  'THE FINAL WAIT ARCHIVE','THE FINAL WAIT AIRWAYS',
+  'TFW AIRWAYS','YOUR JOURNEY TO LEONIDA BEGINS HERE'
  ]);
  const brandContainers='.brand-copy,.footer-brand,.tfw-final-call-headline';
  const lock=el=>{

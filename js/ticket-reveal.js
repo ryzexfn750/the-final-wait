@@ -45,14 +45,14 @@ export async function showTicketReveal(loadTicket){
   '<div class="tfw-reveal-inner">'+
    '<div id="tfwRevealSound" class="tfw-reveal-sound"></div>'+
    '<div class="tfw-reveal-heading">'+
-    '<p class="tfw-reveal-eyebrow">THE FINAL WAIT AIRWAYS</p>'+
+    '<p class="tfw-reveal-eyebrow notranslate" translate="no">THE FINAL WAIT AIRWAYS</p>'+
     '<h2>WELCOME ABOARD<span>.</span></h2>'+
-    '<p class="tfw-reveal-subtitle">YOUR JOURNEY TO LEONIDA BEGINS HERE</p>'+
+    '<p class="tfw-reveal-subtitle notranslate" translate="no">YOUR JOURNEY TO LEONIDA BEGINS HERE</p>'+
    '</div>'+
    '<div class="tfw-reveal-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Ticket printing progress"><i></i></div>'+
    '<p class="tfw-reveal-status" role="status" aria-live="polite">CHECKING PASSENGER MANIFEST</p>'+
    '<div class="tfw-reveal-ticket" id="tfwRevealTicket" aria-live="off">'+
-    '<div class="tfw-reveal-placeholder" aria-hidden="true"><span>✦</span><strong>TFW AIRWAYS</strong></div>'+
+    '<div class="tfw-reveal-placeholder" aria-hidden="true"><span>✦</span><strong class="notranslate" translate="no">TFW AIRWAYS</strong></div>'+
    '</div>'+
    '<div class="tfw-reveal-choices" hidden>'+
     '<button type="button" class="tfw-reveal-continue">EXPLORE THE COUNTDOWN</button>'+
