@@ -842,3 +842,14 @@ html.tfw-performance-lite .tfw-secondary-topbar,html.tfw-performance-lite .tfw-s
 html.tfw-performance-lite .tfw-ui-dialog,html.tfw-performance-lite .newspaper-card,
 html.tfw-performance-lite .tfw-wave-feature,html.tfw-performance-lite .share-modal{
 backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+
+/* Tablet portrait follows the stacked article and Share layout too. */
+@media(min-width:701px) and (max-width:950px) and (orientation:portrait){
+ .home-page .share-section{padding-bottom:clamp(220px,37vw,340px)!important;min-height:0!important}
+ .home-page .share-inner{position:relative;z-index:3;width:min(86vw,640px)!important;max-width:100%;margin:0 auto!important;padding:64px 0 28px!important}
+ .home-page .share-inner h2{font-size:clamp(35px,7vw,62px)!important;overflow-wrap:anywhere}
+ .home-page .share-inner>p:not(.eyebrow){font-size:12px!important;overflow-wrap:anywhere}
+ .home-page .share-backdrop .banner-art{top:auto!important;bottom:0!important;width:100%!important;height:clamp(220px,37vw,340px)!important;transform:none!important;opacity:.64}
+ .home-page .newspaper-copy{justify-content:flex-start!important;padding-top:38px!important}
+ .home-page .newspaper-copy .tag{display:block!important;overflow:visible!important;line-height:1.35!important;margin-bottom:16px!important}
+}
