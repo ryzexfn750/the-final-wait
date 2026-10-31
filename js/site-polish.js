@@ -174,7 +174,7 @@
       reticle.style.transform='translate3d('+(x-1.3)+'px,'+(y-1)+'px,0)';
     }
     function reveal(){
-      if(!mouseSeen){
+      if(!mouseSeen||!document.documentElement.classList.contains('tfw-global-cursor-ready')){
         mouseSeen=true;
         document.documentElement.classList.add('tfw-global-cursor-ready');
       }

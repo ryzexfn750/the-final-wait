@@ -75,6 +75,7 @@
         sessionStorage.setItem(sessionKey,'yes');
       }catch{}
       closeModal(experienceModal);
+      window.dispatchEvent(new CustomEvent('tfw:experience-choice',{detail:{preference}}));
     }
     experienceModal.querySelector('#tfwExperienceRepeat').addEventListener('click',()=>rememberChoice('repeat'));
     experienceModal.querySelector('#tfwExperienceNever').addEventListener('click',()=>rememberChoice('never'));

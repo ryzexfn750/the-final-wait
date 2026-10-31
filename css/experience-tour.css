@@ -1,0 +1,30 @@
+/* A lightweight tour with a real four-sided spotlight (no giant CSS shadow). */
+html.tfw-tour-open{overflow:hidden!important;overscroll-behavior:none!important}
+#tfwSiteTour{position:fixed;inset:0;z-index:2147483600;pointer-events:auto;color:#fff;font-family:Arial,sans-serif}
+#tfwSiteTour .tfw-tour-shade{position:fixed;background:rgba(5,3,11,.83);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:auto}
+#tfwSiteTour .tfw-tour-target{position:fixed;pointer-events:auto;border:2px solid #f59fda;border-radius:13px;box-shadow:0 0 0 3px #f59fda44,inset 0 0 26px #f59fda2c,0 0 30px #e84ebf58;background:#ffffff08}
+#tfwSiteTour .tfw-tour-target[hidden]{display:none}
+#tfwSiteTour .tfw-tour-card{position:fixed;right:clamp(16px,4vw,48px);bottom:clamp(16px,4vh,48px);box-sizing:border-box;width:min(425px,calc(100vw - 32px));padding:clamp(22px,3vw,32px);border:1px solid #ebb0d76b;border-radius:22px;background:linear-gradient(142deg,#30203bf5,#0c0914f8);box-shadow:0 24px 90px #000c,0 0 45px #b53e8d24;z-index:3}
+#tfwSiteTour .tfw-tour-progress{font:900 10px/1.3 Arial;letter-spacing:.16em;color:#f4a9d8;margin:0 0 14px}
+#tfwSiteTour h2{font:900 clamp(22px,3vw,30px)/1.1 "Arial Black",Arial,sans-serif;letter-spacing:-.035em;margin:0 0 14px;overflow-wrap:anywhere}
+#tfwSiteTour .tfw-tour-description{font:400 14px/1.65 Arial;margin:0;color:#e1d2e6}
+#tfwSiteTour .tfw-tour-meter{height:4px;border-radius:20px;background:#ffffff24;overflow:hidden;margin:25px 0 19px}
+#tfwSiteTour .tfw-tour-meter span{display:block;height:100%;background:linear-gradient(90deg,#ffb271,#f272c9,#a680f7);transition:width .18s ease}
+#tfwSiteTour .tfw-tour-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+#tfwSiteTour button{min-height:41px;padding:10px 13px;border-radius:10px;border:1px solid #ffffff40;background:#ffffff0d;color:white;cursor:pointer;font:800 10px/1.2 Arial;letter-spacing:.04em}
+#tfwSiteTour button:hover{border-color:#f6a0d9;background:#f6a0d91a}
+#tfwSiteTour button:focus-visible{outline:2px solid white;outline-offset:2px}
+#tfwSiteTour [data-tour=skip]{margin-right:auto;border:0;background:transparent;color:#d6b5d0}
+#tfwSiteTour [data-tour=next]{background:linear-gradient(100deg,#e56ead,#925dd4);border:1px solid #f4b4e4}
+#tfwSiteTour button:disabled{opacity:.35;cursor:default}
+@media(max-width:700px){
+ #tfwSiteTour .tfw-tour-shade{backdrop-filter:none;-webkit-backdrop-filter:none}
+ #tfwSiteTour .tfw-tour-card{right:12px;left:12px;bottom:12px;width:auto;padding:20px;max-height:48dvh;overflow-y:auto}
+ #tfwSiteTour h2{font-size:21px}
+ #tfwSiteTour .tfw-tour-description{font-size:12px;line-height:1.5}
+ #tfwSiteTour .tfw-tour-meter{margin:14px 0}
+ #tfwSiteTour button{font-size:9px;padding:9px}
+}
+@media(prefers-reduced-motion:reduce){
+ #tfwSiteTour .tfw-tour-meter span{transition:none}
+}

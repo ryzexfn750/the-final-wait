@@ -660,6 +660,8 @@ async function initCommunity(){
       // Do not reveal the underlying countdown between registration and the
       // ceremony. Keep the gate up until the dialog has been mounted.
       if(firstRegistration){
+        // Account-specific tour runs only after the device reminder choice.
+        try{sessionStorage.setItem('tfw_tour_pending_user_v1',String(state.user.id))}catch{}
         try{
           const {showTicketReveal}=await import('./ticket-reveal.js?v=5');
           const ceremony=showTicketReveal(async()=>{
