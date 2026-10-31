@@ -108,8 +108,8 @@
  // Shared long-form notices and runtime statuses; each package maintains
  // exact key alignment across all supported non-English languages.
  for(const [url,key,translations] of [
-  ['js/long-interaction-locales.js?v=1','__tfwLongInteractionEnglish','__tfwLongInteractionLocales'],
-  ['js/status-ui-locales.js?v=2','__tfwStatusUiEnglish','__tfwStatusUiLocales']
+  ['js/long-interaction-locales.js?v=2','__tfwLongInteractionEnglish','__tfwLongInteractionLocales'],
+  ['js/status-ui-locales.js?v=3','__tfwStatusUiEnglish','__tfwStatusUiLocales']
  ]){
   const script=document.createElement('script');
   script.src=url;
@@ -141,7 +141,10 @@
   (/^OF\s+\d+\s+TIME ZONES$/u.test(value)&&sourceKeys.has('TIME ZONES'))||
   (/^\d+\/\d+\s+ZONES$/u.test(value)&&sourceKeys.has('ZONES'))||
   (/^\d+\s+REGION\(S\)\s+·\s+.+$/u.test(value)&&sourceKeys.has('REGION(S)'))||
-  (/^AUTO ROTATE:\s+(ON|OFF)$/u.test(value)&&sourceKeys.has('AUTO ROTATE'));
+  (/^AUTO ROTATE:\s+(ON|OFF)$/u.test(value)&&sourceKeys.has('AUTO ROTATE'))||
+  (/^PLAYING THE 26-HOUR WAVE\s+—\s+.+$/u.test(value)&&sourceKeys.has('PLAYING THE 26-HOUR WAVE'))||
+  (/^SIMULATION ACTIVE\s+·\s+.+$/u.test(value)&&sourceKeys.has('SIMULATION ACTIVE'))||
+  (/^Select\s+.+\s+\(.+\)$/u.test(value)&&sourceKeys.has('Select'));
  function reviewedForm(value){
   const direct=maps[locale]?.get(value);
   if(direct)return direct;
@@ -161,6 +164,12 @@
   if(regions&&maps[locale]?.get('REGION(S)'))return regions[1]+' '+maps[locale].get('REGION(S)')+' · '+regions[2];
   const auto=value.match(/^AUTO ROTATE:\s+(ON|OFF)$/u);
   if(auto&&maps[locale]?.get('AUTO ROTATE'))return maps[locale].get('AUTO ROTATE')+': '+(maps[locale]?.get(auto[1])||auto[1]);
+  const playing=value.match(/^PLAYING THE 26-HOUR WAVE\s+—\s+(.+)$/u);
+  if(playing&&maps[locale]?.get('PLAYING THE 26-HOUR WAVE'))return maps[locale].get('PLAYING THE 26-HOUR WAVE')+' — '+playing[1];
+  const sim=value.match(/^SIMULATION ACTIVE\s+·\s+(.+)$/u);
+  if(sim&&maps[locale]?.get('SIMULATION ACTIVE'))return maps[locale].get('SIMULATION ACTIVE')+' · '+sim[1];
+  const selecting=value.match(/^Select\s+(.+)\s+\((.+)\)$/u);
+  if(selecting&&maps[locale]?.get('Select'))return maps[locale].get('Select')+' '+selecting[1]+' ('+selecting[2]+')';
   return null;
  }
  function renderAttributes(element){

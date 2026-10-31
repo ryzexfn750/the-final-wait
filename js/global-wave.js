@@ -30,7 +30,7 @@ let globe=null,view='2d',autoSpin=true,requested3d=false,haveLoaded=false;
 let painter=null,paintedState='';
 let mapPaths=[],lastStatusKey='',lastListRefresh=0,last2dKey='',lastGlobeKey='';
 const loadingMessage=(text,show=true)=>{ui.message.textContent=text;ui.message.hidden=!show};
-const releaseLabel=at=>new Date(at).toLocaleString('en-GB',{timeZone:'UTC',day:'2-digit',month:'short',year:'numeric',
+const releaseLabel=at=>new Date(at).toLocaleString(window.__tfwPreferredSiteLanguage?.()||'en-GB',{timeZone:'UTC',day:'2-digit',month:'short',year:'numeric',
  hour:'2-digit',minute:'2-digit',hour12:false})+' UTC';
 const sampleAt=()=>mode==='live'?Date.now():simulationAt;
 const isApproaching=(f,at)=>f.release>at&&f.release-at<=3600000;
