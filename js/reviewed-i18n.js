@@ -175,14 +175,20 @@
    };
    if(titleKeys[page]){
     const translated=maps[locale]?.get(titleKeys[page]);
-    document.title=locale==='en'||!translated?originalPageTitle:
+    const nextTitle=locale==='en'||!translated?originalPageTitle:
      page==='index.html'?'The Final Wait: '+translated:translated+' — The Final Wait';
+    if(document.title!==nextTitle)document.title=nextTitle;
    }
-   if(page==='today.html'||page==='timeline.html'){
+   if(page==='today.html'||page==='timeline.html'||page==='intel.html'){
     const headline=document.getElementById('articleHeadline')?.textContent?.trim();
     if(headline){
-     const section=page==='today.html'?'Today in Leonida':'The Road to Leonida';
-     document.title=headline+' — '+section;
+     const englishSection=page==='today.html'?'Today in Leonida':
+      page==='timeline.html'?'The Road to Leonida':'Inside Leonida';
+     const key=page==='today.html'?'TODAY IN LEONIDA':
+      page==='timeline.html'?'THE ROAD TO LEONIDA':'INSIDE LEONIDA';
+     const section=locale==='en'?englishSection:maps[locale]?.get(key)||englishSection;
+     const nextTitle=headline+' — '+section;
+     if(document.title!==nextTitle)document.title=nextTitle;
     }
    }
    if(page==='today.html'||page==='timeline.html'||page==='intel.html'){
