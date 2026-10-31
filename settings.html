@@ -84,6 +84,25 @@
       <strong id="settingsStreamerModeState">OFF</strong>
     </label>
    </section>
+
+   <section class="tfw-profile-card tfw-performance-card" aria-labelledby="tfwPerformanceHeading">
+    <p class="tfw-profile-overline">DISPLAY & DEVICE PERFORMANCE</p>
+    <h2 id="tfwPerformanceHeading">PERFORMANCE SETTINGS</h2>
+    <p>Adjust effects to suit your device. Your preferences take effect immediately and are saved on this device.</p>
+    <label class="tfw-performance-preset" for="tfwPerformanceMode">VISUAL QUALITY
+     <select id="tfwPerformanceMode">
+      <option value="cinematic">CINEMATIC — All effects</option>
+      <option value="balanced">BALANCED — Fewer animations</option>
+      <option value="lite">LOW POWER — Minimum effects</option>
+     </select>
+    </label>
+    <div class="tfw-performance-options">
+     <label><input type="checkbox" id="tfwPerformanceReactions" checked><span><strong>Animated community reactions</strong><small>Show floating emojis from visitors.</small></span></label>
+     <label><input type="checkbox" id="tfwPerformanceCursor" checked><span><strong>Custom cursor and ambient glow</strong><small>Use the themed desktop pointer.</small></span></label>
+    </div>
+    <p id="tfwPerformanceStatus" class="tfw-performance-status" role="status" aria-live="polite"></p>
+    <button type="button" class="tfw-settings-launch tfw-tour-replay" id="tfwRunSiteTour">REPLAY THE SITE TOUR <span aria-hidden="true">↗</span></button>
+   </section>
   </section>
  </main>
  <footer>

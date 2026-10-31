@@ -695,3 +695,34 @@ html.tfw-app-modal-open{overflow:hidden!important;overscroll-behavior:none}
 html.tfw-app-modal-open body{overscroll-behavior:none}
 html.tfw-app-modal-open .timezone-modal{max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
 html.tfw-app-modal-open .timezone-list{overscroll-behavior:contain;touch-action:pan-y}
+
+/* Graphics presets preserve timer accuracy and one-time ticket reveal. */
+html.tfw-performance-balanced .scene,html.tfw-performance-balanced .hero-orbit,
+html.tfw-performance-balanced .hero-atmosphere,html.tfw-performance-balanced .intel-image,
+html.tfw-performance-balanced .tfw-wave-feature-planet,
+html.tfw-performance-balanced .tfw-wave-feature-halo{animation:none!important}
+html.tfw-performance-balanced .hero-atmosphere,
+html.tfw-performance-balanced .scene-sweep{filter:none!important}
+html.tfw-performance-lite .scene,html.tfw-performance-lite .hero-orbit,
+html.tfw-performance-lite .hero-atmosphere,html.tfw-performance-lite .scene-sweep,
+html.tfw-performance-lite .intel-image,html.tfw-performance-lite .tfw-wave-feature-planet,
+html.tfw-performance-lite .tfw-wave-feature-halo,html.tfw-performance-lite .tfw-wave-backdrop,
+html.tfw-performance-lite .page-grid,html.tfw-performance-lite .page-noise,
+html.tfw-performance-lite .hero-status{animation:none!important;filter:none!important}
+html.tfw-performance-lite .hero-orbit,html.tfw-performance-lite .scene-sweep,
+html.tfw-performance-lite .page-noise,html.tfw-performance-lite .page-grid,
+html.tfw-performance-lite .tfw-wave-feature-halo{display:none!important}
+html.tfw-performance-lite .scene{transition:opacity .15s linear!important;transform:none!important}
+html.tfw-performance-lite .glass,html.tfw-performance-lite .topbar,
+html.tfw-performance-lite .tfw-wave-feature,
+html.tfw-performance-lite .tfw-hype-panel{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html.tfw-performance-lite .reveal{filter:none!important;transition:opacity .2s linear!important;transform:none!important}
+html.tfw-performance-lite .tilt-card,html.tfw-performance-lite .magnetic{transform:none!important}
+html.tfw-performance-lite #tfwGlobalCursor .tfw-global-cursor-glow,
+html.tfw-performance-balanced #tfwGlobalCursor .tfw-global-cursor-glow{display:none!important}
+html.tfw-disable-live-reactions .tfw-hype-float{display:none!important}
+html.tfw-disable-custom-cursor #tfwGlobalCursor{display:none!important}
+html.tfw-disable-custom-cursor body,html.tfw-disable-custom-cursor body *{cursor:auto!important}
+html.tfw-disable-custom-cursor body a,html.tfw-disable-custom-cursor body button,
+html.tfw-disable-custom-cursor body select,html.tfw-disable-custom-cursor body label{cursor:pointer!important}
+html.tfw-disable-custom-cursor body input,html.tfw-disable-custom-cursor body textarea{cursor:text!important}

@@ -403,6 +403,7 @@ async function initCommunity(){
     if(reactionQueue.length)reactionFrame=requestAnimationFrame(drainReactions);
   }
   function animate(entries){
+    if(document.documentElement.classList.contains('tfw-disable-live-reactions'))return;
     if(!reactionLayerAvailable()||!Array.isArray(entries))return;
     for(const item of entries){
       if(!EMOJIS.includes(item?.emoji)||

@@ -488,9 +488,11 @@ async function changeSceneFromButton(){
   }
 }
 function scheduleSceneRotation(){
-  if (sceneTimer || !scenes.length || ['final-minute','released'].includes(currentPhase)) return;
-  sceneTimer=setTimeout(function rotate(){ sceneTimer=null; if(!document.hidden) changeScene(); scheduleSceneRotation(); }, SITE_CONFIG.backgroundIntervalMs);
+  const mode=window.__tfwPerformancePrefs?.().mode||'cinematic';
+  if(mode==='lite'||sceneTimer||!scenes.length||['final-minute','released'].includes(currentPhase))return;
+  sceneTimer=setTimeout(function rotate(){sceneTimer=null;if(!document.hidden)changeScene();scheduleSceneRotation();},SITE_CONFIG.backgroundIntervalMs*(mode==='balanced'?2:1));
 }
+window.addEventListener('tfw:performance-change',()=>{stopSceneRotation();scheduleSceneRotation()});
 function stopSceneRotation(){ if(sceneTimer) clearTimeout(sceneTimer); sceneTimer=null; }
 
 function primeFinaleSceneDeck(){

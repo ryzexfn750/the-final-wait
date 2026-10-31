@@ -46,3 +46,19 @@
 .tfw-settings-shell>.tfw-streamer-card .tfw-streamer-description h2{margin:7px 0 9px}
 .tfw-settings-shell>.tfw-streamer-card .tfw-streamer-description p:last-child{max-width:620px}
 @media(max-width:600px){.tfw-settings-shell>.tfw-streamer-card{flex-wrap:wrap;align-items:flex-start;gap:14px}}
+
+/* Customizable graphics presets: reuse the existing Settings aesthetic. */
+.tfw-performance-card{display:grid;gap:14px;margin-top:20px;padding:clamp(22px,3vw,30px)!important}
+.tfw-performance-card h2{font:900 clamp(21px,3vw,27px)/1.14 "Arial Black",Arial,sans-serif;margin:0}
+.tfw-performance-card>p:not(.tfw-profile-overline){margin:0;max-width:68ch;line-height:1.6;color:#d6c5dc}
+.tfw-performance-preset{display:grid;gap:9px;margin-top:7px;font:900 10px/1.4 Arial;letter-spacing:.1em;color:#f7cae9}
+.tfw-performance-preset select{width:100%;max-width:510px;min-height:47px;border-radius:12px;border:1px solid #f6adcf88;background:#22162d;color:#fff;font:700 12px/1.4 Arial;padding:12px;cursor:pointer}
+.tfw-performance-options{display:grid;gap:12px;margin-top:7px}
+.tfw-performance-options label{display:flex;align-items:flex-start;gap:13px;cursor:pointer;padding:13px 15px;border:1px solid #ffffff21;border-radius:13px;background:#ffffff07}
+.tfw-performance-options input{width:20px;height:20px;flex:none;accent-color:#ef75ba}
+.tfw-performance-options label span{display:grid;gap:6px}
+.tfw-performance-options strong{font:800 13px/1.35 Arial}
+.tfw-performance-options small{font:12px/1.4 Arial;color:#b9aabd}
+.tfw-performance-status{min-height:1em;font:12px/1.4 Arial;color:#e9b3d5}
+.tfw-tour-replay{justify-self:start;cursor:pointer}
+@media(max-width:600px){.tfw-tour-replay{justify-self:stretch}}

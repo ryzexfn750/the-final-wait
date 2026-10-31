@@ -5,8 +5,76 @@
  */
 (()=>{
   'use strict';
+
+  // Per-device graphics preferences, shared across regular and seamless pages.
+  const perfKey='tfw_visual_preferences_v1';
+  const perfDefaults={mode:'cinematic',reactions:true,cursor:true};
+  let perfPrefs={...perfDefaults};
+  function loadPerf(){
+    try{
+      const value=JSON.parse(localStorage.getItem(perfKey)||'{}');
+      return {
+        mode:['cinematic','balanced','lite'].includes(value.mode)?value.mode:'cinematic',
+        reactions:value.reactions!==false,cursor:value.cursor!==false
+      };
+    }catch{return {...perfDefaults}}
+  }
+  function applyPerf(){
+    perfPrefs=loadPerf();
+    const html=document.documentElement;
+    html.classList.toggle('tfw-performance-balanced',perfPrefs.mode==='balanced');
+    html.classList.toggle('tfw-performance-lite',perfPrefs.mode==='lite');
+    html.classList.toggle('tfw-disable-live-reactions',!perfPrefs.reactions);
+    html.classList.toggle('tfw-disable-custom-cursor',!perfPrefs.cursor);
+    if(!perfPrefs.cursor){
+      html.classList.remove('tfw-global-cursor-ready');
+      document.getElementById('tfwGlobalCursor')?.classList.remove('active');
+    }
+    window.dispatchEvent(new CustomEvent('tfw:performance-change',{detail:{...perfPrefs}}));
+  }
+  window.__tfwPerformancePrefs=()=>({...perfPrefs});
+  function updatePerf(next){
+    try{localStorage.setItem(perfKey,JSON.stringify({...perfPrefs,...next}))}catch{}
+    applyPerf();
+  }
+  applyPerf();
+  window.addEventListener('storage',event=>{if(event.key===perfKey)applyPerf()});
+  function bindPerfSettings(){
+    const mode=document.getElementById('tfwPerformanceMode');
+    if(!mode||mode.dataset.bound)return;
+    mode.dataset.bound='1';
+    const reactions=document.getElementById('tfwPerformanceReactions');
+    const cursor=document.getElementById('tfwPerformanceCursor');
+    const status=document.getElementById('tfwPerformanceStatus');
+    const sync=()=>{
+      mode.value=perfPrefs.mode;reactions.checked=perfPrefs.reactions;cursor.checked=perfPrefs.cursor;
+    };
+    const change=next=>{
+      updatePerf(next);sync();
+      if(status)status.textContent='Preferences saved on this device.';
+    };
+    mode.addEventListener('change',()=>change({mode:mode.value}));
+    reactions.addEventListener('change',()=>change({reactions:reactions.checked}));
+    cursor.addEventListener('change',()=>change({cursor:cursor.checked}));
+    window.addEventListener('tfw:performance-change',sync);
+    sync();
+    document.getElementById('tfwRunSiteTour')?.addEventListener('click',()=>{
+      try{
+        if(window!==window.parent&&window.parent.location.origin===location.origin&&
+           typeof window.parent.__tfwSiteTourStart==='function'){
+          window.parent.__tfwSeamlessNavigation?.open('/index.html');
+          window.parent.setTimeout(()=>window.parent.__tfwSiteTourStart({force:true}),250);
+          return;
+        }
+      }catch{}
+      window.location.assign('/index.html?tour=1');
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindPerfSettings,{once:true});
+  else bindPerfSettings();
+
   function boot(){
-    if(document.getElementById('tfwGlobalCursor'))return;
+    if(document.getElementById('tfwGlobalCursor')||!perfPrefs.cursor)return;
     const layer=document.createElement('div');
     layer.id='tfwGlobalCursor';
     layer.className='tfw-global-cursor-layer';
@@ -120,6 +188,7 @@
       layer.classList.remove('active');
     }
     function move(event){
+      if(!perfPrefs.cursor){hide();return}
       // Do not hide the Windows pointer on touchscreens, but support a USB
       // mouse or trackpad on hybrid devices without relying on pointer:fine.
       if(event.pointerType && event.pointerType!=='mouse' && event.pointerType!=='pen')return;
@@ -192,4 +261,5 @@
   if(document.readyState==='loading'){
     document.addEventListener('DOMContentLoaded',boot,{once:true});
   }else boot();
+  window.addEventListener('tfw:performance-change',()=>{if(perfPrefs.cursor)boot()});
 })();
