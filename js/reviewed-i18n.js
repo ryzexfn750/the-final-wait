@@ -59,7 +59,7 @@
  // Add reviewed phrases without changing the original editorial dictionaries.
  // The package is shared by all pages that already load this translator.
  const additional=document.createElement('script');
- additional.src='js/additional-ui-locales.js?v=1';
+ additional.src='js/additional-ui-locales.js?v=2';
  additional.onload=()=>{
   const src=window.__tfwAdditionalUiEnglish||[];
   for(const [lang,values] of Object.entries(window.__tfwAdditionalUiLocales||{})){
