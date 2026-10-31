@@ -7,7 +7,7 @@ const locales=window.__tfwArchiveBodyLocales||{};
 window.__tfwTimelineNewShared=shared;
 window.__tfwTimelineNewAdd=(language,records)=>{
  const target=locales[language],common=shared[language];if(!target||!common)return 0;
- const fill=(pattern,record)=>pattern.replace(/\\{(name|next|date)\\}/g,(_,key)=>key==='name'?record.name:key==='next'?record.next:record.nextDate);
+ const fill=(pattern,record)=>pattern.split('{name}').join(record.name).split('{next}').join(record.next).split('{date}').join(record.nextDate);
  let added=0;
  for(const [id,r] of Object.entries(records)){
   const key='timeline:'+id;
