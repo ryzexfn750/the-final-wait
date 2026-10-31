@@ -8,8 +8,8 @@ const pages=['index','today','timeline','intel','intel-archive','global-wave',
 test('Branding is opted out of translation before the GTranslate widget starts',()=>{
  for(const page of pages){
   const html=read(page+'.html');
-  const guard=html.indexOf('js/brand-protection.js?v=2');
-  const i18n=html.indexOf('js/reviewed-i18n.js?v=17');
+  const guard=html.indexOf('js/brand-protection.js?v=3');
+  const i18n=html.indexOf('js/reviewed-i18n.js?v=19');
   const language=html.indexOf('js/language.js?v=54');
   assert.ok(guard>=0&&i18n>guard&&language>i18n,page);
   assert.match(html,/<title[^>]*translate="no"/,page);
