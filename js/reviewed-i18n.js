@@ -42,7 +42,10 @@
   for(const [id,values] of Object.entries(articles)){
    const original=archiveBodyEnglish[id];
    if(!Array.isArray(original)||!Array.isArray(values)||original.length!==values.length)continue;
-   original.forEach((source,index)=>{if(typeof source==='string'&&source&&typeof values[index]==='string'&&values[index])map.set(source,values[index])});
+   original.forEach((source,index)=>{
+    if(typeof source==='string'&&source&&typeof values[index]==='string'&&values[index]&&!map.has(source))
+     map.set(source,values[index]); // Same English sentence must keep a stable translation across articles.
+   });
   }
  }
  const archiveBodySources=Object.values(archiveBodyEnglish).filter(Array.isArray).flat();
