@@ -101,11 +101,19 @@ async function initProfile(){
      const joined=new Date(profile.created_at);
      if(Number.isFinite(joined.getTime())){
        $('#profileCreatedAt').dateTime=joined.toISOString();
-       $('#profileCreatedAt').textContent=new Intl.DateTimeFormat('en-US',{
+       $('#profileCreatedAt').textContent=new Intl.DateTimeFormat(window.__tfwPreferredSiteLanguage?.()||navigator.language||'en',{
          day:'numeric',month:'long',year:'numeric',timeZone:'UTC'
        }).format(joined);
      }
    }
+   window.addEventListener('tfw:site-language-changed',()=>{
+     if(!profile?.created_at)return;
+     const joined=new Date(profile.created_at);
+     if(!Number.isFinite(joined.getTime()))return;
+     $('#profileCreatedAt').textContent=new Intl.DateTimeFormat(
+       window.__tfwPreferredSiteLanguage?.()||navigator.language||'en',
+       {day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(joined);
+   },{once:false});
    // Ticket errors must not disable the user's account/profile actions.
    try{
      const passResponse=await fetch('/api/community/boarding-pass',{
