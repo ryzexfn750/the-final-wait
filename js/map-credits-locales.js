@@ -5,7 +5,7 @@ const packs={"it":["← L'ONDA GLOBALE DELLA MEZZANOTTE","Dati cartografici e ri
 const normalize=s=>{const v=String(s||'').replace('_','-').toLowerCase();return v==='zh'||v.startsWith('zh-')?'zh-CN':v.split('-')[0]};
 let stored='';try{stored=localStorage.getItem('tfw_site_language_v1')||''}catch{}
 const query=new URLSearchParams(location.search).get('lang');
-const cookie=document.cookie.match(/(?:^|;\\s*)googtrans=\\/en\\/([^;]+)/)?.[1]||'';
+const cookie=document.cookie.split(';').map(x=>x.trim()).find(x=>x.startsWith('googtrans='))?.split('/en/')[1]||'';
 const lang=normalize(query||stored||cookie||navigator.languages?.[0]||navigator.language||'en');
 const a=packs[lang];if(!a)return;
 const main=document.querySelector('.credits-main');if(!main)return;
@@ -13,7 +13,7 @@ const set=(selector,value)=>{const node=document.querySelector(selector);if(node
 function linkedParagraph(node,html){
  if(!node)return;
  const links=[...node.querySelectorAll('a')].map(e=>e.cloneNode(true));
- const template=document.createElement('template');template.innerHTML=html.replace(/\\{(\\d+)\\}/g,(_,i)=>'<span data-credit-link="'+i+'"></span>');
+ let marked=html;for(let i=0;i<links.length;i++)marked=marked.split('{'+i+'}').join('<span data-credit-link="'+i+'"></span>');const template=document.createElement('template');template.innerHTML=marked;
  template.content.querySelectorAll('[data-credit-link]').forEach(slot=>{const link=links[Number(slot.dataset.creditLink)];if(link)slot.replaceWith(link)});
  node.replaceChildren(template.content);
 }
@@ -24,7 +24,7 @@ const paragraphs=main.querySelectorAll(':scope > p:not(.credits-small)');
 linkedParagraph(paragraphs[0],a[4]);linkedParagraph(paragraphs[1],a[6]);
 if(paragraphs[2]){const t=document.createElement('template');t.innerHTML=a[8];paragraphs[2].replaceChildren(t.content)}
 set('.credits-footer span',a[9]);
-const footer=document.querySelectorAll('.credits-footer nav a');if(footer[0])footer[0].textContent=a[0].replace(/^←\\s*/,'');if(footer[1])footer[1].textContent=a[10];
+const footer=document.querySelectorAll('.credits-footer nav a');if(footer[0])footer[0].textContent=a[0].slice(2);if(footer[1])footer[1].textContent=a[10];
 document.title=a[1]+' — The Final Wait';const meta=document.querySelector('meta[name="description"]');if(meta)meta.content=a[2];
 if(lang==='ar')main.querySelectorAll('h1,h2,p,.credits-back').forEach(node=>node.dir='rtl');
 })();
