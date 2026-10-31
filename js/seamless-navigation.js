@@ -23,7 +23,7 @@
   '<div class="tfw-seamless-progress" aria-live="polite">',
   '<div class="route-loader-inner">',
   '<img src="assets/gta-vi-logo.webp" alt="" aria-hidden="true">',
-  '<span class="route-loader-kicker">THE FINAL WAIT</span>',
+  '<span class="route-loader-kicker notranslate" translate="no">THE FINAL WAIT</span>',
   '<strong class="tfw-seamless-caption">LOADING</strong>',
   '<div class="route-loader-track" role="progressbar" aria-label="Page loading progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div>',
   '<a class="tfw-seamless-direct" hidden>OPEN PAGE DIRECTLY</a>',

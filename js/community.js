@@ -51,7 +51,7 @@ async function initCommunity(){
       </select>
     </div>
     <img class="tfw-gate-logo" src="assets/gta-vi-logo.webp" alt="Grand Theft Auto VI">
-    <p class="tfw-gate-kicker">THE FINAL WAIT</p>
+    <p class="tfw-gate-kicker notranslate" translate="no">THE FINAL WAIT</p>
     <h1 id="tfwGateHeading">WELCOME TO LEONIDA.</h1>
     <p class="tfw-gate-lede">Create your account to enter the countdown and join fans in your time zone.</p>
     <p class="tfw-gate-status" id="tfwGateStatus" role="status" aria-live="polite">CHECKING SESSION…</p>

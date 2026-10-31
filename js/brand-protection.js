@@ -36,8 +36,12 @@
   const changed=new Set();
   for(const item of mutations){
    if(item.type==='characterData'){if(item.target.parentElement)changed.add(item.target.parentElement)}
-   else for(const node of item.addedNodes)if(node.nodeType===1)changed.add(node);
-   else if(node.nodeType===3&&node.parentElement)changed.add(node.parentElement);
+   else {
+    for(const node of item.addedNodes){
+     if(node.nodeType===1)changed.add(node);
+     else if(node.nodeType===3&&node.parentElement)changed.add(node.parentElement);
+    }
+   }
   }
   for(const el of changed)scan(el);
  });

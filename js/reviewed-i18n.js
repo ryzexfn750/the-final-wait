@@ -198,12 +198,13 @@
  }
  let locale='en',observer=null,scheduled=false,applying=false;
  let attributesDirty=true,previousAttrLocale='en';
- const ignored='script,style,noscript,textarea,pre,code,svg,[contenteditable="true"],.gtranslate_wrapper,.tfw-gate-language-widget';
+ const ignored='script,style,noscript,textarea,pre,code,svg,[contenteditable="true"],.gtranslate_wrapper,.tfw-gate-language-widget,.brand-copy,.footer-brand,.tfw-final-call-headline,[data-tfw-fixed-brand="1"]';
+ const fixedBrand=new Set(['THE FINAL WAIT','ROAD TO LEONIDA','THE ROAD TO LEONIDA','THE END OF AN ERA.','Every story has an ending.','THE FINAL WAIT ARCHIVE']);
  function render(node){
   const parent=node.parentElement;
   if(!parent||parent.closest(ignored))return;
   const value=node.nodeValue||'',trim=value.trim();
-  if(!trim)return;
+  if(!trim||fixedBrand.has(trim))return;
   let info=saved.get(node);
   if(!info){
    if(!sourceForm(trim))return;
@@ -263,7 +264,6 @@
    // runtime language switch or asynchronous article render.
    const page=location.pathname.split('/').pop()||'index.html';
    const titleKeys={
-    'index.html':'THE ROAD TO LEONIDA',
     'global-wave.html':'THE GLOBAL MIDNIGHT WAVE',
     'intel-archive.html':'INSIDE LEONIDA',
     'profile.html':'MY PROFILE',
@@ -286,7 +286,7 @@
       page==='timeline.html'?'The Road to Leonida':'Inside Leonida';
      const key=page==='today.html'?'TODAY IN LEONIDA':
       page==='timeline.html'?'THE ROAD TO LEONIDA':'INSIDE LEONIDA';
-     const section=locale==='en'?englishSection:maps[locale]?.get(key)||englishSection;
+     const section=locale==='en'||page==='timeline.html'?englishSection:maps[locale]?.get(key)||englishSection;
      const nextTitle=headline+' — '+section;
      if(document.title!==nextTitle)document.title=nextTitle;
     }

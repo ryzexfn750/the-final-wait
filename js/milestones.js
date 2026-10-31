@@ -104,7 +104,7 @@
           <div class="milestone-film"></div><div class="milestone-vignette"></div><div class="milestone-beam beam-a"></div><div class="milestone-beam beam-b"></div>
           <div class="milestone-particles" id="milestoneParticles"></div>
           <div class="milestone-card">
-            <span class="milestone-kicker" id="milestoneKicker">THE FINAL WAIT</span>
+            <span class="milestone-kicker notranslate" id="milestoneKicker" translate="no">THE FINAL WAIT</span>
             <strong class="milestone-number" id="milestoneNumber">ONE MONTH</strong>
             <h2 id="milestoneSubtitle">THE FINAL MONTH BEGINS</h2>
             <div class="milestone-line"><i></i><span id="milestoneAccent">FINAL MONTH</span><i></i></div>
