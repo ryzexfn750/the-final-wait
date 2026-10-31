@@ -6,7 +6,7 @@ const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const langs=['it','fr','es','de','pt','ru','pl','ja','tr','nl','ko','zh-CN','ar'];
 const files=[
  ['js/home-timeline-locales.js','__tfwHomeTimelineEnglish','__tfwHomeTimelineLocales',23],
- ['js/remaining-ui-locales.js','__tfwRemainingUiEnglish','__tfwRemainingUiLocales',77],
+ ['js/remaining-ui-locales.js','__tfwRemainingUiEnglish','__tfwRemainingUiLocales',81],
  ['js/long-interaction-locales.js','__tfwLongInteractionEnglish','__tfwLongInteractionLocales',19],
  ['js/status-ui-locales.js','__tfwStatusUiEnglish','__tfwStatusUiLocales',51],
  ['js/editorial-metadata-locales.js','__tfwEditorialMetadataEnglish','__tfwEditorialMetadataLocales',52],
@@ -35,11 +35,11 @@ test('Home article descriptions and translation packages load before the languag
  assert.deepEqual([...home.window.__tfwHomeTimelineEnglish],source.map(x=>x.text));
  const html=read('index.html');
  const refs=['js/today-locales.js?v=2','js/home-timeline-locales.js?v=1',
-  'js/reviewed-i18n.js?v=16','js/language.js?v=54'].map(x=>html.indexOf(x));
+  'js/reviewed-i18n.js?v=17','js/language.js?v=54'].map(x=>html.indexOf(x));
  assert.ok(refs.every((v,i)=>v>=0&&(!i||v>refs[i-1])));
  for(const page of ['index','today','timeline','intel','intel-archive','global-wave',
   'streamer-overlay','profile','settings','support','newsletter','ticket'])
-  assert.ok(read(page+'.html').includes('js/reviewed-i18n.js?v=16'),page);
+  assert.ok(read(page+'.html').includes('js/reviewed-i18n.js?v=17'),page);
 });
 test('Reviewed engine translates variable labels, long notices and changes language reversibly',()=>{
  const scripts=[],textSources=['SOURCE ↗','READ STORY','Send 🔥','OF 38 TIME ZONES',
