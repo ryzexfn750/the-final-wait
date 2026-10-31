@@ -55,7 +55,13 @@
   const map=maps[code];
   if(map)archiveUiEnglish.forEach((key,i)=>map.set(key,values[i]));
  }
- const sourceKeys=new Set([...english,...extraEnglish,...longEnglish,...todayEnglish,...archiveEnglish,...archiveBodySources,...archiveUiEnglish]);
+ const homeEnglish=Array.isArray(window.__tfwHomeTimelineEnglish)?window.__tfwHomeTimelineEnglish:[];
+ const homeLocales=window.__tfwHomeTimelineLocales||{};
+ for(const [lang,values] of Object.entries(homeLocales)){
+  if(!maps[lang]||!Array.isArray(values)||values.length!==homeEnglish.length)continue;
+  homeEnglish.forEach((key,i)=>{if(key&&values[i])maps[lang].set(key,values[i])});
+ }
+ const sourceKeys=new Set([...english,...extraEnglish,...longEnglish,...todayEnglish,...archiveEnglish,...archiveBodySources,...archiveUiEnglish,...homeEnglish]);
  // Add reviewed phrases without changing the original editorial dictionaries.
  // The package is shared by all pages that already load this translator.
  const additional=document.createElement('script');
@@ -86,6 +92,19 @@
   apply();
  };
  document.head.appendChild(editorial);
+ const remaining=document.createElement('script');
+ remaining.src='js/remaining-ui-locales.js?v=1';
+ remaining.onload=()=>{
+  const src=window.__tfwRemainingUiEnglish||[];
+  for(const [lang,values] of Object.entries(window.__tfwRemainingUiLocales||{})){
+   if(!maps[lang]||!Array.isArray(values)||values.length!==src.length)continue;
+   src.forEach((key,i)=>{if(key&&values[i])maps[lang].set(key,values[i])});
+  }
+  src.forEach(key=>sourceKeys.add(key));
+  attributesDirty=true;
+  apply();
+ };
+ document.head.appendChild(remaining);
  const originalPageTitle=document.title;
  const isScene=value=>{
   const parts=value.startsWith('SCENE: ')?value.slice(7).split(' / '):[];
@@ -94,16 +113,31 @@
  const saved=new WeakMap();
  const savedAttributes=new WeakMap();
  const attributeNames=['aria-label','title','placeholder','alt'];
+ // Preserve human-reviewed source captions alongside icons and emoji.
+ const sourceForm=value=>sourceKeys.has(value)||isScene(value)||
+  (/^(.+?)\s*↗$/u.test(value)&&sourceKeys.has(value.replace(/\s*↗$/u,'')))||
+  (/^Send\s+\S+$/u.test(value)&&sourceKeys.has('Send'));
+ function reviewedForm(value){
+  const direct=maps[locale]?.get(value);
+  if(direct)return direct;
+  const scene=isScene(value)?value.slice(7).split(' / '):null;
+  if(scene&&maps[locale]?.get('SCENE'))return maps[locale].get('SCENE')+': '+scene[0]+' / '+scene[1];
+  const arrow=value.match(/^(.+?)\s*(↗)$/u);
+  if(arrow){const base=maps[locale]?.get(arrow[1].trim());if(base)return base+' '+arrow[2];}
+  const reaction=value.match(/^Send\s+(\S+)$/u);
+  if(reaction&&maps[locale]?.get('Send'))return maps[locale].get('Send')+' '+reaction[1];
+  return null;
+ }
  function renderAttributes(element){
   if(element.closest('.gtranslate_wrapper,.tfw-gate-language-widget'))return;
   const state=savedAttributes.get(element)||{};
   for(const attribute of attributeNames){
    const value=element.getAttribute(attribute);
    if(!value)continue;
-   const prev=state[attribute],src=sourceKeys.has(value)?value:
+   const prev=state[attribute],src=sourceForm(value)?value:
     prev?.last===value?prev.source:null;
    if(!src)continue;
-   const translated=maps[locale]?.get(src)||src;
+   const translated=reviewedForm(src)||src;
    state[attribute]={source:src,last:translated};
    if(translated!==value)element.setAttribute(attribute,translated);
   }
@@ -119,12 +153,12 @@
   if(!trim)return;
   let info=saved.get(node);
   if(!info){
-   if(!sourceKeys.has(trim)&&!isScene(trim))return;
+   if(!sourceForm(trim))return;
    info={source:trim,leading:value.slice(0,value.indexOf(trim)),
     trailing:value.slice(value.indexOf(trim)+trim.length),last:value};
    saved.set(node,info);
   }else if(value!==info.last){
-   if(sourceKeys.has(trim)||isScene(trim)){
+   if(sourceForm(trim)){
     info.source=trim;info.leading=value.slice(0,value.indexOf(trim));
     info.trailing=value.slice(value.indexOf(trim)+trim.length);
    }else if(trim!==info.source){
@@ -138,9 +172,7 @@
     return;
    }
   }
-  const scene=isScene(info.source)?info.source.slice(7).split(' / '):null;
-  const reviewed=maps[locale]?.get(info.source)||
-   (scene&&maps[locale]?.get('SCENE')?maps[locale].get('SCENE')+': '+scene[0]+' / '+scene[1]:null);
+  const reviewed=reviewedForm(info.source);
   const translated=reviewed||info.source;
   const replacement=info.leading+translated+info.trailing;
   if(node.nodeValue!==replacement)node.nodeValue=replacement;
