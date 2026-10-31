@@ -109,7 +109,7 @@
  // exact key alignment across all supported non-English languages.
  for(const [url,key,translations] of [
   ['js/long-interaction-locales.js?v=2','__tfwLongInteractionEnglish','__tfwLongInteractionLocales'],
-  ['js/status-ui-locales.js?v=3','__tfwStatusUiEnglish','__tfwStatusUiLocales']
+  ['js/status-ui-locales.js?v=4','__tfwStatusUiEnglish','__tfwStatusUiLocales']
  ]){
   const script=document.createElement('script');
   script.src=url;
@@ -144,7 +144,10 @@
   (/^AUTO ROTATE:\s+(ON|OFF)$/u.test(value)&&sourceKeys.has('AUTO ROTATE'))||
   (/^PLAYING THE 26-HOUR WAVE\s+—\s+.+$/u.test(value)&&sourceKeys.has('PLAYING THE 26-HOUR WAVE'))||
   (/^SIMULATION ACTIVE\s+·\s+.+$/u.test(value)&&sourceKeys.has('SIMULATION ACTIVE'))||
-  (/^Select\s+.+\s+\(.+\)$/u.test(value)&&sourceKeys.has('Select'));
+  (/^Select\s+.+\s+\(.+\)$/u.test(value)&&sourceKeys.has('Select'))||
+  (/^THIS COUNTDOWN REFERS TO\s+.+\.$/u.test(value)&&sourceKeys.has('THIS COUNTDOWN REFERS TO'))||
+  (/^.+\s+·\s+YOUR LOCAL COUNTDOWN$/u.test(value)&&sourceKeys.has('YOUR LOCAL COUNTDOWN'))||
+  (/^COULD NOT PREPARE THE OBS FILE:\s+.+$/u.test(value)&&sourceKeys.has('COULD NOT PREPARE THE OBS FILE:'));
  function reviewedForm(value){
   const direct=maps[locale]?.get(value);
   if(direct)return direct;
@@ -170,6 +173,12 @@
   if(sim&&maps[locale]?.get('SIMULATION ACTIVE'))return maps[locale].get('SIMULATION ACTIVE')+' · '+sim[1];
   const selecting=value.match(/^Select\s+(.+)\s+\((.+)\)$/u);
   if(selecting&&maps[locale]?.get('Select'))return maps[locale].get('Select')+' '+selecting[1]+' ('+selecting[2]+')';
+  const reference=value.match(/^THIS COUNTDOWN REFERS TO\s+(.+)\.$/u);
+  if(reference&&maps[locale]?.get('THIS COUNTDOWN REFERS TO'))return maps[locale].get('THIS COUNTDOWN REFERS TO')+' '+reference[1]+'.';
+  const local=value.match(/^(.+)\s+·\s+YOUR LOCAL COUNTDOWN$/u);
+  if(local&&maps[locale]?.get('YOUR LOCAL COUNTDOWN'))return local[1]+' · '+maps[locale].get('YOUR LOCAL COUNTDOWN');
+  const obs=value.match(/^COULD NOT PREPARE THE OBS FILE:\s+(.+)$/u);
+  if(obs&&maps[locale]?.get('COULD NOT PREPARE THE OBS FILE:'))return maps[locale].get('COULD NOT PREPARE THE OBS FILE:')+' '+(maps[locale]?.get(obs[1])||obs[1]);
   return null;
  }
  function renderAttributes(element){
