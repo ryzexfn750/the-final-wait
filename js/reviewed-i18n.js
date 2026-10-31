@@ -71,6 +71,21 @@
   apply();
  };
  document.head.appendChild(additional);
+ // Load curated metadata separately so editorial article text and navigation
+ // receive the same translation treatment without changing the English sources.
+ const editorial=document.createElement('script');
+ editorial.src='js/editorial-metadata-locales.js?v=1';
+ editorial.onload=()=>{
+  const src=window.__tfwEditorialMetadataEnglish||[];
+  for(const [lang,values] of Object.entries(window.__tfwEditorialMetadataLocales||{})){
+   if(!maps[lang]||!Array.isArray(values)||values.length!==src.length)continue;
+   src.forEach((key,i)=>{if(key&&values[i])maps[lang].set(key,values[i])});
+  }
+  src.forEach(key=>sourceKeys.add(key));
+  attributesDirty=true;
+  apply();
+ };
+ document.head.appendChild(editorial);
  const originalPageTitle=document.title;
  const isScene=value=>{
   const parts=value.startsWith('SCENE: ')?value.slice(7).split(' / '):[];
