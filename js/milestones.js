@@ -140,7 +140,7 @@
       shell.insertAdjacentHTML('beforeend',`
         <div class="finale-release" id="finaleRelease" aria-hidden="true">
           <span class="release-radiance" aria-hidden="true"></span>
-          <h2><span class="finale-release-kicker">THE WAIT IS OVER!</span><em class="finale-release-main">WELCOME TO<br>LEONIDA!</em><span class="finale-release-date">GO LAUNCH THAT FUCKING GTA VI RIGHT NOW!</span></h2>
+          <h2><span class="finale-release-kicker">THE WAIT IS OVER!</span><em class="finale-release-main">WELCOME TO<br>LEONIDA!</em><span class="finale-release-date notranslate" translate="no">GO LAUNCH THAT FUCKING GTA VI RIGHT NOW!</span></h2>
           <span class="release-line" aria-hidden="true"></span>
           <i class="release-spark spark-a"></i><i class="release-spark spark-b"></i><i class="release-spark spark-c"></i><i class="release-spark spark-d"></i>
         </div>`);

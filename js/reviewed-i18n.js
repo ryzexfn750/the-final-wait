@@ -61,7 +61,13 @@
   if(!maps[lang]||!Array.isArray(values)||values.length!==homeEnglish.length)continue;
   homeEnglish.forEach((key,i)=>{if(key&&values[i])maps[lang].set(key,values[i])});
  }
- const sourceKeys=new Set([...english,...extraEnglish,...longEnglish,...todayEnglish,...archiveEnglish,...archiveBodySources,...archiveUiEnglish,...homeEnglish]);
+ const sourceReferenceEnglish=Array.isArray(window.__tfwSourceReferenceEnglish)?window.__tfwSourceReferenceEnglish:[];
+ const sourceReferenceLocales=window.__tfwSourceReferenceLocales||{};
+ for(const [lang,values] of Object.entries(sourceReferenceLocales)){
+  if(!maps[lang]||!Array.isArray(values)||values.length!==sourceReferenceEnglish.length)continue;
+  sourceReferenceEnglish.forEach((key,i)=>{if(key&&values[i])maps[lang].set(key,values[i])});
+ }
+ const sourceKeys=new Set([...english,...extraEnglish,...longEnglish,...todayEnglish,...archiveEnglish,...archiveBodySources,...archiveUiEnglish,...homeEnglish,...sourceReferenceEnglish]);
  // Add reviewed phrases without changing the original editorial dictionaries.
  // The package is shared by all pages that already load this translator.
  const additional=document.createElement('script');
@@ -203,7 +209,7 @@
  let locale='en',observer=null,scheduled=false,applying=false;
  let attributesDirty=true,previousAttrLocale='en';
  const ignored='script,style,noscript,textarea,pre,code,svg,[contenteditable="true"],.gtranslate_wrapper,.tfw-gate-language-widget,.brand-copy,.footer-brand,.tfw-final-call-headline,[data-tfw-fixed-brand="1"]';
- const fixedBrand=new Set(['THE FINAL WAIT','The Final Wait','ROAD TO LEONIDA','Road to Leonida','THE ROAD TO LEONIDA','The Road to Leonida','THE END OF AN ERA.','Every story has an ending.','THE FINAL WAIT ARCHIVE','THE FINAL WAIT AIRWAYS','TFW AIRWAYS','The Final Wait Airways','YOUR JOURNEY TO LEONIDA BEGINS HERE','← THE FINAL WAIT']);
+ const fixedBrand=new Set(['THE FINAL WAIT','The Final Wait','ROAD TO LEONIDA','Road to Leonida','THE ROAD TO LEONIDA','The Road to Leonida','THE END OF AN ERA.','Every story has an ending.','THE FINAL WAIT ARCHIVE','THE FINAL WAIT AIRWAYS','TFW AIRWAYS','The Final Wait Airways','YOUR JOURNEY TO LEONIDA BEGINS HERE','← THE FINAL WAIT','GO LAUNCH THAT FUCKING GTA VI RIGHT NOW!']);
  function render(node){
   const parent=node.parentElement;
   if(!parent||parent.closest(ignored))return;
