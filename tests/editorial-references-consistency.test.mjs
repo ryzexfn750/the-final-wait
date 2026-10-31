@@ -76,7 +76,7 @@ test('Source references are ready before the locale engine and GTranslate',()=>{
  for(const page of ['index','today','timeline','intel']){
   const html=read(page+'.html');
   const s=html.indexOf('js/source-reference-locales.js?v=1');
-  const r=html.indexOf('js/reviewed-i18n.js?v=19');
+  const r=html.indexOf('js/reviewed-i18n.js?v=20');
   const l=html.indexOf('js/language.js?v=54');
   assert.ok(s>=0&&r>s&&l>r,page);
  }

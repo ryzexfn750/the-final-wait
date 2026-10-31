@@ -74,7 +74,7 @@ test('All translated pages load updated reviewed catalogues before the language 
   'intel-archive.html','profile.html','settings.html','support.html',
   'newsletter.html','global-wave.html','streamer-overlay.html','ticket.html']){
   const html=read(page);
-  const reviewed=html.indexOf('js/reviewed-i18n.js?v=19');
+  const reviewed=html.indexOf('js/reviewed-i18n.js?v=20');
   const language=html.indexOf('js/language.js?v=54');
   assert.ok(reviewed>=0&&language>reviewed,page);
  }
