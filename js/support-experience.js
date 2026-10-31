@@ -46,11 +46,13 @@
       if(shown||document.documentElement.classList.contains('tfw-auth-pending'))return;
       previousFocus=document.activeElement;
       shown=modal;modal.hidden=false;updateLock();
+      window.dispatchEvent(new Event('tfw:cursor-surface-change'));
       (modal.querySelector('button,a[href]')||modal.querySelector('[tabindex]'))?.focus();
     }
     function closeModal(modal){
       if(shown!==modal)return;
       shown=null;modal.hidden=true;updateLock();
+      window.dispatchEvent(new Event('tfw:cursor-surface-change'));
       if(previousFocus?.isConnected)previousFocus.focus();
       previousFocus=null;
     }
@@ -93,6 +95,14 @@
     },true);
     const embedded=window.self!==window.top&&new URLSearchParams(location.search).has('tfw_embed');
     function offerExperience(options){
+      // Replay takes precedence over the recurring large-screen reminder.
+      // Otherwise the reminder can cover and block the resumed tour.
+      try{
+        if(window.__tfwSiteTourReplayPending||
+           sessionStorage.getItem('tfw_site_tour_replay_v1')==='1'||
+           new URLSearchParams(location.search).has('tour')||
+           document.documentElement.classList.contains('tfw-tour-open'))return;
+      }catch{}
       const afterSignup=Boolean(options?.postRegistration);
       if(window.__tfwTicketRevealActive||
          document.getElementById('tfwTicketReveal')||

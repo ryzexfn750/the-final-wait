@@ -772,3 +772,13 @@ html.tfw-native-selection-cursor #tfwGlobalCursor .tfw-global-cursor-glow{opacit
  white-space:normal!important;overflow:visible!important;
  overflow-wrap:anywhere!important;line-height:1.16!important;
 }
+
+/* Cursor portal: the same pointer is attached as the last child of the
+   active notice or tour. Its local stacking order must beat every child,
+   including the backdrop-filter shades. No OS pointer beneath it. */
+#tfwExperienceModal > #tfwGlobalCursor.tfw-global-cursor-layer,
+#tfwCoffeeModal > #tfwGlobalCursor.tfw-global-cursor-layer,
+#tfwSiteTour > #tfwGlobalCursor.tfw-global-cursor-layer{
+ z-index:2147483647!important;
+ pointer-events:none!important;
+}

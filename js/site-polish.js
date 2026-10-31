@@ -59,15 +59,22 @@
     window.addEventListener('tfw:performance-change',sync);
     sync();
     document.getElementById('tfwRunSiteTour')?.addEventListener('click',()=>{
+      // Persistent replay intent survives a full navigation or an iframe return.
+      // Do not start the tour on an arbitrary timer: the homepage may still be
+      // obscured by the old route or the device-reminder dialog.
+      try{sessionStorage.setItem('tfw_site_tour_replay_v1','1')}catch{}
+      const home=new URL('index.html',location.href);
       try{
         if(window!==window.parent&&window.parent.location.origin===location.origin&&
-           typeof window.parent.__tfwSiteTourStart==='function'){
-          window.parent.__tfwSeamlessNavigation?.open('/index.html');
-          window.parent.setTimeout(()=>window.parent.__tfwSiteTourStart({force:true}),250);
+           typeof window.parent.__tfwSiteTourStart==='function'&&
+           window.parent.__tfwSeamlessNavigation){
+          window.parent.__tfwSiteTourReplayPending=true;
+          window.parent.__tfwSeamlessNavigation.open(home.href);
           return;
         }
       }catch{}
-      window.location.assign('/index.html?tour=1');
+      home.searchParams.set('tour','1');
+      window.location.assign(home.href);
     });
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindPerfSettings,{once:true});
@@ -101,6 +108,21 @@
     layer.appendChild(halo);
     layer.appendChild(reticle);
     document.body.appendChild(layer);
+
+    // A very high z-index cannot reliably cross fullscreen backdrop-filter
+    // compositing layers in every browser. Put the *same* pointer directly
+    // inside the active modal/tour so it is composited on top of its backdrop.
+    // Reticle position stays viewport-relative and all events pass through.
+    function syncCursorSurface(){
+      const tour=document.getElementById('tfwSiteTour');
+      const notice=document.getElementById('tfwExperienceModal');
+      const coffee=document.getElementById('tfwCoffeeModal');
+      const surface=tour||(notice&&!notice.hidden?notice:null)||
+        (coffee&&!coffee.hidden?coffee:null)||document.body;
+      if(layer.parentElement!==surface)surface.appendChild(layer);
+    }
+    window.addEventListener('tfw:cursor-surface-change',syncCursorSurface);
+    syncCursorSurface();
 
     let x=-200,y=-200,frame=0,active=false,mouseSeen=false;
     let lastTouch=0;
@@ -200,6 +222,9 @@
       x=event.clientX;y=event.clientY;
       if(autoScroll){autoScroll.pointerY=y;positionAutoIcon(x,y)}
       const target=event.target;
+      // Fallback for another script showing its dialog before its event fires.
+      if(target?.closest?.('#tfwSiteTour,#tfwExperienceModal,#tfwCoffeeModal'))
+        syncCursorSurface();
       const interactive=Boolean(target?.closest?.('a,button,summary,[role="button"],[role="link"],input[type="range"],label'));
       const textInput=Boolean(target?.closest?.('input:not([type="range"]),textarea,select,[contenteditable="true"]'));
       layer.classList.toggle('interactive',interactive&&!textInput);

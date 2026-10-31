@@ -4,6 +4,7 @@
  'use strict';
  if(!document.body?.classList.contains('home-page')||window!==window.top)return;
  const pendingKey='tfw_tour_pending_user_v1',donePrefix='tfw_site_tour_done_v1:';
+ const replayKey='tfw_site_tour_replay_v1';
  const targets=[
   null,'#hero .countdown-shell','#globalWavePreview .tfw-wave-feature-cta',
   '#today .section-head','#timeline .timeline-controls',
@@ -345,6 +346,7 @@
   if(!layer)return;
   layer.remove();layer=null;
   document.documentElement.classList.remove('tfw-tour-open');
+  window.dispatchEvent(new Event('tfw:cursor-surface-change'));
   window.removeEventListener('resize',position);
   window.removeEventListener('scroll',position,true);
   document.removeEventListener('keydown',trap,true);
@@ -377,6 +379,10 @@
   if(!options.force&&!pending)return;
   try{if(!options.force&&localStorage.getItem(donePrefix+pending)==='1')return}catch{}
   account=pending;step=0;
+  if(options.force){
+    window.__tfwSiteTourReplayPending=false;
+    try{sessionStorage.removeItem(replayKey)}catch{}
+  }
   layer=document.createElement('section');layer.id='tfwSiteTour';layer.className='tfw-site-tour';
   layer.setAttribute('role','dialog');layer.setAttribute('aria-modal','true');
   layer.setAttribute('translate','no');layer.classList.add('notranslate');
@@ -390,6 +396,7 @@
    '<button type="button" data-tour="next"></button></div></div>';
   document.body.appendChild(layer);
   document.documentElement.classList.add('tfw-tour-open');
+  window.dispatchEvent(new Event('tfw:cursor-surface-change'));
   layer.querySelector('[data-tour=skip]').addEventListener('click',close);
   layer.querySelector('[data-tour=back]').addEventListener('click',()=>{step=Math.max(0,step-1);render()});
   layer.querySelector('[data-tour=next]').addEventListener('click',()=>{
@@ -402,13 +409,16 @@
   render();
  }
  window.__tfwSiteTourStart=start;
- window.addEventListener('tfw:experience-choice',()=>start());
- window.addEventListener('tfw:site-language-changed',()=>{if(layer)render()});
- window.addEventListener('tfw:community-ready',()=>{
-  if(new URLSearchParams(location.search).has('tour'))start({force:true});
- });
- if(new URLSearchParams(location.search).has('tour')){
-  if(document.readyState==='complete')setTimeout(()=>start({force:true}),650);
-  else window.addEventListener('load',()=>setTimeout(()=>start({force:true}),650),{once:true});
+ function replayRequested(){
+  return Boolean(window.__tfwSiteTourReplayPending||
+   read(replayKey)==='1'||new URLSearchParams(location.search).has('tour'));
  }
+ function resumeReplay(){if(replayRequested())start({force:true})}
+ window.addEventListener('tfw:seamless-return',resumeReplay);
+ window.addEventListener('tfw:experience-choice',()=>replayRequested()?resumeReplay():start());
+ window.addEventListener('tfw:site-language-changed',()=>{if(layer)render()});
+ window.addEventListener('tfw:community-ready',resumeReplay);
+ window.addEventListener('tfw:ticket-reveal-closed',resumeReplay);
+ if(document.readyState==='complete')queueMicrotask(resumeReplay);
+ else window.addEventListener('load',resumeReplay,{once:true});
 })();
