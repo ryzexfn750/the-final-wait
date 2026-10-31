@@ -86,7 +86,7 @@
  // Load curated metadata separately so editorial article text and navigation
  // receive the same translation treatment without changing the English sources.
  const editorial=document.createElement('script');
- editorial.src='js/editorial-metadata-locales.js?v=1';
+ editorial.src='js/editorial-metadata-locales.js?v=2';
  editorial.onload=()=>{
   const src=window.__tfwEditorialMetadataEnglish||[];
   for(const [lang,values] of Object.entries(window.__tfwEditorialMetadataLocales||{})){
