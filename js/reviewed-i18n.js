@@ -67,6 +67,7 @@
    src.forEach((key,i)=>{if(key&&values[i])maps[lang].set(key,values[i])});
   }
   src.forEach(key=>sourceKeys.add(key));
+  attributesDirty=true;
   apply();
  };
  document.head.appendChild(additional);
@@ -89,6 +90,7 @@
   savedAttributes.set(element,state);
  }
  let locale='en',observer=null,scheduled=false,applying=false;
+ let attributesDirty=true,previousAttrLocale='en';
  const ignored='script,style,noscript,textarea,pre,code,svg,[contenteditable="true"],.gtranslate_wrapper,.tfw-gate-language-widget';
  function render(node){
   const parent=node.parentElement;
@@ -138,6 +140,7 @@
  }
  function apply(nextLocale=locale){
   locale=Object.prototype.hasOwnProperty.call(maps,nextLocale)?nextLocale:'en';
+  if(locale!==previousAttrLocale){attributesDirty=true;previousAttrLocale=locale;}
   if(!document.body||typeof document.createTreeWalker!=='function')return;
   if(applying)return;
   applying=true;
@@ -145,7 +148,10 @@
    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
    let node;
    while((node=walker.nextNode()))render(node);
-   document.querySelectorAll('[aria-label],[title],[placeholder],[alt]').forEach(renderAttributes);
+   if(attributesDirty){
+    attributesDirty=false;
+    document.querySelectorAll('[aria-label],[title],[placeholder],[alt]').forEach(renderAttributes);
+   }
    // Keep article metadata in the selected language, including after a
    // runtime language switch or asynchronous article render.
    const page=location.pathname.split('/').pop();
@@ -163,7 +169,9 @@
    }
   }finally{applying=false}
  }
- function queue(){
+ function queue(mutations){
+  if(Array.isArray(mutations)&&mutations.some(item=>item.type==='childList'||item.type==='attributes'))
+   attributesDirty=true;
   if(scheduled)return;
   scheduled=true;
   Promise.resolve().then(()=>{scheduled=false;apply()});
@@ -172,7 +180,7 @@
   if(observer||!document.body||typeof MutationObserver==='undefined')return;
   apply();
   observer=new MutationObserver(queue);
-  observer.observe(document.body,{childList:true,characterData:true,subtree:true});
+  observer.observe(document.body,{childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','title','placeholder','alt'],subtree:true});
  }
  window.__tfwReviewedI18nApply=apply;
  document.addEventListener('DOMContentLoaded',boot,{once:true});
