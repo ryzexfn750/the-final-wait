@@ -93,7 +93,7 @@
  };
  document.head.appendChild(editorial);
  const remaining=document.createElement('script');
- remaining.src='js/remaining-ui-locales.js?v=2';
+ remaining.src='js/remaining-ui-locales.js?v=3';
  remaining.onload=()=>{
   const src=window.__tfwRemainingUiEnglish||[];
   for(const [lang,values] of Object.entries(window.__tfwRemainingUiLocales||{})){
@@ -147,7 +147,9 @@
   (/^Select\s+.+\s+\(.+\)$/u.test(value)&&sourceKeys.has('Select'))||
   (/^THIS COUNTDOWN REFERS TO\s+.+\.$/u.test(value)&&sourceKeys.has('THIS COUNTDOWN REFERS TO'))||
   (/^.+\s+·\s+YOUR LOCAL COUNTDOWN$/u.test(value)&&sourceKeys.has('YOUR LOCAL COUNTDOWN'))||
-  (/^COULD NOT PREPARE THE OBS FILE:\s+.+$/u.test(value)&&sourceKeys.has('COULD NOT PREPARE THE OBS FILE:'));
+  (/^COULD NOT PREPARE THE OBS FILE:\s+.+$/u.test(value)&&sourceKeys.has('COULD NOT PREPARE THE OBS FILE:'))||
+  (/^(?:Account service error:|Google sign in failed:)\s+.+$/u.test(value)&&
+   sourceKeys.has(value.split(':',1)[0]+':'));
  function reviewedForm(value){
   const direct=maps[locale]?.get(value);
   if(direct)return direct;
@@ -179,6 +181,8 @@
   if(local&&maps[locale]?.get('YOUR LOCAL COUNTDOWN'))return local[1]+' · '+maps[locale].get('YOUR LOCAL COUNTDOWN');
   const obs=value.match(/^COULD NOT PREPARE THE OBS FILE:\s+(.+)$/u);
   if(obs&&maps[locale]?.get('COULD NOT PREPARE THE OBS FILE:'))return maps[locale].get('COULD NOT PREPARE THE OBS FILE:')+' '+(maps[locale]?.get(obs[1])||obs[1]);
+  const error=value.match(/^(Account service error:|Google sign in failed:)\s+(.+)$/u);
+  if(error&&maps[locale]?.get(error[1]))return maps[locale].get(error[1])+' '+(maps[locale]?.get(error[2])||error[2]);
   return null;
  }
  function renderAttributes(element){
