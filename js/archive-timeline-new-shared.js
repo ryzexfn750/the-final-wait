@@ -11,7 +11,7 @@ window.__tfwTimelineNewAdd=(language,records)=>{
  let added=0;
  for(const [id,r] of Object.entries(records)){
   const key='timeline:'+id;
-  const values=[r.dek,r.dek+' '+common.intro,common.head[0],r.what,common.head[1],r.context,common.head[2],r.why,common.head[3],r.caution,common.head[4],fill(common.look,r),r.reflection,common.head[5],common.fan,common.head[6],fill(common.next,r),common.head[7],common.archive,common.head[8],fill(common.end,r)];
+  const values=[r.dek,r.dek+' '+common.intro,common.head[0],r.what,common.head[1],r.context,common.head[2],r.why,common.head[3],r.caution,common.head[4],fill(common.look,r),r.reflection,common.head[5],r.fan||common.fan,common.head[6],fill(common.next,r),common.head[7],common.archive,common.head[8],fill(common.end,r)];
   if(!Object.hasOwn(target,key)&&source[key]?.length===values.length&&values.every(t=>typeof t==='string'&&t.trim())){target[key]=values;added++}
  }
  return added;
