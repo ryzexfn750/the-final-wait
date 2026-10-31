@@ -34,11 +34,29 @@
    button?.setAttribute('aria-expanded','false');
   });
  };
- addMobile(document.querySelector('#mobileMenu'));
- addMobile(document.querySelector('#tfwPageDrawer'));
+ // The dedicated Settings icon remains visible on phones; do not duplicate it
+ // inside the hamburger navigation.
+ for(const drawer of [document.querySelector('#mobileMenu'),document.querySelector('#tfwPageDrawer')])
+  drawer?.querySelectorAll('a[href="settings.html"]').forEach(link=>link.remove());
+ const mobileHost=header.querySelector('.mobile-controls,.tfw-secondary-mobile');
+ const compactAt=header.classList.contains('tfw-secondary-topbar')?1250:1360;
+ let compactLayout=null;
+ function placeTools(){
+   const compact=innerWidth<=compactAt;
+   if(compactLayout===compact)return;
+   compactLayout=compact;
+   header.classList.toggle('tfw-tools-compact',compact);
+   if(compact&&mobileHost){
+     mobileHost.prepend(profile,settings);
+     profile.style.removeProperty('right');settings.style.removeProperty('right');
+   }else{
+     header.insertBefore(profile,languages);header.insertBefore(settings,languages);
+   }
+ } 
+ placeTools();
  let scheduled=false;
  const reposition=()=>{
-  scheduled=false;
+  scheduled=false;placeTools();if(compactLayout)return;
   const rect=languages.getBoundingClientRect();
   if(rect.width<=0)return;
   const settingsRight=Math.max(8,window.innerWidth-rect.left+9);

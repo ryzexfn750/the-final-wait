@@ -309,3 +309,6 @@ html.tfw-global-cursor-ready .tfw-ticket-modal-backdrop{cursor:none!important}
 /* No shimmer frame or external canvas fill during pixel-perfect PNG capture. */
 .tfw-ticket.tfw-ticket-exporting:after{display:none!important}
 .tfw-ticket.tfw-ticket-exporting{transform:none!important;box-shadow:none!important}
+
+.tfw-ticket-domain{display:block;margin-top:0;font:900 9px/1.5 Arial,sans-serif;letter-spacing:.12em;color:var(--ticket-ink);text-transform:lowercase;white-space:nowrap}
+@media(max-width:560px){.tfw-ticket-domain{font-size:8px;letter-spacing:.06em}}

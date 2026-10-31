@@ -62,3 +62,26 @@
 .tfw-performance-status{min-height:1em;font:12px/1.4 Arial;color:#e9b3d5}
 .tfw-tour-replay{justify-self:start;cursor:pointer}
 @media(max-width:600px){.tfw-tour-replay{justify-self:stretch}}
+
+/* Override inherited Profile flex layout in the performance section. */
+.tfw-settings-shell>.tfw-performance-card{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ align-items:stretch!important;justify-items:stretch!important;
+ gap:16px!important;width:100%!important;min-width:0!important;
+ box-sizing:border-box!important;overflow:visible!important;
+}
+.tfw-performance-card>*{min-width:0;max-width:100%;box-sizing:border-box}
+.tfw-performance-card h2{overflow-wrap:anywhere;hyphens:auto;line-height:1.18!important}
+.tfw-performance-preset select{display:block;max-width:100%!important;min-width:0!important;box-sizing:border-box}
+.tfw-performance-options{min-width:0;width:100%}
+.tfw-performance-options label{display:grid!important;grid-template-columns:22px minmax(0,1fr);align-items:start!important;gap:11px!important;min-width:0;box-sizing:border-box}
+.tfw-performance-options label input{width:19px;height:19px;margin:0!important}
+.tfw-performance-options label span{min-width:0}
+.tfw-performance-options label strong{font:800 13px/1.35 Arial!important;overflow-wrap:anywhere}
+.tfw-performance-options label small{font:400 12px/1.45 Arial!important;letter-spacing:0!important;margin:0!important;overflow-wrap:anywhere}
+.tfw-performance-card .tfw-tour-replay{justify-self:start;max-width:100%;white-space:normal;text-align:center}
+@media(max-width:700px){
+ .tfw-settings-shell>.tfw-performance-card{padding:20px 16px!important}
+ .tfw-performance-card h2{font-size:clamp(18px,5vw,24px)!important}
+ .tfw-performance-card .tfw-tour-replay{width:100%;justify-self:stretch}
+}
