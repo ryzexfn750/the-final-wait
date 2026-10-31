@@ -115,7 +115,7 @@
  // exact key alignment across all supported non-English languages.
  for(const [url,key,translations] of [
   ['js/long-interaction-locales.js?v=2','__tfwLongInteractionEnglish','__tfwLongInteractionLocales'],
-  ['js/status-ui-locales.js?v=4','__tfwStatusUiEnglish','__tfwStatusUiLocales']
+  ['js/status-ui-locales.js?v=5','__tfwStatusUiEnglish','__tfwStatusUiLocales']
  ]){
   const script=document.createElement('script');
   script.src=url;
