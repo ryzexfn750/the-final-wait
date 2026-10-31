@@ -97,6 +97,7 @@
     current=code;
     preserveLayoutDirection();
     applyPreferred();
+    window.dispatchEvent(new CustomEvent('tfw:site-language-changed',{detail:{language:current}}));
   }
   function applyPreferred(){
     const native=document.querySelector('.gtranslate_wrapper select');
