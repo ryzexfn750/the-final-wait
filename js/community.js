@@ -100,16 +100,17 @@ async function initCommunity(){
   };
   const legalPages=new Set(['community-privacy.html','community-terms.html','support.html']);
   const legalModal=$('#tfwGateLegal'),legalBody=$('#tfwGateLegalBody');
-  let legalTicket=0,legalOpener=null;
+  let legalTicket=0,legalOpener=null,legalCurrentPage=null;
   function closeLegal(){
     const wasOpen=!legalModal.hidden;
-    legalTicket++;legalModal.hidden=true;legalBody.replaceChildren();
+    legalTicket++;legalModal.hidden=true;legalCurrentPage=null;legalBody.replaceChildren();
     if(wasOpen&&legalOpener?.isConnected&&!gate.hidden)legalOpener.focus();
     legalOpener=null;
   }
   async function openLegal(page){
     if(!legalPages.has(page))return;
     const ticket=++legalTicket;
+    legalCurrentPage=page;
     legalModal.hidden=false;
     $('#tfwGateLegalTitle').textContent=page==='support.html'?'SUPPORT':
       page==='community-terms.html'?'TERMS & CONDITIONS':'PRIVACY NOTICE';
@@ -134,11 +135,13 @@ async function initCommunity(){
       const main=new DOMParser().parseFromString(await response.text(),'text/html').querySelector('main');
       if(!main)throw Error('The document is unavailable.');
       main.querySelector('a[href="./"]')?.remove();
+      window.__tfwLocalizeLegalMain?.(main,page==='community-terms.html'?'terms':'privacy',window.__tfwPreferredSiteLanguage?.());
       if(page==='community-terms.html')main.querySelector('footer')?.remove();
       main.querySelectorAll('script,style,iframe,form').forEach(node=>node.remove());
       if(ticket===legalTicket)legalBody.replaceChildren(...Array.from(main.childNodes));
     }catch(error){if(ticket===legalTicket)legalBody.textContent=error.message}
   }
+  window.addEventListener('tfw:site-language-changed',()=>{if(!legalModal.hidden&&legalCurrentPage&&legalCurrentPage!=='support.html')void openLegal(legalCurrentPage)});
   $('#tfwGateLegalClose').addEventListener('click',closeLegal);
   gate.addEventListener('keydown',event=>{
     if(legalModal.hidden)return;
