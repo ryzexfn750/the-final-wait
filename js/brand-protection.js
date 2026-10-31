@@ -2,10 +2,10 @@
 (()=>{
  'use strict';
  const fixed=new Set([
-  'THE FINAL WAIT','ROAD TO LEONIDA','THE ROAD TO LEONIDA',
+  'THE FINAL WAIT','The Final Wait','ROAD TO LEONIDA','Road to Leonida','THE ROAD TO LEONIDA','The Road to Leonida',
   'THE END OF AN ERA.','Every story has an ending.',
   'THE FINAL WAIT ARCHIVE','THE FINAL WAIT AIRWAYS',
-  'TFW AIRWAYS','YOUR JOURNEY TO LEONIDA BEGINS HERE'
+  'TFW AIRWAYS','The Final Wait Airways','YOUR JOURNEY TO LEONIDA BEGINS HERE','← THE FINAL WAIT'
  ]);
  const brandContainers='.brand-copy,.footer-brand,.tfw-final-call-headline';
  const lock=el=>{

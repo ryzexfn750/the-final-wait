@@ -199,7 +199,7 @@
  let locale='en',observer=null,scheduled=false,applying=false;
  let attributesDirty=true,previousAttrLocale='en';
  const ignored='script,style,noscript,textarea,pre,code,svg,[contenteditable="true"],.gtranslate_wrapper,.tfw-gate-language-widget,.brand-copy,.footer-brand,.tfw-final-call-headline,[data-tfw-fixed-brand="1"]';
- const fixedBrand=new Set(['THE FINAL WAIT','ROAD TO LEONIDA','THE ROAD TO LEONIDA','THE END OF AN ERA.','Every story has an ending.','THE FINAL WAIT ARCHIVE','THE FINAL WAIT AIRWAYS','TFW AIRWAYS','YOUR JOURNEY TO LEONIDA BEGINS HERE']);
+ const fixedBrand=new Set(['THE FINAL WAIT','The Final Wait','ROAD TO LEONIDA','Road to Leonida','THE ROAD TO LEONIDA','The Road to Leonida','THE END OF AN ERA.','Every story has an ending.','THE FINAL WAIT ARCHIVE','THE FINAL WAIT AIRWAYS','TFW AIRWAYS','The Final Wait Airways','YOUR JOURNEY TO LEONIDA BEGINS HERE','← THE FINAL WAIT']);
  function render(node){
   const parent=node.parentElement;
   if(!parent||parent.closest(ignored))return;
