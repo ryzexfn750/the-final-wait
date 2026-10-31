@@ -69,7 +69,7 @@
            typeof window.parent.__tfwSiteTourStart==='function'&&
            window.parent.__tfwSeamlessNavigation){
           window.parent.__tfwSiteTourReplayPending=true;
-          window.parent.__tfwSeamlessNavigation.open(home.href);
+          window.parent.__tfwSeamlessNavigation.home();
           return;
         }
       }catch{}

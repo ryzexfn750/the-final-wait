@@ -63,6 +63,7 @@ export function mountBoardingPass(host,pass){
       '<div class="tfw-ticket-mini"><span>GATE <b>VI</b></span><span>SEAT <b>06A</b></span></div>'+
       '<div class="tfw-ticket-qr" aria-label="QR code for The Final Wait"></div>'+
       '<span class="tfw-ticket-code"></span>'+
+       '<span class="tfw-ticket-domain notranslate" translate="no">thefinalwait.com</span>'+
     '</div>'+
   '</div>';
  card.querySelector('.tfw-ticket-scene').src=e.image;

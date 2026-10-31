@@ -50,7 +50,12 @@ function drawBox(){
  refs.box.style.height=g.h/CANVAS.height*100+'%';
 }
 function render(){
- state=normalizeOptions(state);
+  state=normalizeOptions(state);
+  const previewUrl=new URL(refs.frame.getAttribute('src')||'stream-overlay.html',location.href);
+  if(previewUrl.searchParams.get('lang')!==state.lang){
+    previewUrl.searchParams.set('lang',state.lang);
+    refs.frame.src=previewUrl.href;
+  }
  geometry=overlayGeometry(state);
  const url=buildOverlayUrl(location.href,state);
  refs.url.value=url;refs.open.href=url;
@@ -186,7 +191,11 @@ window.addEventListener('storage',event=>{
  if(event.key==='tfw_site_language_v1'){state.lang=getSiteLang();render()}
 });
 window.addEventListener('tfw:site-language-changed',event=>{
- state.lang=event.detail?.language||getSiteLang();render();
+  state.lang=event.detail?.language||getSiteLang();render();
+});
+window.addEventListener('pageshow',()=>{
+  const code=getSiteLang();
+  if(code!==state.lang){state.lang=code;render()}
 });
 refs.demo.addEventListener('click',()=>{
  if(!refs.frame.contentWindow)return;

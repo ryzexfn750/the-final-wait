@@ -2,7 +2,8 @@ import {nicknameVerdict} from './nickname-policy.js?v=2';
 import {mountRegistrationSoundControls} from './registration-sound.js?v=1';
 /* LIVE HYPE v2 — private QA identity gate, countdown reactions.
    Protected API routes remain enforced server-side. */
-const PUBLIC_COMMUNITY_ENABLED=false;
+// QA branch only: enable registration and Hype across devices.
+const PUBLIC_COMMUNITY_ENABLED=true;
 let communityPreview=false;
 try{communityPreview=localStorage.getItem('tfw_community_preview')==='yes'}catch{}
 // Only trust an iframe created by the same-origin navigation host.
@@ -704,10 +705,16 @@ async function initCommunity(){
   // Recover the HYPE components after the first profile visit and Back.
   const restoreHype=()=>{
     if(!member()||!hero)return;
-    for(const node of [layer,meter,rail]){
-      if(node&&!node.isConnected)hero.appendChild(node);
-      if(node?.hidden)node.hidden=false;
-    }
+     const shell=document.getElementById('tfwSeamlessShell');
+     if((!shell||shell.hidden)&&document.body.classList.contains('tfw-route-overlay-open')){
+       document.body.classList.remove('tfw-route-overlay-open');
+       document.documentElement.classList.remove('tfw-route-overlay-open');
+     }
+     for(const node of [layer,meter,rail]){
+       if(node&&node.parentElement!==hero)hero.appendChild(node);
+       if(node?.hidden)node.hidden=false;
+       if(node){node.style.removeProperty('display');node.style.removeProperty('visibility')}
+     }
     updateStatus();tick();
   };
   window.addEventListener('tfw:seamless-return',()=>{
@@ -715,6 +722,8 @@ async function initCommunity(){
     if(member()&&!state.ws)void connectSocket();
   });
   window.addEventListener('pageshow',restoreHype);
+   window.addEventListener('focus',restoreHype);
+   window.addEventListener('tfw:content-ready',restoreHype);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)restoreHype()});
   if(hero&&typeof MutationObserver!=='undefined'){
     let scheduled=false;

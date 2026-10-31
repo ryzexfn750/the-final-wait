@@ -793,3 +793,8 @@ html.tfw-auth-pending #hero>.tfw-hype-stage{visibility:hidden}
   right:10px;top:9px;width:74px;min-width:74px;max-width:74px
  }
 }
+
+/* Only an active visible iframe may conceal live Hype elements. */
+body.home-page:not(:has(#tfwSeamlessShell:not([hidden]))) #hero>.tfw-hype-rail,
+body.home-page:not(:has(#tfwSeamlessShell:not([hidden]))) #hero>.tfw-hype-intensity,
+body.home-page:not(:has(#tfwSeamlessShell:not([hidden]))) #hero>.tfw-hype-stage{visibility:visible!important}

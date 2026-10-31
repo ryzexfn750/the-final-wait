@@ -697,7 +697,14 @@ function bindTimeline(){
     viewport.addEventListener('pointerup',end);viewport.addEventListener('pointercancel',end);
   }
   if('ResizeObserver' in window){
-    new ResizeObserver(()=>{syncTimelineEdge();scrollTimelineTo(timelineTarget,true)}).observe(viewport);
+     let lastTimelineWidth=0;
+     new ResizeObserver(entries=>{
+       const width=Math.round(entries[0].contentRect.width);
+       if(width===lastTimelineWidth)return;
+       lastTimelineWidth=width;
+       syncTimelineEdge();
+       if(viewport.scrollLeft>0)scrollTimelineTo(timelineTarget,true);
+     }).observe(viewport);
   }else window.addEventListener('resize',syncTimelineEdge,{passive:true});
   viewport.scrollLeft=0;updateTimelineProgress();
 }

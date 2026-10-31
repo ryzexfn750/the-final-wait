@@ -371,7 +371,7 @@
  function start(options={}){
   if(layer)return;
   if(!canOpen()){
-   if(options.force&&retry++<25)setTimeout(()=>start(options),200);
+   if(options.force&&retry++<150)setTimeout(()=>start(options),250);
    return;
   }
   retry=0;
@@ -419,6 +419,7 @@
  window.addEventListener('tfw:site-language-changed',()=>{if(layer)render()});
  window.addEventListener('tfw:community-ready',resumeReplay);
  window.addEventListener('tfw:ticket-reveal-closed',resumeReplay);
+ window.addEventListener('pageshow',resumeReplay);
  if(document.readyState==='complete')queueMicrotask(resumeReplay);
  else window.addEventListener('load',resumeReplay,{once:true});
 })();

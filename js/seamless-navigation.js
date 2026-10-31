@@ -282,5 +282,14 @@
  });
  // Keep the host page's audio on the original document. If a link has
  // been opened in another tab, ordinary navigation works as before.
- window.__tfwSeamlessNavigation={open:href=>navigate(canonical(new URL(href,location.href)),true),get active(){return Boolean(activeFrame)},get loading(){return loading}};
+ window.__tfwSeamlessNavigation={
+   open:href=>navigate(canonical(new URL(href,location.href)),true),
+   home:()=>{
+     const home=new URL(originalBase,origin.origin);
+     history.pushState({tfwSeamless:true},'',originalBase);
+     closeFrames();scrollOriginal(home);
+   },
+   get active(){return Boolean(activeFrame)},
+   get loading(){return loading}
+  };
 })();
