@@ -20,7 +20,10 @@ function inferZone(){
  try{const zone=Intl.DateTimeFormat().resolvedOptions().timeZone;if(isValidZone(zone))return zone}catch{}
  return DEFAULTS.tz;
 }
-let state=normalizeOptions({...DEFAULTS,tz:inferZone(),...getSaved()});
+const getSiteLang=()=>{
+ try{return window.__tfwPreferredSiteLanguage?.()||localStorage.getItem('tfw_site_language_v1')||'en'}catch{return 'en'}
+};
+let state=normalizeOptions({...DEFAULTS,tz:inferZone(),...getSaved(),lang:getSiteLang()});
 let geometry=overlayGeometry(state);
 let pointer=null,modalReturnFocus=null,zoneCache=new Map(),generation=0;
 let templates=null;
@@ -73,6 +76,10 @@ function updateControls(event){
  render();
 }
 refs.form.addEventListener('change',updateControls);
+document.addEventListener('change',event=>{
+ if(event.target?.matches?.('.gtranslate_wrapper select,.tfw-gate-language-widget select'))
+  setTimeout(()=>{state.lang=getSiteLang();render()},0);
+});
 refs.frame.addEventListener('load',syncFrame);
 if(typeof ResizeObserver==='function')new ResizeObserver(scalePreview).observe(refs.stage);
 else window.addEventListener('resize',scalePreview);
@@ -160,13 +167,13 @@ refs.download.addEventListener('click',()=>{
 async function loadSourceTemplates(){
  try{
   const names=['stream-overlay.html?v=7','css/stream-overlay.css?v=7',
-   'js/stream-overlay-core.js?v=5','js/stream-overlay.js?v=7'];
+   'js/stream-overlay-core.js?v=5','js/stream-overlay.js?v=7','js/stream-overlay-locales.js?v=1'];
   const texts=await Promise.all(names.map(async name=>{
    const response=await fetch(new URL(name,location.href),{cache:'force-cache'});
    if(!response.ok)throw Error('Overlay source unavailable ('+response.status+')');
    return response.text();
   }));
-  templates={template:texts[0],css:texts[1],core:texts[2],runner:texts[3]};
+  templates={template:texts[0],css:texts[1],core:texts[2],runner:texts[3],locales:texts[4]};
   refs.download.disabled=false;refs.copy.disabled=false;
   render();
  }catch(error){
@@ -174,7 +181,13 @@ async function loadSourceTemplates(){
  }
 }
 void loadSourceTemplates();
-refs.reset.addEventListener('click',()=>{state=normalizeOptions({...DEFAULTS,tz:inferZone()});render()});
+refs.reset.addEventListener('click',()=>{state=normalizeOptions({...DEFAULTS,tz:inferZone(),lang:getSiteLang()});render()});
+window.addEventListener('storage',event=>{
+ if(event.key==='tfw_site_language_v1'){state.lang=getSiteLang();render()}
+});
+window.addEventListener('tfw:site-language-changed',event=>{
+ state.lang=event.detail?.language||getSiteLang();render();
+});
 refs.demo.addEventListener('click',()=>{
  if(!refs.frame.contentWindow)return;
  refs.frame.contentWindow.postMessage({type:'tfw:overlay-demo'},location.origin);
