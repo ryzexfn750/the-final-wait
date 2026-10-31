@@ -2,7 +2,7 @@
 export const RELEASE={year:2026,month:11,day:19,hour:0,minute:0,second:0};
 export const DEFAULTS=Object.freeze({
  tz:'Europe/Rome',theme:'glass',position:'bottom-left',size:'medium',
- progress:true,x:38,y:920,w:420
+ progress:true,x:38,y:920,w:420,lang:'en'
 });
 export const OPTIONS=Object.freeze({
  theme:['glass','neon','minimal'],
@@ -10,6 +10,8 @@ export const OPTIONS=Object.freeze({
  size:['small','medium','large','custom']
 });
 export const WAIT_START=new Date('2025-11-06T00:00:00+01:00').getTime();
+const LANGUAGES=new Set(['en','it','fr','es','de','pt','ru','pl','ja','tr','nl','ko','zh-CN','ar']);
+const validLanguage=code=>LANGUAGES.has(code)?code:'en';
 const validChoice=(key,value)=>OPTIONS[key].includes(value)?value:DEFAULTS[key];
 const bound=(v,min,max,fallback)=>{const n=Number(v);return v!==null&&v!==undefined&&v!==''&&Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback};
 export function isValidZone(zone){
@@ -19,6 +21,7 @@ export function isValidZone(zone){
 export function normalizeOptions(input={}){
  return {
   tz:isValidZone(input.tz)?input.tz:DEFAULTS.tz,
+  lang:validLanguage(input.lang),
   theme:validChoice('theme',input.theme),
   position:validChoice('position',input.position),
   size:validChoice('size',input.size),
@@ -29,7 +32,7 @@ export function normalizeOptions(input={}){
 export function parseOptions(search){
  const p=search instanceof URLSearchParams?search:new URLSearchParams(search||'');
  return normalizeOptions({
-  tz:p.get('tz'),theme:p.get('theme'),position:p.get('position'),size:p.get('size'),
+  tz:p.get('tz'),lang:p.get('lang'),theme:p.get('theme'),position:p.get('position'),size:p.get('size'),
   progress:p.get('progress'),x:p.get('x'),y:p.get('y'),w:p.get('w')
  });
 }
@@ -37,7 +40,7 @@ export function buildOverlayUrl(base,options){
  const o=normalizeOptions(options);
  const url=new URL('stream-overlay.html',base);
  url.search=new URLSearchParams({
-  v:'4',tz:o.tz,theme:o.theme,position:o.position,size:o.size,
+  v:'5',tz:o.tz,lang:o.lang,theme:o.theme,position:o.position,size:o.size,
   progress:o.progress?'1':'0',
   ...(o.position==='custom'?{x:String(Math.round(o.x)),y:String(Math.round(o.y))}:{}),
   ...(o.size==='custom'?{w:String(Math.round(o.w))}:{})
