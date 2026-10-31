@@ -71,6 +71,11 @@
   apply();
  };
  document.head.appendChild(additional);
+ const originalPageTitle=document.title;
+ const isScene=value=>{
+  const parts=value.startsWith('SCENE: ')?value.slice(7).split(' / '):[];
+  return parts.length===2&&parts.every(part=>/^\d+$/.test(part));
+ };
  const saved=new WeakMap();
  const savedAttributes=new WeakMap();
  const attributeNames=['aria-label','title','placeholder','alt'];
@@ -99,12 +104,12 @@
   if(!trim)return;
   let info=saved.get(node);
   if(!info){
-   if(!sourceKeys.has(trim))return;
+   if(!sourceKeys.has(trim)&&!isScene(trim))return;
    info={source:trim,leading:value.slice(0,value.indexOf(trim)),
     trailing:value.slice(value.indexOf(trim)+trim.length),last:value};
    saved.set(node,info);
   }else if(value!==info.last){
-   if(sourceKeys.has(trim)){
+   if(sourceKeys.has(trim)||isScene(trim)){
     info.source=trim;info.leading=value.slice(0,value.indexOf(trim));
     info.trailing=value.slice(value.indexOf(trim)+trim.length);
    }else if(trim!==info.source){
@@ -118,7 +123,9 @@
     return;
    }
   }
-  const reviewed=maps[locale]?.get(info.source);
+  const scene=isScene(info.source)?info.source.slice(7).split(' / '):null;
+  const reviewed=maps[locale]?.get(info.source)||
+   (scene&&maps[locale]?.get('SCENE')?maps[locale].get('SCENE')+': '+scene[0]+' / '+scene[1]:null);
   const translated=reviewed||info.source;
   const replacement=info.leading+translated+info.trailing;
   if(node.nodeValue!==replacement)node.nodeValue=replacement;
@@ -154,7 +161,23 @@
    }
    // Keep article metadata in the selected language, including after a
    // runtime language switch or asynchronous article render.
-   const page=location.pathname.split('/').pop();
+   const page=location.pathname.split('/').pop()||'index.html';
+   const titleKeys={
+    'index.html':'THE ROAD TO LEONIDA',
+    'global-wave.html':'THE GLOBAL MIDNIGHT WAVE',
+    'intel-archive.html':'INSIDE LEONIDA',
+    'profile.html':'MY PROFILE',
+    'newsletter.html':'EMAIL PREFERENCES',
+    'settings.html':'SETTINGS',
+    'support.html':'SUPPORT',
+    'ticket.html':'YOUR TICKET TO LEONIDA.',
+    'streamer-overlay.html':'STREAMER OVERLAY'
+   };
+   if(titleKeys[page]){
+    const translated=maps[locale]?.get(titleKeys[page]);
+    document.title=locale==='en'||!translated?originalPageTitle:
+     page==='index.html'?'The Final Wait: '+translated:translated+' — The Final Wait';
+   }
    if(page==='today.html'||page==='timeline.html'){
     const headline=document.getElementById('articleHeadline')?.textContent?.trim();
     if(headline){
