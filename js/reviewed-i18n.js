@@ -56,9 +56,40 @@
   if(map)archiveUiEnglish.forEach((key,i)=>map.set(key,values[i]));
  }
  const sourceKeys=new Set([...english,...extraEnglish,...longEnglish,...todayEnglish,...archiveEnglish,...archiveBodySources,...archiveUiEnglish]);
+ // Add reviewed phrases without changing the original editorial dictionaries.
+ // The package is shared by all pages that already load this translator.
+ const additional=document.createElement('script');
+ additional.src='js/additional-ui-locales.js?v=1';
+ additional.onload=()=>{
+  const src=window.__tfwAdditionalUiEnglish||[];
+  for(const [lang,values] of Object.entries(window.__tfwAdditionalUiLocales||{})){
+   if(!maps[lang]||!Array.isArray(values)||values.length!==src.length)continue;
+   src.forEach((key,i)=>{if(key&&values[i])maps[lang].set(key,values[i])});
+  }
+  src.forEach(key=>sourceKeys.add(key));
+  apply();
+ };
+ document.head.appendChild(additional);
  const saved=new WeakMap();
+ const savedAttributes=new WeakMap();
+ const attributeNames=['aria-label','title','placeholder','alt'];
+ function renderAttributes(element){
+  if(element.closest('.gtranslate_wrapper,.tfw-gate-language-widget'))return;
+  const state=savedAttributes.get(element)||{};
+  for(const attribute of attributeNames){
+   const value=element.getAttribute(attribute);
+   if(!value)continue;
+   const prev=state[attribute],src=sourceKeys.has(value)?value:
+    prev?.last===value?prev.source:null;
+   if(!src)continue;
+   const translated=maps[locale]?.get(src)||src;
+   state[attribute]={source:src,last:translated};
+   if(translated!==value)element.setAttribute(attribute,translated);
+  }
+  savedAttributes.set(element,state);
+ }
  let locale='en',observer=null,scheduled=false,applying=false;
- const ignored='script,style,noscript,textarea,pre,code,svg,option,[contenteditable="true"],.gtranslate_wrapper,.tfw-gate-language-widget';
+ const ignored='script,style,noscript,textarea,pre,code,svg,[contenteditable="true"],.gtranslate_wrapper,.tfw-gate-language-widget';
  function render(node){
   const parent=node.parentElement;
   if(!parent||parent.closest(ignored))return;
@@ -107,6 +138,7 @@
    const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
    let node;
    while((node=walker.nextNode()))render(node);
+   document.querySelectorAll('[aria-label],[title],[placeholder],[alt]').forEach(renderAttributes);
    // Keep article metadata in the selected language, including after a
    // runtime language switch or asynchronous article render.
    const page=location.pathname.split('/').pop();
