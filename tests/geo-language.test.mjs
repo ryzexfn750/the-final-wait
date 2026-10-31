@@ -104,10 +104,10 @@ test('All translated pages use the new country and locale selector bootstrap',()
   'profile.html','newsletter.html','support.html','settings.html','streamer-overlay.html',
   'global-wave.html','ticket.html']){
   const html=read(page);
-  assert.match(html,/js\/language\.js\?v=53/,page);
+  assert.match(html,/js\/language\.js\?v=54/,page);
   assert.match(html,/js\/timezone-init\.js\?v=4/,page);
  }
- assert.match(read('index.html'),/js\/community\.js\?v=22/);
+ assert.match(read('index.html'),/js\/community\.js\?v=24/);
  assert.match(read('index.html'),/css\/community\.css\?v=15/);
  assert.match(read('js/language.js'),/languages:\['en','fr','es','de','it','pt','ru','pl','ja','tr','nl','ko','zh-CN','ar'\]/);
 });

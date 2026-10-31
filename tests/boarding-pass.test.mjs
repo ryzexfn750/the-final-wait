@@ -137,7 +137,7 @@ test('Detail page reuses full working topbar, language geometry, audio and modal
  const page=read('ticket.html'),profile=read('profile.html');
  for(const id of ['tfwPageShare','tfwPageFullscreen','soundButton','mobileSoundButton','tfwPageMenu','tfwPageDrawer'])
   assert.match(page,new RegExp('id="'+id+'"'));
- assert.match(page,/js\/community-header\.js\?v=3/);
+ assert.match(page,/js\/community-header\.js\?v=4/);
  assert.match(page,/js\/secondary-controls\.js\?v=49/);
  assert.match(page,/gtranslate_wrapper language-widget/);
  assert.match(page,/js\/secondary-share\.js\?v=46/);

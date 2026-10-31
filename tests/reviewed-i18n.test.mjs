@@ -18,7 +18,7 @@ test('All thirteen translated catalogues have exactly one reviewed entry per Eng
 });
 test('Reviewed UI copy translates real text nodes without modifying the DOM structure',()=>{
  const parents=Array.from({length:3},()=>({
-  childElementCount:0,attrs:{},classList:{add(){}},
+  childElementCount:0,attrs:{},dataset:{},classList:{add(){}},
   getAttribute(k){return this.attrs[k]||null},
   setAttribute(k,v){this.attrs[k]=v},
   closest(){return false}
@@ -27,12 +27,13 @@ test('Reviewed UI copy translates real text nodes without modifying the DOM stru
   nodeValue:value,parentElement:parents[i]
  }));
  const document={
-  body:{},readyState:'loading',
+  body:{},head:{appendChild(){}},readyState:'loading',
+  title:'The Final Wait',createElement(){return{}},querySelectorAll(){return[]},querySelector(){return null},getElementById(){return null},
   addEventListener(){},
   createTreeWalker(){let i=0;return{nextNode:()=>nodes[i++]||null}}
  };
  const window={addEventListener(){}};
- runInNewContext(source,{document,window,NodeFilter:{SHOW_TEXT:4},Promise});
+ runInNewContext(source,{document,window,location:{pathname:'/index.html'},NodeFilter:{SHOW_TEXT:4},Promise});
  const apply=window.__tfwReviewedI18nApply;
  apply('it');
  assert.equal(nodes[0].nodeValue,'HOME'); // official navigation stays an idiomatic Home label
@@ -54,8 +55,8 @@ test('All translated routes load curated copy before GTranslate language control
   'profile.html','settings.html','support.html','newsletter.html','global-wave.html',
   'streamer-overlay.html','ticket.html']){
   const html=read(path);
-  const reviewed=html.indexOf('js/reviewed-i18n.js?v=1');
-  const language=html.indexOf('js/language.js?v=53');
+  const reviewed=html.indexOf('js/reviewed-i18n.js?v=10');
+  const language=html.indexOf('js/language.js?v=54');
   assert.ok(reviewed>=0&&language>reviewed,path);
  }
  assert.match(read('js/language.js'),/window\.__tfwReviewedI18nApply\?\.\(current\)/);
