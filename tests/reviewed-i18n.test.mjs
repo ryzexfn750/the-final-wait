@@ -55,7 +55,7 @@ test('All translated routes load curated copy before GTranslate language control
   'profile.html','settings.html','support.html','newsletter.html','global-wave.html',
   'streamer-overlay.html','ticket.html']){
   const html=read(path);
-  const reviewed=html.indexOf('js/reviewed-i18n.js?v=11');
+  const reviewed=html.indexOf('js/reviewed-i18n.js?v=12');
   const language=html.indexOf('js/language.js?v=54');
   assert.ok(reviewed>=0&&language>reviewed,path);
  }

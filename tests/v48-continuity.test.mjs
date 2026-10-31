@@ -6,7 +6,7 @@ const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 test('All site routes retain stable assets and support 14 languages',()=>{
  const home=read('index.html');
  for(const asset of ['js/clock.js?v=49','js/milestones.js?v=52',
-   'js/reviewed-i18n.js?v=11','js/language.js?v=54','js/final-call-locales.js?v=49',
+   'js/reviewed-i18n.js?v=12','js/language.js?v=54','js/final-call-locales.js?v=49',
    'js/seamless-navigation.js?v=60','js/inpage-scroll.js?v=48',
    'css/site-polish.css?v=56']){
     assert.ok(home.includes(asset),asset);

@@ -105,6 +105,26 @@
   apply();
  };
  document.head.appendChild(remaining);
+ // Shared long-form notices and runtime statuses; each package maintains
+ // exact key alignment across all supported non-English languages.
+ for(const [url,key,translations] of [
+  ['js/long-interaction-locales.js?v=1','__tfwLongInteractionEnglish','__tfwLongInteractionLocales'],
+  ['js/status-ui-locales.js?v=2','__tfwStatusUiEnglish','__tfwStatusUiLocales']
+ ]){
+  const script=document.createElement('script');
+  script.src=url;
+  script.onload=()=>{
+   const sources=window[key]||[];
+   for(const [lang,values] of Object.entries(window[translations]||{})){
+    if(!maps[lang]||!Array.isArray(values)||values.length!==sources.length)continue;
+    sources.forEach((source,i)=>{if(source&&values[i])maps[lang].set(source,values[i])});
+   }
+   sources.forEach(source=>sourceKeys.add(source));
+   attributesDirty=true;
+   apply();
+  };
+  document.head.appendChild(script);
+ }
  const originalPageTitle=document.title;
  const isScene=value=>{
   const parts=value.startsWith('SCENE: ')?value.slice(7).split(' / '):[];
@@ -116,7 +136,12 @@
  // Preserve human-reviewed source captions alongside icons and emoji.
  const sourceForm=value=>sourceKeys.has(value)||isScene(value)||
   (/^(.+?)\s*↗$/u.test(value)&&sourceKeys.has(value.replace(/\s*↗$/u,'')))||
-  (/^Send\s+\S+$/u.test(value)&&sourceKeys.has('Send'));
+  (/^Send\s+\S+$/u.test(value)&&sourceKeys.has('Send'))||
+  (/^\d+\s+DOSSIERS$/u.test(value)&&sourceKeys.has('DOSSIERS'))||
+  (/^OF\s+\d+\s+TIME ZONES$/u.test(value)&&sourceKeys.has('TIME ZONES'))||
+  (/^\d+\/\d+\s+ZONES$/u.test(value)&&sourceKeys.has('ZONES'))||
+  (/^\d+\s+REGION\(S\)\s+·\s+.+$/u.test(value)&&sourceKeys.has('REGION(S)'))||
+  (/^AUTO ROTATE:\s+(ON|OFF)$/u.test(value)&&sourceKeys.has('AUTO ROTATE'));
  function reviewedForm(value){
   const direct=maps[locale]?.get(value);
   if(direct)return direct;
@@ -126,6 +151,16 @@
   if(arrow){const base=maps[locale]?.get(arrow[1].trim());if(base)return base+' '+arrow[2];}
   const reaction=value.match(/^Send\s+(\S+)$/u);
   if(reaction&&maps[locale]?.get('Send'))return maps[locale].get('Send')+' '+reaction[1];
+  const dossier=value.match(/^(\d+)\s+DOSSIERS$/u);
+  if(dossier&&maps[locale]?.get('DOSSIERS'))return dossier[1]+' '+maps[locale].get('DOSSIERS');
+  const all=value.match(/^OF\s+(\d+)\s+TIME ZONES$/u);
+  if(all&&maps[locale]?.get('TIME ZONES'))return maps[locale].get('OF')+' '+all[1]+' '+maps[locale].get('TIME ZONES');
+  const zones=value.match(/^(\d+\/\d+)\s+ZONES$/u);
+  if(zones&&maps[locale]?.get('ZONES'))return zones[1]+' '+maps[locale].get('ZONES');
+  const regions=value.match(/^(\d+)\s+REGION\(S\)\s+·\s+(.+)$/u);
+  if(regions&&maps[locale]?.get('REGION(S)'))return regions[1]+' '+maps[locale].get('REGION(S)')+' · '+regions[2];
+  const auto=value.match(/^AUTO ROTATE:\s+(ON|OFF)$/u);
+  if(auto&&maps[locale]?.get('AUTO ROTATE'))return maps[locale].get('AUTO ROTATE')+': '+(maps[locale]?.get(auto[1])||auto[1]);
   return null;
  }
  function renderAttributes(element){
