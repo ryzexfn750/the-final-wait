@@ -42,6 +42,14 @@ const colorOf=(f,at)=>{
 };
 const strokeOf=(f,at)=>f.tzid===selected.tz?'rgba(255,233,251,0.95)':
  at>=f.release?'rgba(249,155,219,0.54)':'rgba(166,135,202,0.25)';
+let stageVisible=true;
+if('IntersectionObserver' in window&&ui.stage){
+ new IntersectionObserver(entries=>{
+  stageVisible=entries[0]?.isIntersecting??true;
+  if(globe){if(view==='3d'&&stageVisible&&!document.hidden)globe.resumeAnimation();
+   else globe.pauseAnimation()}
+ },{threshold:0}).observe(ui.stage);
+}
 function setView(next){
  if(next==='3d'&&!globe)return;
  view=next;
@@ -52,7 +60,7 @@ function setView(next){
  ui.view2d.setAttribute('aria-pressed',String(next==='2d'));
  // Gesture copy removed to keep the map uncluttered.
  ui.spin.hidden=next!=='3d';
- if(globe){if(next==='3d'&&!document.hidden){globe.resumeAnimation();resizeGlobe()}
+ if(globe){if(next==='3d'&&!document.hidden&&stageVisible){globe.resumeAnimation();resizeGlobe()}
   else globe.pauseAnimation();}
  if(next==='2d')render2D(sampleAt());
 }
@@ -312,7 +320,7 @@ async function initialize3D(force=false){
    .pointLabel(c=>c.name+' · '+c.tz)
    .onPointClick(c=>chooseCity(c))
    .pointOfView({lat:22,lng:17,altitude:2.25},0);
-  try{globe.renderer().setPixelRatio(Math.min(window.devicePixelRatio||1,1.25))}catch{}
+  try{globe.renderer().setPixelRatio(Math.min(window.devicePixelRatio||1,lowPower()?.85:1.1))}catch{}
   void painter.loadNight(()=>{paintedState='';refreshGlobe(sampleAt())});
   const controls=globe.controls();
   controls.enablePan=false;
@@ -352,7 +360,7 @@ ui.play.addEventListener('click',()=>{
 ui.search.addEventListener('input',renderCityList);
 document.addEventListener('visibilitychange',()=>{
  if(document.hidden){if(globe)globe.pauseAnimation();if(playing){playing=false;ui.play.textContent='▶ RESUME THE WAVE'}}
- else if(globe&&view==='3d')globe.resumeAnimation();
+ else if(globe&&view==='3d'&&stageVisible)globe.resumeAnimation();
 });
 window.addEventListener('pagehide',()=>{playing=false;globe?.pauseAnimation()});
 if(typeof ResizeObserver==='function'){
@@ -367,8 +375,8 @@ function frame(now){
  // Do not recalculate Intl clocks, city rows and 406 zone states at 60 FPS.
  // Interactive globe rendering is independent of these inexpensive UI ticks.
  const period=playing?110:1000;
- if(!document.hidden&&haveLoaded&&now-lastPaint>=period){lastPaint=now;update()}
- requestAnimationFrame(frame);
+ if(!document.hidden&&stageVisible&&haveLoaded&&now-lastPaint>=period){lastPaint=now;update()}
+ setTimeout(()=>requestAnimationFrame(frame),document.hidden?1450:playing?120:950);
 }
 async function start(){
  try{
