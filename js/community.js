@@ -98,6 +98,19 @@ async function initCommunity(){
     const el=$('#tfwGateStatus');
     el.textContent=message;el.classList.toggle('error',error);
   };
+  // Load legal localization on demand; the registration gate may run on pages
+  // that do not include the standalone legal-page scripts.
+  let legalReady=null;
+  const ensureLegalLocalization=()=>legalReady??=(async()=>{
+    if(window.__tfwLocalizeLegalMain)return;
+    for(const src of ['js/legal-locales.js?v=3','js/legal-localize.js?v=3']){
+      await new Promise((resolve,reject)=>{
+        const script=document.createElement('script');script.src=src;
+        script.onload=resolve;script.onerror=()=>reject(Error('Legal translations unavailable.'));
+        document.head.appendChild(script);
+      });
+    }
+  })();
   const legalPages=new Set(['community-privacy.html','community-terms.html','support.html']);
   const legalModal=$('#tfwGateLegal'),legalBody=$('#tfwGateLegalBody');
   let legalTicket=0,legalOpener=null,legalCurrentPage=null;
@@ -130,6 +143,7 @@ async function initCommunity(){
       return;
     }
     try{
+      await ensureLegalLocalization();
       const response=await fetch(page,{cache:'no-store'});
       if(!response.ok)throw Error('The document could not be loaded.');
       const main=new DOMParser().parseFromString(await response.text(),'text/html').querySelector('main');
@@ -142,6 +156,11 @@ async function initCommunity(){
     }catch(error){if(ticket===legalTicket)legalBody.textContent=error.message}
   }
   window.addEventListener('tfw:site-language-changed',()=>{if(!legalModal.hidden&&legalCurrentPage&&legalCurrentPage!=='support.html')void openLegal(legalCurrentPage)});
+  window.addEventListener('change',event=>{
+    if(!legalModal.hidden&&legalCurrentPage&&legalCurrentPage!=='support.html'&&
+       event.target?.matches?.('.gtranslate_wrapper select,.tfw-gate-language-widget select'))
+      setTimeout(()=>void openLegal(legalCurrentPage),0);
+  });
   $('#tfwGateLegalClose').addEventListener('click',closeLegal);
   gate.addEventListener('keydown',event=>{
     if(legalModal.hidden)return;
