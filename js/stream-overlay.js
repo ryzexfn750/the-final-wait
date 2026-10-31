@@ -1,5 +1,5 @@
 import {parseOptions,normalizeOptions,overlayGeometry,releaseInstant,remaining,waitProgress,formatWaitPercent}
- from './stream-overlay-core.js?v=4';
+ from './stream-overlay-core.js?v=6';
 let config=parseOptions(location.search);
 const surface=document.getElementById('streamSurface');
 const widget=document.getElementById('streamWidget');
