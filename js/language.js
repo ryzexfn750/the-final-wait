@@ -296,7 +296,8 @@
       current=code;preserveLayoutDirection();applyPreferred();
     }
   });
+  document.addEventListener('DOMContentLoaded',boot,{once:true});
   document.addEventListener('tfw:content-ready',boot,{once:true});
   window.addEventListener('load',()=>setTimeout(boot,700),{once:true});
-  setTimeout(boot,2200);
+  setTimeout(boot,300);
 })();

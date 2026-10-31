@@ -721,12 +721,14 @@ function openModal(modal){
   modalReturnFocus=document.activeElement;
   modal.hidden=false;els.modalBackdrop.hidden=false;
   document.body.style.overflow='hidden';
+   document.documentElement.classList.add('tfw-app-modal-open');
   requestAnimationFrame(()=>{if(!modal.hidden)(modal.querySelector('input,button')||modal).focus()});
 }
 function closeModals(clearOverflow=true){
   const wasOpen=!els.shareModal.hidden||!els.timezoneModal.hidden;
   els.shareModal.hidden=true;els.timezoneModal.hidden=true;els.modalBackdrop.hidden=true;
   if(clearOverflow&&currentPhase!=='final-minute')document.body.style.overflow='';
+   if(clearOverflow)document.documentElement.classList.remove('tfw-app-modal-open');
   if(clearOverflow&&wasOpen){modalReturnFocus?.focus?.({preventScroll:true});modalReturnFocus=null}
 }
 function keepModalFocus(event){
@@ -935,6 +937,21 @@ function bindUi(){
     const button=event.target.closest('.timezone-option[data-zone]');
     if(button)setTimeZone(button.dataset.zone);
   });
+
+  // Wheel/touch gestures on timezone dialog must not move the homepage.
+  window.addEventListener('wheel',event=>{
+    if(els.timezoneModal.hidden)return;
+    const box=event.target?.closest?.('.timezone-list')||els.timezoneModal;
+    if(!els.timezoneModal.contains(event.target)||box.scrollHeight<=box.clientHeight+1||
+       (event.deltaY<0&&box.scrollTop<=0)||
+       (event.deltaY>0&&box.scrollTop+box.clientHeight>=box.scrollHeight-1))event.preventDefault();
+    event.stopImmediatePropagation();
+  },{capture:true,passive:false});
+  window.addEventListener('touchmove',event=>{
+    if(els.timezoneModal.hidden)return;
+    if(!els.timezoneModal.contains(event.target))event.preventDefault();
+    event.stopImmediatePropagation();
+  },{capture:true,passive:false});
   $('#zoneButton').addEventListener('click',openTimezonePicker);
   $('#topbarZoneButton')?.addEventListener('click',openTimezonePicker);
   $('#mobileZoneButton')?.addEventListener('click',openTimezonePicker);

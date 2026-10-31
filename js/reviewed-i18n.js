@@ -321,6 +321,17 @@
   observer=new MutationObserver(queue);
   observer.observe(document.body,{childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','title','placeholder','alt'],subtree:true});
  }
+ 
+ // Apply the selected language before the translation widget loads.
+ function storedLocale(){
+  try{
+   const lang=window.__tfwPreferredSiteLanguage?.()||localStorage.getItem('tfw_site_language_v1')||'en';
+   return Object.prototype.hasOwnProperty.call(maps,lang)?lang:'en';
+  }catch{return 'en'}
+ }
+ locale=storedLocale();
+ window.addEventListener('tfw:site-language-changed',event=>apply(event.detail?.language||storedLocale()));
+ window.addEventListener('storage',event=>{if(event.key==='tfw_site_language_v1')apply(storedLocale())});
  window.__tfwReviewedI18nApply=apply;
  document.addEventListener('DOMContentLoaded',boot,{once:true});
  window.addEventListener('tfw:registration-gate-mounted',queue);

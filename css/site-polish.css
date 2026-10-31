@@ -671,3 +671,27 @@ html:lang(ar) :is(h1,h2,h3,h4,h5,h6,p,li,label,small,strong,em,span,a,button,opt
 html:lang(ar) textarea{direction:rtl!important;unicode-bidi:plaintext}
 html:lang(ar) :is(input[type="text"],input[type="email"],input[type="url"],
  input[type="number"],input[type="search"],input:not([type])){direction:ltr!important}
+
+/* Timeline: safe vertical room for entries 02, 04, 14, 16, 17, 18 and 19. */
+.timeline-viewport{overscroll-behavior-inline:contain}
+.timeline-viewport .timeline-item{height:716px!important;grid-template-rows:306px 94px 306px!important;align-content:stretch}
+.timeline-viewport .timeline-copy{box-sizing:border-box;min-width:0;width:100%;max-height:none!important;overflow:visible!important;padding:12px 9px!important}
+.timeline-viewport .timeline-copy h3{font-size:clamp(20px,2.1vw,26px)!important;line-height:1.13!important;overflow-wrap:anywhere;word-break:normal;hyphens:auto;margin-bottom:11px!important}
+.timeline-viewport .timeline-copy p{line-height:1.48;overflow-wrap:anywhere}
+.timeline-viewport .timeline-actions{row-gap:12px}
+.timeline-viewport .timeline-item:nth-child(even) .timeline-copy{align-self:end!important;padding-bottom:16px!important}
+@media(max-width:700px){
+ .timeline-viewport .timeline-item{height:690px!important;grid-template-rows:295px 88px 295px!important}
+ .timeline-viewport .timeline-copy h3{font-size:21px!important}
+}
+/* Never render the native I-beam alongside the themed cursor. */
+@media(any-hover:hover) and (any-pointer:fine){
+ html.tfw-global-cursor-ready body,html.tfw-global-cursor-ready body *,
+ html.tfw-global-cursor-ready body input,html.tfw-global-cursor-ready body textarea,
+ html.tfw-global-cursor-ready body select,html.tfw-global-cursor-ready body [contenteditable],
+ html.tfw-global-cursor-ready body .tfw-ui-overlay,html.tfw-global-cursor-ready body .tfw-ui-overlay *{cursor:none!important}
+}
+html.tfw-app-modal-open{overflow:hidden!important;overscroll-behavior:none}
+html.tfw-app-modal-open body{overscroll-behavior:none}
+html.tfw-app-modal-open .timezone-modal{max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y}
+html.tfw-app-modal-open .timezone-list{overscroll-behavior:contain;touch-action:pan-y}

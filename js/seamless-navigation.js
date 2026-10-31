@@ -157,6 +157,8 @@
        }
      }
      await child.document.fonts?.ready;
+      child.__tfwReviewedI18nApply?.(child.__tfwPreferredSiteLanguage?.());
+      await Promise.resolve();
    }
    if(child.document.documentElement.classList.contains('tfw-page-load-error')){
      throw Error('Page content unavailable');
